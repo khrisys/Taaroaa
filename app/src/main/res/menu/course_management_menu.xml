@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Affiche une possibilité de recherche dans l'actionBar-->
+    <!--ShowAsAction definit si une zction s'affiche comme une action dans actionbar ou comme une entré dans le menu-->
+    <!--L'icone search est affiché dans l'actionbar-->
+<!--        <item
+            android:id="@+id/app_bar_search"
+            android:icon="@android:drawable/btn_minus"
+            android:orderInCategory="103"
+            android:title="dl"
+            app:actionViewClass="android.widget.SearchView"
+            app:showAsAction="always"/>-->
+
+    <item
+        android:id="@+id/action_edit"
+        android:icon="@android:drawable/ic_menu_edit"
+        android:title="Edit"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/app_bar_summary"
+        android:icon="@android:drawable/checkbox_on_background"
+        android:title="Sommaire"
+        app:actionLayout="@layout/activity_courses_pupils"/>
+
+    <item
+        android:id="@+id/app_bar_deconnexion"
+        android:title="Déconnexion"
+        app:actionProviderClass="android.support.v7.app.MediaRouteActionProvider"
+        app:showAsAction="never"
+        tools:icon="@drawable/notification_action_background"
+        tools:ignore="PrivateResource"/>
+
+
+
+</menu>

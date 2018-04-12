@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Affiche une possibilité de recherche dans l'actionBar-->
+
+
+<!--    <item
+        android:id="@+id/app_bar_search2"
+        android:icon="@android:drawable/btn_minus"
+        android:orderInCategory="103"
+        android:title="dl"
+        app:actionViewClass="android.widget.SearchView"
+        app:showAsAction="always"/>-->
+
+<!--    <item
+        android:id="@+id/action_edit"
+        android:icon="@android:drawable/ic_menu_edit"
+        android:title="Edit"
+        app:showAsAction="always"/>-->
+
+    <item
+        android:id="@+id/app_bar_deconnexion"
+        android:icon="@android:drawable/checkbox_on_background"
+        android:title="Déconnexion"
+        app:actionLayout="@layout/activity_main"/>
+
+<!--
+    <item
+        android:id="@+id/media_route_menu_item"
+        android:title="Cast"
+        app:actionProviderClass="android.support.v7.app.MediaRouteActionProvider"
+        app:showAsAction="ifRoom"
+        tools:icon="@drawable/notification_action_background"/>-->
+
+
+    <!--ShowAsAction definit si une zction s'affiche comme une action dans actionbar ou comme une entré dans le menu-->
+    <!--L'icone search est affiché dans l'actionbar-->
+<!--    <item
+        android:id="@+id/app_bar_search"
+        android:icon="@android:drawable/ic_menu_search"
+        android:orderInCategory="104"
+        android:title="Search"
+        app:showAsAction="always"
+        />-->
+
+
+
+</menu>
