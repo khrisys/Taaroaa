@@ -114,7 +114,8 @@ public class AccountCreateActivity extends BaseActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         EditText editText = findViewById(R.id.alertdialog_ok_account);
                         Toast.makeText(AccountCreateActivity.this, editText.getText(), Toast.LENGTH_LONG).show();
-                        deleteUserFromFirebase();
+                        //deleteUserFromFirebase();
+                        deleteData();
                         startMainActivity();
                     }
                 }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -226,94 +227,17 @@ public class AccountCreateActivity extends BaseActivity {
 
         if (this.getCurrentUser() != null) { // retourne un user FirebaseUser. Permettra de remplir toutes les vues de l'activité
             readData();
-           /* //Get email & username from Firebase
-            String email = TextUtils.isEmpty(this.getCurrentUser().getEmail()) ? getString(R.string.info_no_email_found) : this.getCurrentUser().getEmail();
-            String username = TextUtils.isEmpty(this.getCurrentUser().getDisplayName()) ? getString(R.string.info_no_username_found) : this.getCurrentUser().getDisplayName();
-
-            //Update views with data
-            this.mNom.setText(username);
-            this.mEmail.setText(email);
-            this.mFonctionAuClubspinner.setEnabled(false);
             //TODO afficher toutes les informations d'un user*/
-
         }
     }
 
     /**
-     * Methode permettant d'afficher les informations d'un user depuis la bdd firestore
+     * Methode permettant d'afficher les informations d'un user depuis la bdd firestore lorsque le cycle de vie de l'application est à OnResume()
      */
     private void updateUIWhenResuming() {
 
         if (this.getCurrentUser() != null) { // retourne un user FirebaseUser. Permettra de remplir toutes les vues de l'activité
-            //UserHelper.getUser(this.getCurrentUser().getUid()).addOnFailureListener(this.onFailureListener()).addOnSuccessListener();
-            //Get email & username from Firebase
             readData();
-
-
-
-       /*     Task<DocumentSnapshot> documentSnapshot = UserHelper.getUser(getCurrentUser().getUid());
-            documentSnapshot.addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                @Override
-                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                    System.out.println("ou");
-                }
-            });
-            Task<DocumentSnapshot> ds = FirebaseFirestore.getInstance().collection("users").document(getCurrentUser().getUid()).get();
-            ds.addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                @Override
-                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                    documentSnapshot.getData();
-                    System.out.println("ok");
-                }
-            });
-            if(ds.isComplete())
-                System.out.println("ok");
-
-            if(ds.isSuccessful())
-                System.out.println("ok");
-
-            *//*DocumentSnapshot result1 = dd.getResult();
-            Map<String , Object> m = result1.getData();
-            m.isEmpty();
-            if(dd.isSuccessful())
-                System.out.println("ok");*//*
-            //DocumentSnapshot result = dd.getResult(User.class);
-
-
-            String id = docRef1.getId();
-            DocumentReference user = UserHelper.getUsersCollection().document(id);
-            Task<DocumentSnapshot> s = docRef1.get();
-
-            if(docRef1.get().isSuccessful())
-                System.out.println("ok");
-            //mNom.setText(nom);
-            String uid = getCurrentUser().getUid();
-            String n = getCurrentUser().getDisplayName();
-            String email = TextUtils.isEmpty(this.getCurrentUser().getEmail()) ? getString(R.string.info_no_email_found) : this.getCurrentUser().getEmail();
-            String username = TextUtils.isEmpty(this.getCurrentUser().getDisplayName()) ? getString(R.string.info_no_username_found) : this.getCurrentUser().getDisplayName();*/
-            // decomposition du nom et du prenom
-            /*String nom = null, prenom = null;
-            String[] parts;
-            if(username.contains(" ")) {
-                parts = username.split(" ");
-                if(parts[1] != null)  nom = parts[1];  else nom = "";
-                if(parts[0] != null) prenom = parts[0];  else prenom = "";
-            } else {
-                nom = username;
-                prenom = "";
-            }*/
-
-
-            String licence;
-            String niveau;
-            String fonction;
-
-            //Update views with data
-           /* this.mNom.setText(nom);
-            this.mPrenom.setText(prenom);
-            this.mEmail.setText(email);*/
-            this.mFonctionAuClubspinner.setEnabled(false);
-            //TODO afficher toutes les informations d'un user
         }
     }
 
@@ -347,8 +271,7 @@ public class AccountCreateActivity extends BaseActivity {
         DocumentReference docRef1 = FirebaseFirestore.getInstance().collection("users").document(getCurrentUser().getUid()); // recup ref de l'obj courant en bdd de stockage
         // un DocumentReference fait référence à un emplacement de document dans une base de données Firestore et peut être utilisé pour
         // écrire, lire ou écouter l'emplacement. Il peut exister ou non un document à l'emplacement référencé.
-        String ddd = docRef1.getId();
-        String fnom = docRef1.getPath();
+
         docRef1.get().addOnCompleteListener(new OnCompleteListener < DocumentSnapshot > () {
             @Override
             public void onComplete(@NonNull Task < DocumentSnapshot > task) {
@@ -356,21 +279,10 @@ public class AccountCreateActivity extends BaseActivity {
                     DocumentSnapshot doc = task.getResult(); //Un DocumentSnapshot contient des données lues à partir d'un document dans votre base de données Firestore.
                     String nom = (String) doc.get("nom");
                     String prenom = (String) doc.get("prenom");
-                        /*String nom = null, prenom = null;
-                        String[] parts;
-                        if(username.contains(" ")) {
-                            parts = username.split(" ");
-                            if(parts[1] != null)  nom = parts[1];  else nom = "";
-                            if(parts[0] != null) prenom = parts[0];  else prenom = "";
-                        } else {
-                            nom = username;
-                            prenom = "";
-                        }*/
                     String email = (String) doc.get("email");
                     String fonction = (String) doc.get("fonction");
                     String licence = (String) doc.get("licence");
                     String niveau = (String) doc.get("niveau");
-
 
                     mNom.setText(nom);
                     mPrenom.setText(prenom);
@@ -401,7 +313,6 @@ public class AccountCreateActivity extends BaseActivity {
                 return i;
             }
         }
-
         return 0;
     }
 
@@ -430,6 +341,19 @@ public class AccountCreateActivity extends BaseActivity {
                                 Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    private void deleteData() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("users").document(getCurrentUser().getUid())
+                .delete().addOnSuccessListener(new OnSuccessListener < Void > () {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Toast.makeText(AccountCreateActivity.this, R.string.alertDialog_delete,
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
 

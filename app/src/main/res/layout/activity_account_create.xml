@@ -282,7 +282,7 @@
         android:layout_height="wrap_content"
         android:inputType="text"
         android:textSize="@android:dimen/notification_large_icon_height"
-        android:text="@string/alertDialog_ok"
+        android:text="@string/alertDialog_delete"
         android:visibility="invisible"/>
 
     <EditText

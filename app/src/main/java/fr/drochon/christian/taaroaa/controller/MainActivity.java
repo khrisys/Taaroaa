@@ -14,14 +14,12 @@ import android.widget.Toast;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.Arrays;
@@ -29,7 +27,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import fr.drochon.christian.taaroaa.R;
-import fr.drochon.christian.taaroaa.api.UserHelper;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
 
 import static fr.drochon.christian.taaroaa.R.drawable;
@@ -89,7 +86,7 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 if (!isCurrentUserLogged()) {
-                    //CREATION DU USER UNIQUEMENT A LA CREATION DE L'APP
+                    //CREATION DU USER
                     createUserInFirestore();
                     startSummaryActivity(); // connecté : renvoyé vers le sommaire
                 } else {
@@ -98,16 +95,9 @@ public class MainActivity extends BaseActivity {
             }
         });
 
-        // Si l'utilisateur clique sur le bouton de creation d'un compte, il sera redirigé vers la page adequate.
-        /* Button creationCompte = findViewById(id.creation_compte_btn);
-        creationCompte.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, AccountCreateActivity.class);
-                startActivity(intent);
-            }
-        });*/
-        // Deconnexion de l'utilisateur
+        /**
+         * Deconnexion de l'utilisateur
+         */
         mDeconnexion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -204,7 +194,7 @@ public class MainActivity extends BaseActivity {
                 //TODO condition de creation d'un utilisateur ???????????????
                 //getUserFromFirestore();
                 this.createUserInFirestore();
-                showSnackBar(getString(string.connection_succeed));
+                //showSnackBar(getString(string.connection_succeed));
                 //TODO mettre un thread sleep ici?
                 this.startSummaryActivity(); // connexion et renvoi vers la page sommaire
             }
@@ -230,109 +220,6 @@ public class MainActivity extends BaseActivity {
     private void showSnackBar(String message) {
         Snackbar.make(mTextViewHiddenForSnackbar, message, Snackbar.LENGTH_LONG).show();
     }
-
-    private void getUserFromFirestore() {
-
-
-        DocumentReference docRef = FirebaseFirestore.getInstance().collection("users").document(getCurrentUser().getUid()); // auth d'un mec connecté
-        DocumentReference collectionReference = UserHelper.getUsersCollection().document(getCurrentUser().getUid());
-        String s = getCurrentUser().getUid();
-
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        if (auth.getUid().equals(getCurrentUser().getUid()))
-            System.out.println("ok");
-        else
-            System.out.println("nok");
-        FirebaseFirestore fs = FirebaseFirestore.getInstance();
-        if (fs.collection("users").document().equals(getCurrentUser().getUid())) {
-            System.out.println("ok");
-
-        }
-
-
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("users")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (DocumentSnapshot document : task.getResult()) {
-                                Log.d("TAG", document.getId() + " => " + document.getData());
-                            }
-                        } else {
-                            Log.w("TAG", "Error getting documents.", task.getException());
-                        }
-                    }
-                });
-
-        System.out.println(db.collection("users").get());
-        if (db.collection("users").document(getCurrentUser().getUid()).getFirestore() != null)
-            System.out.println("doc existe");
-        else
-            System.out.println("doc n'existe pas");
-/*        if(db.collection("users").get().addOnCompleteListener() != null)
-            System.out.println("existe");
-        else
-            System.out.println("existe pas");
-        DocumentReference docRef1 = db.collection("users").document();
-        CollectionReference collectionReference1 = db.collection("users");
-
-
-        if (docRef1.getFirestore().document(getCurrentUser().getUid()) == null)
-            System.out.print("ok");
-        else System.out.print("nok");
-
-        collectionReference.collection("users");
-
-*//*        if(FirebaseFirestore.getInstance().collection("users").get().getResult().getDocuments().contains(docRef))
-            System.out.println("ok");*//*
-
-        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document != null && document.exists()) {
-                        Log.d("TAG", "DocumentSnapshot data: " + document.getData());
-                    } else {
-                        Log.d("TAG", "No such document");
-                    }
-                } else {
-                    Log.d("TAG", "get failed with ", task.getException());
-                }
-            }
-        });
-
-
-*//*        Task task = UserHelper.getUser(getCurrentUser().getUid());
-        Task result = FirebaseFirestore.getInstance().collection("users").get(); // valueChanges().map(document => {
-
-        if(result.getResult().equals(task))
-            System.out.println(",sdpf");*//*
-
-
-        //CollectionReference colRef =  FirebaseFirestore.getInstance().collection("users"); //getInstance().collection("users").document();
-        //DocumentReference docRef = FirebaseFirestore.getInstance().document(getCurrentUser().getUid());
-
-        //Task<DocumentSnapshot> task = UserHelper.getUser(getCurrentUser().getUid());
-*//*        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {*//*
-         *//*  DocumentSnapshot document = task.getResult();
-                    if (document != null && document.exists()) {
-                        Log.d("TAG", "DocumentSnapshot data: " + document.getData());
-                    } else {
-                        Log.d("TAG", "No such document");
-                    }*//*
-        //} //else {
-        //Log.d("TAG", "get failed with ", task.getException());
-        //}
-        //}
-        // });*/
-    }
-
 
     /**
      * Methode permettant d'afficher sur le bouton de connexion soit la direction de l'ecran de connexion
@@ -369,34 +256,64 @@ public class MainActivity extends BaseActivity {
     }
 
     /**
-     * Methode de creation d'un utilisateur
+     * Methode de creation d'un utilisateur, avec condition de creation en fonction de l'existance ou non d'un user dejà en bdd,
+     * et decomposant le nom et le prenom saisi à l'enregistrement de la personne.
      */
     private void createUserInFirestore() {
 
         if (this.getCurrentUser() != null) {
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            Query mQuery = db.collection("users").whereEqualTo("uid", getCurrentUser().getUid());
 
-            String username = this.getCurrentUser().getDisplayName();
-            String nom = null, prenom = null;
-            String[] parts;
-            if (username.contains(" ")) {
-                parts = username.split(" ");
-                if (parts[1] != null) nom = parts[1];
-                else nom = "";
-                if (parts[0] != null) prenom = parts[0];
-                else prenom = "";
-            } else {
-                nom = username;
-                prenom = "";
-            }
-            String uid = this.getCurrentUser().getUid();
-            String email = this.getCurrentUser().getEmail();
+            // RAJOUTER LE THIS DANS LE LUSTENER PERMET DE RESTREINDRE LE CONTEXT A CETTE ACTIVITE, EVITANT AINSI DE METTRE LES DONNEES
+            // A JOUR A CHAUQE FOIS QU'IL Y A UN UPDATE DANS L'APP.
+            // SI ON ENLEVE LE THIS, ON CREERA UN NOUVEAU DOCUMENT A CHAQUE FOIS QU'ON EN SUPPRIMERA UN, PAR EX !
+            mQuery.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
+                @Override
+                public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+                    // condition de creation d'un user ou affichage simple d'un message indiquant que l'user existe dejà en bdd.
+                    // Avec les uid, il ne peut y avoir de doublon.
+                    if (documentSnapshots.size() == 1) {
+                        Log.e("TAG", "Le document existe !");
+                    } else {
+                        // recuperation des données de l'user
+                        String username = getCurrentUser().getDisplayName();
+                        // decomposition du nom et du prenom recu dans username
+                        String nom = null, prenom = null;
+                        String[] parts;
+                        if (username.contains(" ")) {
+                            parts = username.split(" ");
+                            try {
+                                if (parts[1] != null) nom = parts[1];
+                                else nom = "";
+                            } catch (ArrayIndexOutOfBoundsException e1) {
+                                Log.e("TAG", "ArrayOutOfBoundException " + e1.getMessage());
+                            }
+                            if (parts[0] != null) prenom = parts[0];
+                            else prenom = "";
+                        } else {
+                            nom = username;
+                            prenom = "";
+                        }
+                        String uid = getCurrentUser().getUid();
+                        String email = getCurrentUser().getEmail();
 
-            //UserHelper.createUser(uid, username, email).addOnFailureListener(this.onFailureListener());
-            this.addNewUser(uid, nom, prenom, email);
+                        //UserHelper.createUser(uid, username, email).addOnFailureListener(this.onFailureListener());
+                        addNewUser(uid, nom, prenom, email);
+                    }
+                }
+            });
         }
     }
 
-
+    /**
+     * Methode permettan de creer un user lorsque celui ci vient de se connecter pour la 1ere fois.
+     *
+     * @param uid
+     * @param nom
+     * @param prenom
+     * @param email
+     */
     private void addNewUser(String uid, String nom, String prenom, String email) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
