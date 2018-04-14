@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
-import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,30 +24,20 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
-
-import java.util.Map;
-import java.util.Objects;
 
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.api.UserHelper;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
-import fr.drochon.christian.taaroaa.controller.AdapterCoursesPupils;
 import fr.drochon.christian.taaroaa.controller.MainActivity;
 import fr.drochon.christian.taaroaa.controller.SummaryActivity;
-import fr.drochon.christian.taaroaa.model.User;
-
-import static java.util.Objects.*;
 
 public class AccountCreateActivity extends BaseActivity {
 
+    public static final int GET_USERNAME = 40;
     // identifiant pour identifier la requete REST
     private static final int SIGN_OUT_TASK = 10;
     private static final int DELETE_USER_TASK = 20;
     private static final int UPDATE_USERNAME = 30;
-    public static final int GET_USERNAME = 40;
-
     TextInputEditText mPrenom;
     TextInputEditText mNom;
     TextInputEditText mLicence;
@@ -166,7 +155,7 @@ public class AccountCreateActivity extends BaseActivity {
     // --------------------
 
     /**
-     *  Fait appel au fichier xml menu pour definir les icones.
+     * Fait appel au fichier xml menu pour definir les icones.
      * Definit differentes options dans le menu caché.
      */
     @Override
@@ -185,18 +174,7 @@ public class AccountCreateActivity extends BaseActivity {
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.app_bar_summary:
-                setTitle("sommaire appelé");
-                return true;
-            case R.id.app_bar_deconnexion:
-                setTitle("Deconnexion appelé");
-                return true;
-           /* case R.id.app_bar_search:
-                setTitle("search activé");
-                return true;*/
-        }
-        return false;
+        return optionsToolbar(this, item);
     }
 
     /**
@@ -267,14 +245,14 @@ public class AccountCreateActivity extends BaseActivity {
         }
     }
 
-    private void readData(){
+    private void readData() {
         DocumentReference docRef1 = FirebaseFirestore.getInstance().collection("users").document(getCurrentUser().getUid()); // recup ref de l'obj courant en bdd de stockage
         // un DocumentReference fait référence à un emplacement de document dans une base de données Firestore et peut être utilisé pour
         // écrire, lire ou écouter l'emplacement. Il peut exister ou non un document à l'emplacement référencé.
 
-        docRef1.get().addOnCompleteListener(new OnCompleteListener < DocumentSnapshot > () {
+        docRef1.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
-            public void onComplete(@NonNull Task < DocumentSnapshot > task) {
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
                     DocumentSnapshot doc = task.getResult(); //Un DocumentSnapshot contient des données lues à partir d'un document dans votre base de données Firestore.
                     String nom = (String) doc.get("nom");
@@ -303,13 +281,14 @@ public class AccountCreateActivity extends BaseActivity {
 
     /**
      * Methode permettant de retrouver la position d'un item de la liste des niveaux de plongée d'un user
+     *
      * @param spinner
      * @param myString
      * @return
      */
-    private int getIndexSpinner(Spinner spinner, String myString){
-        for (int i=0;i<spinner.getCount();i++){
-            if (spinner.getItemAtPosition(i).toString().equalsIgnoreCase(myString)){
+    private int getIndexSpinner(Spinner spinner, String myString) {
+        for (int i = 0; i < spinner.getCount(); i++) {
+            if (spinner.getItemAtPosition(i).toString().equalsIgnoreCase(myString)) {
                 return i;
             }
         }
@@ -347,7 +326,7 @@ public class AccountCreateActivity extends BaseActivity {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         db.collection("users").document(getCurrentUser().getUid())
-                .delete().addOnSuccessListener(new OnSuccessListener < Void > () {
+                .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 Toast.makeText(AccountCreateActivity.this, R.string.alertDialog_delete,

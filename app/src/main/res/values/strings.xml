@@ -52,6 +52,7 @@
     <!--COURSES ACTIVITIES-->
     <string name="button_create_course">Créez un cours</string>
     <string name="button_update_course">Modifiez un cours</string>
+    <string name="error_empty_fields">Merci de saisir ce champ !</string>
 
 
     <!-- FACEBOOK PURPOSE -->

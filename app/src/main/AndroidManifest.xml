@@ -40,14 +40,14 @@
             android:name=".auth.AccountCreateActivity"
             android:label="@string/app_name">
         </activity>
-        <activity android:name=".controller.CoursesManagementActivity">
+        <activity android:name=".course.CoursesManagementActivity">
         </activity>
         <activity
-            android:name=".controller.CoursesSupervisorsActivity"
+            android:name=".course.CoursesSupervisorsActivity"
             android:label="@string/title_activity_courses_supervisors">
         </activity>
         <activity
-            android:name=".controller.CoursesPupilsActivity"
+            android:name=".course.CoursesPupilsActivity"
             android:label="@string/title_activity_courses_pupils">
         </activity>
 

@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".controller.CoursesManagementActivity">
+    tools:context=".course.CoursesManagementActivity">
 
     <ScrollView
         android:id="@+id/scrollview_ecran"
@@ -232,28 +232,19 @@
                 android:textSize="18sp"/>
 
 
-            <EditText
+            <android.support.design.widget.TextInputEditText
                 android:id="@+id/timeText"
-                style="@android:style/Widget.DeviceDefault.AutoCompleteTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:clickable="true"
                 android:ems="10"
                 android:gravity="center"
-                android:hint="02:30"
-                android:inputType="time"
+                android:inputType="text"
+                android:lines="1"
                 android:onClick="showTimePickerDialog"
                 android:textAppearance="@style/TextAppearance.AppCompat"
                 android:textColor="@color/colorPrimary"/>
 
         </LinearLayout>
-<!--            <DatePicker
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layoutMode="clipBounds"
-                android:datePickerMode="spinner">
-
-            </DatePicker>-->
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -272,13 +263,13 @@
                 android:textColor="@color/colorPrimary"
                 android:textSize="18sp"/>
 
-                <EditText
+                <android.support.design.widget.TextInputEditText
                     android:id="@+id/dateText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:ems="10"
                     android:gravity="center"
-                    android:inputType="date"
+                    android:inputType="text"
                     android:linksClickable="false"
                     android:longClickable="false"
                     android:onClick="showDatePickerDialog"
@@ -288,17 +279,6 @@
             </LinearLayout>
 
         </LinearLayout>
-            <!--
-            <TimePicker
-                android:id="@+id/timePickerCourses"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:timePickerMode="spinner"
-                android:theme="@style/AppTheme"
-                android:onClick="showTimePickerDialog"
-                />
--->
-
 
             <Button
                 android:id="@+id/creation_compte_btn"

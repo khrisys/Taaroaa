@@ -3,7 +3,6 @@ package fr.drochon.christian.taaroaa.controller;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,6 +11,8 @@ import android.widget.Button;
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.auth.AccountCreateActivity;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
+import fr.drochon.christian.taaroaa.course.CoursesPupilsActivity;
+import fr.drochon.christian.taaroaa.course.CoursesSupervisorsActivity;
 
 public class SummaryActivity extends BaseActivity {
 
@@ -84,17 +85,6 @@ public class SummaryActivity extends BaseActivity {
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.app_bar_deconnexion:
-                setTitle("switch activé");
-                return true;
-/*            case R.id.media_route_menu_item:
-                setTitle("Cast appelé");
-                return true;
-            case R.id.app_bar_search:
-                setTitle("search activé");
-                return true;*/
-        }
-        return false;
+        return optionsToolbar(this, item);
     }
 }

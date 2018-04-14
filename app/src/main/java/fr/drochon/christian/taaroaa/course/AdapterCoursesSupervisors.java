@@ -1,4 +1,4 @@
-package fr.drochon.christian.taaroaa.controller;
+package fr.drochon.christian.taaroaa.course;
 
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
@@ -8,11 +8,11 @@ import android.view.ViewGroup;
 import android.widget.CalendarView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import fr.drochon.christian.taaroaa.R;
+import fr.drochon.christian.taaroaa.controller.Sixth;
 
 /**
  * l'adapter s'occupe de l'ensemble du contenu alors que le viewholder s'occupe des specificités d'une cellule

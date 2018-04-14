@@ -1,6 +1,7 @@
 package fr.drochon.christian.taaroaa.model;
 
 import java.sql.Time;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -17,8 +18,8 @@ public class Course {
     private String mSujetDuCours;
     private String mNiveauDuCours;
     private String mNomDuMoniteur;
-    private String  mDateDuCours;
-    private String mTimeDuCours;
+    private Date  mDateDuCours;
+    private Time mTimeDuCours;
 
     List<User> listUsers;
 
@@ -26,17 +27,17 @@ public class Course {
         mUid = uid;
     }
 
-    public Course(String typeCours, String sujetDuCours, String niveauDuCours, String nomDuMoniteur, String dateDuCours, String timeDuCours) {
+    public Course(String uid, String typeCours, String sujetDuCours, String niveauDuCours, String nomDuMoniteur, Date dateDuCours) {
+        mUid = uid;
         mTypeCours = typeCours;
         mSujetDuCours = sujetDuCours;
         mNiveauDuCours = niveauDuCours;
         mNomDuMoniteur = nomDuMoniteur;
         mDateDuCours = dateDuCours;
-        mTimeDuCours = timeDuCours;
-        this.listUsers = new ArrayList<>();
+        //this.listUsers = listUsers;
     }
 
-    public Course(String uid, String typeCours, String sujetDuCours, String niveau, String nomDuMoniteur, String dateDuCours, String timeDuCours) {
+    public Course(String uid, String typeCours, String sujetDuCours, String niveau, String nomDuMoniteur, Date dateDuCours, Time timeDuCours) {
         mUid = uid;
         mTypeCours = typeCours;
         mSujetDuCours = sujetDuCours;
@@ -44,19 +45,8 @@ public class Course {
         mNomDuMoniteur = nomDuMoniteur;
         mDateDuCours = dateDuCours;
         mTimeDuCours = timeDuCours;
-        this.listUsers = new ArrayList<>();
+        //this.listUsers = new ArrayList<>();
     }
-
-/*    public Course(String uid, String typeCours, String sujetDuCours, String niveau, String nomDuMoniteur, Date dateDuCours, Time timeDuCours) {
-        mUid = uid;
-        mTypeCours = typeCours;
-        mSujetDuCours = sujetDuCours;
-        mNiveauDuCours = niveau;
-        mNomDuMoniteur = nomDuMoniteur;
-        mDateDuCours = dateDuCours;
-        mTimeDuCours = timeDuCours;
-        this.listUsers = new ArrayList<>();
-    }*/
 
     // GETTERS & SETTERS
 
@@ -100,19 +90,19 @@ public class Course {
         mNomDuMoniteur = nomDuMoniteur;
     }
 
-    public String getDateDuCours() {
+    public Date getDateDuCours() {
         return mDateDuCours;
     }
 
-    public void setDateDuCours(String dateDuCours) {
+    public void setDateDuCours(Date dateDuCours) {
         mDateDuCours = dateDuCours;
     }
 
-    public String getTimeDuCours() {
+    public Time getTimeDuCours() {
         return mTimeDuCours;
     }
 
-    public void setTimeDuCours(String timeDuCours) {
+    public void setTimeDuCours(Time timeDuCours) {
         mTimeDuCours = timeDuCours;
     }
 

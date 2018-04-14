@@ -1,11 +1,10 @@
-package fr.drochon.christian.taaroaa.controller;
+package fr.drochon.christian.taaroaa.course;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -110,18 +109,7 @@ public class CoursesPupilsActivity extends BaseActivity {
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.app_bar_summary:
-                setTitle("sommaire appelé");
-                return true;
-            case R.id.app_bar_deconnexion:
-                setTitle("deconnexion appelée");
-                return true;
-           /* case R.id.app_bar_search:
-                setTitle("search activé");
-                return true;*/
-        }
-        return false;
+        return optionsToolbar(this, item);
     }
 
 

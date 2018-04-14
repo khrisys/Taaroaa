@@ -1,20 +1,35 @@
 package fr.drochon.christian.taaroaa.base;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
+
 import butterknife.ButterKnife;
 import fr.drochon.christian.taaroaa.R;
+import fr.drochon.christian.taaroaa.auth.AccountCreateActivity;
+import fr.drochon.christian.taaroaa.controller.MainActivity;
+import fr.drochon.christian.taaroaa.controller.SummaryActivity;
 
 /**
  * Created by Philippe on 12/01/2018.
@@ -60,6 +75,32 @@ public abstract class BaseActivity extends AppCompatActivity {
         //ab.setTitle(R.string.app_name);
     }
 
+    /**
+     * Methode permettant de gerer les actions dee options de la toolbar.
+     * Recuperation  du clic d'un user = switch car 2 options.
+     * Surtout ne pas oublier le "true" apres chaque case sinon, ce sera toujours le dernier case qui sera executé!
+     * @param item
+     * @return boolean
+     */
+    protected boolean optionsToolbar(Activity activity, MenuItem item){
+        switch (item.getItemId()) {
+            case R.id.app_bar_summary:
+                Intent intent = new Intent(activity, SummaryActivity.class);
+                startActivity(intent);
+                return true;
+
+            case R.id.app_bar_deconnexion:
+                // deconnexion
+                AuthUI.getInstance()
+                        .signOut(this) // methode utilisée par le singleton authUI.getInstance()
+                        .addOnSuccessListener(this, this.updateUIAfterRESTRequestsCompleted(SIGN_OUT_TASK));
+                // redirection vers la page d'accueil
+                Intent intent1 = new Intent(activity, MainActivity.class);
+                startActivity(intent1);
+                return true;
+        }
+        return false;
+    }
 
     // --------------------
     // CONNEXION ET AUTHENTIFICATION DES USERS
@@ -76,6 +117,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected FirebaseUser getCurrentUser() {
         return FirebaseAuth.getInstance().getCurrentUser();
     }
+
 
 
     /**
@@ -135,6 +177,44 @@ public abstract class BaseActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), getString(R.string.error_unknown_error), Toast.LENGTH_LONG).show();
             }
         };
+    }
+
+    // --------------------
+    // HEURE & DATE PARSING
+    // --------------------
+
+    /**
+     * Methode permettant de parser une date en string
+     *
+     * @param currentTime
+     * @return
+     */
+    protected String dateToString(Date currentTime) {
+        //Date currentTime = Calendar.getInstance().getTime();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        String s = sdf.format(currentTime);
+        return s;
+    }
+
+    /**
+     * Methode permettant de parse une string en date
+     *
+     * @param dateEtHeureCours
+     * @return
+     */
+    protected Date stringToDate(String dateEtHeureCours) {
+        Date horaireCoursFormat = null;
+        SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+
+        try {
+            horaireCoursFormat = df.parse(dateEtHeureCours);
+            df.setTimeZone(TimeZone.getTimeZone("Europe/Paris"));
+            System.out.println(TimeZone.getTimeZone("Europe/Paris"));
+            System.out.println(horaireCoursFormat);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return horaireCoursFormat;
     }
 
 }

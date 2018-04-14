@@ -4,8 +4,10 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 
 import java.sql.Time;
+import java.time.LocalDate;
 import java.util.Date;
 
 import fr.drochon.christian.taaroaa.model.Course;
@@ -39,20 +41,22 @@ public class CourseHelper {
      * @param niveauDuCours
      * @param moniteur
      * @param dateDuCours
-     * @param heureDuCours
      * @return Task
      */
-    public static Task<Void> createCourse(String id, String typeDuCours, String sujetDuCours, String niveauDuCours, String moniteur, String  dateDuCours, String  heureDuCours) {
+    public static Task<Void> createCourse(String id, String typeDuCours, String sujetDuCours, String niveauDuCours, String moniteur, Date dateDuCours) {
         // creation de l'objet Course
-        Course courseToCreate = new Course(id, typeDuCours, sujetDuCours, niveauDuCours, moniteur, dateDuCours, heureDuCours);
+        Course courseToCreate = new Course(id, typeDuCours, sujetDuCours, niveauDuCours, moniteur, dateDuCours);
 
         return CourseHelper.getCoursesCollection().document().set(courseToCreate);
     }
 
     // --- GET ---
+    public static Query getCourse(String id){
+        return CourseHelper.getCoursesCollection().document(id).collection(COLLECTION_NAME);
+    }
 
-    public static Task<DocumentSnapshot> getCourse(String id) {
-        return CourseHelper.getCoursesCollection().document(id).get();
+    public static Query getAllCourses() {
+        return CourseHelper.getCoursesCollection().document().collection(COLLECTION_NAME).orderBy("dateDuCours");
     }
 
     // --- UPDATE ---
@@ -61,8 +65,8 @@ public class CourseHelper {
      * Mehode permettant de mettre à jour un utilisateur.
      * Auncun utilisateur ne peut updater son adresse email pour eviter de perdre don addresse en la cgngeant trop souvent.
      */
-    public static Task<Void> updateCourse(String id, String type, String sujet, String niveau, String moniteur, String  dateDuCours, String heureDuCours) {
-        return CourseHelper.getCoursesCollection().document(id).update("id", id, "type", type, "sujetDuCours", sujet, "niveauDuCours", niveau, "niveauDuCours", niveau, "moniteur", moniteur, "dateDuCours", dateDuCours, "heureDuCours", heureDuCours);
+    public static Task<Void> updateCourse(String id, String type, String sujet, String niveau, String moniteur, Date dateDuCours) {
+        return CourseHelper.getCoursesCollection().document(id).update("id", id, "type", type, "sujetDuCours", sujet, "niveauDuCours", niveau, "niveauDuCours", niveau, "moniteur", moniteur, "dateDuCours", dateDuCours);
     }
 
     // --- DELETE ---
