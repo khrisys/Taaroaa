@@ -1,4 +1,4 @@
-package fr.drochon.christian.taaroaa.controller;
+package fr.drochon.christian.taaroaa.course;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -19,11 +19,15 @@ import android.widget.Spinner;
 import android.widget.TimePicker;
 
 import com.firebase.ui.auth.AuthUI;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.Query;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.api.CourseHelper;
@@ -105,14 +109,16 @@ public class CoursesManagementActivity extends BaseActivity {
                 // recuperation de l'id du cours
                 String coursId = CourseHelper.getCoursesCollection().document().getId();
 
-                // ??? verification d'un id existant dans la bdd et si c'est le cas, remplissage des champs de l'ecran cours + changement de la phrase du bouton ????
-                if (CourseHelper.getCourse(coursId) == null) {
+                //TODO verification d'un id existant dans la bdd et si c'est le cas, remplissage des champs de l'ecran cours + changement de la phrase du bouton ????
+                mCreerCours.setText(R.string.button_create_course);
+                createCourseInFirebase();
+                /*if (CourseHelper.getCourse(coursId) == null) {
                     mCreerCours.setText(R.string.button_create_course);
                     createCourseInFirebase();
                 } else {
                     mCreerCours.setText(R.string.button_update_course);
                     updateCourseInFirebase();
-                }
+                }*/
                 startCoursesSupervisorsActivity(); // renvoi l'encadrant sur la page de tous les cours
             }
         });
@@ -202,8 +208,7 @@ public class CoursesManagementActivity extends BaseActivity {
             mSujetCours.setText(course.getSujetDuCours());
             mTypeCours.setTag(course.getNiveauDuCours());
             mNiveauCours.setTag(course.getNiveauDuCours());
-            mDateCours.setText(course.getDateDuCours());
-            mHeureCours.setText(course.getTimeDuCours());
+            //mDateCours.setText(course.getDateDuCours());
 
 
         }
@@ -233,12 +238,23 @@ public class CoursesManagementActivity extends BaseActivity {
         String dateCours = mDateCours.getText().toString();
         String heureCours = mHeureCours.getText().toString();
 
-        //Date horaireCours = dateCours + heureCours.;
-        DocumentReference reference = getCoursesCollection().document();
+        String horaireCours = dateCours + " " + heureCours;
+        Date horaireCoursFormat = this.stringToDate(horaireCours); // changement de la string en date
 
-        if (!id.isEmpty() && !moniteur.isEmpty() && !sujet.isEmpty() && !dateCours.isEmpty() && !heureCours.isEmpty()) {
-            CourseHelper.createCourse(id, typeCours, sujet, niveauCours, moniteur, dateCours, heureCours);
-            // apres la creation d'un cours, l'encadrant est redirigé vers l'ecran des encadrants
+       /* SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+
+        try {
+            horaireCoursFormat = df.parse(horaireCours);
+            df.setTimeZone(TimeZone.getTimeZone("UTC+2"));
+            //System.out.println(horaireCoursFormat);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }*/
+
+        if (!moniteur.isEmpty() && !sujet.isEmpty() && !dateCours.isEmpty() && !heureCours.isEmpty()) {
+            CourseHelper.createCourse(id, typeCours, sujet, niveauCours, moniteur, horaireCoursFormat);
+            //TODO mettre un alertdialog pour notifier qu'un champ est vide
+            //TODO apres la creation d'un cours, l'encadrant est redirigé vers l'ecran des encadrants
         }
     }
 
@@ -248,21 +264,31 @@ public class CoursesManagementActivity extends BaseActivity {
      */
     private void updateCourseInFirebase() {
 
-        DocumentReference reference = getCoursesCollection().document();
+        String id = getCoursesCollection().document().getId();
         String moniteur = mMoniteurCours.getText().toString();
         String sujet = mSujetCours.getText().toString();
         String typeCours = mTypeCours.getSelectedItem().toString();
         String niveauCours = mNiveauCours.getSelectedItem().toString();
         String dateCours = mDateCours.getText().toString();
         String heureCours = mHeureCours.getText().toString();
+        String horaireCours = dateCours + " " + heureCours;
+        Date horaireCoursFormat = null;
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MM yyyy HH:mm:ss", Locale.FRANCE);
+        try {
+            horaireCoursFormat = simpleDateFormat.parse(dateCours + " " + heureCours);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
-        String id = getCoursesCollection().getId();
-        DocumentReference reference2 = getCoursesCollection().document();
-        Task<DocumentSnapshot> reference1 = CourseHelper.getCourse(reference2.getId());
+
+        DocumentReference reference2 = getCoursesCollection().document(id);
+        Query reference1 = CourseHelper.getCourse(reference2.getId());
         if (reference2 != null) {
             //TODO alert dialog lorsque tous les champs ne sont pas remplis
             if (!moniteur.isEmpty() && !sujet.isEmpty() && !dateCours.isEmpty() && !heureCours.isEmpty()) { // verification que tous les champs vides soient remplis
-                CourseHelper.updateCourse(String.valueOf(reference2), typeCours, sujet, niveauCours, moniteur, dateCours, heureCours).addOnFailureListener(this.onFailureListener()).addOnSuccessListener(this.updateUIAfterRESTRequestsCompleted(UPDATE_USERNAME));
+                CourseHelper.updateCourse(id, typeCours, sujet, niveauCours, moniteur, horaireCoursFormat)
+                        .addOnFailureListener(this.onFailureListener())
+                        .addOnSuccessListener(this.updateUIAfterRESTRequestsCompleted(UPDATE_USERNAME));
             }
         }
     }
@@ -285,8 +311,12 @@ public class CoursesManagementActivity extends BaseActivity {
         }
     }
 
+    // --------------------
+    // HEURE & DATE
+    // --------------------
+
     /**
-     * Classe interne pour la date
+     * Classe static interne pour la date
      */
     public static class DatePickerFragment extends DialogFragment implements
             DatePickerDialog.OnDateSetListener {
@@ -295,12 +325,14 @@ public class CoursesManagementActivity extends BaseActivity {
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             // Use the current date as the default date in the picker
             final Calendar c = Calendar.getInstance();
+
             int year = c.get(Calendar.YEAR);
             int month = c.get(Calendar.MONTH);
             int day = c.get(Calendar.DAY_OF_MONTH);
 
+
             // Create a new instance of DatePickerDialog and return it
-            return new DatePickerDialog(getActivity(), this, day, month, year);
+            return new DatePickerDialog(getActivity(), this, year, month, day + 1);
         }
 
         /**
@@ -313,12 +345,12 @@ public class CoursesManagementActivity extends BaseActivity {
         @Override
         public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
             // Do something with the date chosen by the user
-            mDateCours.setText(dayOfMonth + "/" + (month + 1) + "/" + year);
+            mDateCours.setText(mDateCours.getText() + " " + dayOfMonth + "-" + (month + 1) + "-" + year);
         }
     }
 
     /**
-     * Classe interne statique
+     * Classe interne statique pour l'heure
      */
     public static class TimePickerFragment extends DialogFragment implements
             TimePickerDialog.OnTimeSetListener {
@@ -337,7 +369,42 @@ public class CoursesManagementActivity extends BaseActivity {
 
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
             // Do something with the time chosen by the user
-            mHeureCours.setText(mHeureCours.getText() + " -" + hourOfDay + ":" + minute);
+            mHeureCours.setText(mHeureCours.getText() + " " + hourOfDay + ":" + minute + ":00");
         }
+    }
+
+
+    /**
+     * Methode permettant de parser une date en string
+     *
+     * @param currentTime
+     * @return
+     */
+    private String dateToString(Date currentTime) {
+        //Date currentTime = Calendar.getInstance().getTime();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        String s = sdf.format(currentTime);
+        return s;
+    }
+
+    /**
+     * Methode permettant de parse une string en date
+     *
+     * @param dateEtHeureCours
+     * @return
+     */
+    private Date stringToDate(String dateEtHeureCours) {
+        Date horaireCoursFormat = null;
+        SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+
+        try {
+            horaireCoursFormat = df.parse(dateEtHeureCours);
+            TimeZone timeZone = TimeZone.getTimeZone("Europe/Paris");
+            df.setTimeZone(TimeZone.getTimeZone(timeZone.getID()));
+            //System.out.println(horaireCoursFormat);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return horaireCoursFormat;
     }
 }
