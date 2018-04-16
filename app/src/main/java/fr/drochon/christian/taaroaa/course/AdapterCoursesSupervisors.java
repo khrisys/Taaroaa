@@ -75,7 +75,7 @@ public class AdapterCoursesSupervisors extends RecyclerView.Adapter<AdapterCours
         sixth = courses.get(position);
 
         // AFFICHAGE SEULEMENT POUR LES ENCADRANTS
-        holder.display(sixth); // recuperation de la sixth et je la fourni au viewholder pour qu'il l'affiche
+        //holder.display(sixth); // recuperation de la sixth et je la fourni au viewholder pour qu'il l'affiche
     }
 
     /**

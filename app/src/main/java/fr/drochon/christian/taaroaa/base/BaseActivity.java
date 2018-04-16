@@ -20,6 +20,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.sql.Time;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
@@ -29,6 +30,7 @@ import butterknife.ButterKnife;
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.controller.MainActivity;
 import fr.drochon.christian.taaroaa.controller.SummaryActivity;
+import fr.drochon.christian.taaroaa.model.Course;
 
 /**
  * Created by Philippe on 12/01/2018.
@@ -51,7 +53,6 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //this.setContentView(this.getFragmentLayout());
         ButterKnife.bind(this); //Configure Butterknife
     }
 
@@ -69,8 +70,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         // ajout d'un icone de l'appli à l'actionbar en haut à gauche
         ab.setDisplayShowHomeEnabled(true);
         ab.setIcon(R.mipmap.ic_launcher);
-
-
         //ab.setTitle(R.string.app_name);
     }
 
@@ -190,7 +189,7 @@ public abstract class BaseActivity extends AppCompatActivity {
      */
     protected String dateToString(Date currentTime) {
         //Date currentTime = Calendar.getInstance().getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        DateFormat sdf = new SimpleDateFormat("dd MM yyyy");
         String s = sdf.format(currentTime);
         return s;
     }
@@ -199,14 +198,14 @@ public abstract class BaseActivity extends AppCompatActivity {
      * Methode permettant de parse une string en date
      *
      * @param dateDuCours
-     * @return
+     * @return Date
      */
-    @RequiresApi(api = Build.VERSION_CODES.O)
     protected Date stringToDate(String dateDuCours) {
 
         Date date = null;
         try {
-            date = new SimpleDateFormat("dd-MM-yyyy").parse(dateDuCours);
+            DateFormat df = new SimpleDateFormat("dd MM yyyy");
+            date = df.parse(dateDuCours);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -214,13 +213,21 @@ public abstract class BaseActivity extends AppCompatActivity {
         return date;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    /**
+     * Methode permettant de transformer une string en Time
+     * @param heureDuCours
+     * @return Time
+     */
     protected Time stringToTime(String heureDuCours) {
 
-        SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
+        DateFormat df = new SimpleDateFormat("HH:mm:ss");
+        Time heureCoursFormat = null;
         //DateTimeFormatter df = DateTimeFormatter.ofPattern("HH:mm:ss");
-        final Time heureCoursFormat = Time.valueOf(heureDuCours);
-
+            try {
+                heureCoursFormat = new Time(df.parse(heureDuCours).getTime());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
             /*df.setTimeZone(TimeZone.getTimeZone("Europe/Paris"));
             System.out.println(TimeZone.getTimeZone("Europe/Paris"));
             System.out.println(heureCoursFormat);*/

@@ -54,6 +54,7 @@
     <string name="button_update_course">Modifiez un cours</string>
     <string name="error_empty_fields">Merci de saisir ce champ !</string>
     <string name="empty_list_txt">Il n\'y actuellement pas de cours à cette date</string>
+    <string name="create_course">Vous avez créé un nouveau cours. \n\tMerci !</string>
 
 
     <!-- FACEBOOK PURPOSE -->

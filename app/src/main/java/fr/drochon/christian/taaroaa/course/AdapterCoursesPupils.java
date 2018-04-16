@@ -12,6 +12,9 @@ import com.bumptech.glide.RequestManager;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -36,9 +39,6 @@ public class AdapterCoursesPupils extends FirestoreRecyclerAdapter<Course, Pupil
 
     public static final String  DROIT_N1 = "1";
     public static final int DROIT_MONITEUR = 2;
-    //private final List<Sixth<String, String, String, String, String, Date>> characters;
-    Sixth<String, String, String , String, String, Date> sixth;
-
 
     //FOR COMMUNICATION
     private Listener callback;
@@ -46,7 +46,6 @@ public class AdapterCoursesPupils extends FirestoreRecyclerAdapter<Course, Pupil
     public AdapterCoursesPupils(FirestoreRecyclerOptions<Course> options, Listener callback) {
         super(options);
         this.callback = callback;
-        //characters = new ArrayList<Sixth<String, String  , String, String, String, Date>>();
     }
 
     /**
@@ -60,13 +59,9 @@ public class AdapterCoursesPupils extends FirestoreRecyclerAdapter<Course, Pupil
      */
     @Override
     protected void onBindViewHolder(@NonNull PupilsViewHolder holder, int position, @NonNull Course model) {
-        holder.updateWithCourse(model);
-        //holder.display();
-        //sixth = characters.get(position);
-
         // AFFICHAGE SEULEMENT POUR LES N1
-        //if(sixth.third == DROIT_N1)
-           // holder.display(sixth); // recuperation de la sixth et je la fourni au viewholder pour qu'il l'affiche
+        //if(model.getNiveauDuCours() == DROIT_N1)
+        holder.updateWithCourse(model);
     }
 
     /**
@@ -80,9 +75,6 @@ public class AdapterCoursesPupils extends FirestoreRecyclerAdapter<Course, Pupil
     public PupilsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new PupilsViewHolder(LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.list_cell, parent, false));// creation de la viewholder avec en param la vue du layout
-        /*LayoutInflater inflater = LayoutInflater.from(parent.getContext()); // creation du layout
-        View view = inflater.inflate(R.layout.list_cell, parent, false);
-        return new PupilsViewHolder(view); // creation de la viewholder avec en param la vue du layout*/
     }
 
     @Override

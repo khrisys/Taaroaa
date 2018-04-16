@@ -46,11 +46,12 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
 
     // CONTIENT LA RECYCLERVIEW
 
+
+
     // FOR DESIGN
     CoordinatorLayout mCoordinatorLayout;
     String calendrier;
     LinearLayout mLinearLayout;
-
     CalendarView mCalendarView;
     RecyclerView recyclerView;
     TextView mTextView;
@@ -65,7 +66,6 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_courses_pupils);
-        //setContentView(R.layout.list_cell);
 
         // FOR DESIGN
         // recuperation des var des objets graphiques du layout correspondant
@@ -79,9 +79,6 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
 
         configureRecyclerView();
         configureToolbar();
-
-        //showCourses();
-
 
         // --------------------
         // LISTENERS
@@ -111,20 +108,11 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
         });
     }
 
-
     @Override
     public int getFragmentLayout() {
         return R.layout.activity_courses_pupils;
     }
 
-    /**
-     * Methode utilisée lorsque l'ecran est de nouveau appellé apres avoir été mis au second plan
-     */
-    @Override
-    protected void onResume() {
-        super.onResume();
-        //showCourses();
-    }
 
     // --------------------
     // TOOLBAR
@@ -132,7 +120,7 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
 
     /**
      * Fait appel au fichier xml menu pour definir les icones du menu toolbar.
-     * Definit differentes options dans le menu caché.
+     * Defini differentes options dans le menu caché.
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -146,7 +134,7 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
      * Surtout ne pas oublier le "true" apres chaque case sinon, ce sera toujours le dernier case qui sera executé!
      *
      * @param item
-     * @return
+     * @return bool
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -158,7 +146,6 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
     // --------------------
 
     /**
-     * 13
      * Permet d'afficher un message à l'user s'il n'y a pas de messages
      */
     @Override
@@ -171,20 +158,14 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
     // --------------------
 
     /**
-     * 10
      * Configuration de la recyclerview
      * Cette methode créé l'adapter et lui passe en param pas mal d'informations 'comme par ex l'objet FireStoreRecyclerOptions generé par la methode
      * generateOptionsForAdapter.
      */
     private void configureRecyclerView() {
-        //Track current chat name
-        //this.currentChatName = chatName;
+
         //Configure Adapter & RecyclerView
-
-        //queryAllCourses();
-
         mAdapterCoursesPupils = new AdapterCoursesPupils(generateOptionsForAdapter(queryAllCourses()), this);
-
         mAdapterCoursesPupils.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onItemRangeInserted(int positionStart, int itemCount) { // c'est cette ligne de code qui insere les données dans la recyclerview
@@ -195,30 +176,37 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
         recyclerView.setAdapter(this.mAdapterCoursesPupils);// l'adapter s'occupe du contenu
     }
 
+    /**
+     * Requete en bdd pour recuperer tous les cours existants
+     *
+     * @return query
+     */
     private Query queryAllCourses() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         // Query mq = CourseHelper.getCoursesCollection().document().collection("users");
-        Query mQuery = db.collection("courses");
+        Query mQuery = db.collection("courses").orderBy("timeDuCours", Query.Direction.ASCENDING);
         mQuery.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
                 // condition de creation d'un user ou affichage simple d'un message indiquant que l'user existe dejà en bdd.
-                // Avec les uid, il ne peut y avoir de doublon.
+                // Avec les uid, il ne peut y avoir de doublon, on peut donc etre sur qu'il n'y a qu'un seule doc qui existe s'il en existe un.
                 if (documentSnapshots.size() != 0) {
                     Log.e("TAG", "Le document existe !");
-                    // remplir la liste
-                    //for (int i = 0; i < documentSnapshots.size(); i++)
-                        readDataInList(documentSnapshots.getDocuments());
+                    // liste des docs
+                    readDataInList(documentSnapshots.getDocuments());
                 }
-
             }
         });
         return mQuery;
     }
 
+    /**
+     * Methode permettant de recuperer l'integralité de la liste des snapshots et d'en faire des objets "Course"
+     * @param documentSnapshot
+     */
     private void readDataInList(final List<DocumentSnapshot> documentSnapshot) {
-        //DocumentReference docRef1 = FirebaseFirestore.getInstance().collection("courses").document(documentSnapshot.); // recup ref de l'obj courant en bdd de stockage
+
         // un DocumentReference fait référence à un emplacement de document dans une base de données Firestore et peut être utilisé pour
         // écrire, lire ou écouter l'emplacement. Il peut exister ou non un document à l'emplacement référencé.
         for (int i = 0; i < documentSnapshot.size(); i++) {
@@ -229,6 +217,7 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
             String sujetDuCours = (String) doc.get("sujetDuCours");
             String typeCours = (String) doc.get("typeCours");
             Date dateDucours = (Date) doc.get("dateDuCours");
+            Date timeDuCours = (Date) doc.get("timeDuCours");
 
             Course course = new Course(uid);
             course.setUid(uid);
@@ -237,16 +226,11 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
             course.setSujetDuCours(sujetDuCours);
             course.setTypeCours(typeCours);
             course.setDateDuCours(dateDucours);
-
-
-/*            PupilsViewHolder pupilsViewHolder = new PupilsViewHolder(recyclerView);
-            pupilsViewHolder.updateWithCourse(course);*/
+            course.setTimeDuCours(timeDuCours);
         }
     }
 
-
     /**
-     * 11
      * La methode generateOptionsForAdapter utilise la methode query, precedemment definit dans la classe MessageHelper
      * permettra à la recyclerview d'afficher en temps reel le resultat de cette requete (la liste des derniers messages du chat correspondant, soit android/firebase/bug).
      */

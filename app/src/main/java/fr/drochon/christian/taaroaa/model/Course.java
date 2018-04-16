@@ -19,7 +19,7 @@ public class Course {
     private String mNiveauDuCours;
     private String mNomDuMoniteur;
     private Date  mDateDuCours;
-    private Time mTimeDuCours;
+    private Date mTimeDuCours;
 
     List<User> listUsers;
 
@@ -39,7 +39,7 @@ public class Course {
         //this.listUsers = listUsers;
     }
 
-    public Course(String uid, String typeCours, String sujetDuCours, String niveau, String nomDuMoniteur, Date dateDuCours, Time timeDuCours) {
+    public Course(String uid, String typeCours, String sujetDuCours, String niveau, String nomDuMoniteur, Date dateDuCours, Date timeDuCours) {
         mUid = uid;
         mTypeCours = typeCours;
         mSujetDuCours = sujetDuCours;
@@ -100,10 +100,13 @@ public class Course {
         mDateDuCours = dateDuCours;
     }
 
-    public Time getTimeDuCours() {
+    public Date getTimeDuCours() {
         return mTimeDuCours;
     }
 
+    public void setTimeDuCours(Date timeDuCours) {
+        mTimeDuCours = timeDuCours;
+    }
 
     public List<User> getListUsers() {
         return listUsers;
