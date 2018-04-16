@@ -1,10 +1,12 @@
 package fr.drochon.christian.taaroaa.course;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -174,6 +176,20 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
         });
         recyclerView.setLayoutManager(new LinearLayoutManager(this)); // layoutmanager indique comment seront positionnés les elements (linearlayout)
         recyclerView.setAdapter(this.mAdapterCoursesPupils);// l'adapter s'occupe du contenu
+    }
+
+
+    public void notifCompleteAccount(){
+        AlertDialog.Builder adb = new AlertDialog.Builder(this);
+        adb.setTitle(R.string.alertDialog_account);
+        adb.setIcon(android.R.drawable.ic_dialog_alert);
+        adb.setTitle("Merci de completer votre compte pour acceder à la liste des cours !");
+        adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                // rien à appeler. pas la peine de faire de toast
+            }
+        });
+        adb.show(); // affichage de l'artdialog
     }
 
     /**

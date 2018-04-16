@@ -260,20 +260,22 @@ public class AccountCreateActivity extends BaseActivity {
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
                     DocumentSnapshot doc = task.getResult(); //Un DocumentSnapshot contient des données lues à partir d'un document dans votre base de données Firestore.
-                    String nom = (String) doc.get("nom");
-                    String prenom = (String) doc.get("prenom");
-                    String email = (String) doc.get("email");
-                    String fonction = (String) doc.get("fonction");
-                    String licence = (String) doc.get("licence");
-                    String niveau = (String) doc.get("niveau");
+                    if (doc.exists()) {
+                        String nom = (String) doc.get("nom");
+                        String prenom = (String) doc.get("prenom");
+                        String email = (String) doc.get("email");
+                        String fonction = (String) doc.get("fonction");
+                        String licence = (String) doc.get("licence");
+                        String niveau = (String) doc.get("niveau");
 
-                    mNom.setText(nom);
-                    mPrenom.setText(prenom);
-                    mEmail.setText(email);
-                    mFonctionAuClubspinner.setTag(fonction);
-                    mLicence.setText(licence);
-                    mNiveauPlongeespinner.setSelection(getIndexSpinner(mNiveauPlongeespinner, niveau));
-                    mFonctionAuClubspinner.setEnabled(false);
+                        mNom.setText(nom);
+                        mPrenom.setText(prenom);
+                        mEmail.setText(email);
+                        mFonctionAuClubspinner.setTag(fonction);
+                        mLicence.setText(licence);
+                        mNiveauPlongeespinner.setSelection(getIndexSpinner(mNiveauPlongeespinner, niveau));
+                        mFonctionAuClubspinner.setEnabled(false);
+                    }
                 }
             }
         })

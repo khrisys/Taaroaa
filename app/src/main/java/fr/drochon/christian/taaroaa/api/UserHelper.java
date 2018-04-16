@@ -51,20 +51,14 @@ public class UserHelper {
     public static Task<Void> createUser(String uid, String nom, String email) {
         // creation de l'objet User
         User userToCreate = new User(uid, nom, email);
-
-
         return UserHelper.getUsersCollection().document(uid).set(userToCreate);
     }
 
     // --- GET ---
 
     public static Task<DocumentSnapshot> getUser(String uid){
-        //return UserHelper.getUsersCollection().document(uid).get();
         return  UserHelper.getUsersCollection().document(uid).get();
     }
-
-    // --- GET ---
-
 
     public static Query getAllUidForUsers(String uid){
 
@@ -79,11 +73,6 @@ public class UserHelper {
      * Auncun utilisateur ne peut updater son adresse email pour eviter de perdre don addresse en la cgngeant trop souvent.
       */
     public static Task<Void> updateUser(String uid, String nom, String prenom, String licence, String email, String niveauPlongeur, String fonction) {
-
-        // creation de l'objet User
-        //User userToCreate = new User(uid, nom, prenom, licence, email, niveauPlongeur, fonction);
-
-        //return UserHelper.getUsersCollection().document(uid).set(userToCreate);
         return UserHelper.getUsersCollection().document(uid).update("uid", uid, "nom", nom, "prenom", prenom, "licence", licence, "niveauPlongeur", niveauPlongeur, "fonction", fonction);
     }
 

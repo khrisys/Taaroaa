@@ -1,7 +1,9 @@
 package fr.drochon.christian.taaroaa.course;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,11 +37,6 @@ public class AdapterCoursesPupils extends FirestoreRecyclerAdapter<Course, Pupil
         void onDataChanged();
     }
 
-    //FOR DATA
-
-    public static final String  DROIT_N1 = "1";
-    public static final int DROIT_MONITEUR = 2;
-
     //FOR COMMUNICATION
     private Listener callback;
 
@@ -59,8 +56,6 @@ public class AdapterCoursesPupils extends FirestoreRecyclerAdapter<Course, Pupil
      */
     @Override
     protected void onBindViewHolder(@NonNull PupilsViewHolder holder, int position, @NonNull Course model) {
-        // AFFICHAGE SEULEMENT POUR LES N1
-        //if(model.getNiveauDuCours() == DROIT_N1)
         holder.updateWithCourse(model);
     }
 

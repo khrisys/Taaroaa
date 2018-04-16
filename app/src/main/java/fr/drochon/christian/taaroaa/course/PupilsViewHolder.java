@@ -1,13 +1,26 @@
 package fr.drochon.christian.taaroaa.course;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -21,7 +34,6 @@ public class PupilsViewHolder extends RecyclerView.ViewHolder {
 
     // DATA
     List<Course> mCourseList;
-
     // CELLULES
     RecyclerView mRecyclerViewCoursesPupils;
     @BindView(R.id.liste_cell_linear_layout)
@@ -71,12 +83,39 @@ public class PupilsViewHolder extends RecyclerView.ViewHolder {
      *
      * @param course
      */
-    public void updateWithCourse(Course course) {
+    public void updateWithCourse(final Course course) {
         // ajout des Cours dans une liste afin de les retrouver pour l'affichage de chaque cours particulier sous forme de notification
         mCourseList.add(course);
 
-        // Update course TextView
-        this.mCourseType.setText(course.getTypeCours());
-        this.mCourseSubject.setText(course.getSujetDuCours());
+        // Affichage en fonction du niveau de la personne connectée
+        final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference currentUser = db.collection("users").document(firebaseUser.getUid());
+
+        currentUser.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                if (documentSnapshot.exists()) {
+                    Map<String, Object> user = documentSnapshot.getData();
+                    if(user.get("niveau") == null){
+                        //TODO notification à l'user de se creer un compte pour cacceder aux cours
+   /*                     AlertDialog.Builder adb = new AlertDialog.Builder();
+                        adb.setTitle(R.string.alertDialog_account);
+                        adb.setIcon(android.R.drawable.ic_dialog_alert);
+                        adb.setTitle("Merci de completer votre compte pour acceder à la liste des cours !");
+                        adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // rien à appeler. pas la peine de faire de toast
+                            }
+                        });
+                        adb.show(); // affichage de l'artdialog*/
+                    }
+                    else if (user.get("niveau").equals(course.getNiveauDuCours())) {
+                        mCourseType.setText(course.getTypeCours());
+                        mCourseSubject.setText(course.getSujetDuCours());
+                    }
+                }
+            }
+        });
     }
 }
