@@ -60,6 +60,11 @@ public class SummaryActivity extends BaseActivity {
         });
     }
 
+    @Override
+    public int getFragmentLayout() {
+        return R.layout.activity_summary;
+    }
+
 
     // --------------------
     // TOOLBAR

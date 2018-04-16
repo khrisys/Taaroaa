@@ -117,6 +117,11 @@ public class MainActivity extends BaseActivity {
         });
     }
 
+    @Override
+    public int getFragmentLayout() {
+        return layout.activity_main;
+    }
+
     /**
      * Methode permettant un affichage different en fonction de si l'user a dejà été loggé ou pas
      */

@@ -1,11 +1,4 @@
-package fr.drochon.christian.taaroaa.controller;
-
-import android.support.annotation.NonNull;
-
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
+package fr.drochon.christian.taaroaa.course;
 
 public class Sixth<F, S, T, U, V, W> {
 
@@ -25,7 +18,7 @@ public class Sixth<F, S, T, U, V, W> {
      * @param v
      * @param w
      */
-    private Sixth(F f, S s, T t, U u, V v, W w) {
+    public Sixth(F f, S s, T t, U u, V v, W w) {
         this.first = f;
         this.second = s;
         this.third = t;

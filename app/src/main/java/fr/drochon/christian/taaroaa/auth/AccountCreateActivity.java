@@ -141,6 +141,11 @@ public class AccountCreateActivity extends BaseActivity {
         mFonctionAuClubspinner.setAdapter(adapter);
     }
 
+    @Override
+    public int getFragmentLayout() {
+        return R.layout.activity_account_create;
+    }
+
     /**
      * Methode appellée lors d'un reaffichage de l'activité
      */

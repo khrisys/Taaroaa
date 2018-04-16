@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.DialogFragment;
@@ -21,8 +22,11 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.Spinner;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -30,11 +34,14 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
 
 import fr.drochon.christian.taaroaa.R;
@@ -52,6 +59,8 @@ public class CoursesManagementActivity extends BaseActivity {
     private static final int SIGN_OUT_TASK = 10;
     private static final int DELETE_USER_TASK = 20;
     private static final int UPDATE_USERNAME = 30;
+
+    // id objets graphiques
     static TextInputEditText mHeureCours;
     static TextInputEditText mDateCours;
     TextInputEditText mMoniteurCours;
@@ -64,7 +73,6 @@ public class CoursesManagementActivity extends BaseActivity {
     // CYCLE DE VIE
     // --------------------
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -132,15 +140,21 @@ public class CoursesManagementActivity extends BaseActivity {
         });
 
         mCreerCours.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View v) {
                 // recuperation de l'id du cours
-               String coursId = CourseHelper.getCoursesCollection().document().getId();
+                String coursId = CourseHelper.getCoursesCollection().document().getId();
 
                 //TODO verification d'un id existant dans la bdd et si c'est le cas, remplissage des champs de l'ecran cours +  A voir si il ne vaut mieux pas mettre toujours la fonction create, parce que soit, ca creera le doc soit ca l'ecrasera
                 createCourseInFirebase();
             }
         });
+    }
+
+    @Override
+    public int getFragmentLayout() {
+        return R.layout.activity_courses_management;
     }
 
     /**
@@ -194,7 +208,7 @@ public class CoursesManagementActivity extends BaseActivity {
         // recuperation de l'id du cours
         String coursId = CourseHelper.getCoursesCollection().document().getId();
         // choix de l'affichage en fonction de la creation ou de l'update d'un doc
-        createOrUpdate(coursId);
+        createOrUpdateAffichage(coursId);
     }
 
     /**
@@ -203,7 +217,7 @@ public class CoursesManagementActivity extends BaseActivity {
      *
      * @param uid
      */
-    private void createOrUpdate(final String uid) {
+    private void createOrUpdateAffichage(final String uid) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         Query mQuery = db.collection("courses").whereEqualTo("uid", uid);
 
@@ -230,7 +244,7 @@ public class CoursesManagementActivity extends BaseActivity {
                     mHeureCours.setText(course.getTimeDuCours().toString());
                 } else {
                     System.out.println("le doc n'existe pas");
-                    mCreerCours.setText(R.string.button_create_account);
+                    mCreerCours.setText(R.string.button_create_course);
                 }
             }
         });
@@ -249,6 +263,7 @@ public class CoursesManagementActivity extends BaseActivity {
     // REST REQUETES
     // --------------------
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void createCourseInFirebase() {
 
         // pas d'id pour un objet non créé
@@ -257,15 +272,45 @@ public class CoursesManagementActivity extends BaseActivity {
         String sujet = mSujetCours.getText().toString();
         String typeCours = mTypeCours.getSelectedItem().toString();
         String niveauCours = mNiveauCours.getSelectedItem().toString();
-        String dateCours = mDateCours.getText().toString();
-        String heureCours = mHeureCours.getText().toString();
+        Date dateCours = stringToDate(mDateCours.getText().toString());
+        Time heureCours = stringToTime(mHeureCours.getText().toString());
 
-        String horaireCours = dateCours + " " + heureCours; // recup de l'heure et de la date du cours en une seule string
-        Date horaireCoursFormat = stringToDate(horaireCours); // changement de la string en date
 
-        if (!moniteur.isEmpty() && !sujet.isEmpty() && !dateCours.isEmpty() && !heureCours.isEmpty()) {
-            CourseHelper.createCourse(id, typeCours, sujet, niveauCours, moniteur, horaireCoursFormat);
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        if (!moniteur.isEmpty() && !sujet.isEmpty() && !mDateCours.getText().toString().isEmpty() && !mHeureCours.getText().toString().isEmpty()) {
+            //CourseHelper.createCourse(id, typeCours, sujet, niveauCours, moniteur, horaireCoursFormat);
+
+            Map<String, Object> newCourse = new HashMap<>();
+            newCourse.put("uid", id);
+            newCourse.put("niveauDuCours", niveauCours);
+            newCourse.put("nomDuMoniteur", moniteur);
+            newCourse.put("sujetDuCours", sujet);
+            newCourse.put("typeCours", typeCours);
+            newCourse.put("dateDuCours", dateCours);
+            newCourse.put("timeDuCours", heureCours);
+            db.collection("courses").document(getCurrentUser().getUid()).set(newCourse)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Toast.makeText(CoursesManagementActivity.this, R.string.create_account,
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(CoursesManagementActivity.this, "ERROR" + e.toString(),
+                                    Toast.LENGTH_SHORT).show();
+                            Log.d("TAG", e.toString());
+                        }
+                    });
+
             startCoursesSupervisorsActivity(); // renvoi l'encadrant sur la page de tous les cours
+
+       /* String horaireCours = dateCours + " " + heureCours; // recup de l'heure et de la date du cours en une seule string
+        Date horaireCoursFormat = stringToDate(horaireCours); // changement de la string en date*/
+
         } else {
             final AlertDialog.Builder adb = new AlertDialog.Builder(CoursesManagementActivity.this);
             adb.setTitle(R.string.alertDialog_account);

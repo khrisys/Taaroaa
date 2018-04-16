@@ -12,7 +12,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import fr.drochon.christian.taaroaa.R;
-import fr.drochon.christian.taaroaa.controller.Sixth;
 
 /**
  * l'adapter s'occupe de l'ensemble du contenu alors que le viewholder s'occupe des specificités d'une cellule
@@ -103,8 +102,8 @@ public class AdapterCoursesSupervisors extends RecyclerView.Adapter<AdapterCours
         MyViewHolder(final View itemView) {
             super(itemView);
 
-            mCourseType = itemView.findViewById(R.id.course_type);
-            mCoursesubject = itemView.findViewById(R.id.course_subject);
+            mCourseType = itemView.findViewById(R.id.liste_cell_course_type);
+            mCoursesubject = itemView.findViewById(R.id.list_cell_course_subject);
             mCourseLevel = itemView.findViewById(R.id.course_level);
    /*         mCourseSupervisor = itemView.findViewById(R.id.course_supervisor);
             mCourseDate = itemView.findViewById(R.id.course_date);

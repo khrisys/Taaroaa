@@ -3,6 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linearLayoutRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -17,14 +18,22 @@
         android:firstDayOfWeek="0x00000002"
         /> <!--le nb 0x00000002 signifie MONDAY-->
 
-
+    <!-- MESSAGE RECYCLER VIEW EMPTY -->
+    <TextView
+        android:id="@+id/empty_list_textview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/empty_list_txt"
+        android:textAlignment="center"
+        />
 
     <ScrollView
+        android:id="@+id/scrollviewRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/recyclerView"
+            android:id="@+id/recyclerViewCoursesPupils"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|center_horizontal"/>

@@ -2,9 +2,11 @@ package fr.drochon.christian.taaroaa.base;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
@@ -17,17 +19,14 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.TimeZone;
 
 import butterknife.ButterKnife;
 import fr.drochon.christian.taaroaa.R;
-import fr.drochon.christian.taaroaa.auth.AccountCreateActivity;
 import fr.drochon.christian.taaroaa.controller.MainActivity;
 import fr.drochon.christian.taaroaa.controller.SummaryActivity;
 
@@ -56,7 +55,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         ButterKnife.bind(this); //Configure Butterknife
     }
 
-    //public abstract int getFragmentLayout();
+    public abstract int getFragmentLayout();
 
     // --------------------
     // TOOLBAR
@@ -79,10 +78,11 @@ public abstract class BaseActivity extends AppCompatActivity {
      * Methode permettant de gerer les actions dee options de la toolbar.
      * Recuperation  du clic d'un user = switch car 2 options.
      * Surtout ne pas oublier le "true" apres chaque case sinon, ce sera toujours le dernier case qui sera executé!
+     *
      * @param item
      * @return boolean
      */
-    protected boolean optionsToolbar(Activity activity, MenuItem item){
+    protected boolean optionsToolbar(Activity activity, MenuItem item) {
         switch (item.getItemId()) {
             case R.id.app_bar_summary:
                 Intent intent = new Intent(activity, SummaryActivity.class);
@@ -117,7 +117,6 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected FirebaseUser getCurrentUser() {
         return FirebaseAuth.getInstance().getCurrentUser();
     }
-
 
 
     /**
@@ -199,22 +198,34 @@ public abstract class BaseActivity extends AppCompatActivity {
     /**
      * Methode permettant de parse une string en date
      *
-     * @param dateEtHeureCours
+     * @param dateDuCours
      * @return
      */
-    protected Date stringToDate(String dateEtHeureCours) {
-        Date horaireCoursFormat = null;
-        SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    protected Date stringToDate(String dateDuCours) {
 
+        Date date = null;
         try {
-            horaireCoursFormat = df.parse(dateEtHeureCours);
-            df.setTimeZone(TimeZone.getTimeZone("Europe/Paris"));
-            System.out.println(TimeZone.getTimeZone("Europe/Paris"));
-            System.out.println(horaireCoursFormat);
+            date = new SimpleDateFormat("dd-MM-yyyy").parse(dateDuCours);
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        return horaireCoursFormat;
+
+        return date;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    protected Time stringToTime(String heureDuCours) {
+
+        SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
+        //DateTimeFormatter df = DateTimeFormatter.ofPattern("HH:mm:ss");
+        final Time heureCoursFormat = Time.valueOf(heureDuCours);
+
+            /*df.setTimeZone(TimeZone.getTimeZone("Europe/Paris"));
+            System.out.println(TimeZone.getTimeZone("Europe/Paris"));
+            System.out.println(heureCoursFormat);*/
+
+        return heureCoursFormat;
     }
 
 }

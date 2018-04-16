@@ -27,7 +27,7 @@ public class CoursesSupervisorsActivity extends BaseActivity {
         // layoutmanager indique comment seront positionnés les elements (linearlayout)
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         // l'adapter s'occupe du contenu
-        recyclerView.setAdapter(new AdapterCoursesPupils());
+        recyclerView.setAdapter(new AdapterCoursesSupervisors());
 
         // bouton d'ajout de cours pour les encadrants : renvoi vers la page de gestion des cours si on clique sur l'icone
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -40,6 +40,11 @@ public class CoursesSupervisorsActivity extends BaseActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    @Override
+    public int getFragmentLayout() {
+        return R.layout.activity_courses_supervisors;
     }
 
 

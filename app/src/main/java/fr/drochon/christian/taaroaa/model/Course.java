@@ -23,6 +23,8 @@ public class Course {
 
     List<User> listUsers;
 
+    public Course(){}
+
     public Course(String uid) {
         mUid = uid;
     }
@@ -102,9 +104,6 @@ public class Course {
         return mTimeDuCours;
     }
 
-    public void setTimeDuCours(Time timeDuCours) {
-        mTimeDuCours = timeDuCours;
-    }
 
     public List<User> getListUsers() {
         return listUsers;
