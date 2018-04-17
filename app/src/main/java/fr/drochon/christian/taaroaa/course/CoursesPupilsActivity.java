@@ -26,6 +26,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.sql.Time;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -52,7 +53,7 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
 
     // FOR DESIGN
     CoordinatorLayout mCoordinatorLayout;
-    String calendrier;
+    String calendrierClique;
     LinearLayout mLinearLayout;
     CalendarView mCalendarView;
     RecyclerView recyclerView;
@@ -78,7 +79,7 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
         mTextView = findViewById(R.id.empty_list_textview);
         mScrollView = findViewById(R.id.scrollviewRecyclerView);
         mFloatingActionButton = findViewById(R.id.fab);
-        calendrier = new String();
+        calendrierClique = new String();
         configureRecyclerView();
         configureToolbar();
 
@@ -104,9 +105,8 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
 
                 Calendar calendar = Calendar.getInstance();
                 calendar.set(year, month, dayOfMonth);
-                Date d = calendar.getTime();
                 DateFormat sdf = new SimpleDateFormat("dd MM yyyy");
-                calendrier = sdf.format(calendar.getTime());
+                calendrierClique = sdf.format(calendar.getTime());
             }
         });
     }
@@ -233,7 +233,10 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
             String nomDuMoniteur = (String) doc.get("nomDuMoniteur");
             String sujetDuCours = (String) doc.get("sujetDuCours");
             String typeCours = (String) doc.get("typeCours");
+
             Date dateDucours = (Date) doc.get("dateDuCours");
+            //calendrierClique = dateToString(dateDucours);
+
             Date timeDuCours = (Date) doc.get("timeDuCours");
 
             Course course = new Course(uid);

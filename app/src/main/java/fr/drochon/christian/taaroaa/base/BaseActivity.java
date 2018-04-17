@@ -24,6 +24,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.Date;
 
 import butterknife.ButterKnife;
@@ -188,10 +189,25 @@ public abstract class BaseActivity extends AppCompatActivity {
      * @return
      */
     protected String dateToString(Date currentTime) {
-        //Date currentTime = Calendar.getInstance().getTime();
-        DateFormat sdf = new SimpleDateFormat("dd MM yyyy");
-        String s = sdf.format(currentTime);
-        return s;
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+        calendar.set(year, month, dayOfMonth);
+        java.text.DateFormat sdf = new SimpleDateFormat("dd MM yyyy");
+        calendar.setTime(currentTime);
+        return sdf.format(calendar.getTime());
+    }
+
+    protected String timeToString(Date currentTime){
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+        calendar.set(year, month, dayOfMonth);
+        java.text.DateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+        calendar.setTime(currentTime);
+        return sdf.format(calendar.getTime());
     }
 
     /**

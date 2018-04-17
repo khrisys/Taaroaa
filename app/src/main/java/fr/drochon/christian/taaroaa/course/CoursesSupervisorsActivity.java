@@ -1,12 +1,10 @@
 package fr.drochon.christian.taaroaa.course;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -26,6 +24,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -51,7 +50,7 @@ public class CoursesSupervisorsActivity extends BaseActivity implements AdapterC
 
     // FOR DESIGN
     CoordinatorLayout mCoordinatorLayout;
-    String calendrier;
+    String calendrierClique;
     LinearLayout mLinearLayout;
     CalendarView mCalendarView;
     RecyclerView recyclerView;
@@ -104,9 +103,8 @@ public class CoursesSupervisorsActivity extends BaseActivity implements AdapterC
             public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
                 Calendar calendar = Calendar.getInstance();
                 calendar.set(year, month, dayOfMonth);
-                Date d = calendar.getTime();
-                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-                calendrier = sdf.format(calendar);
+                DateFormat sdf = new SimpleDateFormat("dd MM yyyy");
+                calendrierClique = sdf.format(calendar.getTime());
             }
         });
     }

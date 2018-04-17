@@ -14,7 +14,10 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -91,8 +94,25 @@ public class SupervisorsViewHolder extends RecyclerView.ViewHolder {
         mCourseSubject.setText("Sujet : " + course.getSujetDuCours());
         mMoniteur.setText("Moniteur : " + course.getNomDuMoniteur());
         mCourseLevel.setText("Niveau " + course.getNiveauDuCours());
-        mDate.setText(course.getDateDuCours().toString());
-        mHeure.setText(course.getTimeDuCours().toString());
+/*
+        String s = course.getDateDuCours().toString();
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+        calendar.set(year, month, dayOfMonth);
+        java.text.DateFormat sdf = new SimpleDateFormat("dd MM yyyy");
+        s = sdf.format(calendar.getTime());
+        */
+        // ici regex ou fonctions pour recuperer "year , month , day" de la date qui arrive de la bdd
+
+        /*Calendar calendar = Calendar.getInstance();
+        calendar.set(year, month, dayOfMonth);
+        DateFormat sdf = new SimpleDateFormat("dd MM yyyy");
+        calendrierClique = sdf.format(calendar.getTime());*/
+        mDate.setText(this.stDateToString(course.getDateDuCours().toString()));
+
+        mHeure.setText(this.stTimeToString(course.getTimeDuCours().toString()));
 
         /*// Affichage en fonction du niveau de la personne connectée
         final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -124,5 +144,26 @@ public class SupervisorsViewHolder extends RecyclerView.ViewHolder {
                 }
             }
         });*/
+    }
+    public String  stDateToString(String s){
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+        calendar.set(year, month, dayOfMonth);
+        java.text.DateFormat sdf = new SimpleDateFormat("dd MM yyyy");
+        s = sdf.format(calendar.getTime());
+        return s;
+    }
+
+    public String stTimeToString(String s){
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.HOUR);
+        int month = calendar.get(Calendar.MINUTE);
+        int dayOfMonth = calendar.get(Calendar.SECOND);
+        calendar.set(year, month, dayOfMonth);
+        java.text.DateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+        s = sdf.format(calendar.getTime());
+        return s;
     }
 }
