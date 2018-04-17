@@ -3,6 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/supervisors_layout_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".course.CoursesSupervisorsActivity">
@@ -21,36 +22,45 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <RelativeLayout
+    <LinearLayout
+        android:id="@+id/supervisors_linear_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
         <CalendarView
-            android:id="@+id/calendrier_eleves"
+            android:id="@+id/calendrier_supervisors"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:firstDayOfWeek="0x00000002"/>
 
+        <!-- MESSAGE RECYCLER VIEW EMPTY -->
+        <TextView
+            android:id="@+id/empty_list_textview_supervisors"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/empty_list_txt"
+            android:textAlignment="center"
+            />
 
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/calendrier_eleves">
+            android:id="@+id/scrollview_calendrier_supervisors">
+
 
             <android.support.v7.widget.RecyclerView
-                android:id="@+id/recyclerView"
+                android:id="@+id/recyclerViewCoursesSupervisors"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical|center_horizontal"/>
-
         </ScrollView>
-    </RelativeLayout>
+    </LinearLayout>
 
-    <include layout="@layout/content_courses_supervisors"/>
+    <!--<include layout="@layout/content_courses_supervisors"/>-->
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
+        android:id="@+id/fab_supervisors"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"

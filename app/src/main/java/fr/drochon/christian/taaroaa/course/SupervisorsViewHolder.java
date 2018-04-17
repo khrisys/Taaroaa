@@ -1,9 +1,5 @@
 package fr.drochon.christian.taaroaa.course;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -28,19 +24,24 @@ import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.model.Course;
 
 /**
- * Classe responsable de chaque ligne de la recyclerview, et donc, chaque cours
+ * Classe responsable de chaque ligne de la recyclerview des supervisors, et donc, chaque cours
  */
-public class PupilsViewHolder extends RecyclerView.ViewHolder {
+public class SupervisorsViewHolder extends RecyclerView.ViewHolder {
 
     // DATA
     List<Course> mCourseList;
     // CELLULES
-    RecyclerView mRecyclerViewCoursesPupils;
+    RecyclerView mRecyclerViewCoursesSupervisors;
     LinearLayout mLinearLayout;
-    @BindView(R.id.list_cell_course_subject)
+    @BindView(R.id.course_subject_supervisors)
     TextView mCourseSubject;
-    @BindView(R.id.liste_cell_course_type)
+    @BindView(R.id.course_type_supervisors)
     TextView mCourseType;
+    @BindView(R.id.course_level_supervisors) TextView mCourseLevel;
+    @BindView(R.id.course_moniteur_supervisor) TextView mMoniteur;
+    @BindView(R.id.course_date_supervisors) TextView mDate;
+    @BindView(R.id.course_heure_supervisors) TextView mHeure;
+
 
     /**
      * Contructeur qui prend en param la vue affichée.
@@ -49,17 +50,16 @@ public class PupilsViewHolder extends RecyclerView.ViewHolder {
      *
      * @param itemView : cellule d'une liste comprenant le titre et la description d'un cours
      */
-    public PupilsViewHolder(final View itemView) {
+    public SupervisorsViewHolder(final View itemView) {
         super(itemView);
         // liaison des elements du layout recyclerview et list_cell avec les variables declarées ici
         ButterKnife.bind(this, itemView);
 
-        mRecyclerViewCoursesPupils = itemView.findViewById(R.id.recyclerViewCoursesPupils);
-        mLinearLayout = itemView.findViewById(R.id.list_supervisors_linear_layout);
-
+        mRecyclerViewCoursesSupervisors = itemView.findViewById(R.id.recyclerViewCoursesSupervisors);
+        mLinearLayout = itemView.findViewById(R.id.supervisors_linear_layout);
         mCourseList = new ArrayList<>();
 
-        // Affichage de la notification
+        // Affichage de la notification de l'ensemble des informations des cours
         // j'utilise l'ecouteur sur la cellule et recupere les informations pour les affihcer dans une notification
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,7 +86,15 @@ public class PupilsViewHolder extends RecyclerView.ViewHolder {
         // ajout des Cours dans une liste afin de les retrouver pour l'affichage de chaque cours particulier sous forme de notification
         mCourseList.add(course);
 
-        // Affichage en fonction du niveau de la personne connectée
+        // Affichage de tous les cours en bdd
+        mCourseType.setText(course.getTypeCours());
+        mCourseSubject.setText("Sujet : " + course.getSujetDuCours());
+        mMoniteur.setText("Moniteur : " + course.getNomDuMoniteur());
+        mCourseLevel.setText("Niveau " + course.getNiveauDuCours());
+        mDate.setText(course.getDateDuCours().toString());
+        mHeure.setText(course.getTimeDuCours().toString());
+
+        /*// Affichage en fonction du niveau de la personne connectée
         final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference currentUser = db.collection("users").document(firebaseUser.getUid());
@@ -98,7 +106,7 @@ public class PupilsViewHolder extends RecyclerView.ViewHolder {
                     Map<String, Object> user = documentSnapshot.getData();
                     if(user.get("niveau") == null){
                         //TODO notification à l'user de se creer un compte pour cacceder aux cours
-   /*                     AlertDialog.Builder adb = new AlertDialog.Builder();
+   *//*                     AlertDialog.Builder adb = new AlertDialog.Builder();
                         adb.setTitle(R.string.alertDialog_account);
                         adb.setIcon(android.R.drawable.ic_dialog_alert);
                         adb.setTitle("Merci de completer votre compte pour acceder à la liste des cours !");
@@ -107,7 +115,7 @@ public class PupilsViewHolder extends RecyclerView.ViewHolder {
                                 // rien à appeler. pas la peine de faire de toast
                             }
                         });
-                        adb.show(); // affichage de l'artdialog*/
+                        adb.show(); // affichage de l'artdialog*//*
                     }
                     else if (user.get("niveau").equals(course.getNiveauDuCours())) {
                         mCourseType.setText(course.getTypeCours());
@@ -115,6 +123,6 @@ public class PupilsViewHolder extends RecyclerView.ViewHolder {
                     }
                 }
             }
-        });
+        });*/
     }
 }

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/list_supervisors_linear_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -8,7 +9,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <TextView
-        android:id="@+id/course_"
+        android:id="@+id/course_type_supervisors"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
@@ -18,11 +19,11 @@
 
     <!-- ellipsize = si le texte est trop grand pour s'afficher sur une seule ligne, la ligne se terminera par '...'-->
     <TextView
-        android:id="@+id/course_subject"
+        android:id="@+id/course_subject_supervisors"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="5dp"
+        android:layout_margin="1dp"
         android:ellipsize="end"
         android:lines="1"
         android:textAppearance="?android:attr/textAppearanceSmall"
@@ -30,20 +31,7 @@
 
 
     <TextView
-        android:id="@+id/course_level"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_margin="1dp"
-        android:layout_marginBottom="10dp"
-        android:ellipsize="end"
-        android:lines="1"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        tools:text="Niveau du cours"/>
-
-    <!--
-    <TextView
-        android:id="@+id/course_supervisor"
+        android:id="@+id/course_moniteur_supervisor"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
@@ -55,7 +43,19 @@
 
 
     <TextView
-        android:id="@+id/course_date"
+        android:id="@+id/course_level_supervisors"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="1dp"
+        android:ellipsize="end"
+        android:lines="1"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        tools:text="Niveau du cours"/>
+
+
+    <TextView
+        android:id="@+id/course_date_supervisors"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
@@ -66,16 +66,16 @@
         tools:text="Date du cours"/>
 
     <TextView
-        android:id="@+id/course_heure"
+        android:id="@+id/course_heure_supervisors"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_margin="1dp"
+        android:layout_marginBottom="10dp"
         android:ellipsize="end"
         android:lines="1"
         android:textAppearance="?android:attr/textAppearanceSmall"
         tools:text="Heure du cours"/>
--->
 
 
 </LinearLayout>

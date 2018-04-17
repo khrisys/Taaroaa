@@ -26,6 +26,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -36,11 +37,10 @@ import fr.drochon.christian.taaroaa.base.BaseActivity;
 import fr.drochon.christian.taaroaa.model.Course;
 
 /**
- * 3 : creer l'ihm
+ * creer l'ihm
  * Cette classe permet l'affichage IHM de l'ensemble des messages dans le chat. Contient une recycler view
  * On y implemente MentorChatActivity pour gerer la recyclerview
- * <p>
- * 12
+ *
  * On implement aussi un Listener qui nous permet d'etre alerter si la liste de message est vide grace au callback onDataChanged()
  * pour afficher un message à l'user
  */
@@ -71,14 +71,14 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
 
         // FOR DESIGN
         // recuperation des var des objets graphiques du layout correspondant
-        mCoordinatorLayout = findViewById(R.id.coordinator_layout_root);
+        mCoordinatorLayout = findViewById(R.id.pupils_layout_root);
         mLinearLayout = findViewById(R.id.linearLayoutRoot);
         mCalendarView = findViewById(R.id.calendrier_eleves);
         recyclerView = findViewById(R.id.recyclerViewCoursesPupils); // liste des cours
         mTextView = findViewById(R.id.empty_list_textview);
         mScrollView = findViewById(R.id.scrollviewRecyclerView);
         mFloatingActionButton = findViewById(R.id.fab);
-
+        calendrier = new String();
         configureRecyclerView();
         configureToolbar();
 
@@ -101,11 +101,12 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
         mCalendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
+
                 Calendar calendar = Calendar.getInstance();
                 calendar.set(year, month, dayOfMonth);
                 Date d = calendar.getTime();
-                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-                calendrier = sdf.format(calendar);
+                DateFormat sdf = new SimpleDateFormat("dd MM yyyy");
+                calendrier = sdf.format(calendar.getTime());
             }
         });
     }
