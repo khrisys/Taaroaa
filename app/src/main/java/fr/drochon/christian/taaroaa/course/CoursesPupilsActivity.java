@@ -26,7 +26,6 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.sql.Time;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -34,6 +33,7 @@ import java.util.Date;
 import java.util.List;
 
 import fr.drochon.christian.taaroaa.R;
+import fr.drochon.christian.taaroaa.api.CourseHelper;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
 import fr.drochon.christian.taaroaa.model.Course;
 
@@ -41,14 +41,13 @@ import fr.drochon.christian.taaroaa.model.Course;
  * creer l'ihm
  * Cette classe permet l'affichage IHM de l'ensemble des messages dans le chat. Contient une recycler view
  * On y implemente MentorChatActivity pour gerer la recyclerview
- *
+ * <p>
  * On implement aussi un Listener qui nous permet d'etre alerter si la liste de message est vide grace au callback onDataChanged()
  * pour afficher un message à l'user
  */
 public class CoursesPupilsActivity extends BaseActivity implements AdapterCoursesPupils.Listener {
 
     // CONTIENT LA RECYCLERVIEW
-
 
 
     // FOR DESIGN
@@ -180,14 +179,14 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
     }
 
 
-    public void notifCompleteAccount(){
+    public void notifCompleteAccount() {
         AlertDialog.Builder adb = new AlertDialog.Builder(this);
         adb.setTitle(R.string.alertDialog_account);
         adb.setIcon(android.R.drawable.ic_dialog_alert);
         adb.setTitle("Merci de completer votre compte pour acceder à la liste des cours !");
         adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                // rien à appeler. pas la peine de faire de toast
+                //CourseHelper.deleteCourse();
             }
         });
         adb.show(); // affichage de l'artdialog
@@ -202,7 +201,7 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         // Query mq = CourseHelper.getCoursesCollection().document().collection("users");
-        Query mQuery = db.collection("courses").orderBy("timeDuCours", Query.Direction.ASCENDING);
+        Query mQuery = db.collection("courses").orderBy("horaireDuCours", Query.Direction.ASCENDING);
         mQuery.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -220,6 +219,7 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
 
     /**
      * Methode permettant de recuperer l'integralité de la liste des snapshots et d'en faire des objets "Course"
+     *
      * @param documentSnapshot
      */
     private void readDataInList(final List<DocumentSnapshot> documentSnapshot) {
@@ -233,11 +233,7 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
             String nomDuMoniteur = (String) doc.get("nomDuMoniteur");
             String sujetDuCours = (String) doc.get("sujetDuCours");
             String typeCours = (String) doc.get("typeCours");
-
-            Date dateDucours = (Date) doc.get("dateDuCours");
-            //calendrierClique = dateToString(dateDucours);
-
-            Date timeDuCours = (Date) doc.get("timeDuCours");
+            Date horaireDucours = (Date) doc.get("horaireDuCours");
 
             Course course = new Course(uid);
             course.setUid(uid);
@@ -245,8 +241,7 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
             course.setNomDuMoniteur(nomDuMoniteur);
             course.setSujetDuCours(sujetDuCours);
             course.setTypeCours(typeCours);
-            course.setDateDuCours(dateDucours);
-            course.setTimeDuCours(timeDuCours);
+            course.setHoraireDuCours(horaireDucours);
         }
     }
 

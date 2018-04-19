@@ -26,6 +26,8 @@ import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Locale;
 
 import butterknife.ButterKnife;
 import fr.drochon.christian.taaroaa.R;
@@ -182,73 +184,29 @@ public abstract class BaseActivity extends AppCompatActivity {
     // HEURE & DATE PARSING
     // --------------------
 
+
     /**
-     * Methode permettant de parser une date en string
-     *
-     * @param currentTime
+     * Methode permettant de formatter une date en string avec locale en francais
+     * @param horaireDuCours
      * @return
      */
-    protected String dateToString(Date currentTime) {
-        Calendar calendar = Calendar.getInstance();
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-        int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
-        calendar.set(year, month, dayOfMonth);
-        java.text.DateFormat sdf = new SimpleDateFormat("dd MM yyyy");
-        calendar.setTime(currentTime);
-        return sdf.format(calendar.getTime());
-    }
+    public String  stDateToString(Date horaireDuCours){
 
-    protected String timeToString(Date currentTime){
-        Calendar calendar = Calendar.getInstance();
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-        int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
-        calendar.set(year, month, dayOfMonth);
-        java.text.DateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-        calendar.setTime(currentTime);
-        return sdf.format(calendar.getTime());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy", Locale.FRANCE);
+        String dateDuCours = dateFormat.format(horaireDuCours);
+        return dateDuCours;
+
     }
 
     /**
-     * Methode permettant de parse une string en date
-     *
-     * @param dateDuCours
-     * @return Date
+     * Methode permettant de formatter une date en format heure
+     * @param horaireDuCours
+     * @return
      */
-    protected Date stringToDate(String dateDuCours) {
+    public String stTimeToString(Date horaireDuCours){
 
-        Date date = null;
-        try {
-            DateFormat df = new SimpleDateFormat("dd MM yyyy");
-            date = df.parse(dateDuCours);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        return date;
+        SimpleDateFormat dateFormat1 = new SimpleDateFormat("HH:mm:ss");
+        String heureDuCours = dateFormat1.format(horaireDuCours);
+        return heureDuCours;
     }
-
-    /**
-     * Methode permettant de transformer une string en Time
-     * @param heureDuCours
-     * @return Time
-     */
-    protected Time stringToTime(String heureDuCours) {
-
-        DateFormat df = new SimpleDateFormat("HH:mm:ss");
-        Time heureCoursFormat = null;
-        //DateTimeFormatter df = DateTimeFormatter.ofPattern("HH:mm:ss");
-            try {
-                heureCoursFormat = new Time(df.parse(heureDuCours).getTime());
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            /*df.setTimeZone(TimeZone.getTimeZone("Europe/Paris"));
-            System.out.println(TimeZone.getTimeZone("Europe/Paris"));
-            System.out.println(heureCoursFormat);*/
-
-        return heureCoursFormat;
-    }
-
 }

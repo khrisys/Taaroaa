@@ -12,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.DialogFragment;
+import android.text.InputType;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.Menu;
@@ -24,7 +25,6 @@ import android.widget.Spinner;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
@@ -35,8 +35,11 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.sql.Time;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -46,7 +49,6 @@ import java.util.TimeZone;
 
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.api.CourseHelper;
-import fr.drochon.christian.taaroaa.api.UserHelper;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
 import fr.drochon.christian.taaroaa.model.Course;
 
@@ -271,8 +273,18 @@ public class CoursesManagementActivity extends BaseActivity {
         final String sujet = mSujetCours.getText().toString();
         final String typeCours = mTypeCours.getSelectedItem().toString();
         final String niveauCours = mNiveauCours.getSelectedItem().toString();
-        final Date dateCours = stringToDate(mDateCours.getText().toString());
-        final Time heureCours = stringToTime(mHeureCours.getText().toString());
+        final String dateCoursTxt = mDateCours.getText().toString();
+        final String timeCoursTxt = mHeureCours.getText().toString();
+
+        String  horaireCours = dateCoursTxt + " "+ timeCoursTxt;
+        //final Date horaires = stringToDate(horaireCours);
+        Date horaireDuCours = null;
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        try {
+            horaireDuCours = simpleDateFormat.parse(horaireCours);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
 
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -285,8 +297,7 @@ public class CoursesManagementActivity extends BaseActivity {
             newCourse.put("nomDuMoniteur", moniteur);
             newCourse.put("sujetDuCours", sujet);
             newCourse.put("typeCours", typeCours);
-            newCourse.put("dateDuCours", dateCours);
-            newCourse.put("timeDuCours", heureCours);
+            newCourse.put("horaireDuCours", horaireDuCours);
             db.collection("courses").document(id).set(newCourse)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
@@ -346,13 +357,19 @@ public class CoursesManagementActivity extends BaseActivity {
         String sujet = mSujetCours.getText().toString();
         String typeCours = mTypeCours.getSelectedItem().toString();
         String niveauCours = mNiveauCours.getSelectedItem().toString();
-        String dateCours = mDateCours.getText().toString();
-        String heureCours = mHeureCours.getText().toString();
-        String horaireCours = dateCours + " " + heureCours;
-        Date horaireCoursFormat = null;
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MM yyyy HH:mm:ss", Locale.FRANCE);
+        String dateCoursTxt = mDateCours.getText().toString();
+        /*Date dateCours = null;
         try {
-            horaireCoursFormat = simpleDateFormat.parse(dateCours + " " + heureCours);
+            dateCours = SimpleDateFormat.getDateInstance().parse(String.valueOf(mDateCours));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }*/
+        String heureCours = mHeureCours.getText().toString();
+        String horaireCours = dateCoursTxt + " " + heureCours;
+        Date horaireCoursFormat = null;
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MM yyyy HH:mm:ss Z");
+        try {
+            horaireCoursFormat = simpleDateFormat.parse(horaireCours);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -362,7 +379,7 @@ public class CoursesManagementActivity extends BaseActivity {
         Query reference1 = CourseHelper.getCourse(reference2.getId());
         if (reference2 != null) {
             //TODO alert dialog lorsque tous les champs ne sont pas remplis.
-            if (!moniteur.isEmpty() && !sujet.isEmpty() && !dateCours.isEmpty() && !heureCours.isEmpty()) { // verification que tous les champs vides soient remplis
+            if (!moniteur.isEmpty() && !sujet.isEmpty()  && !heureCours.isEmpty()) { // verification que tous les champs vides soient remplis
                 CourseHelper.updateCourse(id, typeCours, sujet, niveauCours, moniteur, horaireCoursFormat)
                         .addOnFailureListener(this.onFailureListener())
                         .addOnSuccessListener(this.updateUIAfterRESTRequestsCompleted(UPDATE_USERNAME));
@@ -370,9 +387,11 @@ public class CoursesManagementActivity extends BaseActivity {
         }
     }
 
+    /*    */
+
     /**
      * Methode permettant à un encadrant de supprimer un compte. Retourne un objet de type Task permettant de realiser ces appels de maniere asynchrone
-     */
+     *//*
     private void deleteCourseFromFirebase() {
         if (this.getCurrentUser() != null) {
 
@@ -383,13 +402,12 @@ public class CoursesManagementActivity extends BaseActivity {
                     .delete(this) // methode utilisée par le singleton authUI.getInstance()
                     .addOnSuccessListener(this, this.updateUIAfterRESTRequestsCompleted(DELETE_USER_TASK));
         }
-    }
+    }*/
 
 
     // --------------------
     // DATETIMEPICKERS
     // --------------------
-
     public void showDatePickerDialog(View v) {
         DialogFragment newFragment = new DatePickerFragment();
         newFragment.show(getSupportFragmentManager(), "datePicker");
@@ -410,30 +428,34 @@ public class CoursesManagementActivity extends BaseActivity {
     public static class DatePickerFragment extends DialogFragment implements
             DatePickerDialog.OnDateSetListener {
 
+        /**
+         * Créé une instance de DatePicker et la renvoi
+         *
+         * @param savedInstanceState
+         * @return
+         */
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            // Use the current date as the default date in the picker
             final Calendar c = Calendar.getInstance();
-
             int year = c.get(Calendar.YEAR);
             int month = c.get(Calendar.MONTH);
             int day = c.get(Calendar.DAY_OF_MONTH);
-
-            // Create a new instance of DatePickerDialog and return it
             return new DatePickerDialog(getActivity(), this, year, month, day + 1);
         }
 
         /**
-         * @param view       the picker associated with the dialog
-         * @param year       the selected year
-         * @param month      the selected month (0-11 for compatibility with
-         *                   {@link Calendar#MONTH})
-         * @param dayOfMonth th selected day of the month (1-31, depending on
+         * Affiche la date choisi par l'utilisateur
+         *
+         * @param view       picker associé au dialog
+         * @param year
+         * @param month      (0 à 11)
+         * @param dayOfMonth
          */
         @Override
         public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-            // Do something with the date chosen by the user
-            mDateCours.setText(mDateCours.getText() + "" + dayOfMonth + "-" + (month + 1) + "-" + year);
+
+            //mDateCours.setText(mDateCours.getText() + "" + dayOfMonth + "-" + (month + 1) + "-" + year);
+            mDateCours.setText(mDateCours.getText() +""+ dayOfMonth +"-"+ (month + 1)+"-"+ year);
         }
     }
 
@@ -443,28 +465,36 @@ public class CoursesManagementActivity extends BaseActivity {
     public static class TimePickerFragment extends DialogFragment implements
             TimePickerDialog.OnTimeSetListener {
 
+        /**
+         * Créé une nouvelle instance d'un datepicket et la renvoi
+         * @param savedInstanceState
+         * @return
+         */
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            // Use the current time as the default values for the picker
-            final Calendar c = Calendar.getInstance();
-
-            //TODO UTC
-            final String format = "dd-MMM-yyyy HH:mm:ss";
+            //UTC
+/*            final String format = "dd-MMM-yyyy HH:mm:ss";
             final SimpleDateFormat dateFormatGmt = new SimpleDateFormat(format);
-            dateFormatGmt.setTimeZone(TimeZone.getTimeZone("UTC+02:00"));
+            dateFormatGmt.setTimeZone(TimeZone.getTimeZone("UTC"));*/
 
+            final Calendar c = Calendar.getInstance();
             int hour = c.get(Calendar.HOUR_OF_DAY);
-            dateFormatGmt.format(hour);
+            //dateFormatGmt.format(hour);
             int minute = c.get(MINUTE);
 
-            // Create a new instance of TimePickerDialog and return it
-            return new TimePickerDialog(getActivity(), this, hour, minute,
-                    DateFormat.is24HourFormat(getActivity()));
+            return new TimePickerDialog(getActivity(), this, hour, minute, DateFormat.is24HourFormat(getActivity()));
         }
 
+        /**
+         * Affichage de l'heure obtenue dans l'edittext
+         *
+         * @param view
+         * @param hourOfDay
+         * @param minute
+         */
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-            // Do something with the time chosen by the user
-            mHeureCours.setText(mHeureCours.getText() + "" + hourOfDay + ":" + minute + ":00");
+            //mHeureCours.setText(mHeureCours.getText() + "" + hourOfDay + ":" + minute + ":00");
+            mHeureCours.setText(mHeureCours.getText() + "" + hourOfDay + ":"+ minute + ":00");
         }
     }
 }

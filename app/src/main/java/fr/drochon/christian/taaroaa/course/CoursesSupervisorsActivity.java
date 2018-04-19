@@ -200,7 +200,7 @@ public class CoursesSupervisorsActivity extends BaseActivity implements AdapterC
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         // Query mq = CourseHelper.getCoursesCollection().document().collection("users");
-        Query mQuery = db.collection("courses").orderBy("dateDuCours", Query.Direction.ASCENDING);
+        Query mQuery = db.collection("courses").orderBy("horaireDuCours", Query.Direction.ASCENDING);
         mQuery.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -231,8 +231,7 @@ public class CoursesSupervisorsActivity extends BaseActivity implements AdapterC
             String nomDuMoniteur = (String) doc.get("nomDuMoniteur");
             String sujetDuCours = (String) doc.get("sujetDuCours");
             String typeCours = (String) doc.get("typeCours");
-            Date dateDucours = (Date) doc.get("dateDuCours");
-            Date timeDuCours = (Date) doc.get("timeDuCours");
+            Date horaireDuCours = (Date) doc.get("horaireDuCours");
 
             Course course = new Course(uid);
             course.setUid(uid);
@@ -240,8 +239,8 @@ public class CoursesSupervisorsActivity extends BaseActivity implements AdapterC
             course.setNomDuMoniteur(nomDuMoniteur);
             course.setSujetDuCours(sujetDuCours);
             course.setTypeCours(typeCours);
-            course.setDateDuCours(dateDucours);
-            course.setTimeDuCours(timeDuCours);
+            course.setHoraireDuCours(horaireDuCours); // format date
+            //course.setTimeDuCours(timeDuCours);
         }
     }
 

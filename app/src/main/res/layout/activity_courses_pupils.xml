@@ -33,6 +33,12 @@
             android:firstDayOfWeek="0x00000002"
             /> <!--le nb 0x00000002 signifie MONDAY
 -->
+        <View
+            android:id="@+id/divider"
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:background="?android:attr/listDivider"
+            />
 
         <!-- MESSAGE RECYCLER VIEW EMPTY -->
         <TextView

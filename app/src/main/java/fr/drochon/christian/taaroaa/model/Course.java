@@ -18,6 +18,7 @@ public class Course {
     private String mSujetDuCours;
     private String mNiveauDuCours;
     private String mNomDuMoniteur;
+    private Date mHoraireDuCours;
     private Date  mDateDuCours;
     private Date mTimeDuCours;
 
@@ -29,13 +30,13 @@ public class Course {
         mUid = uid;
     }
 
-    public Course(String uid, String typeCours, String sujetDuCours, String niveauDuCours, String nomDuMoniteur, Date dateDuCours) {
+    public Course(String uid, String typeCours, String sujetDuCours, String niveauDuCours, String nomDuMoniteur, Date horaireDuCours) {
         mUid = uid;
         mTypeCours = typeCours;
         mSujetDuCours = sujetDuCours;
         mNiveauDuCours = niveauDuCours;
         mNomDuMoniteur = nomDuMoniteur;
-        mDateDuCours = dateDuCours;
+        mHoraireDuCours = horaireDuCours;
         //this.listUsers = listUsers;
     }
 
@@ -90,6 +91,14 @@ public class Course {
 
     public void setNomDuMoniteur(String nomDuMoniteur) {
         mNomDuMoniteur = nomDuMoniteur;
+    }
+
+    public Date getHoraireDuCours() {
+        return mHoraireDuCours;
+    }
+
+    public void setHoraireDuCours(Date horaireDuCours) {
+        mHoraireDuCours = horaireDuCours;
     }
 
     public Date getDateDuCours() {
