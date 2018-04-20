@@ -7,22 +7,11 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -43,10 +32,14 @@ public class SupervisorsViewHolder extends RecyclerView.ViewHolder {
     TextView mCourseSubject;
     @BindView(R.id.course_type_supervisors)
     TextView mCourseType;
-    @BindView(R.id.course_level_supervisors) TextView mCourseLevel;
-    @BindView(R.id.course_moniteur_supervisor) TextView mMoniteur;
-    @BindView(R.id.course_date_supervisors) TextView mDate;
-    @BindView(R.id.course_heure_supervisors) TextView mHeure;
+    @BindView(R.id.course_level_supervisors)
+    TextView mCourseLevel;
+    @BindView(R.id.course_moniteur_supervisor)
+    TextView mMoniteur;
+    @BindView(R.id.course_date_supervisors)
+    TextView mDate;
+    @BindView(R.id.course_heure_supervisors)
+    TextView mHeure;
 
 
     /**
@@ -74,9 +67,10 @@ public class SupervisorsViewHolder extends RecyclerView.ViewHolder {
                 for (int i = 0; i < mCourseList.size(); i++) {
                     new AlertDialog.Builder(itemView.getContext())
                             .setTitle(mCourseList.get(i).getTypeCours())
-                            .setMessage("Sujet : " + mCourseList.get(i).getSujetDuCours() + "\nMoniteur : " + mCourseList.get(i).getNomDuMoniteur()
-                                    + "\nNiveau " + mCourseList.get(i).getNiveauDuCours()
-                                    + "\n" + stDateToString(mCourseList.get(i).getHoraireDuCours()) + "\n" + stTimeToString(mCourseList.get(i).getHoraireDuCours())).show();
+                            .setMessage(Html.fromHtml("<b>Sujet : </b>" + mCourseList.get(i).getSujetDuCours() + "<br/><b>Moniteur : </b>" + mCourseList.get(i).getNomDuMoniteur()
+                                    + "<br/><b>Niveau </b>" + mCourseList.get(i).getNiveauDuCours()
+                                    + "<br/>" + stDateToString(mCourseList.get(i).getHoraireDuCours()) + "<br/>" + stTimeToString(mCourseList.get(i).getHoraireDuCours())))
+                            .show();
                     break;
                 }
             }
@@ -95,9 +89,9 @@ public class SupervisorsViewHolder extends RecyclerView.ViewHolder {
 
         // Affichage de tous les cours en bdd
         mCourseType.setText(course.getTypeCours());
-        mCourseSubject.setText(Html.fromHtml("<b>Sujet : </b>") + course.getSujetDuCours());
-        mMoniteur.setText(Html.fromHtml("<b>Moniteur : </b>") + course.getNomDuMoniteur());
-        mCourseLevel.setText(Html.fromHtml("<b>Niveau </b>") + course.getNiveauDuCours());
+        mCourseSubject.setText(Html.fromHtml("<b>Sujet : </b>" + course.getSujetDuCours()));
+        mMoniteur.setText(Html.fromHtml("<b>Moniteur : </b>" + course.getNomDuMoniteur()));
+        mCourseLevel.setText(Html.fromHtml("<b>Niveau </b>" + course.getNiveauDuCours()));
 
         // recuperation du datetime
         Date horaireDuCours = course.getHoraireDuCours();
@@ -111,10 +105,11 @@ public class SupervisorsViewHolder extends RecyclerView.ViewHolder {
 
     /**
      * Methode permettant de formatter une date en string avec locale en francais
+     *
      * @param horaireDuCours
      * @return
      */
-    public String  stDateToString(Date horaireDuCours){
+    public String stDateToString(Date horaireDuCours) {
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy", Locale.FRANCE);
         String dateDuCours = dateFormat.format(horaireDuCours);
@@ -124,10 +119,11 @@ public class SupervisorsViewHolder extends RecyclerView.ViewHolder {
 
     /**
      * Methode permettant de formatter une date en format heure
+     *
      * @param horaireDuCours
      * @return
      */
-    public String stTimeToString(Date horaireDuCours){
+    public String stTimeToString(Date horaireDuCours) {
 
         SimpleDateFormat dateFormat1 = new SimpleDateFormat("HH:mm:ss");
         String heureDuCours = dateFormat1.format(horaireDuCours);

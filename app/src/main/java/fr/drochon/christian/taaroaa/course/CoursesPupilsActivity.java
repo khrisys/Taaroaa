@@ -19,6 +19,11 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -31,9 +36,10 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import fr.drochon.christian.taaroaa.R;
-import fr.drochon.christian.taaroaa.api.CourseHelper;
+import fr.drochon.christian.taaroaa.api.UserHelper;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
 import fr.drochon.christian.taaroaa.model.Course;
 
@@ -181,12 +187,11 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
 
     public void notifCompleteAccount() {
         AlertDialog.Builder adb = new AlertDialog.Builder(this);
-        adb.setTitle(R.string.alertDialog_account);
         adb.setIcon(android.R.drawable.ic_dialog_alert);
         adb.setTitle("Merci de completer votre compte pour acceder à la liste des cours !");
         adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                //CourseHelper.deleteCourse();
+                // rien à appeler. pas la peine de faire de toast
             }
         });
         adb.show(); // affichage de l'artdialog
@@ -198,9 +203,24 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
      * @return query
      */
     private Query queryAllCourses() {
+        // Affichage en fonction du niveau de la personne connectée
+       //final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        // Query mq = CourseHelper.getCoursesCollection().document().collection("users");
+/*        final String niveau = null;
+        DocumentReference dr = db.collection("users").document(getCurrentUser().getUid());
+        dr.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                if(documentSnapshot.exists()){
+                    Course course = new Course(getCurrentUser().getUid());
+                    niveau = course.getNiveauDuCours();
+
+                }
+            }
+        });*/
+
+
         Query mQuery = db.collection("courses").orderBy("horaireDuCours", Query.Direction.ASCENDING);
         mQuery.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
@@ -216,7 +236,6 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
         });
         return mQuery;
     }
-
     /**
      * Methode permettant de recuperer l'integralité de la liste des snapshots et d'en faire des objets "Course"
      *

@@ -12,7 +12,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.DialogFragment;
-import android.text.InputType;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.Menu;
@@ -34,16 +33,11 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.sql.Time;
-import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -276,7 +270,7 @@ public class CoursesManagementActivity extends BaseActivity {
         final String dateCoursTxt = mDateCours.getText().toString();
         final String timeCoursTxt = mHeureCours.getText().toString();
 
-        String  horaireCours = dateCoursTxt + " "+ timeCoursTxt;
+        String horaireCours = dateCoursTxt + " " + timeCoursTxt;
         //final Date horaires = stringToDate(horaireCours);
         Date horaireDuCours = null;
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
@@ -379,7 +373,7 @@ public class CoursesManagementActivity extends BaseActivity {
         Query reference1 = CourseHelper.getCourse(reference2.getId());
         if (reference2 != null) {
             //TODO alert dialog lorsque tous les champs ne sont pas remplis.
-            if (!moniteur.isEmpty() && !sujet.isEmpty()  && !heureCours.isEmpty()) { // verification que tous les champs vides soient remplis
+            if (!moniteur.isEmpty() && !sujet.isEmpty() && !heureCours.isEmpty()) { // verification que tous les champs vides soient remplis
                 CourseHelper.updateCourse(id, typeCours, sujet, niveauCours, moniteur, horaireCoursFormat)
                         .addOnFailureListener(this.onFailureListener())
                         .addOnSuccessListener(this.updateUIAfterRESTRequestsCompleted(UPDATE_USERNAME));
@@ -455,7 +449,7 @@ public class CoursesManagementActivity extends BaseActivity {
         public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
 
             //mDateCours.setText(mDateCours.getText() + "" + dayOfMonth + "-" + (month + 1) + "-" + year);
-            mDateCours.setText(mDateCours.getText() +""+ dayOfMonth +"-"+ (month + 1)+"-"+ year);
+            mDateCours.setText(mDateCours.getText() + "" + dayOfMonth + "-" + (month + 1) + "-" + year);
         }
     }
 
@@ -467,6 +461,7 @@ public class CoursesManagementActivity extends BaseActivity {
 
         /**
          * Créé une nouvelle instance d'un datepicket et la renvoi
+         *
          * @param savedInstanceState
          * @return
          */
@@ -494,7 +489,7 @@ public class CoursesManagementActivity extends BaseActivity {
          */
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
             //mHeureCours.setText(mHeureCours.getText() + "" + hourOfDay + ":" + minute + ":00");
-            mHeureCours.setText(mHeureCours.getText() + "" + hourOfDay + ":"+ minute + ":00");
+            mHeureCours.setText(mHeureCours.getText() + "" + hourOfDay + ":" + minute + ":00");
         }
     }
 }
