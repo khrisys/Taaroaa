@@ -4,6 +4,7 @@
     android:id="@+id/list_supervisors_linear_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp"
     android:orientation="vertical"
     xmlns:tools="http://schemas.android.com/tools">
 
@@ -12,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="20dp"
         android:textAppearance="?android:attr/textAppearanceLarge"
         tools:text="Type de cours"/>
 
@@ -70,7 +71,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_margin="1dp"
-        android:layout_marginBottom="10dp"
         android:ellipsize="end"
         android:lines="1"
         android:textAppearance="?android:attr/textAppearanceSmall"

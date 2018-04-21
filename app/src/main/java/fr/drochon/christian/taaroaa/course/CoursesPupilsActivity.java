@@ -19,11 +19,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -36,10 +32,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import fr.drochon.christian.taaroaa.R;
-import fr.drochon.christian.taaroaa.api.UserHelper;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
 import fr.drochon.christian.taaroaa.model.Course;
 
@@ -58,7 +52,7 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
 
     // FOR DESIGN
     CoordinatorLayout mCoordinatorLayout;
-    String calendrierClique;
+    Date calendrierClique;
     LinearLayout mLinearLayout;
     CalendarView mCalendarView;
     RecyclerView recyclerView;
@@ -84,7 +78,7 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
         mTextView = findViewById(R.id.empty_list_textview);
         mScrollView = findViewById(R.id.scrollviewRecyclerView);
         mFloatingActionButton = findViewById(R.id.fab);
-        calendrierClique = new String();
+        calendrierClique = new Date();
         configureRecyclerView();
         configureToolbar();
 
@@ -110,8 +104,10 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
 
                 Calendar calendar = Calendar.getInstance();
                 calendar.set(year, month, dayOfMonth);
-                DateFormat sdf = new SimpleDateFormat("dd MM yyyy");
-                calendrierClique = sdf.format(calendar.getTime());
+                //DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                calendrierClique = calendar.getTime();
+                // application du filtre sur la liste des cours
+                filterDateCalendar();
             }
         });
     }
@@ -173,7 +169,10 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
     private void configureRecyclerView() {
 
         //Configure Adapter & RecyclerView
-        mAdapterCoursesPupils = new AdapterCoursesPupils(generateOptionsForAdapter(queryAllCourses()), this);
+        if (calendrierClique.equals(Calendar.getInstance().getTime()))
+            mAdapterCoursesPupils = new AdapterCoursesPupils(generateOptionsForAdapter(queryAllCourses()), this);
+        else
+            mAdapterCoursesPupils = new AdapterCoursesPupils(generateOptionsForAdapter(queryDateCourses(calendrierClique)), this);
         mAdapterCoursesPupils.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onItemRangeInserted(int positionStart, int itemCount) { // c'est cette ligne de code qui insere les données dans la recyclerview
@@ -184,6 +183,17 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
         recyclerView.setAdapter(this.mAdapterCoursesPupils);// l'adapter s'occupe du contenu
     }
 
+
+    /**
+     * La methode generateOptionsForAdapter utilise la methode query, precedemment definit dans la classe MessageHelper
+     * permettra à la recyclerview d'afficher en temps reel le resultat de cette requete (la liste des derniers messages du chat correspondant, soit android/firebase/bug).
+     */
+    private FirestoreRecyclerOptions<Course> generateOptionsForAdapter(Query query) {
+        return new FirestoreRecyclerOptions.Builder<Course>()
+                .setQuery(query, Course.class)
+                .setLifecycleOwner(this)
+                .build();
+    }
 
     public void notifCompleteAccount() {
         AlertDialog.Builder adb = new AlertDialog.Builder(this);
@@ -197,6 +207,11 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
         adb.show(); // affichage de l'artdialog
     }
 
+
+    // --------------------
+    // REQUETES
+    // --------------------
+
     /**
      * Requete en bdd pour recuperer tous les cours existants
      *
@@ -204,7 +219,7 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
      */
     private Query queryAllCourses() {
         // Affichage en fonction du niveau de la personne connectée
-       //final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        //final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
 /*        final String niveau = null;
@@ -227,15 +242,38 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
                 // condition de creation d'un user ou affichage simple d'un message indiquant que l'user existe dejà en bdd.
                 // Avec les uid, il ne peut y avoir de doublon, on peut donc etre sur qu'il n'y a qu'un seule doc qui existe s'il en existe un.
-                if (documentSnapshots.size() != 0) {
-                    Log.e("TAG", "Le document existe !");
-                    // liste des docs
-                    readDataInList(documentSnapshots.getDocuments());
+                if (documentSnapshots != null) {
+                    if (documentSnapshots.size() != 0) {
+                        Log.e("TAG", "Le document existe !");
+                        // liste des docs
+                        readDataInList(documentSnapshots.getDocuments());
+                    }
                 }
             }
         });
         return mQuery;
     }
+
+    private Query queryDateCourses(Object dateCours) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        Query mQ = db.collection("courses").whereEqualTo("horaireDuCours", dateCours);
+        mQ.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+                // condition de creation d'un user ou affichage simple d'un message indiquant que l'user existe dejà en bdd.
+                // Avec les uid, il ne peut y avoir de doublon, on peut donc etre sur qu'il n'y a qu'un seule doc qui existe s'il en existe un.
+                if (documentSnapshots != null) {
+                    if (documentSnapshots.size() != 0) {
+                        Log.e("TAG", "Le document existe !");
+                        // liste des docs
+                        readDataInList(documentSnapshots.getDocuments());
+                    }
+                }
+            }
+        });
+        return mQ;
+    }
+
     /**
      * Methode permettant de recuperer l'integralité de la liste des snapshots et d'en faire des objets "Course"
      *
@@ -264,14 +302,33 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
         }
     }
 
+
     /**
-     * La methode generateOptionsForAdapter utilise la methode query, precedemment definit dans la classe MessageHelper
-     * permettra à la recyclerview d'afficher en temps reel le resultat de cette requete (la liste des derniers messages du chat correspondant, soit android/firebase/bug).
+     * Methode permettant de filtrer les cours à afficher sur l'ecran des eleves lorsqu'un utilisateur clique sur une date du calendrier.
+     * Ce clic agit comme un filtre sur la liste des cours  à afficher.
      */
-    private FirestoreRecyclerOptions<Course> generateOptionsForAdapter(Query query) {
-        return new FirestoreRecyclerOptions.Builder<Course>()
-                .setQuery(query, Course.class)
-                .setLifecycleOwner(this)
-                .build();
+    private void filterDateCalendar() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        //Task<QuerySnapshot> mQuery = db.collection("courses").whereEqualTo("horaireDuCours", "2018-04-04").get();
+        CollectionReference cr = db.collection("courses");
+        cr.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+                if (documentSnapshots.size() != 0) {
+                    List<DocumentSnapshot> ds = documentSnapshots.getDocuments();
+                    for (int i = 0; i < documentSnapshots.size(); i++) {
+                        // recuperation des documents comprenant l'horaire du cours
+                        DocumentSnapshot map = documentSnapshots.getDocuments().get(i);
+                        Object horaireDuCours = map.getData().get("horaireDuCours");
+                        // formatage des donnees recues de la bdd et du clic sur la calendrier et condition
+                        DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                        if (sdf.format(horaireDuCours).equals(sdf.format(calendrierClique)))
+                            System.out.println("ok");
+                        queryDateCourses(horaireDuCours);
+                    }
+                }
+            }
+        });
     }
+
 }
