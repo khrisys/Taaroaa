@@ -73,7 +73,7 @@ public class UserHelper {
      * Auncun utilisateur ne peut updater son adresse email pour eviter de perdre don addresse en la cgngeant trop souvent.
       */
     public static Task<Void> updateUser(String uid, String nom, String prenom, String licence, String email, String niveauPlongeur, String fonction) {
-        return UserHelper.getUsersCollection().document(uid).update("uid", uid, "nom", nom, "prenom", prenom, "licence", licence, "niveauPlongeur", niveauPlongeur, "fonction", fonction);
+        return UserHelper.getUsersCollection().document(uid).update("uid", uid, "nom", nom, "prenom", prenom, "licence", licence, "email", email, "niveau", niveauPlongeur, "fonction", fonction);
     }
 
 

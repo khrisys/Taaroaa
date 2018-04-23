@@ -92,7 +92,11 @@ public abstract class BaseActivity extends AppCompatActivity {
      */
     protected boolean optionsToolbar(Activity activity, MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.app_bar_search_adherents:
+                // afichage de la barre de recherche
+                return true;
             case R.id.app_bar_summary:
+                // redirection à la page sommaire
                 Intent intent = new Intent(activity, SummaryActivity.class);
                 startActivity(intent);
                 return true;
