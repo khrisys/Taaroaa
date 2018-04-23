@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.model.Course;
@@ -24,6 +26,14 @@ public class AdapterCoursesPupils extends FirestoreRecyclerAdapter<Course, Pupil
         super(options);
         this.callback = callback;
     }
+
+/*
+    private EventListener<QuerySnapshot> mEventListener;
+    public AdapterCoursesPupils(FirestoreRecyclerOptions<Course> options, EventListener<QuerySnapshot> eventListener) {
+        super(options);
+        this.mEventListener = eventListener;
+    }
+*/
 
     /**
      * Methode qui applique une donnee à une vue (on bind la donnée à la vue).

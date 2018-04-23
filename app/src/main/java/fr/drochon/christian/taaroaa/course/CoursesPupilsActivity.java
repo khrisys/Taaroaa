@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -29,6 +30,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -36,6 +38,7 @@ import java.util.List;
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
 import fr.drochon.christian.taaroaa.model.Course;
+import fr.drochon.christian.taaroaa.model.User;
 
 /**
  * creer l'ihm
@@ -62,6 +65,7 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
 
     // FOR DATA
     private AdapterCoursesPupils mAdapterCoursesPupils;
+    List<DocumentSnapshot> listSnapshot;
 
 
     @Override
@@ -79,8 +83,10 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
         mScrollView = findViewById(R.id.scrollviewRecyclerView);
         mFloatingActionButton = findViewById(R.id.fab);
         calendrierClique = new Date();
+        listSnapshot = new ArrayList<DocumentSnapshot>();
         configureRecyclerView();
         configureToolbar();
+        showFloatingButton();
 
         // --------------------
         // LISTENERS
@@ -101,16 +107,15 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
         mCalendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
-
                 Calendar calendar = Calendar.getInstance();
                 calendar.set(year, month, dayOfMonth);
                 //DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
                 calendrierClique = calendar.getTime();
-                // application du filtre sur la liste des cours
-                filterDateCalendar();
+
             }
         });
     }
+
 
     @Override
     public int getFragmentLayout() {
@@ -168,11 +173,11 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
      */
     private void configureRecyclerView() {
 
+        // application du filtre sur la liste des cours
+        filterDateCalendar();
         //Configure Adapter & RecyclerView
-        if (calendrierClique.equals(Calendar.getInstance().getTime()))
             mAdapterCoursesPupils = new AdapterCoursesPupils(generateOptionsForAdapter(queryAllCourses()), this);
-        else
-            mAdapterCoursesPupils = new AdapterCoursesPupils(generateOptionsForAdapter(queryDateCourses(calendrierClique)), this);
+            //mAdapterCoursesPupils = new AdapterCoursesPupils(generateOptionsForAdapter(queryDateCourses(calendrierClique)), this);
         mAdapterCoursesPupils.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onItemRangeInserted(int positionStart, int itemCount) { // c'est cette ligne de code qui insere les données dans la recyclerview
@@ -193,6 +198,28 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
                 .setQuery(query, Course.class)
                 .setLifecycleOwner(this)
                 .build();
+    }
+
+    /**
+     * Methode permettant d'afficher le floating button à l'ecran si l'utilisateur est un encadrant ou un initiateur.
+     */
+    private void showFloatingButton() {
+
+        if (this.getCurrentUser() != null) {
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            DocumentReference mQuery = db.collection("users").document(getCurrentUser().getUid());
+
+            mQuery.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                @Override
+                public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                    if(documentSnapshot.exists()){
+                        Object ds = documentSnapshot.get("fonction");
+                        if(ds.equals("Moniteur") || ds.equals("Initiateur"))
+                            mFloatingActionButton.setVisibility(View.VISIBLE);
+                    }
+                }
+            });
+        }
     }
 
     public void notifCompleteAccount() {
@@ -222,20 +249,6 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
         //final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-/*        final String niveau = null;
-        DocumentReference dr = db.collection("users").document(getCurrentUser().getUid());
-        dr.addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                if(documentSnapshot.exists()){
-                    Course course = new Course(getCurrentUser().getUid());
-                    niveau = course.getNiveauDuCours();
-
-                }
-            }
-        });*/
-
-
         Query mQuery = db.collection("courses").orderBy("horaireDuCours", Query.Direction.ASCENDING);
         mQuery.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
@@ -256,6 +269,7 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
 
     private Query queryDateCourses(Object dateCours) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+
         Query mQ = db.collection("courses").whereEqualTo("horaireDuCours", dateCours);
         mQ.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
@@ -266,7 +280,8 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
                     if (documentSnapshots.size() != 0) {
                         Log.e("TAG", "Le document existe !");
                         // liste des docs
-                        readDataInList(documentSnapshots.getDocuments());
+                        listSnapshot.addAll(documentSnapshots.getDocuments());
+                        readDataInList(listSnapshot);
                     }
                 }
             }
@@ -311,10 +326,11 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         //Task<QuerySnapshot> mQuery = db.collection("courses").whereEqualTo("horaireDuCours", "2018-04-04").get();
         CollectionReference cr = db.collection("courses");
-        cr.addSnapshotListener(new EventListener<QuerySnapshot>() {
+        cr.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-                if (documentSnapshots.size() != 0) {
+
+                if (documentSnapshots != null && documentSnapshots.size() != 0) {
                     List<DocumentSnapshot> ds = documentSnapshots.getDocuments();
                     for (int i = 0; i < documentSnapshots.size(); i++) {
                         // recuperation des documents comprenant l'horaire du cours
@@ -322,13 +338,14 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
                         Object horaireDuCours = map.getData().get("horaireDuCours");
                         // formatage des donnees recues de la bdd et du clic sur la calendrier et condition
                         DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-                        if (sdf.format(horaireDuCours).equals(sdf.format(calendrierClique)))
+                        if (sdf.format(horaireDuCours).equals(sdf.format(calendrierClique))) {
                             System.out.println("ok");
-                        queryDateCourses(horaireDuCours);
+                            queryDateCourses(horaireDuCours);
+                            configureRecyclerView();
+                        }
                     }
                 }
             }
         });
     }
-
 }

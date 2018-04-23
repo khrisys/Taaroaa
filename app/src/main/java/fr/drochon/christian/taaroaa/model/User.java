@@ -42,6 +42,7 @@ public class User {
         mNiveauPlongeur = niveauPlongeur;
         mFonction = fonction;
     }
+
     // GETTERS & SETTERS
 
     public String getUid() {

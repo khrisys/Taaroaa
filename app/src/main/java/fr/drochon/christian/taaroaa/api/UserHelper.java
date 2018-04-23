@@ -76,15 +76,6 @@ public class UserHelper {
         return UserHelper.getUsersCollection().document(uid).update("uid", uid, "nom", nom, "prenom", prenom, "licence", licence, "niveauPlongeur", niveauPlongeur, "fonction", fonction);
     }
 
-    /**
-     * Methode permettant à un encadrant de changer le statut d'une personne
-     * @param uid
-     * @param fonctionAuClub
-     * @return
-     */
-    public static Task<Void> updateUserFonction(String uid, String fonctionAuClub) {
-        return UserHelper.getUsersCollection().document(uid).update(uid, "fonction", fonctionAuClub);
-    }
 
     // --- DELETE ---
 

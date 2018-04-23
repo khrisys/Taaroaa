@@ -6,12 +6,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
+import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -21,15 +23,24 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.List;
+import java.util.Map;
 
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.api.UserHelper;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
 import fr.drochon.christian.taaroaa.controller.MainActivity;
 import fr.drochon.christian.taaroaa.controller.SummaryActivity;
+
+import static android.widget.Toast.LENGTH_SHORT;
 
 public class AccountCreateActivity extends BaseActivity {
 
@@ -38,6 +49,7 @@ public class AccountCreateActivity extends BaseActivity {
     private static final int SIGN_OUT_TASK = 10;
     private static final int DELETE_USER_TASK = 20;
     private static final int UPDATE_USERNAME = 30;
+    LinearLayout mLinearLayoutFonctionAdherent;
     TextInputEditText mPrenom;
     TextInputEditText mNom;
     TextInputEditText mLicence;
@@ -47,27 +59,30 @@ public class AccountCreateActivity extends BaseActivity {
     ProgressBar mProgressBar;
     Button mModificationCompte;
     Button mSuppressionCompte;
+    MenuItem mItemView;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account_create);
-        configureToolbar();
 
         //setTitle("Création de compte");
-
+        mLinearLayoutFonctionAdherent = findViewById(R.id.linearLayoutFonctionAdherent);
         mPrenom = findViewById(R.id.prenom_txt);
         mNom = findViewById(R.id.nom_txt);
         mLicence = findViewById(R.id.licence_txt);
         mNiveauPlongeespinner = findViewById(R.id.niveau_spinner);
+        mNiveauPlongeespinner.setEnabled(false);
         mFonctionAuClubspinner = findViewById(R.id.fonction_spinner);
         mEmail = findViewById(R.id.email_txt);
         mProgressBar = findViewById(R.id.progress_bar);
         mModificationCompte = findViewById(R.id.modificiation_compte_btn);
-        //TODO n'afficher le bouton de suppression qu'aux encadrants
+        //TODO n'afficher le bouton de suppression qu'aux proprieraires des comptes
         mSuppressionCompte = findViewById(R.id.suppression_compte_btn);
 
+        configureToolbar();
+        showManagementSupervisors();
         // methode à appeler APRES l'initialisation des variables, sinon les variables auront des references null
         this.updateUIWhenCreating(); // recuperation des informations de l'user actuel
 
@@ -166,7 +181,37 @@ public class AccountCreateActivity extends BaseActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.account_create_menu, menu);
+        // recup de l'item de recherche des adherents
+
+        mItemView = menu.findItem(R.id.app_bar_search_adherents);
+        searchAndModifPupils();
+
         return true; // true affiche le menu
+    }
+
+    /**
+     * Methode permettant de gerer la barre de recherche des adherents pour l'affichage de leurs comptes
+     * afin que les encadrants puissent les modifier.
+     */
+    private void searchAndModifPupils() {
+
+        android.widget.SearchView searchView = (android.widget.SearchView) mItemView.getActionView();
+        searchView.setQueryHint("Modifiez un compte");
+        searchView.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+        searchView.setOnQueryTextListener(new android.widget.SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String name) {
+                System.out.println("clic");
+                readSearchedData(name);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                System.out.println(newText);
+                return true;
+            }
+        });
     }
 
     /**
@@ -224,6 +269,52 @@ public class AccountCreateActivity extends BaseActivity {
         }
     }
 
+
+    /**
+     * Methode permettant de donner acces à la fonction d'un adherent si l'utilisateur connecté est un encadrant ou un initiateur.
+     * Ceci permettra de changer la fonction d'un adherent par un encadrant.
+     * Cette methode desactive toutes les autres options pour empecher les erreurs de manipulation.
+     */
+    private void showManagementSupervisors() {
+
+        if (this.getCurrentUser() != null) {
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            DocumentReference mQuery = db.collection("users").document(getCurrentUser().getUid());
+
+            mQuery.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                @Override
+                public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                    if (documentSnapshot.exists()) {
+                        //TODO ajout d'un titre à la page de modif
+                        Object ds = documentSnapshot.get("fonction");
+                        Object uid = documentSnapshot.get("uid");
+                        // moniteur etant sur un autre compte que le sien dès la premiere connexion ??
+                        if (ds.equals("Moniteur") && !uid.equals(getCurrentUser().getUid())) {
+                            //TODO ajouter un titre à la page
+                            mItemView.setVisible(true);
+                            mPrenom.setEnabled(false);
+                            mNom.setEnabled(false);
+                            mLicence.setEnabled(false);
+                            mNiveauPlongeespinner.setEnabled(true);
+                            mLinearLayoutFonctionAdherent.setVisibility(View.VISIBLE);
+                            mProgressBar.setVisibility(View.INVISIBLE);
+                            //Affichage du bouton de suppression uniquement aux proprietaires d'un compte
+                            mSuppressionCompte.setVisibility(View.INVISIBLE);
+
+                            // moniteur etant sur son propre compte
+                        } else if (ds.equals("Moniteur") && uid.equals(getCurrentUser().getUid())) {
+                            mItemView.setVisible(true);
+                            mNiveauPlongeespinner.setEnabled(true);
+                            mLinearLayoutFonctionAdherent.setVisibility(View.VISIBLE);
+                            //Affichage du bouton de suppression uniquement aux proprietaires d'un compte
+                            mSuppressionCompte.setVisibility(View.VISIBLE);
+                        }
+                    }
+                }
+            });
+        }
+    }
+
     // --------------------
     // REST REQUETES
     // --------------------
@@ -250,6 +341,9 @@ public class AccountCreateActivity extends BaseActivity {
         }
     }
 
+    /**
+     * Methode permettant de recuperer et de lire les données de l'utilisateur actuellement connecté
+     */
     private void readData() {
         DocumentReference docRef1 = FirebaseFirestore.getInstance().collection("users").document(getCurrentUser().getUid()); // recup ref de l'obj courant en bdd de stockage
         // un DocumentReference fait référence à un emplacement de document dans une base de données Firestore et peut être utilisé pour
@@ -271,13 +365,60 @@ public class AccountCreateActivity extends BaseActivity {
                         mNom.setText(nom);
                         mPrenom.setText(prenom);
                         mEmail.setText(email);
-                        mFonctionAuClubspinner.setTag(fonction);
                         mLicence.setText(licence);
                         mNiveauPlongeespinner.setSelection(getIndexSpinner(mNiveauPlongeespinner, niveau));
-                        mFonctionAuClubspinner.setEnabled(false);
+                        mFonctionAuClubspinner.setSelection(getIndexSpinner(mFonctionAuClubspinner, fonction));
                     }
                 }
             }
+        })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                    }
+                });
+    }
+
+    /**
+     * Methode permettant de recuperer et de lire les données de l'utilisateur recherché par un encadrant
+     */
+    private void readSearchedData(final String name) {
+        CollectionReference docRef1 = FirebaseFirestore.getInstance().collection("users");
+
+        docRef1.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    List<DocumentSnapshot> docs = task.getResult().getDocuments(); //Un DocumentSnapshot contient des données lues à partir d'un document de la base de données Firestore.
+                    if (docs.size() != 0) {
+                        for (DocumentSnapshot ds : docs) {
+                            Map<String, Object> doc = ds.getData();
+                            if (doc.get("nom").equals(name)) {
+                                String nom = (String) doc.get("nom");
+                                String prenom = (String) doc.get("prenom");
+                                String email = (String) doc.get("email");
+                                String fonction = (String) doc.get("fonction");
+                                String licence = (String) doc.get("licence");
+                                String niveau = (String) doc.get("niveau");
+
+                                mNom.setText(nom);
+                                mNom.setEnabled(false);
+                                mPrenom.setText(prenom);
+                                mPrenom.setEnabled(false);
+                                mEmail.setText(email);
+                                mLicence.setText(licence);
+                                mLicence.setEnabled(false);
+                                mNiveauPlongeespinner.setSelection(getIndexSpinner(mNiveauPlongeespinner, niveau));
+                                mFonctionAuClubspinner.setSelection(getIndexSpinner(mFonctionAuClubspinner, fonction));
+                                break;
+                                //mFonctionAuClubspinner.setEnabled(false);
+                            }
+                        }
+                    }
+                                    }
+                /*Toast.makeText(AccountCreateActivity.this, "L'utilisateur saisi n'existe pas !",
+            Toast.LENGTH_LONG).show();*/
+        }
         })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -324,7 +465,7 @@ public class AccountCreateActivity extends BaseActivity {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Toast.makeText(AccountCreateActivity.this, R.string.update_account,
-                                Toast.LENGTH_SHORT).show();
+                                LENGTH_SHORT).show();
                     }
                 });
     }
@@ -337,7 +478,7 @@ public class AccountCreateActivity extends BaseActivity {
             @Override
             public void onSuccess(Void aVoid) {
                 Toast.makeText(AccountCreateActivity.this, R.string.alertDialog_delete,
-                        Toast.LENGTH_SHORT).show();
+                        LENGTH_SHORT).show();
             }
         });
     }

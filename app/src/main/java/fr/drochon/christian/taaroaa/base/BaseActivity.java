@@ -10,6 +10,7 @@ import android.support.annotation.RequiresApi;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -18,6 +19,11 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import java.sql.Time;
 import java.text.DateFormat;
@@ -128,6 +134,30 @@ public abstract class BaseActivity extends AppCompatActivity {
      */
     protected Boolean isCurrentUserLogged() {
         return (this.getCurrentUser() != null);
+    }
+
+    /**
+     * Methode permettant d'afficher le floating button à l'ecran si l'utilisateur est un encadrant ou un initiateur.
+     */
+    private Boolean rightsSupervisors() {
+
+        if (this.getCurrentUser() != null) {
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            DocumentReference mQuery = db.collection("users").document(getCurrentUser().getUid());
+
+            mQuery.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                @Override
+                public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                    if(documentSnapshot.exists()){
+                        Object ds = documentSnapshot.get("niveau");
+                        if(ds.equals("4") || ds.equals("MEF1") || ds.equals("MEF2"))
+                            return;
+                            //mFloatingActionButton.setVisibility(View.VISIBLE);
+                    }
+                }
+            });
+        }
+        return false;
     }
 
 
