@@ -27,14 +27,6 @@ public class AdapterCoursesPupils extends FirestoreRecyclerAdapter<Course, Pupil
         this.callback = callback;
     }
 
-/*
-    private EventListener<QuerySnapshot> mEventListener;
-    public AdapterCoursesPupils(FirestoreRecyclerOptions<Course> options, EventListener<QuerySnapshot> eventListener) {
-        super(options);
-        this.mEventListener = eventListener;
-    }
-*/
-
     /**
      * Methode qui applique une donnee à une vue (on bind la donnée à la vue).
      * Cette methode sera appellée à chaque fois qu'une donnée devra etre affichée dans une cellule, que la cellule soit nouvellement créée ou recyclée

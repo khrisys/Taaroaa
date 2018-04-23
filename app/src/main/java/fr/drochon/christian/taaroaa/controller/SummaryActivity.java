@@ -8,11 +8,20 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.List;
+import java.util.Map;
+
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.auth.AccountCreateActivity;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
 import fr.drochon.christian.taaroaa.course.CoursesPupilsActivity;
 import fr.drochon.christian.taaroaa.course.CoursesSupervisorsActivity;
+import fr.drochon.christian.taaroaa.covoiturage.CovoiturageAccueilActivity;
 
 public class SummaryActivity extends BaseActivity {
 
@@ -39,22 +48,44 @@ public class SummaryActivity extends BaseActivity {
             }
         });
 
-        // redirige un utilisateur vers le planning des cours des eleves
+
+        // redirige un utilisateur vers le planning des cours des eleves ou des encadrants en fonction de sa fonction
         mCours = findViewById(R.id.cours_btn);
         mCours.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(SummaryActivity.this, CoursesPupilsActivity.class);
-                startActivity(intent);
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                db.collection("users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot documentSnapshots) {
+                        if (documentSnapshots.size() != 0) {
+                            List<DocumentSnapshot> ds = documentSnapshots.getDocuments();
+                            for (int i = 0; i < ds.size(); i++) {
+                                Map<String, Object> user = ds.get(i).getData();
+                                if (user.get("uid").equals(getCurrentUser().getUid()) &&
+                                        user.get("fonction").equals("Moniteur")) {
+                                    Intent intent = new Intent(SummaryActivity.this, CoursesSupervisorsActivity.class);
+                                    startActivity(intent);
+                                    break;
+                                } else {
+                                    Intent intent = new Intent(SummaryActivity.this, CoursesPupilsActivity.class);
+                                    startActivity(intent);
+                                }
+
+                            }
+                        }
+                    }
+                });
             }
         });
+
 
         // Redirige l'utilisateur vers les sorties
         mSortie = findViewById(R.id.sorties_btn);
         mSortie.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(SummaryActivity.this, CoursesSupervisorsActivity.class);
+                Intent intent = new Intent(SummaryActivity.this, CovoiturageAccueilActivity.class);
                 startActivity(intent);
             }
         });
@@ -71,7 +102,7 @@ public class SummaryActivity extends BaseActivity {
     // --------------------
 
     /**
-     *  Fait appel au fichier xml menu pour definir les icones.
+     * Fait appel au fichier xml menu pour definir les icones.
      * Definit differentes options dans le menu caché.
      */
     @Override

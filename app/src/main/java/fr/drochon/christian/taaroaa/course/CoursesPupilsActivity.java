@@ -214,6 +214,7 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
                 public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                     if(documentSnapshot.exists()){
                         Object ds = documentSnapshot.get("fonction");
+                        //TODO : decision : est ce que je met le bouton dispo pour les initiateurs?
                         if(ds.equals("Moniteur") || ds.equals("Initiateur"))
                             mFloatingActionButton.setVisibility(View.VISIBLE);
                     }

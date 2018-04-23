@@ -7,10 +7,7 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
     <uses-permission android:name="android.permission.READ_PROFILE"/>
     <uses-permission android:name="android.permission.READ_CONTACTS"/>
-
-
     <uses-permission android:name="android.permission.INTERNET"/>
-
 
     <application
         android:allowBackup="true"
@@ -37,20 +34,25 @@
             android:label="@string/app_name">
         </activity>
         <activity
-            android:name=".auth.AccountCreateActivity"
-            android:label="@string/app_name">
+            android:name=".auth.AccountCreateActivity">
         </activity>
         <activity android:name=".course.CoursesManagementActivity">
         </activity>
         <activity
-            android:name=".course.CoursesSupervisorsActivity"
-            android:label="@string/title_activity_courses_supervisors">
+            android:name=".course.CoursesSupervisorsActivity">
         </activity>
         <activity
-            android:name=".course.CoursesPupilsActivity"
-            android:label="@string/title_activity_courses_pupils">
+            android:name=".course.CoursesPupilsActivity">
         </activity>
-
+        <activity android:name=".covoiturage.CovoiturageAccueilActivity">
+        </activity>
+        <activity android:name=".covoiturage.CovoituragePassagersActivity">
+        </activity>
+        <activity android:name=".covoiturage.CovoiturageConducteursActivity">
+        </activity>
+        <activity
+            android:name=".covoiturage.CovoiturageVehiculesActivity">
+        </activity>
     </application>
 
 </manifest>

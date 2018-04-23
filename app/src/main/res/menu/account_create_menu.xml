@@ -8,7 +8,7 @@
         android:id="@+id/app_bar_search_adherents"
         android:icon="@android:drawable/btn_minus"
         android:title="dl"
-        android:visible="false"
+        android:visible="true"
         android:tooltipText="Modifiez le compte d'un adhérent"
         app:actionViewClass="android.widget.SearchView"
         app:showAsAction="always"/>

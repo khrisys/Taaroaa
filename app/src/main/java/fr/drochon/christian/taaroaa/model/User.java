@@ -22,9 +22,9 @@ public class User {
         this.uid = uid;
     }
 
-    public User(String uid, String nom) {
-        this.uid = uid;
+    public User(String nom, String prenom) {
         mNom = nom;
+        mPrenom = prenom;
     }
 
     public User(String uid, String nom, String email) {

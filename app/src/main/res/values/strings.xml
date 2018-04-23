@@ -56,6 +56,9 @@
     <string name="empty_list_txt">Il n\'y actuellement pas de cours à cette date</string>
     <string name="create_course">Vous avez créé un nouveau cours. \n\tMerci !</string>
 
+    <!-- COVOITURAGE ACTIVITY -->
+    <string name="proposer_covoit_btn">Proposez une covoiturage</string>
+    <string name="inscription_covoit_txt">Cliquez sur le nom d\'un conducteur pour s'inscrire à un covoiturage.</string>
 
     <!-- FACEBOOK PURPOSE -->
     <!--<string name="facebook_application_id" translatable="false">420763051691337</string>
@@ -74,4 +77,5 @@
     <string name="title_activity_courses_supervisors">Tous les cours</string>
     <string name="title_activity_courses_pupils">Cours prépa balbla</string>
     <string name="title_activity_test">TestActivity</string>
+    <string name="title_activity_covoiturage_vehicules">CovoiturageVehiculesActivity</string>
 </resources>

@@ -52,11 +52,12 @@
         <ScrollView
             android:id="@+id/scrollviewRecyclerView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            >
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recyclerViewCoursesPupils"
-                android:layout_marginTop="-20dp"
+                android:layout_marginTop="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_vertical|center_horizontal"

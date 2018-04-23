@@ -206,10 +206,12 @@ public class CoursesSupervisorsActivity extends BaseActivity implements AdapterC
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
                 // condition de creation d'un user ou affichage simple d'un message indiquant que l'user existe dejà en bdd.
                 // Avec les uid, il ne peut y avoir de doublon, on peut donc etre sur qu'il n'y a qu'un seule doc qui existe s'il en existe un.
-                if (documentSnapshots.size() != 0) {
-                    Log.e("TAG", "Le document existe !");
-                    // liste des docs
-                    readDataInList(documentSnapshots.getDocuments());
+                if(documentSnapshots != null) {
+                    if (documentSnapshots.size() != 0) {
+                        Log.e("TAG", "Le document existe !");
+                        // liste des docs
+                        readDataInList(documentSnapshots.getDocuments());
+                    }
                 }
             }
         });
