@@ -37,7 +37,7 @@
             android:layout_marginStart="60dp"
             android:layout_marginTop="10dp"
             android:layout_weight="0.9"
-            android:text="Passagers : "
+            android:text="Nom des passagers : "
             android:textSize="20sp"/>
 
         <Spinner
@@ -66,7 +66,7 @@
             android:layout_marginStart="60dp"
             android:layout_marginTop="3dp"
             android:layout_weight="0.7"
-            android:text="Véhicule : "
+            android:text="Type de véhicule : "
             android:textSize="20sp"/>
 
         <Spinner
@@ -95,7 +95,7 @@
             android:layout_marginStart="60dp"
             android:layout_marginTop="3dp"
             android:layout_weight="0.7"
-            android:text="Places : "
+            android:text="Places restantes : "
             android:textSize="20sp"/>
 
         <Spinner
