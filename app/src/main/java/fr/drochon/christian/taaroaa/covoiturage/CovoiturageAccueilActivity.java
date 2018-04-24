@@ -25,7 +25,7 @@ public class CovoiturageAccueilActivity extends BaseActivity {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(CovoiturageAccueilActivity.this, CovoiturageVehiculesActivity.class);
+                Intent intent = new Intent(CovoiturageAccueilActivity.this, CovoiturageVehiclesActivity.class);
                 startActivity(intent);
             }
         });

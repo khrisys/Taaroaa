@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:id="@+id/vehicle_linear_layout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/covoit_conducteur_nom"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
+        android:background="#E3F2FD"
+        android:clickable="true"
+        android:gravity="center"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="#2196F3"
+        android:textStyle="bold"
+        tools:text="Nom du conducteur"/>
+
+    <FrameLayout
+        android:id="@+id/covoit_passager_framelayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:weightSum="1">
+
+        <TextView
+            android:id="@+id/passager_titre_txt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="40dp"
+            android:layout_marginStart="60dp"
+            android:layout_marginTop="10dp"
+            android:layout_weight="0.9"
+            android:text="Passagers : "
+            android:textSize="20sp"/>
+
+        <Spinner
+            android:id="@+id/passager_spinner"
+            style="@style/FirebaseUI.CountrySpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="22dp">
+        </Spinner>
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/covoit_vehicule_framelayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:weightSum="1">
+
+        <TextView
+            android:id="@+id/vehicule_titre_txt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="40dp"
+            android:layout_marginStart="60dp"
+            android:layout_marginTop="3dp"
+            android:layout_weight="0.7"
+            android:text="Véhicule : "
+            android:textSize="20sp"/>
+
+        <Spinner
+            android:id="@+id/vehicule_spinner"
+            style="@style/FirebaseUI.CountrySpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="15dp">
+        </Spinner>
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/covoit_places_framelayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:weightSum="1">
+
+        <TextView
+            android:id="@+id/places_titre_txt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="40dp"
+            android:layout_marginStart="60dp"
+            android:layout_marginTop="3dp"
+            android:layout_weight="0.7"
+            android:text="Places : "
+            android:textSize="20sp"/>
+
+        <Spinner
+            android:id="@+id/places_spinner"
+            style="@style/FirebaseUI.CountrySpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="30dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="15dp">
+        </Spinner>
+    </FrameLayout>
+
+
+</LinearLayout>

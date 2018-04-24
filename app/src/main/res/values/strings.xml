@@ -58,7 +58,8 @@
 
     <!-- COVOITURAGE ACTIVITY -->
     <string name="proposer_covoit_btn">Proposez une covoiturage</string>
-    <string name="inscription_covoit_txt">Cliquez sur le nom d\'un conducteur pour s'inscrire à un covoiturage.</string>
+    <string name="inscription_covoit_txt">Cliquez sur le nom d\'un conducteur pour vous inscrire à un covoiturage.</string>
+    <string name="empty_list_covoit_txt">Il n\'y actuellement pas de covoiturage proposé</string>
 
     <!-- FACEBOOK PURPOSE -->
     <!--<string name="facebook_application_id" translatable="false">420763051691337</string>

@@ -51,7 +51,7 @@
         <activity android:name=".covoiturage.CovoiturageConducteursActivity">
         </activity>
         <activity
-            android:name=".covoiturage.CovoiturageVehiculesActivity">
+            android:name=".covoiturage.CovoiturageVehiclesActivity">
         </activity>
     </application>
 

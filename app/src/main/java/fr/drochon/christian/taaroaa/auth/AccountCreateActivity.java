@@ -139,7 +139,6 @@ public class AccountCreateActivity extends BaseActivity {
                     }
                 });
                 adb.show(); // affichage de l'artdialog
-
             }
         });
 
@@ -454,22 +453,6 @@ public class AccountCreateActivity extends BaseActivity {
                         System.out.println("nok");
                     }
                 });
-    }
-
-    /**
-     * Methode permettant de retrouver la position d'un item de la liste des niveaux de plongée d'un user
-     *
-     * @param spinner
-     * @param myString
-     * @return int
-     */
-    private int getIndexSpinner(Spinner spinner, String myString) {
-        for (int i = 0; i < spinner.getCount(); i++) {
-            if (spinner.getItemAtPosition(i).toString().equalsIgnoreCase(myString)) {
-                return i;
-            }
-        }
-        return 0;
     }
 
     /**

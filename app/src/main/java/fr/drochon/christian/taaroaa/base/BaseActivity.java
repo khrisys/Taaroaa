@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
@@ -245,5 +246,25 @@ public abstract class BaseActivity extends AppCompatActivity {
         SimpleDateFormat dateFormat1 = new SimpleDateFormat("HH:mm:ss");
         String heureDuCours = dateFormat1.format(horaireDuCours);
         return heureDuCours;
+    }
+
+    // --------------------
+    // UI
+    // --------------------
+
+    /**
+     * Methode permettant de retrouver la position d'un item de la liste des niveaux de plongée d'un user
+     *
+     * @param spinner
+     * @param myString
+     * @return int
+     */
+    protected int getIndexSpinner(Spinner spinner, String myString) {
+        for (int i = 0; i < spinner.getCount(); i++) {
+            if (spinner.getItemAtPosition(i).toString().equalsIgnoreCase(myString)) {
+                return i;
+            }
+        }
+        return 0;
     }
 }

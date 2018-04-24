@@ -1,4 +1,4 @@
-package fr.drochon.christian.taaroaa.course;
+package fr.drochon.christian.taaroaa.covoiturage;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -9,18 +9,20 @@ import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 
 import fr.drochon.christian.taaroaa.R;
-import fr.drochon.christian.taaroaa.model.Course;
+import fr.drochon.christian.taaroaa.model.Covoiturage;
 
-/**
- * l'adapter s'occupe de l'ensemble du contenu alors que le viewholder s'occupe des specificités d'une cellule
- */
-public class AdapterCoursesPupils extends FirestoreRecyclerAdapter<Course, PupilsViewHolder> {
-
+public class AdapterCovoiturageVehicles extends FirestoreRecyclerAdapter<Covoiturage, VehiculeViewHolder> {
 
     //FOR COMMUNICATION
     private Listener callback;
 
-    public AdapterCoursesPupils(FirestoreRecyclerOptions<Course> options, Listener callback) {
+    /**
+     * Create a new RecyclerView adapter that listens to a Firestore Query.  See {@link
+     * FirestoreRecyclerOptions} for configuration options.
+     *
+     * @param options
+     */
+    public AdapterCovoiturageVehicles(@NonNull FirestoreRecyclerOptions<Covoiturage> options, Listener callback) {
         super(options);
         this.callback = callback;
     }
@@ -35,8 +37,8 @@ public class AdapterCoursesPupils extends FirestoreRecyclerAdapter<Course, Pupil
      * @see #onBindViewHolder(RecyclerView.ViewHolder, int)
      */
     @Override
-    protected void onBindViewHolder(@NonNull final PupilsViewHolder holder, int position, @NonNull final Course model) {
-        holder.updateWithCourse(model);
+    protected void onBindViewHolder(@NonNull VehiculeViewHolder holder, int position, @NonNull Covoiturage model) {
+        holder.updateWithCovoiturage(model);
     }
 
     /**
@@ -47,9 +49,9 @@ public class AdapterCoursesPupils extends FirestoreRecyclerAdapter<Course, Pupil
      * @return le vue d'une cellule
      */
     @Override
-    public PupilsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new PupilsViewHolder(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.list_cell, parent, false));// creation de la viewholder avec en param la vue du layout
+    public VehiculeViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        return new VehiculeViewHolder(LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.covoiturage_cell, parent, false));// creation de la viewholder avec en param la vue du layout
     }
 
     @Override

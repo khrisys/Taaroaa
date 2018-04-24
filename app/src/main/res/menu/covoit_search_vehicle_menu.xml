@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Affiche une possibilité de recherche dans l'actionBar-->
+    <item
+        android:id="@+id/app_bar_search_vehicles"
+        android:icon="@android:drawable/btn_minus"
+        android:title="search_vehicles"
+        android:tooltipText="Modifiez le compte d'un adhérent"
+        android:visible="true"
+        app:actionViewClass="android.widget.SearchView"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/app_bar_summary"
+        android:icon="@android:drawable/checkbox_on_background"
+        android:title="Sommaire"
+        app:actionLayout="@layout/activity_account_create"/>
+
+    <item
+        android:id="@+id/app_bar_deconnexion"
+        android:title="Déconnexion"
+        app:actionProviderClass="android.support.v7.app.MediaRouteActionProvider"
+        app:showAsAction="never"
+        tools:icon="@drawable/notification_action_background"
+        tools:ignore="PrivateResource"/>
+
+</menu>
