@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
-import android.text.Html;
 import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
@@ -32,7 +31,6 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.List;
@@ -47,7 +45,7 @@ import fr.drochon.christian.taaroaa.model.User;
 
 import static android.widget.Toast.LENGTH_SHORT;
 
-public class AccountCreateActivity extends BaseActivity {
+public class AccountModificationActivity extends BaseActivity {
 
     public static final int GET_USERNAME = 40;
     // identifiant pour identifier la requete REST
@@ -61,17 +59,17 @@ public class AccountCreateActivity extends BaseActivity {
     Spinner mNiveauPlongeespinner;
     Spinner mFonctionAuClubspinner;
     TextInputEditText mEmail;
+    TextInputEditText mPassword;
     ProgressBar mProgressBar;
     Button mModificationCompte;
     Button mSuppressionCompte;
     MenuItem mItemView;
     TextView mTitrePage;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_account_create);
+        setContentView(R.layout.activity_account_modification);
 
         //setTitle("Création de compte");
         mTitrePage = findViewById(R.id.titre_page_compte_txt);
@@ -83,6 +81,7 @@ public class AccountCreateActivity extends BaseActivity {
         mNiveauPlongeespinner.setEnabled(false);
         mFonctionAuClubspinner = findViewById(R.id.fonction_spinner);
         mEmail = findViewById(R.id.email_txt);
+        mPassword = findViewById(R.id.password_input);
         mProgressBar = findViewById(R.id.progress_bar);
         mModificationCompte = findViewById(R.id.modificiation_compte_btn);
         //TODO n'afficher le bouton de suppression qu'aux proprieraires des comptes
@@ -120,13 +119,13 @@ public class AccountCreateActivity extends BaseActivity {
         mSuppressionCompte.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final AlertDialog.Builder adb = new AlertDialog.Builder(AccountCreateActivity.this);
+                final AlertDialog.Builder adb = new AlertDialog.Builder(AccountModificationActivity.this);
                 adb.setTitle(R.string.alertDialog_account);
                 adb.setIcon(android.R.drawable.ic_dialog_alert);
                 adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         EditText editText = findViewById(R.id.alertdialog_ok_account);
-                        Toast.makeText(AccountCreateActivity.this, editText.getText(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(AccountModificationActivity.this, editText.getText(), Toast.LENGTH_LONG).show();
                         //deleteUserFromFirebase();
                         deleteUser();
                         startMainActivity();
@@ -134,7 +133,7 @@ public class AccountCreateActivity extends BaseActivity {
                 }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         EditText editText = findViewById(R.id.alertdialog_delete_account);
-                        Toast.makeText(AccountCreateActivity.this, editText.getText(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(AccountModificationActivity.this, editText.getText(), Toast.LENGTH_LONG).show();
                         //finish();
                         //TODO est ce qu'on change d'ecran ou pas ?
                     }
@@ -166,7 +165,7 @@ public class AccountCreateActivity extends BaseActivity {
 
     @Override
     public int getFragmentLayout() {
-        return R.layout.activity_account_create;
+        return R.layout.activity_account_modification;
     }
 
     /**
@@ -177,7 +176,6 @@ public class AccountCreateActivity extends BaseActivity {
         super.onResume();
         this.updateUIWhenResuming();
         mItemView = findViewById(R.id.app_bar_search_adherents);
-
     }
 
     // --------------------
@@ -258,7 +256,7 @@ public class AccountCreateActivity extends BaseActivity {
      * Methode permettant de changer d'ecran lors d'une connexion valide
      */
     private void startSummaryActivity() {
-        Intent intent = new Intent(AccountCreateActivity.this, SummaryActivity.class);
+        Intent intent = new Intent(AccountModificationActivity.this, SummaryActivity.class);
         startActivity(intent);
     }
 
@@ -266,7 +264,7 @@ public class AccountCreateActivity extends BaseActivity {
      * Methode permettant de revenir à la page d'accueil lorsqu'un utilisateur a supprimer son compte
      */
     private void startMainActivity() {
-        Intent intent = new Intent(AccountCreateActivity.this, MainActivity.class);
+        Intent intent = new Intent(AccountModificationActivity.this, MainActivity.class);
         startActivity(intent);
     }
 
@@ -480,8 +478,8 @@ public class AccountCreateActivity extends BaseActivity {
                 if (task.isSuccessful()) {
                     //mise à jour du compte de la personne connectée exceptée moniteur
                     List<DocumentSnapshot> users = task.getResult().getDocuments();
-                    for(int i = 0; i < users.size(); i++) {
-                       // recuperation des infos de la personne connectée
+                    for (int i = 0; i < users.size(); i++) {
+                        // recuperation des infos de la personne connectée
                         Map<String, Object> user = users.get(i).getData();
                         if (user.get("nom").equals(nom)) { //TODO a changer : condition sur l'uid : recuperer l'uid de l'adherent
                             user.put("nom", nom);
@@ -496,14 +494,14 @@ public class AccountCreateActivity extends BaseActivity {
                                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                                             @Override
                                             public void onSuccess(Void aVoid) {
-                                                Toast.makeText(AccountCreateActivity.this, R.string.update_account,
+                                                Toast.makeText(AccountModificationActivity.this, R.string.update_account,
                                                         Toast.LENGTH_SHORT).show();
                                             }
                                         })
                                         .addOnFailureListener(new OnFailureListener() {
                                             @Override
                                             public void onFailure(@NonNull Exception e) {
-                                                Toast.makeText(AccountCreateActivity.this, "ERROR" + e.toString(),
+                                                Toast.makeText(AccountModificationActivity.this, "ERROR" + e.toString(),
                                                         Toast.LENGTH_LONG).show();
                                                 Log.d("TAG", e.toString());
                                             }
@@ -549,7 +547,7 @@ public class AccountCreateActivity extends BaseActivity {
                             }).addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                                 @Override
                                 public void onSuccess(QuerySnapshot documentSnapshots) {
-                                    Toast.makeText(AccountCreateActivity.this, R.string.update_account,
+                                    Toast.makeText(AccountModificationActivity.this, R.string.update_account,
                                             Toast.LENGTH_LONG).show();
                                 }
                             });
@@ -571,7 +569,7 @@ public class AccountCreateActivity extends BaseActivity {
                 .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                Toast.makeText(AccountCreateActivity.this, R.string.alertDialog_delete,
+                Toast.makeText(AccountModificationActivity.this, R.string.alertDialog_delete,
                         LENGTH_SHORT).show();
             }
         });
@@ -591,8 +589,8 @@ public class AccountCreateActivity extends BaseActivity {
                     .addOnSuccessListener(this, this.updateUIAfterRESTRequestsCompleted(DELETE_USER_TASK));
         }
     }
-/*
-    *//**
+    /*
+     *//**
      * Methode permettant à un utilisateur de se deconnecter retournant un objet de type Task permettant d erealiser ces appels de maniere asynchrone
      *//*
     private void signOutUserFromFirebase() {
@@ -600,5 +598,4 @@ public class AccountCreateActivity extends BaseActivity {
                 .signOut(this) // methode utilisée par le singleton authUI.getInstance()
                 .addOnSuccessListener(this, this.updateUIAfterRESTRequestsCompleted(SIGN_OUT_TASK));
     }*/
-
 }
