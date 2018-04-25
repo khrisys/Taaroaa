@@ -25,6 +25,10 @@
     <string name="connection_succeed">Authentification réussie !</string>
     <string name="button_login_text_logged">Afficher le profil</string>
     <string name="button_login_text_not_logged">Connexion</string>
+    <string name="titre_app">Bonjour.  Bienvenue sur l\'application de gestion d\'un club de plongée sous-marine.</string>
+    <string name="connectez_vous">Connectez vous</string>
+    <string name="deconnectez_vous">Deconnectez vous</string>
+    <string name="mot_de_passe_oubli">mot de passe oublié ?</string>
 
     <!-- LOGIN ACTIVITY -->
     <string name="toolbar_title_login_activity">Votre Profil</string>
@@ -32,9 +36,7 @@
     <string name="text_view_email">Adresse email :</string>
     <string name="button_update_account">Mettre à jour le nom d\'utilisateur</string>
     <string name="button_delete_account">Supprimer mon compte</string>
-    <string name="button_create_account">Connectez vous</string>
     <string name="button_go_summary">Allez au sommaire</string>
-    <string name="button_sign_out_account">Déconnexion</string>
     <string name="info_no_email_found">Auncune adresse email</string>
     <string name="info_no_username_found">Aucun nom d\'utilisateur</string>
     <string name="popup_message_confirmation_delete_account">Etes vous sûr(e) de vouloir supprimer votre compte ?</string>
@@ -60,6 +62,13 @@
     <string name="proposer_covoit_btn">Proposez une covoiturage</string>
     <string name="inscription_covoit_txt">Cliquez sur le nom d\'un conducteur pour vous inscrire à un covoiturage.</string>
     <string name="empty_list_covoit_txt">Il n\'y actuellement pas de covoiturage proposé</string>
+    <string name="nom_des_passagers">Nom des passagers :</string>
+    <string name="nombre_de_passagers">Nombre de passager(s) :</string>
+    <string name="reservez_btn">Réservez</string>
+    <string name="nom_du_passager_responsable">Nom du passager / responsable :</string>
+    <string name="passager">Passager</string>
+    <string name="type_du_vehicule">Type du véhicule :</string>
+    <string name="places_disponibles">Places disponibles :</string>
 
     <!-- FACEBOOK PURPOSE -->
     <!--<string name="facebook_application_id" translatable="false">420763051691337</string>
@@ -79,4 +88,7 @@
     <string name="title_activity_courses_pupils">Cours prépa balbla</string>
     <string name="title_activity_test">TestActivity</string>
     <string name="title_activity_covoiturage_vehicules">CovoiturageVehiculesActivity</string>
+
+
+
 </resources>
