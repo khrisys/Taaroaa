@@ -60,6 +60,9 @@
     <string name="proposer_covoit_btn">Proposez une covoiturage</string>
     <string name="inscription_covoit_txt">Cliquez sur le nom d\'un conducteur pour vous inscrire à un covoiturage.</string>
     <string name="empty_list_covoit_txt">Il n\'y actuellement pas de covoiturage proposé</string>
+    <string name="nom_des_passagers">Nom des passagers :</string>
+    <string name="type_de_vehicule">Type de véhicule :</string>
+    <string name="nombre_de_places_disponibles">Nombre de places disponibles :</string>
 
     <!-- FACEBOOK PURPOSE -->
     <!--<string name="facebook_application_id" translatable="false">420763051691337</string>
@@ -79,4 +82,5 @@
     <string name="title_activity_courses_pupils">Cours prépa balbla</string>
     <string name="title_activity_test">TestActivity</string>
     <string name="title_activity_covoiturage_vehicules">CovoiturageVehiculesActivity</string>
+
 </resources>

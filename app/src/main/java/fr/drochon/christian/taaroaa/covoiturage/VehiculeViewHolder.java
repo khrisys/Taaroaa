@@ -1,11 +1,16 @@
 package fr.drochon.christian.taaroaa.covoiturage;
 
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +19,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.model.Covoiturage;
+import fr.drochon.christian.taaroaa.model.User;
 
 public class VehiculeViewHolder extends RecyclerView.ViewHolder {
 
@@ -54,7 +60,17 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
         mNomConducteur.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO
+                //TODO recuperer l'objet Covoiturage avec les champs manquants à justement rajouter ici.Se reperer à l'id de l'objet covoiturage
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                db.collection("covoiturage").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot documentSnapshots) {
+                        if(documentSnapshots.size() != 0){
+
+
+                        }
+                    }
+                });
             }
         });
     }
