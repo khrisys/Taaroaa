@@ -7,8 +7,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -18,6 +20,7 @@ import java.util.Map;
 
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.auth.AccountCreateActivity;
+import fr.drochon.christian.taaroaa.auth.AccountModificationActivity;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
 import fr.drochon.christian.taaroaa.course.CoursesPupilsActivity;
 import fr.drochon.christian.taaroaa.course.CoursesSupervisorsActivity;
@@ -25,7 +28,8 @@ import fr.drochon.christian.taaroaa.covoiturage.CovoiturageAccueilActivity;
 
 public class SummaryActivity extends BaseActivity {
 
-    Button mAdherent;
+    Button mCompte;
+    Button mModifCompte;
     Button mCours;
     Button mSortie;
 
@@ -33,17 +37,29 @@ public class SummaryActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_summary);
-        configureToolbar();
-
-        mAdherent = findViewById(R.id.adherents_btn);
 
         ActionBar actionBar = getSupportActionBar();
+        assert actionBar != null;
         actionBar.setDisplayShowHomeEnabled(true);
 
-        mAdherent.setOnClickListener(new View.OnClickListener() {
+        configureToolbar();
+        showPannelModification();
+
+
+        mCompte = findViewById(R.id.adherents_btn);
+        mCompte.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(SummaryActivity.this, AccountCreateActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        mModifCompte = findViewById(R.id.modif_adherents_btn);
+        mModifCompte.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(SummaryActivity.this, AccountModificationActivity.class);
                 startActivity(intent);
             }
         });
@@ -122,5 +138,35 @@ public class SummaryActivity extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         return optionsToolbar(this, item);
+    }
+
+
+    // --------------------
+    // UI
+    // --------------------
+
+    private void showPannelModification() {
+        //TODO afficher le graphique du panneau de modif si l'utilisateur connecté est un encadrant
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference documentReference = db.collection("users").document(getCurrentUser().getUid());
+        documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if(documentSnapshot.exists()){
+                    Map<String, Object> user = documentSnapshot.getData();
+                    if(!user.get("fonction").equals("Moniteur")){
+                        // si l'user n'est pas un moniteur, enlever la tuile de modif par code ici
+                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
+                        params.weight = 0.3f;
+                        mModifCompte.setLayoutParams(params);
+
+                        /*LinearLayout.LayoutParams params1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
+                        params1.weight = 0.6f;
+                        mCompte.setLayoutParams(params1);*/
+                        mModifCompte.setVisibility(View.INVISIBLE);
+                    }
+                }
+            }
+        });
     }
 }

@@ -33,7 +33,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
         mDateDepart = findViewById(R.id.date_depart_txt);
         mHeureDepart = findViewById(R.id.heure_depart_txt);
         mDateretour = findViewById(R.id.date_retour_txt);
-        mHeureRetour = findViewById(R.id.heure_depart_retour_txt);
+        mHeureRetour = findViewById(R.id.heure_retour_txt);
         mNbPlaceDispo = findViewById(R.id.nb_place_dispo_txt);
         mTypeVehicule = findViewById(R.id.type_vehicule_txt);
         mNomPassager = findViewById(R.id.nom_passager_input);

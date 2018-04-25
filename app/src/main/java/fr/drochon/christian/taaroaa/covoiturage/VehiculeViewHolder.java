@@ -7,6 +7,10 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,7 +58,14 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
         mNomConducteur.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO
+                //TODO recuperer l'objet Covoiturage via l'id en requetant. Passer l'id à la liste depuis la creation de l'objet dans l'ecran conducteur.
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                db.collection("covoiturage").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot documentSnapshots) {
+                        //get l'objet
+                    }
+                });
             }
         });
     }
