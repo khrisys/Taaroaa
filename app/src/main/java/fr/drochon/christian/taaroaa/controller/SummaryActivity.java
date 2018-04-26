@@ -20,7 +20,7 @@ import java.util.Objects;
 
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.auth.AccountCreateActivity;
-import fr.drochon.christian.taaroaa.auth.AccountModificationActivity;
+import fr.drochon.christian.taaroaa.auth.SearchUserActivity;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
 import fr.drochon.christian.taaroaa.course.CoursesPupilsActivity;
 import fr.drochon.christian.taaroaa.course.CoursesSupervisorsActivity;
@@ -59,7 +59,7 @@ public class SummaryActivity extends BaseActivity {
         mModifCompte.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(SummaryActivity.this, AccountModificationActivity.class);
+                Intent intent = new Intent(SummaryActivity.this, SearchUserActivity.class);
                 startActivity(intent);
             }
         });

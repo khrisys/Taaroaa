@@ -4,6 +4,108 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".auth.SearchUserActivity">
+
+    <LinearLayout
+        android:id="@+id/linearLayoutVehicules"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/covoit_presentation_txt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:layout_marginEnd="40dp"
+            android:layout_marginStart="40dp"
+            android:enabled="false"
+            android:gravity="center_vertical|center_horizontal"
+            android:linksClickable="false"
+            android:longClickable="false"
+            android:singleLine="false"
+            android:text="@string/modif_ecran_titre"
+            android:textAlignment="gravity"
+            android:textColor="@android:color/black"
+            android:textIsSelectable="false"
+            android:textSize="20sp"
+            android:textStyle="bold"/>
+
+        <View
+            android:id="@+id/divider"
+            android:layout_width="match_parent"
+            android:layout_marginTop="10dp"
+            android:layout_height="3dp"
+            android:background="?android:attr/listDivider"
+            />
+
+
+        <LinearLayout
+            android:id="@+id/linearLayoutRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <!-- MESSAGE RECYCLER VIEW EMPTY -->
+            <TextView
+                android:id="@+id/empty_list_textview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="30dp"
+                android:layout_marginEnd="30dp"
+                android:text="@string/empty_list_users_txt"
+                android:textAlignment="center"
+                />
+
+            <!--RECYCLER VIEW-->
+            <ScrollView
+                android:id="@+id/scrollviewRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                >
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/recyclerViewSearchedUser"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|center_horizontal"
+                    />
+
+            </ScrollView>
+        </LinearLayout>
+
+        <android.support.v7.widget.SearchView
+            android:id="@+id/searchbar_user"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="40dp"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="40dp"
+            android:background="@drawable/round_corner_toogle"
+            android:inputType="text"
+            android:minHeight="50dp"
+            android:tooltipText="@string/recherche_adherent_btn">
+        </android.support.v7.widget.SearchView>
+
+        <Button
+            android:id="@+id/search_valid_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginEnd="30dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="20dp"
+            android:background="@color/colorPrimary"
+            android:gravity="center"
+            android:minHeight="60dp"
+            android:text="@string/recherche_adherent_btn"
+            android:textColor="@android:color/white"/>
+
+    </LinearLayout>
+    <!--<include layout="@layout/content_covoiturage_vehicules"/>-->
 
 </android.support.constraint.ConstraintLayout>
