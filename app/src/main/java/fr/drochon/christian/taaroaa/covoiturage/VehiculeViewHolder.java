@@ -58,7 +58,7 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
         mNomConducteur.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO recuperer l'objet Covoiturage via l'id en requetant. Passer l'id à la liste depuis la creation de l'objet dans l'ecran conducteur.
+                //TODO recuperer l'objet Covoiturage via l'id en requetant. Passer ensuite l'id à la liste depuis la creation de l'objet dans l'ecran conducteur.
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
                 db.collection("covoiturage").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
