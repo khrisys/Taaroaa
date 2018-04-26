@@ -1,7 +1,5 @@
 package fr.drochon.christian.taaroaa.auth;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,7 +11,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
@@ -59,10 +56,9 @@ public class AccountModificationActivity extends BaseActivity {
     Spinner mNiveauPlongeespinner;
     Spinner mFonctionAuClubspinner;
     TextInputEditText mEmail;
-    TextInputEditText mPassword;
     ProgressBar mProgressBar;
     Button mModificationCompte;
-    Button mSuppressionCompte;
+    //Button mSuppressionCompte;
     MenuItem mItemView;
     TextView mTitrePage;
 
@@ -81,11 +77,10 @@ public class AccountModificationActivity extends BaseActivity {
         mNiveauPlongeespinner.setEnabled(false);
         mFonctionAuClubspinner = findViewById(R.id.fonction_spinner);
         mEmail = findViewById(R.id.email_txt);
-        mPassword = findViewById(R.id.password_input);
         mProgressBar = findViewById(R.id.progress_bar);
         mModificationCompte = findViewById(R.id.modificiation_compte_btn);
         //TODO n'afficher le bouton de suppression qu'aux proprieraires des comptes
-        mSuppressionCompte = findViewById(R.id.suppression_compte_btn);
+        //mSuppressionCompte = findViewById(R.id.suppression_compte_btn);
         // recup de la barre de rehcerche pour ne pas qu'elle soit null (non declarée dans BaseActivity)
         mItemView = findViewById(R.id.app_bar_search_adherents);
 
@@ -115,7 +110,7 @@ public class AccountModificationActivity extends BaseActivity {
         });
 
 
-        // Suppression d'un compte utilisateur avec alertdialog avant suppression
+/*        // Suppression d'un compte utilisateur avec alertdialog avant suppression
         mSuppressionCompte.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -140,7 +135,7 @@ public class AccountModificationActivity extends BaseActivity {
                 });
                 adb.show(); // affichage de l'artdialog
             }
-        });
+        });*/
 
 
         // --------------------
@@ -325,14 +320,14 @@ public class AccountModificationActivity extends BaseActivity {
                             mLinearLayoutFonctionAdherent.setVisibility(View.VISIBLE);
                             mProgressBar.setVisibility(View.INVISIBLE);
                             //Affichage du bouton de suppression uniquement aux proprietaires d'un compte
-                            mSuppressionCompte.setVisibility(View.INVISIBLE);
+                            //mSuppressionCompte.setVisibility(View.INVISIBLE);
 
                             // moniteur etant sur son propre compte
                         } else if (ds.equals("Moniteur") && uid.equals(getCurrentUser().getUid())) {
                             mNiveauPlongeespinner.setEnabled(true);
                             mLinearLayoutFonctionAdherent.setVisibility(View.VISIBLE);
                             //Affichage du bouton de suppression uniquement aux proprietaires d'un compte
-                            mSuppressionCompte.setVisibility(View.VISIBLE);
+                           //mSuppressionCompte.setVisibility(View.VISIBLE);
                         }
                     }
                 }
@@ -438,7 +433,7 @@ public class AccountModificationActivity extends BaseActivity {
                                 mLicence.setEnabled(false);
                                 mNiveauPlongeespinner.setSelection(getIndexSpinner(mNiveauPlongeespinner, niveau));
                                 mFonctionAuClubspinner.setSelection(getIndexSpinner(mFonctionAuClubspinner, fonction));
-                                mSuppressionCompte.setVisibility(View.INVISIBLE);
+                                //mSuppressionCompte.setVisibility(View.INVISIBLE);
                                 break;
                             }
                         }

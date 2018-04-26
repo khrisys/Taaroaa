@@ -51,6 +51,8 @@
         </activity>
         <activity android:name=".auth.AccountModificationActivity">
         </activity>
+        <activity android:name=".auth.SearchUserActivity">
+        </activity>
     </application>
 
 </manifest>

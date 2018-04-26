@@ -18,6 +18,20 @@
         android:orientation="horizontal">
 
         <Button
+            android:id="@+id/modif_adherents_btn"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="7dp"
+            android:layout_marginTop="7dp"
+            android:layout_marginBottom="7dp"
+            android:layout_weight="0.6"
+            android:background="@color/colorPrimary"
+            android:text="Modifiez un compte"
+            android:textColor="@android:color/white"
+            android:textSize="25sp"
+            android:textStyle="bold"/>
+
+        <Button
             android:id="@+id/adherents_btn"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -29,21 +43,7 @@
             android:background="@color/colorPrimary"
             android:text="Mon compte"
             android:textColor="@android:color/white"
-            android:textSize="28sp"
-            android:textStyle="bold"/>
-
-        <Button
-            android:id="@+id/modif_adherents_btn"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="7dp"
-            android:layout_marginBottom="7dp"
-            android:layout_marginEnd="7dp"
-            android:layout_weight="0.6"
-            android:background="@color/colorPrimary"
-            android:text="Modifiez un compte"
-            android:textColor="@android:color/white"
-            android:textSize="25sp"
+            android:textSize="40sp"
             android:textStyle="bold"/>
 
     </LinearLayout>

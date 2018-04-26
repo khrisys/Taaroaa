@@ -25,6 +25,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
@@ -44,13 +45,8 @@ public class MainActivity extends BaseActivity {
 
     //FOR DATA CONNEXION
     private static final int SIGN_OUT_TASK = 10;
-    private static final int DELETE_USER_TASK = 20;
-    private static final int UPDATE_USERNAME = 30;
 
-
-    TextView mTextView;
-    /*@BindView(id.deconnexion_btn) Button mDeconnexion;
-    @BindView(id.connection_valid_btn) Button mConnexion;*/
+    // FOR COMMUNICATION
     Button mConnexion;
     Button mDeconnexion;
     TextView mTextViewHiddenForSnackbar;
@@ -79,9 +75,8 @@ public class MainActivity extends BaseActivity {
         // --------------------
         // LISTENERS
         // --------------------
-        /**
-         * Lancement de la page de connection lors d'un clic sur le bouton "Connectez vous"
-         */
+
+        // Lancement de la page de connection lors d'un clic sur le bouton "Connectez vous"
         mConnexion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -95,9 +90,7 @@ public class MainActivity extends BaseActivity {
             }
         });
 
-        /**
-         * Deconnexion de l'utilisateur
-         */
+        // Deconnexion de l'utilisateur
         mDeconnexion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -286,6 +279,7 @@ public class MainActivity extends BaseActivity {
                         // decomposition du nom et du prenom recu dans username
                         String nom = null, prenom = null;
                         String[] parts;
+                        assert username != null;
                         if (username.contains(" ")) {
                             parts = username.split(" ");
                             try {
@@ -327,7 +321,7 @@ public class MainActivity extends BaseActivity {
         newContact.put("nom", nom);
         newContact.put("prenom", prenom);
         newContact.put("email", email);
-        db.collection("users").document(getCurrentUser().getUid()).set(newContact)
+        db.collection("users").document(Objects.requireNonNull(getCurrentUser()).getUid()).set(newContact)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
