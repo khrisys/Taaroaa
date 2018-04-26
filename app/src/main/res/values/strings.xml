@@ -44,13 +44,14 @@
     <string name="popup_message_choice_no">Non</string>
     <string name="check_box_is_mentor">Etes-vous un mentor ?</string>
 
-    <!--ACCOUNT CREATE AND MODIFICATION ACTIVITIES-->
+    <!--ACCOUNT CREATE AND MODIFICATION USER ACTIVITIES-->
     <string name="alertDialog_account">Voulez vous réellement supprimer votre compte ?</string>
     <string name="alertDialog_delete">Vous avez supprimé votre compte !</string>
     <string name="alertDialog_cancel">Vous n\'avez pas supprimé votre compte. \nVous diposez encore de vos informations personnelles. </string>
     <string name="update_account">Vous avez mis à jour votre compte !</string>
     <string name="create_account">Vous avez créé votre compte. \n\tMerci !</string>
-    <string name="modifiez_le_compte">Modifiez le compte</string>
+    <string name="modifiez_votre_compte">Modifiez votre compte</string>
+    <string name="modifiez_le_compte">Modifiez le compte adhérent</string>
     <string name="email">Email :</string>
     <string name="compte">Compte</string>
     <string name="fonction_au_sein_du_club">Fonction au sein du club :</string>
@@ -62,6 +63,7 @@
     <string name="personnel">Personnel</string>
     <string name="bienvenue_sur_votre_compte">Bienvenue sur votre compte</string>
     <string name="modifiez_le_compte_d_un_adherent">Modifiez le compte d\'un adhérent</string>
+    <string name="verif_every_fields_complete">Merci de saisir tous les champs du formulaire !</string>
 
     <!--COURSES ACTIVITIES-->
     <string name="button_create_course">Créez un cours</string>
@@ -100,7 +102,6 @@
     <string name="title_activity_courses_pupils">Cours prépa balbla</string>
     <string name="title_activity_test">TestActivity</string>
     <string name="title_activity_covoiturage_vehicules">CovoiturageVehiculesActivity</string>
-
 
 
 </resources>

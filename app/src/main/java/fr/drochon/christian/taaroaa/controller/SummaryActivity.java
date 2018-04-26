@@ -7,7 +7,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.LinearLayout;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
@@ -17,6 +16,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.auth.AccountCreateActivity;
@@ -145,25 +145,20 @@ public class SummaryActivity extends BaseActivity {
     // UI
     // --------------------
 
+    /**
+     * Fonction permettant d'afficher ou non la tuile de moficiation d'un adherent
+     */
     private void showPannelModification() {
         //TODO afficher le graphique du panneau de modif si l'utilisateur connecté est un encadrant
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        DocumentReference documentReference = db.collection("users").document(getCurrentUser().getUid());
+        DocumentReference documentReference = db.collection("users").document(Objects.requireNonNull(getCurrentUser()).getUid());
         documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 if(documentSnapshot.exists()){
                     Map<String, Object> user = documentSnapshot.getData();
-                    if(!user.get("fonction").equals("Moniteur")){
-                        // si l'user n'est pas un moniteur, enlever la tuile de modif par code ici
-                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
-                        params.weight = 0.3f;
-                        mModifCompte.setLayoutParams(params);
-
-                        /*LinearLayout.LayoutParams params1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
-                        params1.weight = 0.6f;
-                        mCompte.setLayoutParams(params1);*/
-                        mModifCompte.setVisibility(View.INVISIBLE);
+                    if (user.get("fonction") == null || !user.get("fonction").equals("Moniteur")) {
+                        mModifCompte.setVisibility(View.GONE);
                     }
                 }
             }
