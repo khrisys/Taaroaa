@@ -245,15 +245,6 @@ public class MainActivity extends BaseActivity {
     // --------------------
 
     /**
-     * Methode permettant à un utilisateur de se deconnecter retournant un objet de type Task permettant d erealiser ces appels de maniere asynchrone
-     */
-    private void signOutUserFromFirebase() {
-        AuthUI.getInstance()
-                .signOut(this) // methode utilisée par le singleton authUI.getInstance()
-                .addOnSuccessListener(this, this.updateUIAfterRESTRequestsCompleted(SIGN_OUT_TASK));
-    }
-
-    /**
      * Methode de creation d'un utilisateur, avec condition de creation en fonction de l'existance ou non d'un user dejà en bdd,
      * et decomposant le nom et le prenom saisi à l'enregistrement de la personne.
      */
@@ -306,7 +297,7 @@ public class MainActivity extends BaseActivity {
     }
 
     /**
-     * Methode permettan de creer un user lorsque celui ci vient de se connecter pour la 1ere fois.
+     * Methode permettant de creer un user lorsque celui ci vient de se connecter pour la 1ere fois.
      *
      * @param uid
      * @param nom

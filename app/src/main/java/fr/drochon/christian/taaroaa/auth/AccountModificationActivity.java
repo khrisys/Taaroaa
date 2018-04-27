@@ -1,16 +1,18 @@
 package fr.drochon.christian.taaroaa.auth;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
-import android.text.InputType;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
@@ -32,6 +34,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.api.UserHelper;
@@ -58,8 +61,8 @@ public class AccountModificationActivity extends BaseActivity {
     TextInputEditText mEmail;
     ProgressBar mProgressBar;
     Button mModificationCompte;
-    //Button mSuppressionCompte;
-    MenuItem mItemView;
+    Button mSuppressionCompte;
+    //MenuItem mItemView;
     TextView mTitrePage;
     Intent mIntent;
 
@@ -81,19 +84,15 @@ public class AccountModificationActivity extends BaseActivity {
         mProgressBar = findViewById(R.id.progress_bar);
         mModificationCompte = findViewById(R.id.modificiation_compte_btn);
         //TODO n'afficher le bouton de suppression qu'aux proprieraires des comptes
-        //mSuppressionCompte = findViewById(R.id.suppression_compte_btn);
+        mSuppressionCompte = findViewById(R.id.suppression_compte_btn);
         // recup de la barre de rehcerche pour ne pas qu'elle soit null (non declarée dans BaseActivity)
-        mItemView = findViewById(R.id.app_bar_search_adherents);
+        //mItemView = findViewById(R.id.app_bar_search_adherents);
 
         configureToolbar();
-        showManagementSupervisors();
+        showAttributes();
         // methode à appeler APRES l'initialisation des variables, sinon les variables auront des references null
         this.updateUIWhenCreating(); // recuperation des informations de l'user actuel
 
-        mIntent  = getIntent();
-        User user = (User) mIntent.getExtras().getSerializable("User");
-        /*Bundle bundle = getIntent().getExtras();
-        User u = (User) bundle.getSerializable("User");*/
         //TODO verifier que tous les champs soient remplis
 
 
@@ -107,14 +106,14 @@ public class AccountModificationActivity extends BaseActivity {
         mModificationCompte.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //updateUserInFirebase(); // update dans firebase
-                updateData(mNom.getText().toString(), mPrenom.getText().toString());
+                updateUserInFirebase(); // update dans firebase
+                //updateData(mNom.getText().toString(), mPrenom.getText().toString());
                 startSummaryActivity();
             }
         });
 
 
-/*        // Suppression d'un compte utilisateur avec alertdialog avant suppression
+        // Suppression d'un compte utilisateur avec alertdialog avant suppression
         mSuppressionCompte.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -127,6 +126,7 @@ public class AccountModificationActivity extends BaseActivity {
                         Toast.makeText(AccountModificationActivity.this, editText.getText(), Toast.LENGTH_LONG).show();
                         //deleteUserFromFirebase();
                         deleteUser();
+                        signOutUserFromFirebase();
                         startMainActivity();
                     }
                 }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -139,7 +139,7 @@ public class AccountModificationActivity extends BaseActivity {
                 });
                 adb.show(); // affichage de l'artdialog
             }
-        });*/
+        });
 
 
         // --------------------
@@ -174,11 +174,7 @@ public class AccountModificationActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         this.updateUIWhenResuming();
-        mItemView = findViewById(R.id.app_bar_search_adherents);
-       /* Intent intent  = getIntent();
-        User user = (User) intent.getSerializableExtra("User");*/
-       Bundle bundle = getIntent().getExtras();
-       User u = (User) bundle.getSerializable("User");
+        //mItemView = findViewById(R.id.app_bar_search_adherents);
     }
 
     // --------------------
@@ -192,18 +188,18 @@ public class AccountModificationActivity extends BaseActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.account_create_menu, menu);
-
+/*
         // recup de l'item de recherche des adherents
         mItemView = menu.findItem(R.id.app_bar_search_adherents);
-        searchAndModifPupils();
+        searchAndModifPupils();*/
 
         return true; // true affiche le menu
     }
 
-    /**
+/*    *//**
      * Methode permettant de gerer la barre de recherche des adherents pour l'affichage de leurs comptes
      * afin que les encadrants puissent les modifier.
-     */
+     *//*
     private void searchAndModifPupils() {
 
         android.widget.SearchView searchView = (android.widget.SearchView) mItemView.getActionView();
@@ -240,7 +236,7 @@ public class AccountModificationActivity extends BaseActivity {
                 return true;
             }
         });
-    }
+    }*/
 
     /**
      * recuperation  du clic d'un user.
@@ -303,7 +299,7 @@ public class AccountModificationActivity extends BaseActivity {
      * Ceci permettra de changer la fonction d'un adherent par un encadrant.
      * Cette methode desactive toutes les autres options pour empecher les erreurs de manipulation.
      */
-    private void showManagementSupervisors() {
+    private void showAttributes() {
 
         if (this.getCurrentUser() != null) {
             FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -319,8 +315,8 @@ public class AccountModificationActivity extends BaseActivity {
                         // moniteur etant sur un autre compte que le sien dès la premiere connexion ??
                         if (ds.equals("Moniteur") && !uid.equals(getCurrentUser().getUid())) {
                             //TODO ajouter un titre à la page
-                            mTitrePage.setText("Modifiez le compte d'un adhérent");
-                            mItemView.setVisible(false);
+                            mTitrePage.setText(R.string.modifiez_le_compte_d_un_adherent);
+                            //mItemView.setVisible(false);
                             mPrenom.setEnabled(false);
                             mNom.setEnabled(false);
                             mLicence.setEnabled(false);
@@ -328,14 +324,33 @@ public class AccountModificationActivity extends BaseActivity {
                             mLinearLayoutFonctionAdherent.setVisibility(View.VISIBLE);
                             mProgressBar.setVisibility(View.INVISIBLE);
                             //Affichage du bouton de suppression uniquement aux proprietaires d'un compte
-                            //mSuppressionCompte.setVisibility(View.INVISIBLE);
+                            mSuppressionCompte.setVisibility(View.INVISIBLE);
 
                             // moniteur etant sur son propre compte
                         } else if (ds.equals("Moniteur") && uid.equals(getCurrentUser().getUid())) {
+                            mTitrePage.setText(R.string.bienvenue_sur_votre_compte);
+                            //mItemView.setVisible(true);
+                            mPrenom.setEnabled(true);
+                            mNom.setEnabled(true);
+                            mLicence.setEnabled(true);
                             mNiveauPlongeespinner.setEnabled(true);
                             mLinearLayoutFonctionAdherent.setVisibility(View.VISIBLE);
+                            mModificationCompte.setText(R.string.modifiez_votre_compte);
                             //Affichage du bouton de suppression uniquement aux proprietaires d'un compte
-                           //mSuppressionCompte.setVisibility(View.VISIBLE);
+                           mSuppressionCompte.setVisibility(View.VISIBLE);
+
+                            // adherent non moniteur sur son propre compte
+                        } else if (!ds.equals("Moniteur") && uid.equals(getCurrentUser().getUid())) {
+                            mTitrePage.setText(R.string.bienvenue_sur_votre_compte);
+                            //mItemView.setVisible(true);
+                            mPrenom.setEnabled(true);
+                            mNom.setEnabled(true);
+                            mLicence.setEnabled(true);
+                            mNiveauPlongeespinner.setEnabled(false);
+                            mLinearLayoutFonctionAdherent.setVisibility(View.INVISIBLE);
+                            mModificationCompte.setText(R.string.modifiez_votre_compte);
+                            //Affichage du bouton de suppression uniquement aux proprietaires d'un compte
+                            mSuppressionCompte.setVisibility(View.VISIBLE);
                         }
                     }
                 }
@@ -364,16 +379,35 @@ public class AccountModificationActivity extends BaseActivity {
         if (this.getCurrentUser() != null) {
             //TODO alert dialog lorsque tous les champs ne sont pas remplis
             if (!nom.isEmpty() && !nom.equals(getString(R.string.info_no_username_found)) && !prenom.isEmpty() && !email.isEmpty()) { // verification que tous les champs vides soient remplis
-                UserHelper.updateUser(this.getCurrentUser().getUid(), nom, prenom, licence, email, niveau, fonction).addOnFailureListener(this.onFailureListener()).addOnSuccessListener(this.updateUIAfterRESTRequestsCompleted(UPDATE_USERNAME));
+                UserHelper.updateUser(this.getCurrentUser().getUid(), nom, prenom, licence, email, niveau, fonction).
+                        addOnFailureListener(this.onFailureListener()).
+                        addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Toast.makeText(AccountModificationActivity.this, R.string.update_account,
+                                        Toast.LENGTH_SHORT).show();
+                                updateUIAfterRESTRequestsCompleted(UPDATE_USERNAME);
+                            }
+                        });
             }
         }
     }
 
     /**
-     * Methode permettant de recuperer et d'afficher les données de l'utilisateur actuellement connecté
+     * Methode permettant de recuperer et d'afficher les données de l'utilisateur actuellement connecté depuis
+     * l'activité Sommaire qui a determiné que l'utilisateur voulant afficher ses informations etait enregistré en bdd.
      */
     private void getAndShowUserDatas() {
-        DocumentReference docRef1 = FirebaseFirestore.getInstance().collection("users").document(getCurrentUser().getUid()); // recup ref de l'obj courant en bdd de stockage
+        mIntent  = getIntent();
+        User user = (User) Objects.requireNonNull(mIntent.getExtras()).getSerializable("user");
+        assert user != null;
+        mNom.setText(user.getNom());
+        mPrenom.setText(user.getPrenom());
+        mLicence.setText(user.getLicence());
+        mNiveauPlongeespinner.setSelection(getIndexSpinner(mNiveauPlongeespinner, user.getNiveauPlongeur()));
+        mFonctionAuClubspinner.setSelection(getIndexSpinner(mFonctionAuClubspinner, user.getFonction()));
+        mEmail.setText(user.getEmail());
+/*        DocumentReference docRef1 = FirebaseFirestore.getInstance().collection("users").document(getCurrentUser().getUid()); // recup ref de l'obj courant en bdd de stockage
         // un DocumentReference fait référence à un emplacement de document dans une base de données Firestore et peut être utilisé pour
         // écrire, lire ou écouter l'emplacement. Il peut exister ou non un document à l'emplacement référencé.
 
@@ -404,7 +438,7 @@ public class AccountModificationActivity extends BaseActivity {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                     }
-                });
+                });*/
     }
 
     /**
