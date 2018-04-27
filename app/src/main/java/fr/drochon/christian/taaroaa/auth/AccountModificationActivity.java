@@ -61,6 +61,7 @@ public class AccountModificationActivity extends BaseActivity {
     //Button mSuppressionCompte;
     MenuItem mItemView;
     TextView mTitrePage;
+    Intent mIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,7 +90,10 @@ public class AccountModificationActivity extends BaseActivity {
         // methode à appeler APRES l'initialisation des variables, sinon les variables auront des references null
         this.updateUIWhenCreating(); // recuperation des informations de l'user actuel
 
-
+        mIntent  = getIntent();
+        User user = (User) mIntent.getExtras().getSerializable("User");
+        /*Bundle bundle = getIntent().getExtras();
+        User u = (User) bundle.getSerializable("User");*/
         //TODO verifier que tous les champs soient remplis
 
 
@@ -171,6 +175,10 @@ public class AccountModificationActivity extends BaseActivity {
         super.onResume();
         this.updateUIWhenResuming();
         mItemView = findViewById(R.id.app_bar_search_adherents);
+       /* Intent intent  = getIntent();
+        User user = (User) intent.getSerializableExtra("User");*/
+       Bundle bundle = getIntent().getExtras();
+       User u = (User) bundle.getSerializable("User");
     }
 
     // --------------------

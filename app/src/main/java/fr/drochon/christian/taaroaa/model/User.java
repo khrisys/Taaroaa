@@ -1,11 +1,11 @@
 package fr.drochon.christian.taaroaa.model;
 
-import android.widget.Spinner;
+import java.io.Serializable;
 
 /**
  * Classe represantant les adherents du club
  */
-public class User {
+public class User implements Serializable{
 
     private String uid;
     private String mNom;

@@ -20,11 +20,13 @@ import java.util.Objects;
 
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.auth.AccountCreateActivity;
+import fr.drochon.christian.taaroaa.auth.AccountModificationActivity;
 import fr.drochon.christian.taaroaa.auth.SearchUserActivity;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
 import fr.drochon.christian.taaroaa.course.CoursesPupilsActivity;
 import fr.drochon.christian.taaroaa.course.CoursesSupervisorsActivity;
 import fr.drochon.christian.taaroaa.covoiturage.CovoiturageAccueilActivity;
+import fr.drochon.christian.taaroaa.model.User;
 
 public class SummaryActivity extends BaseActivity {
 
@@ -50,8 +52,42 @@ public class SummaryActivity extends BaseActivity {
         mCompte.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(SummaryActivity.this, AccountCreateActivity.class);
-                startActivity(intent);
+
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                db.collection("users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot documentSnapshots) {
+                       if(documentSnapshots.size() != 0){
+                           List<DocumentSnapshot> ds = documentSnapshots.getDocuments();
+                           for (DocumentSnapshot doc: ds) {
+                               Map<String, Object> user = doc.getData();
+                               User u = new User();
+                               String uid = user.get("uid").toString();
+                               String nom = user.get("nom").toString();
+                               String prenom = user.get("prenom").toString();
+                               String licence = user.get("licence").toString();
+                               String email = user.get("email").toString();
+                               String niveau = user.get("niveau").toString();
+                               String fonction = user.get("fonction").toString();
+                               u.setUid(uid);
+                               u.setNom(nom);
+                               u.setPrenom(prenom);
+                               u.setLicence(licence);
+                               u.setEmail(email);
+                               u.setNiveauPlongeur(niveau);
+                               u.setFonction(fonction);
+                               Intent intent = new Intent(SummaryActivity.this, AccountModificationActivity.class);
+                               intent.putExtra("User", u);// ajout de serializable dans la classe user
+                               startActivity(intent);
+                           }
+                       }
+                       else{
+                           Intent intent = new Intent(SummaryActivity.this, AccountCreateActivity.class);
+                           startActivity(intent);
+                       }
+                    }
+                });
+
             }
         });
 
