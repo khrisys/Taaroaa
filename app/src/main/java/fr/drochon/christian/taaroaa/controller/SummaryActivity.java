@@ -44,54 +44,44 @@ public class SummaryActivity extends BaseActivity {
         assert actionBar != null;
         actionBar.setDisplayShowHomeEnabled(true);
 
+        mCompte = findViewById(R.id.adherents_btn);
+        mModifCompte = findViewById(R.id.modif_adherents_btn);
+
         configureToolbar();
         showPannelModification();
 
 
-        mCompte = findViewById(R.id.adherents_btn);
         mCompte.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                final FirebaseFirestore db = FirebaseFirestore.getInstance();
                 db.collection("users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot documentSnapshots) {
-                       if(documentSnapshots.size() != 0){
-                           List<DocumentSnapshot> ds = documentSnapshots.getDocuments();
-                           for (DocumentSnapshot doc: ds) {
-                               Map<String, Object> user = doc.getData();
-                               User u = new User();
-                               String uid = user.get("uid").toString();
-                               String nom = user.get("nom").toString();
-                               String prenom = user.get("prenom").toString();
-                               String licence = user.get("licence").toString();
-                               String email = user.get("email").toString();
-                               String niveau = user.get("niveau").toString();
-                               String fonction = user.get("fonction").toString();
-                               u.setUid(uid);
-                               u.setNom(nom);
-                               u.setPrenom(prenom);
-                               u.setLicence(licence);
-                               u.setEmail(email);
-                               u.setNiveauPlongeur(niveau);
-                               u.setFonction(fonction);
-                               Intent intent = new Intent(SummaryActivity.this, AccountModificationActivity.class);
-                               intent.putExtra("User", u);// ajout de serializable dans la classe user
-                               startActivity(intent);
-                           }
-                       }
-                       else{
-                           Intent intent = new Intent(SummaryActivity.this, AccountCreateActivity.class);
-                           startActivity(intent);
-                       }
+                        if (documentSnapshots.size() != 0) {
+                            List<DocumentSnapshot> ds = documentSnapshots.getDocuments();
+                            for (DocumentSnapshot doc : ds) {
+                                Map<String, Object> user = doc.getData();
+                                //TODO demain pb: passe dans les 2 conditions en fonction de l'id. comme ca boucle, on passe dans les2 et ca arrive sur la creation de compte
+                                if (user.get("uid").equals(getCurrentUser().getUid())) {
+                                    User u = new User(user.get("uid").toString(), user.get("nom").toString(), user.get("prenom").toString(), user.get("licence").toString(),
+                                            user.get("email").toString(), user.get("niveau").toString(), user.get("fonction").toString());
+                                    Intent intent = new Intent(SummaryActivity.this, AccountModificationActivity.class).putExtra("user", u);
+                                    startActivity(intent);
+                                } else {
+                                    Intent intent = new Intent(SummaryActivity.this, AccountCreateActivity.class);
+                                    startActivity(intent);
+                                }
+                            }
+                        }
                     }
                 });
 
             }
         });
 
-        mModifCompte = findViewById(R.id.modif_adherents_btn);
+
         mModifCompte.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -191,11 +181,14 @@ public class SummaryActivity extends BaseActivity {
         documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                if(documentSnapshot.exists()){
+                if (documentSnapshot.exists()) {
                     Map<String, Object> user = documentSnapshot.getData();
                     if (user.get("fonction") == null || !user.get("fonction").equals("Moniteur")) {
                         mModifCompte.setVisibility(View.GONE);
                     }
+                    //lors de la creation d'un compte, enleve la tuile de modification d'un compte
+                } else {
+                    mModifCompte.setVisibility(View.GONE);
                 }
             }
         });

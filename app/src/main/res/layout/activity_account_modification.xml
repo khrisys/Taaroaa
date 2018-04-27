@@ -283,20 +283,20 @@
                 android:text="@string/modifiez_le_compte"
                 android:textColor="@android:color/white"/>
 
-<!--            <Button
+            <Button
                 android:id="@+id/suppression_compte_btn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="30dp"
                 android:background="@color/colorPrimary"
                 android:text="Supprimez le compte"
-                android:textColor="@android:color/white"/>-->
+                android:textColor="@android:color/white"/>
 
         </LinearLayout>
 
     </ScrollView>
 
-<!--    <EditText
+    <EditText
         android:id="@+id/alertdialog_ok_account"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -312,6 +312,6 @@
         android:textSize="@android:dimen/notification_large_icon_height"
         android:inputType="text"
         android:text="@string/alertDialog_cancel"
-        android:visibility="invisible"/>-->
+        android:visibility="invisible"/>
 
 </LinearLayout>
