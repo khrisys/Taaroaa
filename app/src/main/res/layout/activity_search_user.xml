@@ -5,13 +5,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".auth.SearchUserActivity">
+    tools:context=".auth.SearchUserActivity"
+    >
+
 
     <LinearLayout
         android:id="@+id/linearLayoutVehicules"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+
 
         <TextView
             android:id="@+id/covoit_presentation_txt"
@@ -86,12 +89,16 @@
             android:layout_marginStart="40dp"
             android:layout_marginTop="40dp"
             android:background="@drawable/round_corner_toogle"
+            android:clickable="true"
+            android:focusable="true"
+            app:iconifiedByDefault="false"
             android:inputType="text"
             android:minHeight="50dp"
-            android:tooltipText="@string/recherche_adherent_btn">
+            android:visibility="visible"
+            app:queryHint="@string/recherche_adherent_btn">
         </android.support.v7.widget.SearchView>
 
-        <Button
+<!--        <Button
             android:id="@+id/search_valid_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -103,9 +110,8 @@
             android:gravity="center"
             android:minHeight="60dp"
             android:text="@string/recherche_adherent_btn"
-            android:textColor="@android:color/white"/>
+            android:textColor="@android:color/white"/>-->
 
     </LinearLayout>
-    <!--<include layout="@layout/content_covoiturage_vehicules"/>-->
 
 </android.support.constraint.ConstraintLayout>

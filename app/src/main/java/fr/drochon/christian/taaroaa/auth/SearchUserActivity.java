@@ -7,8 +7,6 @@ import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
 import fr.drochon.christian.taaroaa.R;
@@ -19,7 +17,6 @@ public class SearchUserActivity extends BaseActivity implements AdapterSearchedU
     TextView mEmptyListMessage;
     RecyclerView mRecyclerViewUser;
     SearchView mSearchView;
-    Button mButtonSearch;
 
 
     @Override
@@ -30,7 +27,6 @@ public class SearchUserActivity extends BaseActivity implements AdapterSearchedU
         mEmptyListMessage = findViewById(R.id.empty_list_textview);
         mRecyclerViewUser = findViewById(R.id.recyclerViewSearchedUser);
         mSearchView = findViewById(R.id.searchbar_user);
-        mButtonSearch = findViewById(R.id.search_valid_btn);
 
         configureToolbar();
 
@@ -38,10 +34,7 @@ public class SearchUserActivity extends BaseActivity implements AdapterSearchedU
         // LISTENERS
         // --------------------
 
-        mSearchView.setQueryHint("Saisissez un adhérent");
-        mSearchView.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
-        mSearchView.setEnabled(true);
-
+        mSearchView.setInputType(InputType.TYPE_TEXT_FLAG_CAP_WORDS);
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
             @Override
@@ -72,14 +65,6 @@ public class SearchUserActivity extends BaseActivity implements AdapterSearchedU
             public boolean onQueryTextChange(String newText) {
                 System.out.println(newText);
                 return false;
-            }
-        });
-
-        mButtonSearch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //TODO la rechecreh ? A voir si ce n'est pas directement la barre de rehcerche qui lance la recherche
-                System.out.println("clic");
             }
         });
     }
