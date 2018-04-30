@@ -8,23 +8,28 @@ import android.view.ViewGroup;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 
+import java.util.List;
+
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.model.User;
 
 public class AdapterSearchedUser extends FirestoreRecyclerAdapter<User, SearchedUserViewHolder> {
 
-    //FOR COMMUNICATION
-    private Listener callback;
-
+    List<User> users;
     /**
      * Create a new RecyclerView adapter that listens to a Firestore Query.  See {@link
      * FirestoreRecyclerOptions} for configuration options.
      *
-     * @param options
+     * @param users
      */
-    public AdapterSearchedUser(@NonNull FirestoreRecyclerOptions<User> options, Listener callback) {
-        super(options);
-        this.callback = callback;
+    public AdapterSearchedUser(@NonNull FirestoreRecyclerOptions<User> userFirestoreRecyclerOptions, List<User> users) {
+        super(userFirestoreRecyclerOptions);
+        this.users = users;
+
+    }
+
+    public AdapterSearchedUser(@NonNull FirestoreRecyclerOptions<User> userFirestoreRecyclerOptions) {
+        super(userFirestoreRecyclerOptions);
     }
 
     /**
@@ -52,15 +57,5 @@ public class AdapterSearchedUser extends FirestoreRecyclerAdapter<User, Searched
     public SearchedUserViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new SearchedUserViewHolder(LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.user_cell, parent, false));// creation de la viewholder avec en param la vue du layout
-    }
-
-    @Override
-    public void onDataChanged() {
-        super.onDataChanged();
-        this.callback.onDataChanged();
-    }
-
-    public interface Listener {
-        void onDataChanged();
     }
 }

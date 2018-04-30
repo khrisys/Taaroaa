@@ -4,14 +4,14 @@
       xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Affiche une possibilité de recherche dans l'actionBar-->
-    <item
+<!--    <item
         android:id="@+id/app_bar_search_vehicles"
         android:icon="@android:drawable/btn_minus"
         android:title="search_vehicles"
         android:tooltipText="Modifiez le compte d'un adhérent"
         android:visible="true"
         app:actionViewClass="android.widget.SearchView"
-        app:showAsAction="always"/>
+        app:showAsAction="always"/>-->
 
     <item
         android:id="@+id/app_bar_summary"

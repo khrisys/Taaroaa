@@ -74,6 +74,8 @@
     <string name="error_empty_fields">Merci de saisir ce champ !</string>
     <string name="empty_list_txt">Il n\'y actuellement pas de cours à cette date</string>
     <string name="create_course">Vous avez créé un nouveau cours. \n\tMerci !</string>
+    <string name="course_deconnexion">Déconnexion</string>
+    <string name="sommaire">Sommaire</string>
 
     <!-- COVOITURAGE ACTIVITY -->
     <string name="proposer_covoit_btn">Proposez une covoiturage</string>
@@ -105,6 +107,7 @@
     <string name="title_activity_courses_pupils">Cours prépa balbla</string>
     <string name="title_activity_test">TestActivity</string>
     <string name="title_activity_covoiturage_vehicules">CovoiturageVehiculesActivity</string>
+
 
 
 </resources>

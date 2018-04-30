@@ -4,18 +4,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import butterknife.ButterKnife;
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
 
@@ -81,7 +78,7 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
         getMenuInflater().inflate(R.menu.covoit_search_vehicle_menu, menu);
 
         // recup de l'item de recherche des adherents
-        mItemView = menu.findItem(R.id.app_bar_search_vehicles);
+        //mItemView = menu.findItem(R.id.app_bar_search_vehicles);
         searchVehicles();
 
         return true; // true affiche le menu
