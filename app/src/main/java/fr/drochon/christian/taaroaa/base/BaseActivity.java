@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
-import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -43,7 +42,6 @@ public abstract class BaseActivity extends AppCompatActivity {
     private static final int SIGN_OUT_TASK = 10;
     private static final int DELETE_USER_TASK = 20;
     private static final int UPDATE_USERNAME = 30;
-    ProgressBar mProgressBar;
 
 
     // --------------------
@@ -68,6 +66,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void configureToolbar() {
         ActionBar ab = getSupportActionBar();
         // ajout d'un icone de l'appli à l'actionbar en haut à gauche
+        assert ab != null;
         ab.setDisplayShowHomeEnabled(true);
         ab.setIcon(R.mipmap.ic_launcher);
         //ab.setTitle(R.string.app_name);
@@ -83,9 +82,9 @@ public abstract class BaseActivity extends AppCompatActivity {
      */
     protected boolean optionsToolbar(Activity activity, MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.app_bar_search_adherents:
+/*            case R.id.app_bar_search_adherents:
                 // afichage de la barre de recherche
-                return true;
+                return true;*/
             case R.id.app_bar_summary:
                 // redirection à la page sommaire
                 Intent intent = new Intent(activity, SummaryActivity.class);
@@ -217,7 +216,6 @@ public abstract class BaseActivity extends AppCompatActivity {
     // --------------------
     // HEURE & DATE PARSING
     // --------------------
-
 
     /**
      * Methode permettant de formatter une date en string avec locale en francais
