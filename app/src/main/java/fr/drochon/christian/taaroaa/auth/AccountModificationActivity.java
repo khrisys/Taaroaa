@@ -62,7 +62,6 @@ public class AccountModificationActivity extends BaseActivity {
     ProgressBar mProgressBar;
     Button mModificationCompte;
     Button mSuppressionCompte;
-    //MenuItem mItemView;
     TextView mTitrePage;
     Intent mIntent;
 
@@ -85,8 +84,6 @@ public class AccountModificationActivity extends BaseActivity {
         mModificationCompte = findViewById(R.id.modificiation_compte_btn);
         //TODO n'afficher le bouton de suppression qu'aux proprieraires des comptes
         mSuppressionCompte = findViewById(R.id.suppression_compte_btn);
-        // recup de la barre de rehcerche pour ne pas qu'elle soit null (non declarée dans BaseActivity)
-        //mItemView = findViewById(R.id.app_bar_search_adherents);
 
         configureToolbar();
         showAttributes();
@@ -174,7 +171,6 @@ public class AccountModificationActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         this.updateUIWhenResuming();
-        //mItemView = findViewById(R.id.app_bar_search_adherents);
     }
 
     // --------------------
@@ -279,7 +275,6 @@ public class AccountModificationActivity extends BaseActivity {
 
         if (this.getCurrentUser() != null) { // retourne un user FirebaseUser. Permettra de remplir toutes les vues de l'activité
             getAndShowUserDatas();
-            //TODO afficher toutes les informations d'un user*/
         }
     }
 
@@ -465,7 +460,7 @@ public class AccountModificationActivity extends BaseActivity {
                                 String fonction = (String) doc.get("fonction");
                                 String licence = (String) doc.get("licence");
                                 String niveau = (String) doc.get("niveau");
-                                mTitrePage.setText("Modifiez le compte d'un adhérent ");
+                                mTitrePage.setText(R.string.modifiez_le_compte_d_un_adherent);
                                 mNom.setText(nom);
                                 mNom.setEnabled(false);
                                 mPrenom.setText(prenom);

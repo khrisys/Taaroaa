@@ -51,6 +51,10 @@ public class SummaryActivity extends BaseActivity {
         showPannelModification();
 
 
+        /*
+        Affichage de l'activité de creation de compte ou de modification de compte en fonction de l'existence
+        en bdd ou non de l'utilisateur connecté
+         */
         mCompte.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -65,13 +69,17 @@ public class SummaryActivity extends BaseActivity {
                                 Map<String, Object> user = doc.getData();
                                 //TODO demain pb: passe dans les 2 conditions en fonction de l'id. comme ca boucle, on passe dans les2 et ca arrive sur la creation de compte
                                 if (user.get("uid").equals(getCurrentUser().getUid())) {
-                                    User u = new User(user.get("uid").toString(), user.get("nom").toString(), user.get("prenom").toString(), user.get("licence").toString(),
-                                            user.get("email").toString(), user.get("niveau").toString(), user.get("fonction").toString());
-                                    Intent intent = new Intent(SummaryActivity.this, AccountModificationActivity.class).putExtra("user", u);
-                                    startActivity(intent);
-                                } else {
-                                    Intent intent = new Intent(SummaryActivity.this, AccountCreateActivity.class);
-                                    startActivity(intent);
+                                    // Si l'user connecté n'existe pas en bdd, on affiche l'ecran de creation
+                                    if(user.get("fonction") != null) {
+                                        User u = new User(user.get("uid").toString(), user.get("nom").toString(), user.get("prenom").toString(), user.get("licence").toString(),
+                                                user.get("email").toString(), user.get("niveau").toString(), user.get("fonction").toString());
+                                        Intent intent = new Intent(SummaryActivity.this, AccountModificationActivity.class).putExtra("user", u);
+                                        startActivity(intent);
+                                    }
+                                    else {
+                                        Intent intent = new Intent(SummaryActivity.this, AccountCreateActivity.class);
+                                        startActivity(intent);
+                                    }
                                 }
                             }
                         }
