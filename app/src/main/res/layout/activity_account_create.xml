@@ -110,14 +110,14 @@
                     android:lines="1"/>
             </android.support.design.widget.TextInputLayout>
 
-<!--            &lt;!&ndash; PROGRESS BAR &ndash;&gt;
-            <ProgressBar
-                android:id="@+id/profile_activity_progress_bar"
-                android:layout_width="30dip"
-                android:layout_height="30dip"
-                android:layout_gravity="center"
-                android:layout_marginTop="20dp"
-                android:visibility="invisible"/>-->
+            <!--            &lt;!&ndash; PROGRESS BAR &ndash;&gt;
+                        <ProgressBar
+                            android:id="@+id/profile_activity_progress_bar"
+                            android:layout_width="30dip"
+                            android:layout_height="30dip"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="20dp"
+                            android:visibility="invisible"/>-->
 
             <TextView
                 android:id="@+id/plongee_titre_txt"
