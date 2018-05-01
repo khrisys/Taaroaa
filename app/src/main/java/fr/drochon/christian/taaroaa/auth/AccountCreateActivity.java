@@ -63,7 +63,7 @@ public class AccountCreateActivity extends BaseActivity {
     ProgressBar mProgressBar;
     Button mCreateAccount;
     Button mSuppressionCompte;
-    MenuItem mItemView;
+    //MenuItem mItemView;
     TextView mTitrePage;
     String fonction;
 
@@ -88,7 +88,7 @@ public class AccountCreateActivity extends BaseActivity {
         //TODO n'afficher le bouton de suppression qu'aux proprieraires des comptes
         mSuppressionCompte = findViewById(R.id.suppression_compte_btn);
         // recup de la barre de rehcerche pour ne pas qu'elle soit null (non declarée dans BaseActivity)
-        mItemView = findViewById(R.id.app_bar_search_adherents);
+        //mItemView = findViewById(R.id.app_bar_search_adherents);
         fonction = "Plongeur"; // la fonction par defaut d'un adhrent qui créé son compte a pour fonction "Plongeur"
 
         configureToolbar();
@@ -241,7 +241,7 @@ public class AccountCreateActivity extends BaseActivity {
     private void updateUIWhenCreating() {
 
         if (this.getCurrentUser() != null) { // retourne un user FirebaseUser. Permettra de remplir toutes les vues de l'activité
-            searchAndShowCurrentUser();
+            getInformationsNewUser();
             //TODO afficher toutes les informations d'un user*/
         }
     }
@@ -257,10 +257,9 @@ public class AccountCreateActivity extends BaseActivity {
     }
 
     /**
-     * Methode permettant de gerer la barre de recherche des adherents pour l'affichage de leurs comptes
-     * afin que les encadrants puissent les modifier.
+     * Methode permettant de recuperer les informations d'un user qui vient de creer un compte et de les afficher à l'ecran
      */
-    private void searchAndShowCurrentUser() {
+    private void getInformationsNewUser() {
         String username = Objects.requireNonNull(getCurrentUser()).getDisplayName();
         String email = getCurrentUser().getEmail();
         String nom = null, prenom = null;
@@ -283,23 +282,9 @@ public class AccountCreateActivity extends BaseActivity {
         mNom.setText(nom);
         mPrenom.setText(prenom);
         mEmail.setText(email);
-
-        DocumentReference docRef1 = FirebaseFirestore.getInstance().collection("users").document(getCurrentUser().getUid());
-        docRef1.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                if(documentSnapshot.exists()){
-                    Map<String, Object> user = documentSnapshot.getData();
-                    // objet existant dans la bdd : affichage du btn suppression + affichage de "modifiez votre compte" plutot que "creez votre compte"
-                    if(user.get("nom") != null)
-                    {
-                        mCreateAccount.setText(R.string.modifiez_votre_compte);
-                        mSuppressionCompte.setVisibility(View.VISIBLE);
-                    }
-                }
-            }
-        });
-
+        mNiveauPlongeespinner.setEnabled(true);
+        mCreateAccount.setText(R.string.complete_account);
+        mSuppressionCompte.setVisibility(View.VISIBLE);
     }
 
 
@@ -679,14 +664,4 @@ public class AccountCreateActivity extends BaseActivity {
                     .addOnSuccessListener(this, this.updateUIAfterRESTRequestsCompleted(DELETE_USER_TASK));
         }
     }
-/*
-    *//**
-     * Methode permettant à un utilisateur de se deconnecter retournant un objet de type Task permettant d erealiser ces appels de maniere asynchrone
-     *//*
-    private void signOutUserFromFirebase() {
-        AuthUI.getInstance()
-                .signOut(this) // methode utilisée par le singleton authUI.getInstance()
-                .addOnSuccessListener(this, this.updateUIAfterRESTRequestsCompleted(SIGN_OUT_TASK));
-    }*/
-
 }
