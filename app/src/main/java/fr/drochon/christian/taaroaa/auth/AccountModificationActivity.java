@@ -404,38 +404,6 @@ public class AccountModificationActivity extends BaseActivity {
         mNiveauPlongeespinner.setSelection(getIndexSpinner(mNiveauPlongeespinner, user.getNiveauPlongeur()));
         mFonctionAuClubspinner.setSelection(getIndexSpinner(mFonctionAuClubspinner, user.getFonction()));
         mEmail.setText(user.getEmail());
-/*        DocumentReference docRef1 = FirebaseFirestore.getInstance().collection("users").document(getCurrentUser().getUid()); // recup ref de l'obj courant en bdd de stockage
-        // un DocumentReference fait référence à un emplacement de document dans une base de données Firestore et peut être utilisé pour
-        // écrire, lire ou écouter l'emplacement. Il peut exister ou non un document à l'emplacement référencé.
-
-        docRef1.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot doc = task.getResult(); //Un DocumentSnapshot contient des données lues à partir d'un document dans votre base de données Firestore.
-                    if (doc.exists()) {
-                        String nom = (String) doc.get("nom");
-                        String prenom = (String) doc.get("prenom");
-                        String email = (String) doc.get("email");
-                        String fonction = (String) doc.get("fonction");
-                        String licence = (String) doc.get("licence");
-                        String niveau = (String) doc.get("niveau");
-
-                        mNom.setText(nom);
-                        mPrenom.setText(prenom);
-                        mEmail.setText(email);
-                        mLicence.setText(licence);
-                        mNiveauPlongeespinner.setSelection(getIndexSpinner(mNiveauPlongeespinner, niveau));
-                        mFonctionAuClubspinner.setSelection(getIndexSpinner(mFonctionAuClubspinner, fonction));
-                    }
-                }
-            }
-        })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                    }
-                });*/
     }
 
     /**
