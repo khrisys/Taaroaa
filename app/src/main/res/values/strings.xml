@@ -90,6 +90,8 @@
     <string name="passager">Passager</string>
     <string name="type_du_vehicule">Type du véhicule :</string>
     <string name="places_disponibles">Places disponibles :</string>
+    <string name="alertDialog_delete_covoit">Voulez vous réellement supprimer ce covoiturage ?</string>
+    <string name="create_covoit">Vous avez créé un covoiturage. \n\tMerci !</string>
 
     <!-- FACEBOOK PURPOSE -->
     <!--<string name="facebook_application_id" translatable="false">420763051691337</string>

@@ -102,8 +102,8 @@ public class SearchUserActivity extends BaseActivity {
             @Override
             public boolean onQueryTextChange(String newText) {
                 System.out.println(newText);
-
-                // condition pour afficher toutes la liste des users si la barre de recherche est vide
+                //TODO FAIRE UN FILTRE PLUTO QU'UNE REQUETE
+                // filtre d'affichage sur la liste des users
                 if (!newText.equals(""))
                     mAdapterSearchedUser = new AdapterSearchedUser(generateOptionsForAdapter(getFilteredUser(newText)));
                 else
@@ -228,10 +228,10 @@ public class SearchUserActivity extends BaseActivity {
      *
      * @return query
      */
-    private Query getFilteredUser(String nom) {
+    private Query getFilteredUser(final String nom) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        Query mQ = db.collection("users").whereEqualTo("nom", nom);
+        Query mQ = db.collection("users").orderBy("nom").startAt(nom).endAt(nom+'\uf8ff');
         mQ.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot documentSnapshots) {
@@ -240,7 +240,7 @@ public class SearchUserActivity extends BaseActivity {
                         List<DocumentSnapshot> docs = documentSnapshots.getDocuments();
                         for (DocumentSnapshot ds : docs) {
                             Map<String, Object> user = ds.getData();
-                            filter(listUsers, user.get("nom").toString());
+                            filter(listUsers, nom);
                         }
                     }
                 }

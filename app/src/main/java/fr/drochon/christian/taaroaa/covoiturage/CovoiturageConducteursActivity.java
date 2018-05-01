@@ -3,46 +3,61 @@ package fr.drochon.christian.taaroaa.covoiturage;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
-import org.w3c.dom.Text;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
 
 import fr.drochon.christian.taaroaa.R;
+import fr.drochon.christian.taaroaa.api.CovoiturageHelper;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
-import fr.drochon.christian.taaroaa.course.CoursesManagementActivity;
+import fr.drochon.christian.taaroaa.model.Reservation;
+import fr.drochon.christian.taaroaa.model.User;
 
 import static java.util.Calendar.MINUTE;
 
 public class CovoiturageConducteursActivity extends BaseActivity {
 
-    TextInputEditText mPrenom;
-    TextInputEditText mNom;
-    TextInputEditText mNbPlaceDispo;
-    Spinner mTypeVehicule;
     static TextInputEditText mDateDepart;
     static TextInputEditText mHeureDepart;
     static TextInputEditText mDateRetour;
     static TextInputEditText mHeureretour;
+    TextInputEditText mPrenom;
+    TextInputEditText mNom;
+    TextInputEditText mNbPlaceDispo;
+    Spinner mTypeVehicule;
     ProgressBar mProgressBar;
     Button mValid;
+    EditText mNotifCreationCovoit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +74,7 @@ public class CovoiturageConducteursActivity extends BaseActivity {
         mHeureretour = findViewById(R.id.heure_retour_input);
         mProgressBar = findViewById(R.id.progress_bar);
         mValid = findViewById(R.id.proposition_covoit_btn);
+        mNotifCreationCovoit = findViewById(R.id.alertdialog_ok_covoit);
 
         configureToolbar();
 
@@ -75,17 +91,61 @@ public class CovoiturageConducteursActivity extends BaseActivity {
 
         // hint pour la date du edittext
         Date currentTime = Calendar.getInstance().getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd / MM / yyyy");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd / MM / yyyy", Locale.FRANCE);
         sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
         String d = sdf.format(currentTime);
         mDateDepart.setHint(d);
         mDateRetour.setHint(d);
+
+        // --------------------
+        // LISTENERS
+        // --------------------
+
+        mValid.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                createCovoiturageInFirebase();
+            }
+        });
     }
+
+    // --------------------
+    // UI
+    // --------------------
 
     @Override
     public int getFragmentLayout() {
         return 0;
     }
+
+    private void startMainCovoitActivity() {
+        Intent intent = new Intent(CovoiturageConducteursActivity.this, CovoiturageVehiclesActivity.class);
+        startActivity(intent);
+    }
+
+    /**
+     * Methode permettant de signaler une erreur lorsqu'un champ est resté vide alors que la soumission du formulaire a été faite.
+     */
+    private void verificationChampsVides() {
+
+        if (mPrenom.getText().toString().isEmpty()) mPrenom.setError("Merci de saisir ce champ !");
+        if (mNom.getText().toString().isEmpty()) mNom.setError("Merci de saisir ce champ !");
+        if (mNbPlaceDispo.getText().toString().isEmpty())
+            mNbPlaceDispo.setError("Merci de saisir ce champ !");
+        if (mDateDepart.getText().toString().isEmpty())
+            mDateDepart.setError("Merci de saisir ce champ !");
+        else mDateDepart.append(" ");
+        if (mDateRetour.getText().toString().isEmpty())
+            mDateRetour.setError("Merci de saisir ce champ !");
+        else mDateRetour.append(" ");
+        if (mHeureDepart.getText().toString().isEmpty())
+            mHeureDepart.setError("Merci de saisir ce champ !");
+        else mHeureDepart.append(" ");
+        if (mHeureretour.getText().toString().isEmpty())
+            mHeureretour.setError("Merci de saisir ce champ !");
+        else mHeureretour.append(" ");
+    }
+
 
     // --------------------
     // TOOLBAR
@@ -107,7 +167,7 @@ public class CovoiturageConducteursActivity extends BaseActivity {
      * Surtout ne pas oublier le "true" apres chaque case sinon, ce sera toujours le dernier case qui sera executé!
      *
      * @param item
-     * @return
+     * @return boolean
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -115,16 +175,121 @@ public class CovoiturageConducteursActivity extends BaseActivity {
     }
 
     // --------------------
+    // REST REQUETES
+    // --------------------
+
+    /**
+     * Methode permettant la creation d'un covoiturage dans le bdd. En cas de probleme,
+     * la fonction renverra une notification à l'utilisateur.
+     */
+    private void createCovoiturageInFirebase() {
+
+        // pas d'id pour un objet non créé : generation auto par firebase
+        this.mProgressBar.setVisibility(View.VISIBLE);
+        final String id = CovoiturageHelper.getCovoituragesCollection().document().getId();
+        String prenom = mPrenom.getText().toString();
+        String nom = mNom.getText().toString();
+        String nbPlacesDispo = mNbPlaceDispo.getText().toString();
+        String typeVehicule = mTypeVehicule.getSelectedItem().toString();
+        String dateDepart = mDateDepart.getText().toString();
+        String dateretour = mDateRetour.getText().toString();
+        String heureDepart = mHeureDepart.getText().toString();
+        String heureRetour = mHeureretour.getText().toString();
+        List<User> users = new ArrayList<>();
+        Reservation reservation = new Reservation();
+
+        String horaireDepart = dateDepart + " " + heureDepart;
+        Date horaireDuDepart = null;
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.US);
+        try {
+            horaireDuDepart = simpleDateFormat.parse(horaireDepart);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        String horaireRetour = dateretour + " " + heureRetour;
+        Date horaireDuRetour = null;
+        SimpleDateFormat simpleDateFormat1 = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.US);
+        try {
+            horaireDuRetour = simpleDateFormat1.parse(horaireRetour);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        final FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        if (!nom.isEmpty() && !prenom.isEmpty() && !nbPlacesDispo.isEmpty() && !dateDepart.isEmpty() && !dateretour.isEmpty() && !heureDepart.isEmpty() && !heureRetour.isEmpty()) {
+
+            Map<String, Object> covoit = new HashMap<>();
+            covoit.put("id", id);
+            covoit.put("nom", nom.toUpperCase());
+            covoit.put("prenom", prenom.toUpperCase());
+            covoit.put("nbPlacesDispo", nbPlacesDispo);
+            covoit.put("typeVehicule", typeVehicule);
+            covoit.put("horaireDepart", horaireDuDepart);
+            covoit.put("horaireRetour", horaireDuRetour);
+            covoit.put("users", users);
+            covoit.put("reservation", reservation);
+            db.collection("covoiturages").document(id).set(covoit)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Toast.makeText(CovoiturageConducteursActivity.this, R.string.create_covoit,
+                                    Toast.LENGTH_SHORT).show();
+                            startMainCovoitActivity(); // renvoi l'covoit sur la page des covoiturages  apres validation de la creation du covoit
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(CovoiturageConducteursActivity.this, "ERROR" + e.toString(),
+                                    Toast.LENGTH_SHORT).show();
+                            Log.d("TAG", e.toString());
+                        }
+                    });
+        }
+        // prise en charge des champs non vides
+        else {
+/*            //TODO verifier si l'alertdialog ici affiche les bonnes informations attendues
+            final AlertDialog.Builder adb = new AlertDialog.Builder(CovoiturageConducteursActivity.this);
+            adb.setTitle(R.string.alertDialog_delete_covoit);
+            adb.setIcon(android.R.drawable.ic_dialog_alert);
+            adb.setTitle(R.string.verif_every_fields_complete);
+            adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    // rien à appeler. pas la peine de faire de toast
+                }
+            });
+            adb.show(); // affichage de l'artdialog*/
+            verificationChampsVides();
+        }
+    }
+
+
+    // --------------------
     // DATETIMEPICKERS
     // --------------------
+
+    // Les pickers etant static, je créé une instance pour chaque champs : une instance ne peut pas servir à 2 champs
     public void showDatePickerDialog(View v) {
         DialogFragment newFragment = new CovoiturageConducteursActivity.DatePickerFragment();
-        newFragment.show(getSupportFragmentManager(), "datePicker");
+        newFragment.show(getSupportFragmentManager(), "dateDepart");
+    }
+
+    public void showDatePickerDialog2(View v) {
+        DialogFragment newFragment = new CovoiturageConducteursActivity.DatePickerFragment();
+        newFragment.show(getSupportFragmentManager(), "dateRetour");
     }
 
     public void showTimePickerDialog(View v) {
         DialogFragment newFragment = new CovoiturageConducteursActivity.TimePickerFragment();
-        newFragment.show(getSupportFragmentManager(), "timePicker");
+        newFragment.show(getSupportFragmentManager(), "timeDepart");
+    }
+
+    public void showTimePickerDialog2(View v) {
+        v.setTag("timePicker2");
+        DialogFragment newFragment = new CovoiturageConducteursActivity.TimePickerFragment();
+        newFragment.show(getSupportFragmentManager(), "timeRetour");
     }
 
     // --------------------
@@ -141,8 +306,9 @@ public class CovoiturageConducteursActivity extends BaseActivity {
          * Créé une instance de DatePicker et la renvoi
          *
          * @param savedInstanceState
-         * @return
+         * @return DatePickerDialog
          */
+        @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             final Calendar c = Calendar.getInstance();
@@ -162,8 +328,9 @@ public class CovoiturageConducteursActivity extends BaseActivity {
          */
         @Override
         public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-
+            if(getTag() == "dateDepart")
             mDateDepart.setText(mDateDepart.getText() + "" + dayOfMonth + "-" + (month + 1) + "-" + year);
+            else if (getTag() == "dateRetour")
             mDateRetour.setText(mDateRetour.getText() + "" + dayOfMonth + "-" + (month + 1) + "-" + year);
         }
     }
@@ -178,8 +345,9 @@ public class CovoiturageConducteursActivity extends BaseActivity {
          * Créé une nouvelle instance d'un datepicket et la renvoi
          *
          * @param savedInstanceState
-         * @return
+         * @return TimePickerDialog
          */
+        @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             //UTC
@@ -203,8 +371,9 @@ public class CovoiturageConducteursActivity extends BaseActivity {
          * @param minute
          */
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-
+            if(getTag() == "timeDepart")
             mHeureDepart.setText(mHeureDepart.getText() + "" + hourOfDay + ":" + minute + ":00");
+            else if(getTag() == "timeRetour")
             mHeureretour.setText(mHeureretour.getText() + "" + hourOfDay + ":" + minute + ":00");
         }
     }
