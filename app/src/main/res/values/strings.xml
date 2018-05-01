@@ -111,7 +111,18 @@
     <string name="title_activity_courses_pupils">Cours prépa balbla</string>
     <string name="title_activity_test">TestActivity</string>
     <string name="title_activity_covoiturage_vehicules">CovoiturageVehiculesActivity</string>
-
+    <string name="conducteur">Conducteur</string>
+    <string name="pr_nom">Prénom :</string>
+    <string name="nom">Nom :</string>
+    <string name="nombre_de_places_disponibles">Nombre de places disponibles :</string>
+    <string name="type_du_vehicule">Type du véhicule :</string>
+    <string name="horaires">Horaires</string>
+    <string name="date_de_depart">Date de départ</string>
+    <string name="heure_du_depart">Heure du départ</string>
+    <string name="heure_depart_trajet_aller">Heure départ trajet aller</string>
+    <string name="date_de_retour">Date de retour</string>
+    <string name="heure_du_retour">Heure du retour</string>
+    <string name="heure_depart_trajet_retour">Heure départ trajet retour</string>
 
 
 </resources>
