@@ -3,10 +3,9 @@ package fr.drochon.christian.taaroaa.covoiturage;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
+import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,8 +17,6 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TimePicker;
 
-import org.w3c.dom.Text;
-
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -27,7 +24,6 @@ import java.util.TimeZone;
 
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
-import fr.drochon.christian.taaroaa.course.CoursesManagementActivity;
 
 import static java.util.Calendar.MINUTE;
 
@@ -182,14 +178,9 @@ public class CovoiturageConducteursActivity extends BaseActivity {
          */
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            //UTC
-/*            final String format = "dd-MMM-yyyy HH:mm:ss";
-            final SimpleDateFormat dateFormatGmt = new SimpleDateFormat(format);
-            dateFormatGmt.setTimeZone(TimeZone.getTimeZone("UTC"));*/
 
             final Calendar c = Calendar.getInstance();
             int hour = c.get(Calendar.HOUR_OF_DAY);
-            //dateFormatGmt.format(hour);
             int minute = c.get(MINUTE);
 
             return new TimePickerDialog(getActivity(), this, hour, minute, DateFormat.is24HourFormat(getActivity()));
