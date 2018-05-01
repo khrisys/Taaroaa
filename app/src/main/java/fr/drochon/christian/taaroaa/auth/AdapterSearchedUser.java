@@ -16,17 +16,7 @@ import fr.drochon.christian.taaroaa.model.User;
 public class AdapterSearchedUser extends FirestoreRecyclerAdapter<User, SearchedUserViewHolder> {
 
     List<User> users;
-    /**
-     * Create a new RecyclerView adapter that listens to a Firestore Query.  See {@link
-     * FirestoreRecyclerOptions} for configuration options.
-     *
-     * @param users
-     */
-    public AdapterSearchedUser(@NonNull FirestoreRecyclerOptions<User> userFirestoreRecyclerOptions, List<User> users) {
-        super(userFirestoreRecyclerOptions);
-        this.users = users;
 
-    }
 
     public AdapterSearchedUser(@NonNull FirestoreRecyclerOptions<User> userFirestoreRecyclerOptions) {
         super(userFirestoreRecyclerOptions);

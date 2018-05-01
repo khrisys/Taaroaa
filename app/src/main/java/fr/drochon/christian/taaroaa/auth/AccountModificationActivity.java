@@ -64,6 +64,7 @@ public class AccountModificationActivity extends BaseActivity {
     Button mSuppressionCompte;
     TextView mTitrePage;
     Intent mIntent;
+    static User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -306,10 +307,11 @@ public class AccountModificationActivity extends BaseActivity {
                     if (documentSnapshot.exists()) {
                         //TODO ajout d'un titre à la page de modif
                         Object ds = documentSnapshot.get("fonction");
-                        Object uid = documentSnapshot.get("uid");
+                        Object nom = documentSnapshot.get("nom");
+                        Object prenom = documentSnapshot.get("prenom");
                         // moniteur etant sur un autre compte que le sien dès la premiere connexion ??
-                        if (ds.equals("Moniteur") && !uid.equals(getCurrentUser().getUid())) {
-                            //TODO ajouter un titre à la page
+                        if (ds.equals("Moniteur") && !nom.equals(user.getNom()) && !prenom.equals(user.getPrenom())) {
+                            //TODO ici, j'update mon propre compte au lieu de celui de l'adherent
                             mTitrePage.setText(R.string.modifiez_le_compte_d_un_adherent);
                             //mItemView.setVisible(false);
                             mPrenom.setEnabled(false);
@@ -322,7 +324,7 @@ public class AccountModificationActivity extends BaseActivity {
                             mSuppressionCompte.setVisibility(View.INVISIBLE);
 
                             // moniteur etant sur son propre compte
-                        } else if (ds.equals("Moniteur") && uid.equals(getCurrentUser().getUid())) {
+                        } else if (ds.equals("Moniteur") && nom.equals(user.getNom()) && prenom.equals(user.getPrenom())) {
                             mTitrePage.setText(R.string.bienvenue_sur_votre_compte);
                             //mItemView.setVisible(true);
                             mPrenom.setEnabled(true);
@@ -335,7 +337,7 @@ public class AccountModificationActivity extends BaseActivity {
                            mSuppressionCompte.setVisibility(View.VISIBLE);
 
                             // adherent non moniteur sur son propre compte
-                        } else if (!ds.equals("Moniteur") && uid.equals(getCurrentUser().getUid())) {
+                        } else if (!ds.equals("Moniteur")) {
                             mTitrePage.setText(R.string.bienvenue_sur_votre_compte);
                             //mItemView.setVisible(true);
                             mPrenom.setEnabled(true);
@@ -371,10 +373,10 @@ public class AccountModificationActivity extends BaseActivity {
         String fonction = this.mFonctionAuClubspinner.getSelectedItem().toString();
         String email = this.mEmail.getText().toString();
 
-        if (this.getCurrentUser() != null) {
+        if (user.getUid() != null) {
             //TODO alert dialog lorsque tous les champs ne sont pas remplis
             if (!nom.isEmpty() && !nom.equals(getString(R.string.info_no_username_found)) && !prenom.isEmpty() && !email.isEmpty()) { // verification que tous les champs vides soient remplis
-                UserHelper.updateUser(this.getCurrentUser().getUid(), nom, prenom, licence, email, niveau, fonction).
+                UserHelper.updateUser(user.getUid(), user.getNom().toUpperCase(), user.getPrenom().toUpperCase(), licence, user.getEmail(), niveau, fonction).
                         addOnFailureListener(this.onFailureListener()).
                         addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
@@ -394,7 +396,7 @@ public class AccountModificationActivity extends BaseActivity {
      */
     private void getAndShowUserDatas() {
         mIntent  = getIntent();
-        User user = (User) Objects.requireNonNull(mIntent.getExtras()).getSerializable("user");
+        user = (User) Objects.requireNonNull(mIntent.getExtras()).getSerializable("user");
         assert user != null;
         mNom.setText(user.getNom());
         mPrenom.setText(user.getPrenom());

@@ -413,8 +413,8 @@ public class AccountCreateActivity extends BaseActivity {
 
             Map<String, Object> user = new HashMap<>();
             user.put("uid", uid);
-            user.put("nom", nom);
-            user.put("prenom", prenom);
+            user.put("nom", nom.toUpperCase());
+            user.put("prenom", prenom.toUpperCase());
             user.put("licence", licence);
             user.put("niveau", niveau);
             user.put("fonction", fonction);

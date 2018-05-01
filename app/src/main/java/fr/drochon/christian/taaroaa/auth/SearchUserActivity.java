@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,7 +19,6 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -30,12 +28,6 @@ import fr.drochon.christian.taaroaa.model.User;
 
 public class SearchUserActivity extends BaseActivity {
 
-    private static final Comparator<User> ALPHABETICAL_COMPARATOR = new Comparator<User>() {
-        @Override
-        public int compare(User a, User b) {
-            return a.getNom().compareTo(b.getNom());
-        }
-    };
     // FOR COMMUNICATION
     TextView mEmptyListMessage;
     RecyclerView mRecyclerViewUser;
@@ -45,9 +37,8 @@ public class SearchUserActivity extends BaseActivity {
     private AdapterSearchedUser mAdapterSearchedUser;
 
 
-
     // --------------------
-    // TOOLBAR
+        // LIFECYCLE
     // --------------------
 
     @Override
@@ -82,14 +73,13 @@ public class SearchUserActivity extends BaseActivity {
         // LISTENERS
         // --------------------
 
-        mSearchView.setInputType(InputType.TYPE_TEXT_FLAG_CAP_WORDS);
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
             @Override
             public boolean onQueryTextSubmit(String name) {
                 System.out.println("getclic");
                 // decomposition du nom et du prenom recu dans le param name
-                String nom = null, prenom = null;
+/*                String nom = null, prenom = null;
                 String[] parts;
                 if (name.contains(" ")) {
                     parts = name.split(" ");
@@ -104,19 +94,21 @@ public class SearchUserActivity extends BaseActivity {
                 } else {
                     nom = name;
                     prenom = "";
-                }
-                showSearchedDatas(name, prenom);
+                }*/
                 return true;
             }
 
+            //Configure Adapter & RecyclerView
             @Override
             public boolean onQueryTextChange(String newText) {
                 System.out.println(newText);
-                // recup de la liste filtrée avec les lettres recuperéers enb param
-                final List<User> filteredModelList = filter(listUsers, newText);
-                //Configure Adapter & RecyclerView
-                mAdapterSearchedUser = new AdapterSearchedUser(generateOptionsForAdapter(getFilteredUser(newText)));
-                //mAdapterCoursesPupils = new AdapterCoursesPupils(generateOptionsForAdapter(queryDateCourses(calendrierClique)), this);
+
+                // condition pour afficher toutes la liste des users si la barre de recherche est vide
+                if (!newText.equals(""))
+                    mAdapterSearchedUser = new AdapterSearchedUser(generateOptionsForAdapter(getFilteredUser(newText)));
+                else
+                    mAdapterSearchedUser = new AdapterSearchedUser(generateOptionsForAdapter(getAllUsers()));
+
                 mAdapterSearchedUser.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
                     @Override
                     public void onItemRangeInserted(int positionStart, int itemCount) { // c'est cette ligne de code qui insere les données dans la recyclerview
@@ -137,7 +129,7 @@ public class SearchUserActivity extends BaseActivity {
 
 
     // --------------------
-    // UI
+    // TOOLBAR
     // --------------------
 
     /**
@@ -164,8 +156,9 @@ public class SearchUserActivity extends BaseActivity {
         return optionsToolbar(this, item);
     }
 
+
     // --------------------
-    // REQUETES
+    // UI
     // --------------------
 
     /**
@@ -189,8 +182,8 @@ public class SearchUserActivity extends BaseActivity {
     }
 
     /**
-     * La methode generateOptionsForAdapter utilise la methode query, precedemment definit dans la classe MessageHelper
-     * permettra à la recyclerview d'afficher en temps reel le resultat de cette requete (la liste des utilisateurs en bdd).
+     * La methode generateOptionsForAdapter utilise une requete passée en prama, recupérée depuis un methode definit dans la classe.
+     * Cette requete permettra à la recyclerview d'afficher en temps reel le resultat de cette requete (la liste des utilisateurs en bdd, triés ou non).
      */
     private FirestoreRecyclerOptions<User> generateOptionsForAdapter(Query query) {
         return new FirestoreRecyclerOptions.Builder<User>()
@@ -201,7 +194,7 @@ public class SearchUserActivity extends BaseActivity {
 
 
     // --------------------
-    // SEARCH
+    // SEARCH REQUESTS
     // --------------------
 
     /**
@@ -210,10 +203,8 @@ public class SearchUserActivity extends BaseActivity {
      * @return query
      */
     private Query getAllUsers() {
-        // Affichage en fonction du niveau de la personne connectée
-        //final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
         Query mQuery = db.collection("users").orderBy("nom", Query.Direction.ASCENDING);
         mQuery.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
@@ -232,32 +223,33 @@ public class SearchUserActivity extends BaseActivity {
         return mQuery;
     }
 
-    private Query getFilteredUser(final String nom) {
+    /**
+     * Methode permettant de filtrer les noms saisis dans la barre de recherche
+     *
+     * @return query
+     */
+    private Query getFilteredUser(String nom) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         Query mQ = db.collection("users").whereEqualTo("nom", nom);
-        mQ.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
+        mQ.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
-            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-                // condition de creation d'un user ou affichage simple d'un message indiquant que l'user existe dejà en bdd.
-                // Avec les uid, il ne peut y avoir de doublon, on peut donc etre sur qu'il n'y a qu'un seule doc qui existe s'il en existe un.
+            public void onSuccess(QuerySnapshot documentSnapshots) {
                 if (documentSnapshots != null) {
                     if (documentSnapshots.size() != 0) {
-                        Log.e("TAG", "Le document existe !");
-                        // liste des docs
-                        /*List<DocumentSnapshot> ds = documentSnapshots.getDocuments();
-                        for (int i = 0; i < ds.size(); i++) {
-                            Map<String, Object> map = ds.get(i).getData();
-                            User user = new User(map.get("uid").toString(), map.get("nom").toString(), map.get("prenom").toString());*/
-                            //listUsers.add(user);
-                            filter(listUsers, nom);
-                        //}
+                        List<DocumentSnapshot> docs = documentSnapshots.getDocuments();
+                        for (DocumentSnapshot ds : docs) {
+                            Map<String, Object> user = ds.getData();
+                            filter(listUsers, user.get("nom").toString());
+                        }
                     }
                 }
             }
         });
+
         return mQ;
     }
+
 
     /**
      * Methode permettant de filtrer la liste des utilisateurs affichés grace à la barre de recherche
@@ -279,6 +271,7 @@ public class SearchUserActivity extends BaseActivity {
         return filteredModelList;
     }
 
+
     /**
      * Methode permettant de recuperer l'integralité de la liste des snapshots et d'en faire des objets "User"
      *
@@ -293,15 +286,5 @@ public class SearchUserActivity extends BaseActivity {
             User user = new User(doc.getId(), doc.get("nom").toString(), doc.get("prenom").toString(), doc.get("licence").toString(), doc.get("email").toString(),
                     doc.get("niveau").toString(), doc.get("fonction").toString());
         }
-    }
-
-    /**
-     * Methode permettant de chercher un adherent dans la bdd par son nom et son prenom
-     *
-     * @param name
-     * @param prenom
-     */
-    private void showSearchedDatas(String name, String prenom) {
-        //TODO
     }
 }

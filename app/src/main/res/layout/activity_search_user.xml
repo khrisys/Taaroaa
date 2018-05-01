@@ -47,17 +47,17 @@
             android:id="@+id/searchbar_user"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
             android:layout_marginEnd="40dp"
             android:layout_marginStart="40dp"
             android:layout_marginTop="30dp"
-            android:layout_marginBottom="10dp"
             android:background="@drawable/round_corner_toogle"
             android:clickable="true"
             android:focusable="true"
-            app:iconifiedByDefault="false"
-            android:inputType="text"
+            android:inputType="textCapCharacters"
             android:minHeight="50dp"
             android:visibility="visible"
+            app:iconifiedByDefault="false"
             app:queryHint="@string/recherche_adherent_btn">
         </android.support.v7.widget.SearchView>
 
