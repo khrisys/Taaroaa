@@ -76,10 +76,7 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.covoit_search_vehicle_menu, menu);
-
-        // recup de l'item de recherche des adherents
-        //mItemView = menu.findItem(R.id.app_bar_search_vehicles);
-        searchVehicles();
+        //searchVehicles();
 
         return true; // true affiche le menu
     }

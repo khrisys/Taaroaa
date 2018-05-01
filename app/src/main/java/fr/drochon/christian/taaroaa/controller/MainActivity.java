@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import fr.drochon.christian.taaroaa.R;
+import fr.drochon.christian.taaroaa.auth.AccountCreateActivity;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
 
 import static fr.drochon.christian.taaroaa.R.drawable;
@@ -47,6 +48,7 @@ public class MainActivity extends BaseActivity {
     private static final int SIGN_OUT_TASK = 10;
 
     // FOR COMMUNICATION
+    Button mCreation;
     Button mConnexion;
     Button mDeconnexion;
     TextView mTextViewHiddenForSnackbar;
@@ -68,6 +70,7 @@ public class MainActivity extends BaseActivity {
         configureToolbar();
 
         mTextViewHiddenForSnackbar = findViewById(R.id.test_coordinator);
+        mCreation = findViewById(R.id.creation_compte_btn);
         mConnexion = findViewById(id.connection_valid_btn);
         mDeconnexion = findViewById(id.deconnexion_btn);
 
@@ -76,7 +79,20 @@ public class MainActivity extends BaseActivity {
         // LISTENERS
         // --------------------
 
-        // Lancement de la page de connection lors d'un clic sur le bouton "Connectez vous"
+        // lancement de l'activité de creation de compte
+        mCreation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!isCurrentUserLogged()) {
+                    startAccountCreationActivity(); // creation de compte
+                    /*//CREATION DU USER
+                    createUserInFirestore();
+                    startSummaryActivity(); // connecté : renvoyé vers le sommaire*/
+                }
+            }
+        });
+
+        // Lancement de la page de connection à un compte existant
         mConnexion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -152,6 +168,11 @@ public class MainActivity extends BaseActivity {
      */
     private void startSummaryActivity() {
         Intent intent = new Intent(MainActivity.this, SummaryActivity.class);
+        startActivity(intent);
+    }
+
+    private void startAccountCreationActivity(){
+        Intent intent = new Intent(MainActivity.this, AccountCreateActivity.class);
         startActivity(intent);
     }
 
@@ -293,6 +314,10 @@ public class MainActivity extends BaseActivity {
                     }
                 }
             });
+        }
+        // si l(utilisateur n'a pas de compte , on lui en fait creer un
+        else {
+            startSignInActivity();
         }
     }
 

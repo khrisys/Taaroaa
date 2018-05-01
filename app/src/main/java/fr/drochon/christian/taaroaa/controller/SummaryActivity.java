@@ -67,7 +67,7 @@ public class SummaryActivity extends BaseActivity {
                             List<DocumentSnapshot> ds = documentSnapshots.getDocuments();
                             for (DocumentSnapshot doc : ds) {
                                 Map<String, Object> user = doc.getData();
-                                //TODO demain pb: passe dans les 2 conditions en fonction de l'id. comme ca boucle, on passe dans les2 et ca arrive sur la creation de compte
+                                //TODO  passe dans les 2 conditions en fonction de l'id. comme ca boucle, on passe dans les2 et ca arrive sur la creation de compte
                                 if (user.get("uid").equals(getCurrentUser().getUid())) {
                                     // Si l'user connecté n'existe pas en bdd, on affiche l'ecran de creation
                                     if(user.get("fonction") != null) {
@@ -75,11 +75,17 @@ public class SummaryActivity extends BaseActivity {
                                                 user.get("email").toString(), user.get("niveau").toString(), user.get("fonction").toString());
                                         Intent intent = new Intent(SummaryActivity.this, AccountModificationActivity.class).putExtra("user", u);
                                         startActivity(intent);
+                                        break;
                                     }
                                     else {
                                         Intent intent = new Intent(SummaryActivity.this, AccountCreateActivity.class);
                                         startActivity(intent);
                                     }
+                                }
+                                // nouvel utilisateur
+                                else {
+                                    Intent intent = new Intent(SummaryActivity.this, AccountCreateActivity.class);
+                                    startActivity(intent);
                                 }
                             }
                         }

@@ -37,7 +37,7 @@
                 android:gravity="center"
                 android:layout_marginTop="30dp"
                 android:layout_marginBottom="20dp"
-                android:text="Bienvenue sur votre compte"
+                android:text="@string/creez_votre_compte"
                 android:textColor="@color/colorPrimary"
                 android:textSize="25sp"/>
 

@@ -61,6 +61,7 @@
     <string name="nom">Nom :</string>
     <string name="prenom">Prénom :</string>
     <string name="personnel">Personnel</string>
+    <string name="creez_votre_compte">Créez votre compte</string>
     <string name="bienvenue_sur_votre_compte">Bienvenue sur votre compte</string>
     <string name="modifiez_le_compte_d_un_adherent">Modifiez le compte d\'un adhérent</string>
     <string name="verif_every_fields_complete">Merci de saisir tous les champs du formulaire !</string>
@@ -78,7 +79,8 @@
     <string name="sommaire">Sommaire</string>
 
     <!-- COVOITURAGE ACTIVITY -->
-    <string name="proposer_covoit_btn">Proposez une covoiturage</string>
+    <string name="covoit_txt">Covoiturage</string>
+    <string name="proposer_covoit_btn">Proposez un covoiturage</string>
     <string name="inscription_covoit_txt">Cliquez sur le nom d\'un conducteur pour vous inscrire à un covoiturage.</string>
     <string name="empty_list_covoit_txt">Il n\'y actuellement pas de covoiturage proposé</string>
     <string name="nom_des_passagers">Nom des passagers :</string>

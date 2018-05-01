@@ -19,7 +19,7 @@
         android:background="@color/colorPrimary"
         android:gravity="center"
         android:textStyle="bold"
-        android:text="@string/proposer_covoit_btn"
+        android:text="@string/covoit_txt"
         android:textColor="@android:color/white"
         android:textSize="15sp"/>
 

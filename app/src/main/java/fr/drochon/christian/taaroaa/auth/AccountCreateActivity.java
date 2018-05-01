@@ -80,7 +80,7 @@ public class AccountCreateActivity extends BaseActivity {
         mNom = findViewById(R.id.nom_txt);
         mLicence = findViewById(R.id.licence_txt);
         mNiveauPlongeespinner = findViewById(R.id.niveau_spinner);
-        mNiveauPlongeespinner.setEnabled(false);
+        mNiveauPlongeespinner.setEnabled(true);
         //mFonctionAuClubspinner = findViewById(R.id.fonction_spinner);
         mEmail = findViewById(R.id.email_txt);
         mProgressBar = findViewById(R.id.progress_bar);
@@ -129,8 +129,8 @@ public class AccountCreateActivity extends BaseActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         EditText editText = findViewById(R.id.alertdialog_ok_account);
                         Toast.makeText(AccountCreateActivity.this, editText.getText(), Toast.LENGTH_LONG).show();
-                        //deleteUserFromFirebase();
-                        deleteUser();
+                        deleteUserFromFirebase();
+                        //deleteUser();
                         startMainActivity();
                     }
                 }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -661,7 +661,14 @@ public class AccountCreateActivity extends BaseActivity {
             //TODO mettre une notification si elle n'arrive pas avoir ajouté le deleteuser ci dessus
             AuthUI.getInstance()
                     .delete(this) // methode utilisée par le singleton authUI.getInstance()
-                    .addOnSuccessListener(this, this.updateUIAfterRESTRequestsCompleted(DELETE_USER_TASK));
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Toast.makeText(AccountCreateActivity.this, R.string.alertDialog_delete,
+                                    LENGTH_SHORT).show();
+                            updateUIAfterRESTRequestsCompleted(DELETE_USER_TASK);
+                        }
+                    });
         }
     }
 }
