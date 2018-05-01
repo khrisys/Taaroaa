@@ -82,7 +82,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="45dp"
                     android:layout_marginStart="45dp"
-                    android:inputType="text"
+                    android:inputType="textCapCharacters"
                     android:lines="1"/>
             </android.support.design.widget.TextInputLayout>
 
@@ -108,7 +108,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="45dp"
                     android:layout_marginStart="45dp"
-                    android:inputType="text"
+                    android:inputType="textCapCharacters"
                     android:lines="1"/>
             </android.support.design.widget.TextInputLayout>
 
@@ -202,7 +202,7 @@
                         android:id="@+id/date_depart_txt"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
+                        android:layout_gravity="center"
                         android:gravity="center"
                         android:shadowColor="@color/colorAccent"
                         android:text="Date de départ"
@@ -215,6 +215,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:ems="10"
+                        android:layout_gravity="center"
                         android:gravity="center"
                         android:inputType="text"
                         android:lines="1"
@@ -236,8 +237,8 @@
                         android:id="@+id/heure_depart_txt"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
                         android:shadowColor="@color/colorAccent"
+                        android:layout_gravity="center"
                         android:text="Heure du départ"
                         android:textColor="@color/colorPrimary"
                         android:textSize="18sp"/>
@@ -248,6 +249,7 @@
                         android:layout_height="wrap_content"
                         android:ems="10"
                         android:gravity="center"
+                        android:layout_gravity="center"
                         android:hint="Heure départ trajet aller"
                         android:inputType="text"
                         android:linksClickable="false"
@@ -279,7 +281,7 @@
                         android:id="@+id/date_retour_txt"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
+                        android:layout_gravity="center"
                         android:gravity="center"
                         android:shadowColor="@color/colorAccent"
                         android:text="Date de retour"
@@ -290,11 +292,12 @@
                         android:id="@+id/date_retour_input"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="center"
                         android:ems="10"
                         android:gravity="center"
                         android:inputType="text"
                         android:lines="1"
-                        android:onClick="showDatePickerDialog"
+                        android:onClick="showDatePickerDialog2"
                         android:textAppearance="@style/TextAppearance.AppCompat"
                         android:textColor="@color/colorPrimary"/>
 
@@ -311,7 +314,7 @@
                         android:id="@+id/heure_retour_txt"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
+                        android:layout_gravity="center"
                         android:shadowColor="@color/colorAccent"
                         android:text="Heure du retour"
                         android:textColor="@color/colorPrimary"
@@ -321,13 +324,14 @@
                         android:id="@+id/heure_retour_input"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="center"
                         android:ems="10"
                         android:gravity="center"
                         android:hint="Heure départ trajet retour"
                         android:inputType="text"
                         android:linksClickable="false"
                         android:longClickable="false"
-                        android:onClick="showTimePickerDialog"
+                        android:onClick="showTimePickerDialog2"
                         android:textAppearance="@style/TextAppearance.AppCompat"
                         android:textColor="@color/colorPrimary"/>
                 </LinearLayout>
@@ -468,12 +472,12 @@
                 android:background="@android:color/holo_green_light"
                 android:clickable="false"
                 android:foregroundGravity="center"
-                android:visibility="invisible"/>
+                android:visibility="gone"/>
 
             <View
                 android:id="@+id/divider3"
                 android:layout_width="match_parent"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="20dp"
                 android:layout_height="3dp"
                 android:background="?android:attr/listDivider"
                 />
@@ -486,7 +490,7 @@
                 android:height="60dp"
                 android:lines="2"
                 android:background="@color/colorPrimary"
-                android:text="Validez votre proposition de covoiturage"
+                android:text="Proposez un covoiturage"
                 android:textColor="@android:color/white"/>
 
 
@@ -494,8 +498,8 @@
 
     </ScrollView>
 
-    <!--    <EditText
-            android:id="@+id/alertdialog_ok_account"
+        <EditText
+            android:id="@+id/alertdialog_ok_covoit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:inputType="text"
@@ -510,6 +514,6 @@
             android:textSize="@android:dimen/notification_large_icon_height"
             android:inputType="text"
             android:text="@string/alertDialog_cancel"
-            android:visibility="invisible"/>-->
+            android:visibility="invisible"/>
 
 </android.support.constraint.ConstraintLayout>

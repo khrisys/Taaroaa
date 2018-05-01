@@ -389,8 +389,6 @@ public class AccountCreateActivity extends BaseActivity {
     // REST REQUETES
     // --------------------
 
-
-
     /**
      * Methode permettant la creation d'un user dans le bdd. En cas d'insertion ou de probleme,
      * la fonction renverra une notification à l'utilisateur.
