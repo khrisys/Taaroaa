@@ -36,7 +36,7 @@
                 android:layout_marginBottom="20dp"
                 android:layout_marginTop="30dp"
                 android:gravity="center"
-                android:text="Proposez un covoiturage"
+                android:text="@string/proposer_covoit_btn"
                 android:textColor="@color/colorPrimary"
                 android:textSize="25sp"/>
 
@@ -47,7 +47,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="20dp"
-                android:text="Conducteur"
+                android:text="@string/conducteur"
                 android:textAlignment="center"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="30sp"
@@ -67,7 +67,7 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginStart="60dp"
                 android:shadowColor="@color/colorAccent"
-                android:text="Prénom : "
+                android:text="@string/prenom"
                 android:textColor="@color/colorPrimary"
                 android:textSize="18sp"/>
 
@@ -93,7 +93,7 @@
                 android:layout_marginStart="60dp"
                 android:layout_marginTop="10dp"
                 android:shadowColor="@color/colorAccent"
-                android:text="Nom :"
+                android:text="@string/nom"
                 android:textColor="@color/colorPrimary"
                 android:textSize="18sp"/>
 
@@ -119,7 +119,7 @@
                 android:layout_marginStart="60dp"
                 android:layout_marginTop="10dp"
                 android:shadowColor="@color/colorAccent"
-                android:text="Nombre de places disponibles :"
+                android:text="@string/nombre_de_places_disponibles"
                 android:textColor="@color/colorPrimary"
                 android:textSize="18sp"/>
 
@@ -149,7 +149,7 @@
                     android:layout_marginStart="60dp"
                     android:layout_marginTop="10dp"
                     android:shadowColor="@color/colorAccent"
-                    android:text="Type du véhicule :"
+                    android:text="@string/type_du_vehicule"
                     android:textColor="@color/colorPrimary"
                     android:textSize="18sp"/>
 
@@ -171,7 +171,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="50dp"
-                android:text="Horaires"
+                android:text="@string/horaires"
                 android:textAlignment="center"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="30sp"
@@ -190,13 +190,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:baselineAligned="false">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    tools:ignore="NestedWeights">
 
                     <TextView
                         android:id="@+id/date_depart_txt"
@@ -205,7 +207,7 @@
                         android:layout_marginStart="10dp"
                         android:gravity="center"
                         android:shadowColor="@color/colorAccent"
-                        android:text="Date de départ"
+                        android:text="@string/date_de_depart"
                         android:textColor="@color/colorPrimary"
                         android:textSize="18sp"/>
 
@@ -238,7 +240,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
                         android:shadowColor="@color/colorAccent"
-                        android:text="Heure du départ"
+                        android:text="@string/heure_du_depart"
                         android:textColor="@color/colorPrimary"
                         android:textSize="18sp"/>
 
@@ -248,7 +250,7 @@
                         android:layout_height="wrap_content"
                         android:ems="10"
                         android:gravity="center"
-                        android:hint="Heure départ trajet aller"
+                        android:hint="@string/heure_depart_trajet_aller"
                         android:inputType="text"
                         android:linksClickable="false"
                         android:longClickable="false"
@@ -267,13 +269,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:baselineAligned="false">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    tools:ignore="NestedWeights">
 
                     <TextView
                         android:id="@+id/date_retour_txt"
@@ -282,7 +286,7 @@
                         android:layout_marginStart="10dp"
                         android:gravity="center"
                         android:shadowColor="@color/colorAccent"
-                        android:text="Date de retour"
+                        android:text="@string/date_de_retour"
                         android:textColor="@color/colorPrimary"
                         android:textSize="18sp"/>
 
@@ -313,7 +317,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
                         android:shadowColor="@color/colorAccent"
-                        android:text="Heure du retour"
+                        android:text="@string/heure_du_retour"
                         android:textColor="@color/colorPrimary"
                         android:textSize="18sp"/>
 
@@ -323,7 +327,7 @@
                         android:layout_height="wrap_content"
                         android:ems="10"
                         android:gravity="center"
-                        android:hint="Heure départ trajet retour"
+                        android:hint="@string/heure_depart_trajet_retour"
                         android:inputType="text"
                         android:linksClickable="false"
                         android:longClickable="false"
