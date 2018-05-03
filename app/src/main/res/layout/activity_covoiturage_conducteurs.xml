@@ -82,7 +82,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="45dp"
                     android:layout_marginStart="45dp"
-                    android:inputType="text"
+                    android:inputType="textCapCharacters"
                     android:lines="1"/>
             </android.support.design.widget.TextInputLayout>
 
@@ -108,7 +108,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="45dp"
                     android:layout_marginStart="45dp"
-                    android:inputType="text"
+                    android:inputType="textCapCharacters"
                     android:lines="1"/>
             </android.support.design.widget.TextInputLayout>
 
@@ -134,7 +134,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="45dp"
                     android:layout_marginStart="45dp"
-                    android:inputType="text"
+                    android:inputType="number"
                     android:lines="1"/>
             </android.support.design.widget.TextInputLayout>
 
@@ -218,7 +218,7 @@
                         android:layout_height="wrap_content"
                         android:ems="10"
                         android:gravity="center"
-                        android:inputType="text"
+                        android:inputType="date"
                         android:lines="1"
                         android:onClick="showDatePickerDialog"
                         android:textAppearance="@style/TextAppearance.AppCompat"
@@ -251,7 +251,7 @@
                         android:ems="10"
                         android:gravity="center"
                         android:hint="@string/heure_depart_trajet_aller"
-                        android:inputType="text"
+                        android:inputType="time"
                         android:linksClickable="false"
                         android:longClickable="false"
                         android:onClick="showTimePickerDialog"
@@ -296,9 +296,9 @@
                         android:layout_height="wrap_content"
                         android:ems="10"
                         android:gravity="center"
-                        android:inputType="text"
+                        android:inputType="date"
                         android:lines="1"
-                        android:onClick="showDatePickerDialog"
+                        android:onClick="showDatePickerDialog2"
                         android:textAppearance="@style/TextAppearance.AppCompat"
                         android:textColor="@color/colorPrimary"/>
 
@@ -328,10 +328,10 @@
                         android:ems="10"
                         android:gravity="center"
                         android:hint="@string/heure_depart_trajet_retour"
-                        android:inputType="text"
+                        android:inputType="time"
                         android:linksClickable="false"
                         android:longClickable="false"
-                        android:onClick="showTimePickerDialog"
+                        android:onClick="showTimePickerDialog2"
                         android:textAppearance="@style/TextAppearance.AppCompat"
                         android:textColor="@color/colorPrimary"/>
                 </LinearLayout>
@@ -376,13 +376,13 @@
 
     </ScrollView>
 
-    <!--    <EditText
-            android:id="@+id/alertdialog_ok_account"
+        <EditText
+            android:id="@+id/alertdialog_ok_covoit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:inputType="text"
             android:textSize="@android:dimen/notification_large_icon_height"
-            android:text="@string/alertDialog_delete"
+            android:text="Saisir la string correspondante"
             android:visibility="invisible"/>
 
         <EditText
@@ -391,7 +391,7 @@
             android:layout_height="wrap_content"
             android:textSize="@android:dimen/notification_large_icon_height"
             android:inputType="text"
-            android:text="@string/alertDialog_cancel"
-            android:visibility="invisible"/>-->
+            android:text="Saisir la string correspodante"
+            android:visibility="invisible"/>
 
 </android.support.constraint.ConstraintLayout>
