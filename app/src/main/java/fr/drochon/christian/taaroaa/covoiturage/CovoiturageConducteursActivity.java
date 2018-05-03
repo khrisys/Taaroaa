@@ -229,7 +229,7 @@ public class CovoiturageConducteursActivity extends BaseActivity {
             covoit.put("horaireDepart", horaireDuDepart);
             covoit.put("horaireRetour", horaireDuRetour);
             covoit.put("users", users);
-            covoit.put("reservation", reservation);
+            covoit.put("reservation", null);
             db.collection("covoiturages").document(id).set(covoit)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
