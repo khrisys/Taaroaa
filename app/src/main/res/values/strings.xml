@@ -88,6 +88,7 @@
     <string name="reservez_btn">Réservez</string>
     <string name="nom_du_passager_responsable">Nom du passager / responsable :</string>
     <string name="passager">Passager</string>
+    <string name="inscription">Inscription</string>
     <string name="type_du_vehicule">Type du véhicule :</string>
     <string name="places_disponibles">Places disponibles :</string>
     <string name="alertDialog_delete_covoit">Voulez vous réellement supprimer ce covoiturage ?</string>

@@ -64,7 +64,7 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
         mRecyclerViewVehicules = findViewById(R.id.recyclerViewCovoitVehicules);
 
         listCovoiturages = new ArrayList<Covoiturage>();
-        listPassagers = new ArrayList<User>();
+        listPassagers = new ArrayList<>();
 
         configureRecyclerView();
         configureToolbar();
@@ -179,7 +179,7 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
     private Query getAllCovoiturages() {
 
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
-        Query mQuery = db.collection("covoiturages"); //.orderBy("nomConducteur", Query.Direction.ASCENDING);
+        Query mQuery = db.collection("covoiturages").document().getParent(); //.orderBy("nomConducteur", Query.Direction.ASCENDING);
         mQuery.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -221,89 +221,4 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
         });
         return mQuery;
     }
-
-
-/*    *//**
-     * Methode permettant de recuperer et d'afficher l'integralité de la liste des snapshots et d'en faire des objets "Covoiturage"
-     *
-     * @param
-     *//*
-    private void readDataInList(final List<DocumentSnapshot> documentSnapshot) {
-
-        // un DocumentReference fait référence à un emplacement de document dans une base de données Firestore et peut être utilisé pour
-        // écrire, lire ou écouter l'emplacement. Il peut exister ou non un document à l'emplacement référencé.
-        for (int i = 0; i < documentSnapshot.size(); i++) {
-            DocumentSnapshot doc = documentSnapshot.get(i); //Un DocumentSnapshot contient des données lues à partir d'un document dans votre base de données Firestore.
-            if (doc.exists()) {
-                if(listPassagers.size() == 0) {
-                    java.util.Date aller = stStringToDate(doc.get("horaireAller").toString());
-                    java.util.Date retour = stStringToDate(doc.get("horaireRetour").toString());
-                    covoiturage = new Covoiturage(doc.getId(), doc.get("nomConducteur").toString(), doc.get("prenomConducteur").toString(), doc.get("nbPlacesDispo").toString(),
-                            doc.get("typeVehicule").toString(), aller, retour, listPassagers);
-                    listCovoiturages.add(covoiturage);
-                }
-                else{
-                    covoiturage = new Covoiturage(doc.getId(), doc.get("nomConducteur").toString(), doc.get("prenomConducteur").toString(), doc.get("nbPlacesDispo").toString(),
-                            doc.get("typeVehicule").toString(), stStringToDate(doc.get("horaireAller").toString()),stStringToDate(doc.get("horaireRetour").toString()), listPassagers);
-                    listCovoiturages.add(covoiturage);
-                }
-            }
-        }
-    }*/
-
-/*    private java.util.Date stStringToDate(String horaire){
-        SimpleDateFormat formatter = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy", Locale.US);
-        java.util.Date dateFormatee = null;
-
-        try {
-            dateFormatee = formatter.parse(horaire);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return dateFormatee;
-    }*/
-
-/*    private void getListCovoiturages() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("covoiturages").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot documentSnapshots) {
-                if (documentSnapshots.size() != 0) {
-                    List<DocumentSnapshot> ds = documentSnapshots.getDocuments();
-                    for (int i = 0; i < ds.size(); i++) {
-                        Map<String, Object> covoit = ds.get(i).getData();
-                        covoiturage = new Covoiturage(covoit.get("id").toString(), covoit.get("nomConducteur").toString(), covoit.get("prenomConducteur").toString(),
-                                covoit.get("nbPlacesDispo").toString(), covoit.get("typeVehicule").toString(),
-                                stStringToDate(covoit.get("horaireAller").toString()), stStringToDate(covoit.get("horaireRetour").toString()), listPassagers);
-                        User user = new User();
-                        for(int j = 0 ; j < listPassagers.size(); j++){
-                            user.setNom(covoit.get("passagers").toString());
-                        }
-                        listCovoiturages.add(covoiturage);
-                    }
-                }
-            }
-        });
-    }*/
-/*
-    *//**
-     * Methode permettant de recuperer tous les passagers d'un covoiturage
-     *
-     * @return
-     *//*
-    private List<User> getPassagers() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        // recuperation de tous les docs covoiturages
-        db.collection("covoiturages").document().get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                if(documentSnapshot.exists()){
-                    Map<String, Object> covoit = documentSnapshot.getData();
-                    // recuperation de tous les passagers d'un covoit
-
-                }
-            }
-        });
-        return listPassagers;
-    }*/
 }

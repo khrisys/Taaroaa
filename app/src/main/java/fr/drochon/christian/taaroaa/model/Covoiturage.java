@@ -1,9 +1,10 @@
 package fr.drochon.christian.taaroaa.model;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-public class Covoiturage {
+public class Covoiturage implements Serializable {
 
     private String id;
     private String mNomConducteur;
