@@ -223,9 +223,9 @@ public abstract class BaseActivity extends AppCompatActivity {
      * @param horaireDuCours
      * @return
      */
-    public String  stDateToString(Date horaireDuCours){
+    protected String  stDateToString(Date horaireDuCours){
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy", Locale.FRANCE);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE dd MMM yyyy ' à ' HH'h'mm", Locale.FRANCE);
         String dateDuCours = dateFormat.format(horaireDuCours);
         return dateDuCours;
 

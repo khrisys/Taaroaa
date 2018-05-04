@@ -37,7 +37,7 @@ public class AdapterCovoiturageVehicles extends FirestoreRecyclerAdapter<Covoitu
      * @see #onBindViewHolder(RecyclerView.ViewHolder, int)
      */
     @Override
-    protected void onBindViewHolder(@NonNull VehiculeViewHolder holder, int position, @NonNull Covoiturage model) {
+    protected void onBindViewHolder(@NonNull final VehiculeViewHolder holder, int position, @NonNull final Covoiturage model) {
         holder.updateWithCovoiturage(model);
     }
 
@@ -67,6 +67,4 @@ public class AdapterCovoiturageVehicles extends FirestoreRecyclerAdapter<Covoitu
         super.onDataChanged();
         this.callback.onDataChanged();
     }
-
-
 }
