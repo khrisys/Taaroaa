@@ -32,9 +32,9 @@ public class SearchUserActivity extends BaseActivity {
     TextView mEmptyListMessage;
     RecyclerView mRecyclerViewUser;
     SearchView mSearchView;
-    List<User> listUsers;
     // FOR DATA
     private AdapterSearchedUser mAdapterSearchedUser;
+    List<User> listUsers;
 
 
     // --------------------
@@ -51,20 +51,7 @@ public class SearchUserActivity extends BaseActivity {
         mSearchView = findViewById(R.id.searchbar_user);
 
         listUsers = new ArrayList<>();
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot documentSnapshots) {
-                if (documentSnapshots.size() != 0) {
-                    List<DocumentSnapshot> ds = documentSnapshots.getDocuments();
-                    for (int i = 0; i < ds.size(); i++) {
-                        Map<String, Object> map = ds.get(i).getData();
-                        User user = new User(map.get("uid").toString(), map.get("nom").toString(), map.get("prenom").toString());
-                        listUsers.add(user);
-                    }
-                }
-            }
-        });
+        getListUsers();
 
         configureRecyclerView();
         configureToolbar();
@@ -271,6 +258,25 @@ public class SearchUserActivity extends BaseActivity {
         return filteredModelList;
     }
 
+    /**
+     * Methode permettant de remplir la liste de tous les utilisateurs contenus dans la bdd
+     */
+    private void getListUsers(){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot documentSnapshots) {
+                if (documentSnapshots.size() != 0) {
+                    List<DocumentSnapshot> ds = documentSnapshots.getDocuments();
+                    for (int i = 0; i < ds.size(); i++) {
+                        Map<String, Object> map = ds.get(i).getData();
+                        User user = new User(map.get("uid").toString(), map.get("nom").toString(), map.get("prenom").toString());
+                        listUsers.add(user);
+                    }
+                }
+            }
+        });
+    }
 
     /**
      * Methode permettant de recuperer l'integralité de la liste des snapshots et d'en faire des objets "User"

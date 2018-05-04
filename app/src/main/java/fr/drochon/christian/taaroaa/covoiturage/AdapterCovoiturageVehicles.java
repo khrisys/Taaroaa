@@ -54,13 +54,19 @@ public class AdapterCovoiturageVehicles extends FirestoreRecyclerAdapter<Covoitu
                 .inflate(R.layout.covoiturage_cell, parent, false));// creation de la viewholder avec en param la vue du layout
     }
 
+    // --------------------
+    // INTERFACE LISTENER
+    // --------------------
+
+    public interface Listener {
+        void onDataChanged();
+    }
+
     @Override
     public void onDataChanged() {
         super.onDataChanged();
         this.callback.onDataChanged();
     }
 
-    public interface Listener {
-        void onDataChanged();
-    }
+
 }
