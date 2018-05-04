@@ -2,11 +2,11 @@
 <LinearLayout
     android:id="@+id/vehicle_linear_layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="10dp"
     android:orientation="vertical">
+
 
     <TextView
         android:id="@+id/covoit_conducteur_nom"
@@ -15,6 +15,8 @@
         android:layout_gravity="center"
         android:layout_marginTop="20dp"
         android:background="#E3F2FD"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="15dp"
         android:clickable="true"
         android:focusable="true"
         android:gravity="center"
@@ -23,23 +25,74 @@
         android:textStyle="bold"
         />
 
+    <LinearLayout
+        android:id="@+id/covoit_vehicule_framelayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="1">
+        <TextView
+            android:id="@+id/vehicule_titre_txt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="10dp"
+            android:layout_weight="0.4"
+            android:text="@string/type_du_vehicule"
+            android:textStyle="bold"
+            android:textSize="20sp"/>
+        <TextView
+            android:id="@+id/typeVehicule_txt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.6"
+            android:textSize="20sp"
+            android:layout_marginTop="10dp"/>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/covoit_places_framelayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="1">
+        <TextView
+            android:id="@+id/places_titre_txt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="10dp"
+            android:text="@string/places_disponibles"
+            android:layout_weight="0.4"
+            android:textStyle="bold"
+            android:textSize="20sp"/>
+        <TextView
+            android:id="@+id/nbPlacesDispo_txt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.6"
+            android:textSize="20sp"
+            android:layout_marginTop="10dp"/>
+    </LinearLayout>
+
+
     <FrameLayout
         android:id="@+id/covoit_passager_framelayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:weightSum="1">
-
         <TextView
             android:id="@+id/passager_titre_txt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginEnd="40dp"
-            android:layout_marginStart="60dp"
+            android:layout_marginStart="30dp"
             android:layout_marginTop="10dp"
             android:text="@string/nom_des_passagers"
+            android:textStyle="bold"
             android:textSize="20sp"/>
-
         <Spinner
             android:id="@+id/passager_spinner"
             style="@style/FirebaseUI.CountrySpinner"
@@ -47,65 +100,10 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="20dp"
             android:layout_marginStart="20dp"
-            android:layout_marginTop="22dp">
+            android:layout_marginTop="10dp"
+            android:minHeight="40dp">
         </Spinner>
-    </FrameLayout>
 
-    <FrameLayout
-        android:id="@+id/covoit_vehicule_framelayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:weightSum="1">
-
-        <TextView
-            android:id="@+id/vehicule_titre_txt"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="40dp"
-            android:layout_marginStart="60dp"
-            android:layout_marginTop="3dp"
-            android:text="@string/type_du_vehicule"
-            android:textSize="20sp"/>
-
-        <Spinner
-            android:id="@+id/vehicule_spinner"
-            style="@style/FirebaseUI.CountrySpinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="20dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="15dp">
-        </Spinner>
-    </FrameLayout>
-
-    <FrameLayout
-        android:id="@+id/covoit_places_framelayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:weightSum="1">
-
-        <TextView
-            android:id="@+id/places_titre_txt"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="40dp"
-            android:layout_marginStart="60dp"
-            android:layout_marginTop="3dp"
-            android:text="@string/places_disponibles"
-            android:textSize="20sp"/>
-
-        <Spinner
-            android:id="@+id/places_spinner"
-            style="@style/FirebaseUI.CountrySpinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="30dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="15dp">
-        </Spinner>
     </FrameLayout>
 
 

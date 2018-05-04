@@ -191,23 +191,23 @@ public class CovoiturageConducteursActivity extends BaseActivity {
         String nom = mNom.getText().toString();
         String nbPlacesDispo = mNbPlaceDispo.getText().toString();
         String typeVehicule = mTypeVehicule.getSelectedItem().toString();
-        String dateDepart = mDateDepart.getText().toString();
-        String dateretour = mDateRetour.getText().toString();
+        String dateAller = mDateDepart.getText().toString();
+        String dateRetour = mDateRetour.getText().toString();
         String heureDepart = mHeureDepart.getText().toString();
         String heureRetour = mHeureretour.getText().toString();
         List<User> users = new ArrayList<>();
         Reservation reservation = new Reservation();
 
-        String horaireDepart = dateDepart + " " + heureDepart;
-        Date horaireDuDepart = null;
+        String horaireAller = dateAller + " " + heureDepart;
+        Date horaireDelAller = null;
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.US);
         try {
-            horaireDuDepart = simpleDateFormat.parse(horaireDepart);
+            horaireDelAller = simpleDateFormat.parse(horaireAller);
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
-        String horaireRetour = dateretour + " " + heureRetour;
+        String horaireRetour = dateRetour + " " + heureRetour;
         Date horaireDuRetour = null;
         SimpleDateFormat simpleDateFormat1 = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.US);
         try {
@@ -218,18 +218,19 @@ public class CovoiturageConducteursActivity extends BaseActivity {
 
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        if (!nom.isEmpty() && !prenom.isEmpty() && !nbPlacesDispo.isEmpty() && !dateDepart.isEmpty() && !dateretour.isEmpty() && !heureDepart.isEmpty() && !heureRetour.isEmpty()) {
+        if (!nom.isEmpty() && !prenom.isEmpty() && !nbPlacesDispo.isEmpty() && !dateAller.isEmpty() && !dateRetour.isEmpty() && !heureDepart.isEmpty() && !heureRetour.isEmpty()) {
 
             Map<String, Object> covoit = new HashMap<>();
             covoit.put("id", id);
-            covoit.put("nom", nom.toUpperCase());
-            covoit.put("prenom", prenom.toUpperCase());
+            covoit.put("nomConducteur", nom.toUpperCase());
+            covoit.put("prenomConducteur", prenom.toUpperCase());
             covoit.put("nbPlacesDispo", nbPlacesDispo);
             covoit.put("typeVehicule", typeVehicule);
-            covoit.put("horaireDepart", horaireDuDepart);
+            covoit.put("horaireAller", horaireDelAller);
             covoit.put("horaireRetour", horaireDuRetour);
-            covoit.put("users", users);
-            covoit.put("reservation", null);
+            covoit.put("passagers", users);
+            //TODO ligne à rajouter lors que l'obet Sortie existera
+            //covoit.put("reservation", null);
             db.collection("covoiturages").document(id).set(covoit)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override

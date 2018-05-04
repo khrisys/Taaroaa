@@ -22,6 +22,7 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -242,6 +243,17 @@ public abstract class BaseActivity extends AppCompatActivity {
         return heureDuCours;
     }
 
+    protected java.util.Date stStringToDate(String horaire){
+        SimpleDateFormat formatter = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy", Locale.US);
+        java.util.Date dateFormatee = null;
+
+        try {
+            dateFormatee = formatter.parse(horaire);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return dateFormatee;
+    }
     // --------------------
     // UI
     // --------------------

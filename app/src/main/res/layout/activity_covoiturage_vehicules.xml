@@ -74,24 +74,25 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
+                android:visibility="gone"
                 android:text="@string/empty_list_covoit_txt"
                 android:textAlignment="center"
                 />
 
             <!--RECYCLER VIEW-->
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recyclerViewCovoitVehicules"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical|center_horizontal"
+                android:layout_marginTop="10dp"
+                />
+
             <ScrollView
                 android:id="@+id/scrollviewRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 >
-
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/recyclerViewCovoitVehicules"
-                    android:layout_marginTop="10dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical|center_horizontal"
-                    />
 
             </ScrollView>
         </LinearLayout>

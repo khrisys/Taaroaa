@@ -2,7 +2,6 @@ package fr.drochon.christian.taaroaa.covoiturage;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -21,23 +20,27 @@ import fr.drochon.christian.taaroaa.model.Covoiturage;
 
 public class VehiculeViewHolder extends RecyclerView.ViewHolder {
 
-    //DATA
-    List<Covoiturage> mCovoiturageList;
-    //CELLULE
-    @BindView(R.id.vehicle_linear_layout) LinearLayout mLinearLayoutGlobal;
+    // DESIGN
+    @BindView(R.id.vehicle_linear_layout)
+    LinearLayout mLinearLayoutGlobal;
     @BindView(R.id.covoit_conducteur_nom)
     TextView mNomConducteur;
-    @BindView(R.id.covoit_passager_framelayout)
-    FrameLayout mFrameLayoutPassagers;
-    @BindView(R.id.passager_titre_txt) TextView mTitrePassager;
+    @BindView(R.id.passager_titre_txt)
+    TextView mTitrePassager;
     @BindView(R.id.passager_spinner)
     Spinner mPassagerSpinner;
-    @BindView(R.id.covoit_vehicule_framelayout) FrameLayout mFrameLayoutVehicules;
-    @BindView(R.id.vehicule_titre_txt) TextView mTitreVehicule;
-    @BindView(R.id.vehicule_spinner) Spinner mVehiculeSpinner;
-    @BindView(R.id.covoit_places_framelayout) FrameLayout mFrameLayoutPlaces;
-    @BindView(R.id.places_titre_txt) TextView mTitrePlace;
-    @BindView(R.id.places_spinner) Spinner mPlaceSpinner;
+    @BindView(R.id.vehicule_titre_txt)
+    TextView mTitreVehicule;
+    @BindView(R.id.typeVehicule_txt)
+    TextView mTypeVehicule;
+    @BindView(R.id.places_titre_txt)
+    TextView mTitrePlace;
+    @BindView(R.id.nbPlacesDispo_txt)
+    TextView mNbPlaceDispo;
+    //DATA
+    private List<Covoiturage> mCovoiturageList;
+    //CELLULE
+    private RecyclerView mRecyclerView;
 
     /**
      * Contructeur qui prend en param la vue affichée.
@@ -52,6 +55,7 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
         // liaison des elements du layout recyclerview et list_cell avec les variables declarées ici
         ButterKnife.bind(this, itemView);
 
+        mRecyclerView = itemView.findViewById(R.id.recyclerViewCovoitVehicules);
         mCovoiturageList = new ArrayList<>();
 
         // clic sur le nom du conducteur qui renvoi l'utilisateur à la page de reservation
@@ -63,7 +67,7 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
                 db.collection("covoiturage").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot documentSnapshots) {
-                        //get l'objet
+                        System.out.println("get l'objet");
                     }
                 });
             }
@@ -79,11 +83,32 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
         // ajout des Covoit dans une liste afin de les retrouver pour l'affichage de chaque cours particulier sous forme de notification
         mCovoiturageList.add(covoiturage);
 
-        for(int i = 0; i < mCovoiturageList.size(); i++) {
-            mPassagerSpinner.setSelection(Integer.parseInt(covoiturage.getListPassagers().get(i).getNom()));
-            mVehiculeSpinner.setSelection(Integer.parseInt(covoiturage.getTypeVehicule()));
-            mPlaceSpinner.setSelection(covoiturage.getNbPlacesDispo());
+        for (int i = 0; i < mCovoiturageList.size(); i++) {
+            mNomConducteur.setText(covoiturage.getNomConducteur() + "  " + covoiturage.getPrenomConducteur());
+            if (covoiturage.getListPassagers() != null)
+                mPassagerSpinner.setSelection(getIndexSpinner(mPassagerSpinner, covoiturage.getListPassagers().get(i).getNom()));
+            mTypeVehicule.setText(covoiturage.getTypeVehicule());
+            mNbPlaceDispo.setText(covoiturage.getNbPlacesDispo());
         }
+    }
 
+    // --------------------
+    // UI
+    // --------------------
+
+    /**
+     * Methode permettant de retrouver la position d'un item de la liste des niveaux de plongée d'un user
+     *
+     * @param spinner
+     * @param myString
+     * @return int
+     */
+    protected int getIndexSpinner(Spinner spinner, String myString) {
+        for (int i = 0; i < spinner.getCount(); i++) {
+            if (spinner.getItemAtPosition(i).toString().equalsIgnoreCase(myString)) {
+                return i;
+            }
+        }
+        return 0;
     }
 }

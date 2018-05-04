@@ -38,6 +38,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -274,7 +275,7 @@ public class CoursesManagementActivity extends BaseActivity {
         String horaireCours = dateCoursTxt + " " + timeCoursTxt;
         //final Date horaires = stringToDate(horaireCours);
         Date horaireDuCours = null;
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.US);
         try {
             horaireDuCours = simpleDateFormat.parse(horaireCours);
         } catch (ParseException e) {
