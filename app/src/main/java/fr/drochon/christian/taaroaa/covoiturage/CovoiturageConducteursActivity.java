@@ -36,7 +36,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.TimeZone;
 
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.api.CovoiturageHelper;
@@ -96,8 +95,7 @@ public class CovoiturageConducteursActivity extends BaseActivity {
 
         // hint pour la date du edittext
         Date currentTime = Calendar.getInstance().getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd / MM / yyyy", Locale.FRANCE);
-        sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+        SimpleDateFormat sdf = new SimpleDateFormat("EEE dd MMM yyyy", Locale.FRANCE);
         String d = sdf.format(currentTime);
         mDateDepart.setHint(d);
         mDateRetour.setHint(d);
@@ -151,6 +149,7 @@ public class CovoiturageConducteursActivity extends BaseActivity {
         if (mHeureretour.getText().toString().isEmpty())
             mHeureretour.setError("Merci de saisir ce champ !");
         else mHeureretour.append(" ");
+        mProgressBar.setVisibility(View.GONE);
     }
 
 
@@ -238,9 +237,9 @@ public class CovoiturageConducteursActivity extends BaseActivity {
             covoit.put("typeVehicule", typeVehicule);
             covoit.put("horaireAller", horaireDelAller);
             covoit.put("horaireRetour", horaireDuRetour);
-            covoit.put("lieuArrivee", lieuAller);
-            covoit.put("lieuRetour", lieuRetour);
-            covoit.put("passagers", users);
+            covoit.put("lieuDepartAller", lieuAller);
+            covoit.put("lieuDepartRetour", lieuRetour);
+            covoit.put("listPassagers", users);
             //TODO ligne à rajouter lors que l'obet Sortie existera
             //covoit.put("reservation", null);
             db.collection("covoiturages").document(id).set(covoit)
@@ -342,7 +341,7 @@ public class CovoiturageConducteursActivity extends BaseActivity {
         @Override
         public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
             if(getTag() == "dateDepart")
-            mDateDepart.setText(mDateDepart.getText() + "" + dayOfMonth + "-" + (month + 1) + "-" + year);
+            mDateDepart.setText(mDateDepart.getText() + "" + dayOfMonth + "-" +(month + 1) + "-" + year);
             else if (getTag() == "dateRetour")
             mDateRetour.setText(mDateRetour.getText() + "" + dayOfMonth + "-" + (month + 1) + "-" + year);
         }
@@ -363,14 +362,9 @@ public class CovoiturageConducteursActivity extends BaseActivity {
         @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            //UTC
-/*            final String format = "dd-MMM-yyyy HH:mm:ss";
-            final SimpleDateFormat dateFormatGmt = new SimpleDateFormat(format);
-            dateFormatGmt.setTimeZone(TimeZone.getTimeZone("UTC"));*/
 
             final Calendar c = Calendar.getInstance();
             int hour = c.get(Calendar.HOUR_OF_DAY);
-            //dateFormatGmt.format(hour);
             int minute = c.get(MINUTE);
 
             return new TimePickerDialog(getActivity(), this, hour, minute, DateFormat.is24HourFormat(getActivity()));

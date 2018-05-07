@@ -182,7 +182,12 @@
                     android:visibility="visible"/>
             </android.support.design.widget.TextInputLayout>
 
-            <!--PARTIE UTILISATEUR-->
+            <!--PARTIE INSCRIPTION-->
+            <LinearLayout
+                android:id="@+id/titre_inscription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
             <TextView
                 android:id="@+id/moniteur_titre_txt"
                 android:layout_width="match_parent"
@@ -250,6 +255,7 @@
                     android:inputType="numberDecimal"
                     android:lines="1"/>
             </android.support.design.widget.TextInputLayout>
+            </LinearLayout>
 
             <ProgressBar
                 android:id="@+id/progress_bar"
