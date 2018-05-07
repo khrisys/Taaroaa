@@ -10,11 +10,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +37,8 @@ public class CovoituragePassagersActivity extends BaseActivity {
     TextInputEditText mTypeVehicule;
     TextInputEditText mNomPassager;
     TextInputEditText mNbPassager;
+    LinearLayout mTitreInscription;
+
     Button mReservation;
     Intent mIntent;
     ProgressBar mProgressBar;
@@ -59,6 +61,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
         mNbPassager = findViewById(R.id.nb_passager_input);
         mReservation = findViewById(R.id.reservation_covoit_btn);
         mProgressBar = findViewById(R.id.progress_bar);
+        mTitreInscription = findViewById(R.id.titre_inscription);
 
         this.configureToolbar();
         this.updateUIWhenCreating();
@@ -121,6 +124,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
 
         if (this.getCurrentUser() != null) { // retourne un user FirebaseUser. Permettra de remplir toutes les vues de l'activité
             getAndShowDatas();
+            updateUI();
         }
     }
 
@@ -131,6 +135,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
 
         if (this.getCurrentUser() != null) { // retourne un user FirebaseUser. Permettra de remplir toutes les vues de l'activité
             getAndShowDatas();
+            updateUI();
         }
     }
 
@@ -181,6 +186,16 @@ public class CovoituragePassagersActivity extends BaseActivity {
         return false;
     }
 
+    /**
+     * Methode permettant de desactiver les champs de saisi en cas de covoiturage complet
+     */
+    private void updateUI() {
+        if (Integer.parseInt(covoiturage.getNbPlacesDispo()) == 0) {
+            mTitreInscription.setEnabled(false);
+        }
+    }
+
+
     // --------------------
     // REST REQUETES
     // --------------------
@@ -192,10 +207,6 @@ public class CovoituragePassagersActivity extends BaseActivity {
     private void createPassagerInCovoiturage() {
 
         this.mProgressBar.setVisibility(View.VISIBLE);
-        final String nbPassagers = this.mNbPassager.getText().toString();
-
-
-        final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         if (verificationChampsVides()) {
             int nbPlacesRestantes = calculNbPlacesRestantes();
@@ -216,7 +227,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
                     }
                 });
                 adb.show(); // affichage de l'artdialog
-            } else if(nbPlacesRestantes < 0 && Integer.parseInt(covoiturage.getNbPlacesDispo()) == 0 ){
+            } else if (nbPlacesRestantes < 0 && Integer.parseInt(covoiturage.getNbPlacesDispo()) == 0) {
                 final AlertDialog.Builder adb = new AlertDialog.Builder(CovoituragePassagersActivity.this);
                 adb.setTitle(R.string.alertDialog_places_restantes);
                 adb.setIcon(android.R.drawable.ic_dialog_alert);

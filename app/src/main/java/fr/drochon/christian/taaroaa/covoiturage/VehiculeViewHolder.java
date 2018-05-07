@@ -22,10 +22,11 @@ import fr.drochon.christian.taaroaa.model.Covoiturage;
 
 public class VehiculeViewHolder extends RecyclerView.ViewHolder {
 
-    private static Covoiturage sCovoiturage;
+    private Covoiturage sCovoiturage;
     // DESIGN
     @BindView(R.id.vehicle_linear_layout)
     LinearLayout mLinearLayoutGlobal;
+    @BindView(R.id.clic_global) LinearLayout mGlobalClic;
     @BindView(R.id.covoit_conducteur_nom)
     TextView mNomConducteur;
     @BindView(R.id.passager_titre_txt)
@@ -67,7 +68,7 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
         mListPassagers = new ArrayList<>();
 
         // clic sur le nom du conducteur qui renvoi l'utilisateur à la page de reservation
-        mNomConducteur.setOnClickListener(new View.OnClickListener() {
+        mGlobalClic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(itemView.getContext(), CovoituragePassagersActivity.class).putExtra("covoit", sCovoiturage);
@@ -94,7 +95,7 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
             if (covoiturage.getListPassagers() != null) {
 
                 // --------------------
-                // SPINNERS & REMPLISSAGE
+                // REMPLISSAGE SPINNER
                 // --------------------
                 // Create an ArrayAdapter using the string array and a default spinner layout
                 ArrayAdapter<String> adapterNiveau = new ArrayAdapter<String>(itemView.getContext(), android.R.layout.simple_spinner_item, mListPassagers);
@@ -123,7 +124,6 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEE dd MMM yyyy ' à ' HH'h'mm", Locale.FRANCE);
         String dateDuCours = dateFormat.format(horaireDuCours);
         return dateDuCours;
-
     }
 
 
