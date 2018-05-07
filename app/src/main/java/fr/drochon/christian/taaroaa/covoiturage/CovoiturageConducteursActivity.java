@@ -19,6 +19,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -55,6 +56,8 @@ public class CovoiturageConducteursActivity extends BaseActivity {
     TextInputEditText mNom;
     TextInputEditText mNbPlaceDispo;
     Spinner mTypeVehicule;
+    TextView mLieuDepart;
+    TextView mLieuArrivee;
     ProgressBar mProgressBar;
     Button mValid;
     EditText mNotifCreationCovoit;
@@ -72,6 +75,8 @@ public class CovoiturageConducteursActivity extends BaseActivity {
         mHeureDepart = findViewById(R.id.heure_depart_input);
         mDateRetour = findViewById(R.id.date_retour_input);
         mHeureretour = findViewById(R.id.heure_retour_input);
+        mLieuArrivee = findViewById(R.id.lieu_arrivee);
+        mLieuDepart = findViewById(R.id.lieu_depart);
         mProgressBar = findViewById(R.id.progress_bar);
         mValid = findViewById(R.id.proposition_covoit_btn);
         mNotifCreationCovoit = findViewById(R.id.alertdialog_ok_covoit);
@@ -132,6 +137,8 @@ public class CovoiturageConducteursActivity extends BaseActivity {
         if (mNom.getText().toString().isEmpty()) mNom.setError("Merci de saisir ce champ !");
         if (mNbPlaceDispo.getText().toString().isEmpty())
             mNbPlaceDispo.setError("Merci de saisir ce champ !");
+        if(mLieuDepart.getText().toString().isEmpty()) mLieuDepart.setError("Merci de saisir ce champ !");
+        if(mLieuArrivee.getText().toString().isEmpty()) mLieuArrivee.setError("Merci de saisir ce champs !");
         if (mDateDepart.getText().toString().isEmpty())
             mDateDepart.setError("Merci de saisir ce champ !");
         else mDateDepart.append(" ");
@@ -193,6 +200,8 @@ public class CovoiturageConducteursActivity extends BaseActivity {
         String typeVehicule = mTypeVehicule.getSelectedItem().toString();
         String dateAller = mDateDepart.getText().toString();
         String dateRetour = mDateRetour.getText().toString();
+        String lieuAller = mLieuDepart.getText().toString();
+        String lieuRetour = mLieuArrivee.getText().toString();
         String heureDepart = mHeureDepart.getText().toString();
         String heureRetour = mHeureretour.getText().toString();
         List<User> users = new ArrayList<>();
@@ -218,7 +227,8 @@ public class CovoiturageConducteursActivity extends BaseActivity {
 
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        if (!nom.isEmpty() && !prenom.isEmpty() && !nbPlacesDispo.isEmpty() && !dateAller.isEmpty() && !dateRetour.isEmpty() && !heureDepart.isEmpty() && !heureRetour.isEmpty()) {
+        if (!nom.isEmpty() && !prenom.isEmpty() && !nbPlacesDispo.isEmpty() && !dateAller.isEmpty() && !dateRetour.isEmpty()
+                && !heureDepart.isEmpty() && !heureRetour.isEmpty() && !lieuAller.isEmpty() && !lieuRetour.isEmpty()) {
 
             Map<String, Object> covoit = new HashMap<>();
             covoit.put("id", id);
@@ -228,6 +238,8 @@ public class CovoiturageConducteursActivity extends BaseActivity {
             covoit.put("typeVehicule", typeVehicule);
             covoit.put("horaireAller", horaireDelAller);
             covoit.put("horaireRetour", horaireDuRetour);
+            covoit.put("lieuArrivee", lieuAller);
+            covoit.put("lieuRetour", lieuRetour);
             covoit.put("passagers", users);
             //TODO ligne à rajouter lors que l'obet Sortie existera
             //covoit.put("reservation", null);

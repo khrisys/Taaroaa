@@ -30,6 +30,8 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
     TextView mTitrePassager;
     @BindView(R.id.passager_spinner)
     Spinner mPassagerSpinner;
+    @BindView(R.id.lieu_depart_aller_txt) TextView mLieuDepart;
+    @BindView(R.id.lieu_depart_retour_txt) TextView mLieuRetour;
     @BindView(R.id.vehicule_titre_txt)
     TextView mTitreVehicule;
     @BindView(R.id.typeVehicule_txt)
@@ -90,6 +92,8 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
             mNbPlaceDispo.setText(covoiturage.getNbPlacesDispo());
             mAller.setText(stDateToString(covoiturage.getHoraireAller()));
             mRetour.setText(stDateToString(covoiturage.getHoraireRetour()));
+            mLieuDepart.setText(covoiturage.getLieuRdvAller());
+            mLieuRetour.setText(covoiturage.getLieuRdvRetour());
         }
     }
 
