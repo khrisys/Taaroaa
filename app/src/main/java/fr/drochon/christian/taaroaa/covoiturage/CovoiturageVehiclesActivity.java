@@ -27,7 +27,6 @@ import java.util.Map;
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
 import fr.drochon.christian.taaroaa.model.Covoiturage;
-import fr.drochon.christian.taaroaa.model.User;
 
 public class CovoiturageVehiclesActivity extends BaseActivity implements AdapterCovoiturageVehicles.Listener {
 
@@ -40,7 +39,7 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
     ScrollView mScrollViewRecyclerView;
     RecyclerView mRecyclerViewVehicules;
     List<Covoiturage> listCovoiturages;
-    List<User> listPassagers;
+    List<String> listPassagers;
     Covoiturage covoiturage;
     // FOR DATA
     private AdapterCovoiturageVehicles mAdapterCovoiturageVehicles;
@@ -197,13 +196,13 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
 
 
                         listPassagers = new ArrayList<>();
-                        listPassagers = (List<User>) covoit.get("passagers");
+                        listPassagers = (List<String>) covoit.get("passagers");
 
                         // recuperation de l'objet covoiturage
-                       /* covoiturage = new Covoiturage(covoit.get("id").toString(), covoit.get("nomConducteur").toString(), covoit.get("prenomConducteur").toString(),
+                        covoiturage = new Covoiturage(covoit.get("id").toString(), covoit.get("nomConducteur").toString(), covoit.get("prenomConducteur").toString(),
                                 covoit.get("nbPlacesDispo").toString(), covoit.get("typeVehicule").toString(), stStringToDate(covoit.get("horaireAller").toString()),
-                                stStringToDate(covoit.get("horaireRetour").toString()), covoit.get("lieuDepartAller").toString(), covoit.get("lieuDepartRetour").toString(), listPassagers);*/
-                        Covoiturage covoiturage = new Covoiturage();
+                                stStringToDate(covoit.get("horaireRetour").toString()), covoit.get("lieuDepartAller").toString(), covoit.get("lieuDepartRetour").toString(), listPassagers);
+                        /*Covoiturage covoiturage = new Covoiturage();
                         covoiturage.setId(covoit.get("id").toString());
                         covoiturage.setNomConducteur(covoit.get("nomConducteur").toString());
                         covoiturage.setPrenomConducteur(covoit.get("prenomConducteur").toString());
@@ -213,15 +212,7 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
                         covoiturage.setHoraireRetour(stStringToDate(covoit.get("horaireRetour").toString()));
                         covoiturage.setLieuRdvAller(covoit.get("lieuDepartAller").toString());
                         covoiturage.setLieuRdvRetour(covoit.get("lieuDepartRetour").toString());
-                        covoiturage.setListPassagers(listPassagers);
-
- /*                       for(int o = 0; o < ((List<User>) covoit.get("passagers")).size(); o++) {
-                            User us = new User();
-                            String passager = ds.get(o).get("passagers").toString();
-                            us.setNom(passager);
-                            listPassagers.add(us);
-                        }*/
-
+                        covoiturage.setListPassagers(listPassagers);*/
 
                         listCovoiturages.add(covoiturage);
                     }

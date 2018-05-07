@@ -1,8 +1,10 @@
 package fr.drochon.christian.taaroaa.covoiturage;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -46,7 +48,7 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
     TextView mRetour;
     //DATA
     private List<Covoiturage> mCovoiturageList;
-
+    private List<String> mListPassagers;
 
     /**
      * Contructeur qui prend en param la vue affichée.
@@ -62,6 +64,7 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
         ButterKnife.bind(this, itemView);
 
         mCovoiturageList = new ArrayList<>();
+        mListPassagers = new ArrayList<>();
 
         // clic sur le nom du conducteur qui renvoi l'utilisateur à la page de reservation
         mNomConducteur.setOnClickListener(new View.OnClickListener() {
@@ -78,23 +81,35 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
      *
      * @param covoiturage
      */
+    @SuppressLint("ResourceType")
     public void updateWithCovoiturage(final Covoiturage covoiturage) {
         // ajout des Covoit dans une liste afin de les retrouver pour l'affichage de chaque cours particulier sous forme de notification
         mCovoiturageList.add(covoiturage);
+        mListPassagers.addAll(covoiturage.getListPassagers());
         sCovoiturage = covoiturage;
 
         for (int i = 0; i < mCovoiturageList.size(); i++) {
             String username = covoiturage.getPrenomConducteur() + "  " + covoiturage.getNomConducteur();
             mNomConducteur.setText(username);
-            if (covoiturage.getListPassagers() != null)
-                mPassagerSpinner.setSelection(getIndexSpinner(mPassagerSpinner, covoiturage.getListPassagers().get(i).getNom()));
+            if (covoiturage.getListPassagers() != null) {
+
+                // --------------------
+                // SPINNERS & REMPLISSAGE
+                // --------------------
+                // Create an ArrayAdapter using the string array and a default spinner layout
+                ArrayAdapter<String> adapterNiveau = new ArrayAdapter<String>(itemView.getContext(), android.R.layout.simple_spinner_item, mListPassagers);
+                // Specify the layout to use when the list of choices appears
+                adapterNiveau.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                // Apply the adapter to the spinner
+                mPassagerSpinner.setAdapter(adapterNiveau);
+                }
+            }
             mTypeVehicule.setText(covoiturage.getTypeVehicule());
             mNbPlaceDispo.setText(covoiturage.getNbPlacesDispo());
             mAller.setText(stDateToString(covoiturage.getHoraireAller()));
             mRetour.setText(stDateToString(covoiturage.getHoraireRetour()));
-            mLieuDepart.setText(covoiturage.getLieuRdvAller());
-            mLieuRetour.setText(covoiturage.getLieuRdvRetour());
-        }
+            mLieuDepart.setText(covoiturage.getLieuDepartAller());
+            mLieuRetour.setText(covoiturage.getLieuDepartRetour());
     }
 
     /**

@@ -182,6 +182,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:weightSum="1">
+
         <TextView
             android:id="@+id/passager_titre_txt"
             android:layout_width="match_parent"
@@ -189,9 +190,10 @@
             android:layout_marginEnd="40dp"
             android:layout_marginStart="30dp"
             android:layout_marginTop="10dp"
-            android:text="@string/nom_des_passagers"
-            android:textStyle="bold"
-            android:textSize="20sp"/>
+            android:text="@string/passagers"
+            android:textSize="20sp"
+            android:textStyle="bold"/>
+
         <Spinner
             android:id="@+id/passager_spinner"
             style="@style/FirebaseUI.CountrySpinner"
@@ -200,7 +202,13 @@
             android:layout_marginEnd="20dp"
             android:layout_marginStart="20dp"
             android:layout_marginTop="10dp"
-            android:minHeight="40dp">
+            android:contentDescription="@string/nom_des_passagers"
+            android:fadeScrollbars="true"
+            android:longClickable="false"
+            android:minHeight="40dp"
+            android:scrollbarSize="15dp"
+            android:spinnerMode="dialog"
+            android:textAlignment="textEnd">
         </Spinner>
     </FrameLayout>
 
