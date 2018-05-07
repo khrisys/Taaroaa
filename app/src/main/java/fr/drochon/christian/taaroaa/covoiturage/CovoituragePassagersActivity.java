@@ -123,8 +123,8 @@ public class CovoituragePassagersActivity extends BaseActivity {
         assert covoiturage != null;
 
         mNomConducteur.setText(Html.fromHtml("<b>Conducteur : </b>" + covoiturage.getPrenomConducteur() + " " + covoiturage.getNomConducteur()));
-        mDateDepart.setText(Html.fromHtml("<b>Aller : départ le </b>" + stDateToString(covoiturage.getHoraireAller())));
-        mDateretour.setText(Html.fromHtml("<b>Retour : départ le </b>" + stDateToString(covoiturage.getHoraireRetour())));
+        mDateDepart.setText(Html.fromHtml("<b>Aller : départ le </b>" + stDateToString(covoiturage.getHoraireAller()) + "<b> jusqu'à >/b>" + covoiturage.getLieuRdvAller()));
+        mDateretour.setText(Html.fromHtml("<b>Retour : départ le </b>" + stDateToString(covoiturage.getHoraireRetour()) + "<b> jusqu'à >/b>" + covoiturage.getLieuRdvRetour()));
         mNbPlaceDispo.setText(Html.fromHtml("<b>Nombre de places disponibles : </b>" + covoiturage.getNbPlacesDispo()));
         mTypeVehicule.setText(Html.fromHtml("<b>Type Véhicule : </b>" + covoiturage.getTypeVehicule()));
 /*        mNomPassager = findViewById(R.id.nom_passager_input);

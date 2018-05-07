@@ -14,10 +14,9 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -179,23 +178,31 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
     private Query getAllCovoiturages() {
 
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
-        Query mQuery = db.collection("covoiturages").document().getParent(); //.orderBy("nomConducteur", Query.Direction.ASCENDING);
-        mQuery.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
+        Query mQuery = db.collection("covoiturages"); //.orderBy("nomConducteur", Query.Direction.ASCENDING);
+/*        CollectionReference colRef = db.collection("").document().get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
-            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
 
+            }
+        });*/
+        mQuery.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot documentSnapshots) {
                 if (documentSnapshots.size() != 0) {
                     List<DocumentSnapshot> ds = documentSnapshots.getDocuments();
                     for (int i = 0; i < ds.size(); i++) {
                         Map<String, Object> covoit = ds.get(i).getData();
                         // recuperation des passagers d'un covoiturage
+                        //DocumentReference reference = (DocumentReference) covoit.get("id");
+
+
                         listPassagers = new ArrayList<>();
                         listPassagers = (List<User>) covoit.get("passagers");
 
                         // recuperation de l'objet covoiturage
-                        /*covoiturage = new Covoiturage(covoit.get("id").toString(), covoit.get("nomConducteur").toString(), covoit.get("prenomConducteur").toString(),
-                                covoit.get("nbPlacesDispo").toString(), covoit.get("typeVehicule").toString(),
-                                stStringToDate(covoit.get("horaireAller").toString()), stStringToDate(covoit.get("horaireRetour").toString()), (List<User>)covoit.get("passagers"));*/
+                       /* covoiturage = new Covoiturage(covoit.get("id").toString(), covoit.get("nomConducteur").toString(), covoit.get("prenomConducteur").toString(),
+                                covoit.get("nbPlacesDispo").toString(), covoit.get("typeVehicule").toString(), stStringToDate(covoit.get("horaireAller").toString()),
+                                stStringToDate(covoit.get("horaireRetour").toString()), covoit.get("lieuDepartAller").toString(), covoit.get("lieuDepartRetour").toString(), listPassagers);*/
                         Covoiturage covoiturage = new Covoiturage();
                         covoiturage.setId(covoit.get("id").toString());
                         covoiturage.setNomConducteur(covoit.get("nomConducteur").toString());
@@ -204,9 +211,11 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
                         covoiturage.setTypeVehicule(covoit.get("typeVehicule").toString());
                         covoiturage.setHoraireAller(stStringToDate(covoit.get("horaireAller").toString()));
                         covoiturage.setHoraireRetour(stStringToDate(covoit.get("horaireRetour").toString()));
+                        covoiturage.setLieuRdvAller(covoit.get("lieuDepartAller").toString());
+                        covoiturage.setLieuRdvRetour(covoit.get("lieuDepartRetour").toString());
                         covoiturage.setListPassagers(listPassagers);
 
-                        /*for(int o = 0; o < ((List<User>) covoit.get("passagers")).size(); o++) {
+ /*                       for(int o = 0; o < ((List<User>) covoit.get("passagers")).size(); o++) {
                             User us = new User();
                             String passager = ds.get(o).get("passagers").toString();
                             us.setNom(passager);
