@@ -247,9 +247,23 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="45dp"
                     android:layout_marginStart="45dp"
-                    android:inputType="text|textCapWords"
+                    android:inputType="numberDecimal"
                     android:lines="1"/>
             </android.support.design.widget.TextInputLayout>
+
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginEnd="40dp"
+                android:layout_marginStart="40dp"
+                android:layout_marginTop="20dp"
+                android:background="@android:color/holo_green_light"
+                android:clickable="false"
+                android:foregroundGravity="center"
+                android:visibility="gone"/>
 
             <Button
                 android:id="@+id/reservation_covoit_btn"

@@ -92,7 +92,11 @@
     <string name="type_du_vehicule">Type du véhicule :</string>
     <string name="places_disponibles">Places disponibles :</string>
     <string name="alertDialog_delete_covoit">Voulez vous réellement supprimer ce covoiturage ?</string>
+    <string name="alertDialog_places_restantes">Il n\'y a pas suffisamment de places disponibles pour votre demande.</string>
+    <string name="rectif_demande">Vous avez saisi un trop grand nombre de place à réserver.\nMerci de rectifier votre demande !</string>
+    <string name="rectif_demande2">Désolé, il n\'y a plus de place disponible pour ce covoiturage !</string>
     <string name="create_covoit">Vous avez créé un covoiturage. \n\tMerci !</string>
+    <string name="create_passager">Vous avez réservé un covoiturage ! </string>
     <string name="conducteur">Conducteur</string>
     <string name="pr_nom">Prénom :</string>
     <string name="nombre_de_places_disponibles">Nombre de places disponibles :</string>
@@ -103,6 +107,9 @@
     <string name="date_de_retour">Date de retour</string>
     <string name="heure_du_retour">Heure du retour</string>
     <string name="heure_depart_trajet_retour">Heure départ trajet retour</string>
+    <string name="lieu_de_depart">Lieu de départ :</string>
+    <string name="lieu_d_arrivee">Lieu d\'arrivée :</string>
+    <string name="passagers">Passagers :</string>
 
     <!-- FACEBOOK PURPOSE -->
     <!--<string name="facebook_application_id" translatable="false">420763051691337</string>

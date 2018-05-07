@@ -6,17 +6,21 @@ import java.util.List;
 
 public class Covoiturage implements Serializable {
 
+    /*
+    LES NOMS DES VARIABLES DOIVENT CORRESPONDRENT AU NOM DES CHAMPS DE LA BDD AVEC LA LETTRE "m" EN DEBUT
+     */
     private String id;
     private String mNomConducteur;
     private String mPrenomConducteur;
     private String mNbPlacesDispo;
+    private String mNbPlacesReservees;
     private Date mHoraireAller;
     private Date mHoraireRetour;
     private String mTypeVehicule;
-    private String mLieuRdvAller;
-    private String mLieuRdvRetour;
+    private String mLieuDepartAller;
+    private String mLieuDepartRetour;
     //private Reservation mReservation;
-    private List<User> listPassagers;
+    private List<String> mListPassagers;
 
     public Covoiturage() {
     }
@@ -44,23 +48,39 @@ public class Covoiturage implements Serializable {
         mHoraireAller = horaireAller;
         mHoraireRetour = horaireRetour;
         mTypeVehicule = typeVehicule;
-        mLieuRdvAller = lieuDeparttAller;
-        mLieuRdvRetour = lieuDepartRetour;
+        mLieuDepartAller = lieuDeparttAller;
+        mLieuDepartRetour = lieuDepartRetour;
     }
 
 
-    public Covoiturage(String id, String nomCoducteur, String prenomCoducteur, String nbPlacesDispo, String typeVehicule, Date horaireAller, Date horaireRetour,
-                       String lieuDeparttAller, String lieuDepartRetour, List<User> passagers) {
+    //
+    public Covoiturage(String id, String nomConducteur, String prenomConducteur, String nbPlacesDispo, String typeVehicule, Date horaireAller, Date horaireRetour,
+                         String lieuDeparttAller, String lieuDepartRetour, List<String> passagers) {
         this.id = id;
-        mNomConducteur = nomCoducteur;
-        mPrenomConducteur = prenomCoducteur;
+        mNomConducteur = nomConducteur;
+        mPrenomConducteur = prenomConducteur;
         mNbPlacesDispo = nbPlacesDispo;
         mHoraireAller = horaireAller;
         mHoraireRetour = horaireRetour;
         mTypeVehicule = typeVehicule;
-        mLieuRdvAller = lieuDeparttAller;
-        mLieuRdvRetour = lieuDepartRetour;
-        listPassagers = passagers;
+        mLieuDepartAller = lieuDeparttAller;
+        mLieuDepartRetour = lieuDepartRetour;
+        mListPassagers = passagers;
+    }
+
+    public Covoiturage(String id, String nomCoducteur, String prenomCoducteur, String nbPlacesDispo, String nbPlacesReservees, String typeVehicule, Date horaireAller, Date horaireRetour,
+                       String lieuDeparttAller, String lieuDepartRetour, List<String> passagers) {
+        this.id = id;
+        mNomConducteur = nomCoducteur;
+        mPrenomConducteur = prenomCoducteur;
+        mNbPlacesDispo = nbPlacesDispo;
+        mNbPlacesReservees = nbPlacesReservees;
+        mHoraireAller = horaireAller;
+        mHoraireRetour = horaireRetour;
+        mTypeVehicule = typeVehicule;
+        mLieuDepartAller = lieuDeparttAller;
+        mLieuDepartRetour = lieuDepartRetour;
+        mListPassagers = passagers;
     }
 
 /*    public Covoiturage(String id, String nomCoducteur, String prenomCoducteur, String nbPlacesDispo, String typeVehicule, Date horaireAller, Date horaireRetour, List<User> passagers, Reservation reservation) {
@@ -123,6 +143,14 @@ public class Covoiturage implements Serializable {
         mNbPlacesDispo = nbPlacesDispo;
     }
 
+    public String getNbPlacesReservees() {
+        return mNbPlacesReservees;
+    }
+
+    public void setNbPlacesReservees(String nbPlacesReservees) {
+        mNbPlacesReservees = nbPlacesReservees;
+    }
+
     public Date getHoraireAller() {
         return mHoraireAller;
     }
@@ -147,20 +175,20 @@ public class Covoiturage implements Serializable {
         mTypeVehicule = typeVehicule;
     }
 
-    public String getLieuRdvAller() {
-        return mLieuRdvAller;
+    public String getLieuDepartAller() {
+        return mLieuDepartAller;
     }
 
-    public void setLieuRdvAller(String lieuRdvAller) {
-        mLieuRdvAller = lieuRdvAller;
+    public void setLieuDepartAller(String lieuDepartAller) {
+        mLieuDepartAller = lieuDepartAller;
     }
 
-    public String getLieuRdvRetour() {
-        return mLieuRdvRetour;
+    public String getLieuDepartRetour() {
+        return mLieuDepartRetour;
     }
 
-    public void setLieuRdvRetour(String lieuRdvRetour) {
-        mLieuRdvRetour = lieuRdvRetour;
+    public void setLieuDepartRetour(String lieuDepartRetour) {
+        mLieuDepartRetour = lieuDepartRetour;
     }
 
     /*
@@ -172,11 +200,11 @@ public class Covoiturage implements Serializable {
         mReservation = reservation;
     }*/
 
-    public List<User> getListPassagers() {
-        return listPassagers;
+    public List<String> getListPassagers() {
+        return mListPassagers;
     }
 
-    public void setListPassagers(List<User> listPassagers) {
-        this.listPassagers = listPassagers;
+    public void setListPassagers(List<String> listPassagers) {
+        this.mListPassagers = listPassagers;
     }
 }
