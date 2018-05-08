@@ -268,12 +268,12 @@ public class AccountCreateActivity extends BaseActivity {
         if (username.contains(" ")) {
             parts = username.split(" ");
             try {
-                if (parts[1] != null) nom = parts[1];
+                if (parts[1] != null) nom = parts[1].toUpperCase();
                 else nom = "";
             } catch (ArrayIndexOutOfBoundsException e1) {
                 Log.e("TAG", "ArrayOutOfBoundException " + e1.getMessage());
             }
-            if (parts[0] != null) prenom = parts[0];
+            if (parts[0] != null) prenom = parts[0].toUpperCase();
             else prenom = "";
         } else {
             nom = username;

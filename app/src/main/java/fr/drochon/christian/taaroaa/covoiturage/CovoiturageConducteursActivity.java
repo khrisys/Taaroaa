@@ -25,7 +25,9 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -59,6 +61,7 @@ public class CovoiturageConducteursActivity extends BaseActivity {
     TextView mLieuArrivee;
     ProgressBar mProgressBar;
     Button mValid;
+    Button mSuppresion;
     EditText mNotifCreationCovoit;
 
     @Override
@@ -78,9 +81,11 @@ public class CovoiturageConducteursActivity extends BaseActivity {
         mLieuDepart = findViewById(R.id.lieu_depart);
         mProgressBar = findViewById(R.id.progress_bar);
         mValid = findViewById(R.id.proposition_covoit_btn);
+        mSuppresion = findViewById(R.id.suppression_covoit_btn);
         mNotifCreationCovoit = findViewById(R.id.alertdialog_ok_covoit);
 
         configureToolbar();
+        findCurrentUser();
 
         // --------------------
         // SPINNERS & REMPLISSAGE
@@ -108,6 +113,13 @@ public class CovoiturageConducteursActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 createCovoiturageInFirebase();
+            }
+        });
+
+        mSuppresion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteCovoiturageInFirebase();
             }
         });
     }
@@ -180,6 +192,18 @@ public class CovoiturageConducteursActivity extends BaseActivity {
         return optionsToolbar(this, item);
     }
 
+
+    // --------------------
+    // UI
+    // --------------------
+    /**
+     * Methode permettant à l'utilisateur d'etre redirigé vers la pages principale des covoiturages
+     */
+    private void startActivityCovoiturageVehicule() {
+        Intent intent = new Intent(CovoiturageConducteursActivity.this, CovoiturageVehiclesActivity.class);
+        startActivity(intent);
+    }
+
     // --------------------
     // REST REQUETES
     // --------------------
@@ -206,6 +230,7 @@ public class CovoiturageConducteursActivity extends BaseActivity {
         List<User> users = new ArrayList<>();
         Reservation reservation = new Reservation();
 
+        // formattage des dates
         String horaireAller = dateAller + " " + heureDepart;
         Date horaireDelAller = null;
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.US);
@@ -224,6 +249,7 @@ public class CovoiturageConducteursActivity extends BaseActivity {
             e.printStackTrace();
         }
 
+        // Requetage et insertion en bdd
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         if (!nom.isEmpty() && !prenom.isEmpty() && !nbPlacesDispo.isEmpty() && !dateAller.isEmpty() && !dateRetour.isEmpty()
@@ -247,7 +273,7 @@ public class CovoiturageConducteursActivity extends BaseActivity {
                         @Override
                         public void onSuccess(Void aVoid) {
                             Toast.makeText(CovoiturageConducteursActivity.this, R.string.create_covoit,
-                                    Toast.LENGTH_SHORT).show();
+                                    Toast.LENGTH_LONG).show();
                             startMainCovoitActivity(); // renvoi l'covoit sur la page des covoiturages  apres validation de la creation du covoit
                         }
                     })
@@ -262,19 +288,75 @@ public class CovoiturageConducteursActivity extends BaseActivity {
         }
         // prise en charge des champs non vides
         else {
-/*            //TODO verifier si l'alertdialog ici affiche les bonnes informations attendues
-            final AlertDialog.Builder adb = new AlertDialog.Builder(CovoiturageConducteursActivity.this);
-            adb.setTitle(R.string.alertDialog_delete_covoit);
-            adb.setIcon(android.R.drawable.ic_dialog_alert);
-            adb.setTitle(R.string.verif_every_fields_complete);
-            adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    // rien à appeler. pas la peine de faire de toast
-                }
-            });
-            adb.show(); // affichage de l'artdialog*/
             verificationChampsVides();
         }
+    }
+
+    /**
+     * Methode permettant de supprimer un covoiturage si ce covoiturage ne comporte pas encore de passager
+     */
+    private void deleteCovoiturageInFirebase(){
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("covoiturages").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot documentSnapshots) {
+                if(documentSnapshots.size() != 0){
+                    List<DocumentSnapshot> docSps = documentSnapshots.getDocuments();
+                    for (DocumentSnapshot ds:docSps
+                         ) {
+                        Map<String, Object> covoit = ds.getData();
+                        if(covoit.get("nomConducteur").equals(mNom) && covoit.get("prenomConducteur").equals(mPrenom)){
+                            if(covoit.get("listPassagers").equals(0)){
+                                mSuppresion.setVisibility(View.VISIBLE);
+                                System.out.println("delete");
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        final String id = CovoiturageHelper.getCovoituragesCollection().document().getId();
+
+        //CRUD
+/*        CovoiturageHelper.deleteCovoiturage(id)
+                .addOnFailureListener(this.onFailureListener())
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(CovoiturageConducteursActivity.this, R.string.delete_covoit,
+                                Toast.LENGTH_LONG).show();
+                        startActivityCovoiturageVehicule(); // renvoi l'user sur la page des covoiturages apres validation de la creation de l'user dans les covoit
+                    }
+                });*/
+    }
+
+    /**
+     * Methode permettant de recuperer le nom et le prenom de la personne connectée. Ainsi, seule une personne connectée
+     * avec un compte precis pourra creer un covoiturage.
+     */
+    private void findCurrentUser(){
+        String username = getCurrentUser().getDisplayName();
+        String nom = null, prenom = null;
+        String[] parts;
+        assert username != null;
+        if (username.contains(" ")) {
+            parts = username.split(" ");
+            try {
+                if (parts[1] != null) nom = parts[1].toUpperCase();
+                else nom = "";
+            } catch (ArrayIndexOutOfBoundsException e1) {
+                Log.e("TAG", "ArrayOutOfBoundException " + e1.getMessage());
+            }
+            if (parts[0] != null) prenom = parts[0].toUpperCase();
+            else prenom = "";
+        } else {
+            nom = username;
+            prenom = "";
+        }
+        mNom.setText(nom);
+        mPrenom.setText(prenom);
     }
 
 

@@ -1,7 +1,6 @@
 package fr.drochon.christian.taaroaa.covoiturage;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -9,11 +8,17 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -71,8 +76,32 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
         mGlobalClic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(itemView.getContext(), CovoituragePassagersActivity.class).putExtra("covoit", sCovoiturage);
-                itemView.getContext().startActivity(intent);
+
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                db.collection("users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot documentSnapshots) {
+                        if(documentSnapshots.size() != 0){
+                            List<DocumentSnapshot> docSps = documentSnapshots.getDocuments();
+                            for (DocumentSnapshot ds:docSps) {
+                                Map<String, Object> covoit = ds.getData();
+                                if(mNomConducteur.getText() ==  covoit.get("nomConducteur").toString() + " " +covoit.get("prenomConducteur").toString()){
+                                    if(covoit.get("listPassagers").equals(0)){
+                                        System.out.println("delete");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+        /*        if(mNomConducteur.getText() == sCovoiturage.getPrenomConducteur() + " " + sCovoiturage.getNomConducteur()){
+                    if(Integer.parseInt(mNbPlaceDispo.getText().toString()) == 0){
+                        System.out.println("alertdialog pour suppression de covoit");
+                    }
+                } else {
+                    Intent intent = new Intent(itemView.getContext(), CovoituragePassagersActivity.class).putExtra("covoit", sCovoiturage);
+                    itemView.getContext().startActivity(intent);
+                }*/
             }
         });
     }
