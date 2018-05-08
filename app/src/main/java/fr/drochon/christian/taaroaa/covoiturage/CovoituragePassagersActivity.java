@@ -247,6 +247,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
                 // ajout des infos du passager dans l'objet covoiturage
                 listPassagers.add(mNomPassager.getText().toString());
 
+                //CRUD
                 CovoiturageHelper.updateCovoiturage(covoiturage.getId(), placesRestantes, listPassagers)
                         .addOnFailureListener(this.onFailureListener())
                         .addOnSuccessListener(new OnSuccessListener<Void>() {

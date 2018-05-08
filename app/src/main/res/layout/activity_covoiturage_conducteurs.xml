@@ -83,6 +83,7 @@
                     android:layout_marginEnd="45dp"
                     android:layout_marginStart="45dp"
                     android:inputType="textCapCharacters"
+                    android:enabled="false"
                     android:lines="1"/>
             </android.support.design.widget.TextInputLayout>
 
@@ -109,6 +110,7 @@
                     android:layout_marginEnd="45dp"
                     android:layout_marginStart="45dp"
                     android:inputType="textCapCharacters"
+                    android:enabled="false"
                     android:lines="1"/>
             </android.support.design.widget.TextInputLayout>
 
@@ -417,7 +419,7 @@
                 android:layout_gravity="center"
                 android:layout_marginEnd="40dp"
                 android:layout_marginStart="40dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="10dp"
                 android:background="@android:color/holo_green_light"
                 android:clickable="false"
                 android:foregroundGravity="center"
@@ -432,14 +434,29 @@
                 />
 
             <Button
-                android:id="@+id/proposition_covoit_btn"
+            android:id="@+id/proposition_covoit_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="40dp"
+            android:layout_marginBottom="50dp"
+            android:height="60dp"
+            android:background="@color/colorPrimary"
+            android:lines="2"
+            android:text="@string/proposer_covoit_btn"
+            android:textColor="@android:color/white"/>
+
+            <Button
+                android:id="@+id/suppression_covoit_btn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="40dp"
+                android:layout_marginStart="40dp"
+                android:layout_marginEnd="40dp"
                 android:height="60dp"
                 android:background="@color/colorPrimary"
                 android:lines="2"
-                android:text="@string/proposer_covoit_btn"
+                android:visibility="gone"
+                android:text="@string/supprimez_un_covoiturage"
                 android:textColor="@android:color/white"/>
 
 

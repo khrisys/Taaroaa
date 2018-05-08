@@ -39,4 +39,15 @@ public class CovoiturageHelper {
     public static Task<Void> updateCovoiturage(String id, String nbPlacesDispo, List<String> passagers) {
         return CovoiturageHelper.getCovoituragesCollection().document(id).update("id", id,  "nbPlacesDispo", nbPlacesDispo, "listPassagers", passagers);
     }
+
+    // --- DELETE ---
+
+    /**
+     * Methode permettant de supprimer un covoiturage
+     * @param id
+     * @return
+     */
+    public static Task<Void> deleteCovoiturage(String id) {
+        return CovoiturageHelper.getCovoituragesCollection().document(id).delete();
+    }
 }

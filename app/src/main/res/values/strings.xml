@@ -97,6 +97,7 @@
     <string name="rectif_demande2">Désolé, il n\'y a plus de place disponible pour ce covoiturage !</string>
     <string name="create_covoit">Vous avez créé un covoiturage. \n\tMerci !</string>
     <string name="create_passager">Vous avez réservé un covoiturage ! </string>
+    <string name="delete_covoit">Vous avez supprimé votre covoiturage !</string>
     <string name="conducteur">Conducteur</string>
     <string name="pr_nom">Prénom :</string>
     <string name="nombre_de_places_disponibles">Nombre de places disponibles :</string>
@@ -129,7 +130,7 @@
     <string name="title_activity_courses_pupils">Cours prépa balbla</string>
     <string name="title_activity_test">TestActivity</string>
     <string name="title_activity_covoiturage_vehicules">CovoiturageVehiculesActivity</string>
-
+    <string name="supprimez_un_covoiturage">Supprimez un covoiturage</string>
 
 
 </resources>

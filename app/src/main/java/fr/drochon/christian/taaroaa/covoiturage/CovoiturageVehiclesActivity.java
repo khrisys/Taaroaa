@@ -178,12 +178,6 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
 
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
         Query mQuery = db.collection("covoiturages"); //.orderBy("nomConducteur", Query.Direction.ASCENDING);
-/*        CollectionReference colRef = db.collection("").document().get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-
-            }
-        });*/
         mQuery.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot documentSnapshots) {
@@ -191,9 +185,6 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
                     List<DocumentSnapshot> ds = documentSnapshots.getDocuments();
                     for (int i = 0; i < ds.size(); i++) {
                         Map<String, Object> covoit = ds.get(i).getData();
-                        // recuperation des passagers d'un covoiturage
-                        //DocumentReference reference = (DocumentReference) covoit.get("id");
-
 
                         listPassagers = new ArrayList<>();
                         listPassagers = (List<String>) covoit.get("passagers");
@@ -202,19 +193,6 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
                         covoiturage = new Covoiturage(covoit.get("id").toString(), covoit.get("nomConducteur").toString(), covoit.get("prenomConducteur").toString(),
                                 covoit.get("nbPlacesDispo").toString(), covoit.get("typeVehicule").toString(), stStringToDate(covoit.get("horaireAller").toString()),
                                 stStringToDate(covoit.get("horaireRetour").toString()), covoit.get("lieuDepartAller").toString(), covoit.get("lieuDepartRetour").toString(), listPassagers);
-                        /*Covoiturage covoiturage = new Covoiturage();
-                        covoiturage.setId(covoit.get("id").toString());
-                        covoiturage.setNomConducteur(covoit.get("nomConducteur").toString());
-                        covoiturage.setPrenomConducteur(covoit.get("prenomConducteur").toString());
-                        covoiturage.setNbPlacesDispo(covoit.get("nbPlacesDispo").toString());
-                        covoiturage.setTypeVehicule(covoit.get("typeVehicule").toString());
-                        covoiturage.setHoraireAller(stStringToDate(covoit.get("horaireAller").toString()));
-                        covoiturage.setHoraireRetour(stStringToDate(covoit.get("horaireRetour").toString()));
-                        covoiturage.setLieuRdvAller(covoit.get("lieuDepartAller").toString());
-                        covoiturage.setLieuRdvRetour(covoit.get("lieuDepartRetour").toString());
-                        covoiturage.setListPassagers(listPassagers);*/
-
-                        listCovoiturages.add(covoiturage);
                     }
                 }
             }
