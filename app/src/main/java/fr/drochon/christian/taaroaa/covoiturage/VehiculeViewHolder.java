@@ -1,12 +1,16 @@
 package fr.drochon.christian.taaroaa.covoiturage;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -23,23 +27,26 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import fr.drochon.christian.taaroaa.R;
+import fr.drochon.christian.taaroaa.api.CovoiturageHelper;
 import fr.drochon.christian.taaroaa.model.Covoiturage;
 
 public class VehiculeViewHolder extends RecyclerView.ViewHolder {
 
-    private Covoiturage sCovoiturage;
     // DESIGN
     @BindView(R.id.vehicle_linear_layout)
     LinearLayout mLinearLayoutGlobal;
-    @BindView(R.id.clic_global) LinearLayout mGlobalClic;
+    @BindView(R.id.clic_global)
+    LinearLayout mGlobalClic;
     @BindView(R.id.covoit_conducteur_nom)
     TextView mNomConducteur;
     @BindView(R.id.passager_titre_txt)
     TextView mTitrePassager;
     @BindView(R.id.passager_spinner)
     Spinner mPassagerSpinner;
-    @BindView(R.id.lieu_depart_aller_txt) TextView mLieuDepart;
-    @BindView(R.id.lieu_depart_retour_txt) TextView mLieuRetour;
+    @BindView(R.id.lieu_depart_aller_txt)
+    TextView mLieuDepart;
+    @BindView(R.id.lieu_depart_retour_txt)
+    TextView mLieuRetour;
     @BindView(R.id.vehicule_titre_txt)
     TextView mTitreVehicule;
     @BindView(R.id.typeVehicule_txt)
@@ -52,6 +59,7 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
     TextView mAller;
     @BindView(R.id.retour_txt)
     TextView mRetour;
+    private Covoiturage sCovoiturage;
     //DATA
     private List<Covoiturage> mCovoiturageList;
     private List<String> mListPassagers;
@@ -76,32 +84,43 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
         mGlobalClic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                // recup des users
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
                 db.collection("users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot documentSnapshots) {
-                        if(documentSnapshots.size() != 0){
+                        if (documentSnapshots.size() != 0) {
                             List<DocumentSnapshot> docSps = documentSnapshots.getDocuments();
-                            for (DocumentSnapshot ds:docSps) {
-                                Map<String, Object> covoit = ds.getData();
-                                if(mNomConducteur.getText() ==  covoit.get("nomConducteur").toString() + " " +covoit.get("prenomConducteur").toString()){
-                                    if(covoit.get("listPassagers").equals(0)){
-                                        System.out.println("delete");
+                            for (DocumentSnapshot ds : docSps) {
+                                final Map<String, Object> user = ds.getData();
+                                // comparaison entre les users cde la bdd et l'user ayant créé le covoiturage
+                                if (mNomConducteur.getText().equals(user.get("prenom") + "  " + user.get("nom"))) {
+                                    // connaitre si des users se sont inscrits dans le convoit
+                                    if (mPassagerSpinner.getSelectedItem() == null) {
+                                        //alterdialog de suppression de covoit
+                                        final AlertDialog.Builder adb = new AlertDialog.Builder(itemView.getContext());
+                                        adb.setTitle(R.string.alertDialog_delete_covoit);
+                                        adb.setIcon(android.R.drawable.ic_dialog_alert);
+                                        adb.setTitle(R.string.alertDialog_delete_covoit);
+                                        adb.setPositiveButton("SUPPRIMER ?", new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                deleteCovoiturageInFirebase(user.get("prenom").toString(), user.get("nom").toString());
+                                            }
+                                        });
+                                        adb.setNegativeButton("ANNULER", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                // rien : rester sur l'ecran actuel
+                                            }
+                                        });
+                                        adb.show();
+
                                     }
                                 }
                             }
                         }
                     }
                 });
-        /*        if(mNomConducteur.getText() == sCovoiturage.getPrenomConducteur() + " " + sCovoiturage.getNomConducteur()){
-                    if(Integer.parseInt(mNbPlaceDispo.getText().toString()) == 0){
-                        System.out.println("alertdialog pour suppression de covoit");
-                    }
-                } else {
-                    Intent intent = new Intent(itemView.getContext(), CovoituragePassagersActivity.class).putExtra("covoit", sCovoiturage);
-                    itemView.getContext().startActivity(intent);
-                }*/
             }
         });
     }
@@ -132,14 +151,14 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
                 adapterNiveau.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 // Apply the adapter to the spinner
                 mPassagerSpinner.setAdapter(adapterNiveau);
-                }
             }
-            mTypeVehicule.setText(covoiturage.getTypeVehicule());
-            mNbPlaceDispo.setText(covoiturage.getNbPlacesDispo());
-            mAller.setText(stDateToString(covoiturage.getHoraireAller()));
-            mRetour.setText(stDateToString(covoiturage.getHoraireRetour()));
-            mLieuDepart.setText(covoiturage.getLieuDepartAller());
-            mLieuRetour.setText(covoiturage.getLieuDepartRetour());
+        }
+        mTypeVehicule.setText(covoiturage.getTypeVehicule());
+        mNbPlaceDispo.setText(covoiturage.getNbPlacesDispo());
+        mAller.setText(stDateToString(covoiturage.getHoraireAller()));
+        mRetour.setText(stDateToString(covoiturage.getHoraireRetour()));
+        mLieuDepart.setText(covoiturage.getLieuDepartAller());
+        mLieuRetour.setText(covoiturage.getLieuDepartRetour());
     }
 
     /**
@@ -161,18 +180,46 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
     // --------------------
 
     /**
-     * Methode permettant de retrouver la position d'un item de la liste des niveaux de plongée d'un user
-     *
-     * @param spinner
-     * @param myString
-     * @return int
+     * Methode permettant à l'utilisateur d'etre redirigé vers la pages principale des covoiturages
      */
-    protected int getIndexSpinner(Spinner spinner, String myString) {
-        for (int i = 0; i < spinner.getCount(); i++) {
-            if (spinner.getItemAtPosition(i).toString().equalsIgnoreCase(myString)) {
-                return i;
+    private void startActivityCovoiturageVehicule() {
+        Intent intent = new Intent(itemView.getContext(), CovoiturageVehiclesActivity.class);
+        itemView.getContext().startActivity(intent);
+    }
+
+
+    // --------------------
+    // REST REQUESTS
+    // --------------------
+
+    /**
+     * Methode permettant de supprimer un covoiturage si ce covoiturage ne comporte pas encore de passager
+     */
+    private void deleteCovoiturageInFirebase(final String prenom, final String nom) {
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("covoiturages").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot documentSnapshots) {
+                if (documentSnapshots.size() != 0) {
+                    List<DocumentSnapshot> docSps = documentSnapshots.getDocuments();
+                    for (DocumentSnapshot ds : docSps) {
+                        Map<String, Object> covoit = ds.getData();
+                        if (covoit.get("nomConducteur").equals(nom) && covoit.get("prenomConducteur").equals(prenom)) {
+                            //CRUD
+                            CovoiturageHelper.deleteCovoiturage(covoit.get("id").toString())
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Toast.makeText(itemView.getContext(), R.string.delete_covoit,
+                                                    Toast.LENGTH_LONG).show();
+                                            startActivityCovoiturageVehicule(); // renvoi l'user sur la page des covoiturages apres validation de la creation de l'user dans les covoit
+                                        }
+                                    });
+                        }
+                    }
+                }
             }
-        }
-        return 0;
+        });
     }
 }
