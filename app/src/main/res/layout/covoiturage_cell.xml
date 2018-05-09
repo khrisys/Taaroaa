@@ -20,8 +20,8 @@
         android:gravity="center"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textColor="#2196F3"
-        android:textStyle="bold"
-        />
+        android:textStyle="bold"/>
+
 
     <FrameLayout
         android:id="@+id/covoit_passager_framelayout"
@@ -65,7 +65,7 @@
             android:layout_marginEnd="40dp"
             android:layout_marginStart="60dp"
             android:layout_marginTop="3dp"
-            android:text="@string/type_du_vehicule"
+            android:text="@string/type_de_vehicule"
             android:textSize="20sp"/>
 
         <Spinner
@@ -93,7 +93,9 @@
             android:layout_marginEnd="40dp"
             android:layout_marginStart="60dp"
             android:layout_marginTop="3dp"
+
             android:text="@string/places_disponibles"
+
             android:textSize="20sp"/>
 
         <Spinner

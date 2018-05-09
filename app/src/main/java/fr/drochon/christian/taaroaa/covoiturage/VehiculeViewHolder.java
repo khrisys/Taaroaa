@@ -1,5 +1,6 @@
 package fr.drochon.christian.taaroaa.covoiturage;
 
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -18,6 +19,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.model.Covoiturage;
+import fr.drochon.christian.taaroaa.model.User;
 
 public class VehiculeViewHolder extends RecyclerView.ViewHolder {
 
@@ -58,12 +60,11 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
         mNomConducteur.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO recuperer l'objet Covoiturage via l'id en requetant. Passer ensuite l'id à la liste depuis la creation de l'objet dans l'ecran conducteur.
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
                 db.collection("covoiturage").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot documentSnapshots) {
-                        //get l'objet
+                      
                     }
                 });
             }
