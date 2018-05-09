@@ -459,7 +459,6 @@
                 android:text="@string/supprimez_un_covoiturage"
                 android:textColor="@android:color/white"/>
 
-
         </LinearLayout>
 
 
