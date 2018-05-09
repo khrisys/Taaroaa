@@ -29,6 +29,7 @@ import butterknife.ButterKnife;
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.api.CovoiturageHelper;
 import fr.drochon.christian.taaroaa.model.Covoiturage;
+import fr.drochon.christian.taaroaa.model.User;
 
 public class VehiculeViewHolder extends RecyclerView.ViewHolder {
 
@@ -84,11 +85,12 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
         mGlobalClic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // recup des users
+              
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
                 db.collection("users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot documentSnapshots) {
+
                         if (documentSnapshots.size() != 0) {
                             List<DocumentSnapshot> docSps = documentSnapshots.getDocuments();
                             for (DocumentSnapshot ds : docSps) {

@@ -37,7 +37,7 @@
                 android:gravity="center"
                 android:layout_marginTop="30dp"
                 android:layout_marginBottom="20dp"
-                android:text="@string/creez_votre_compte"
+                android:text="Bienvenue sur votre compte"
                 android:textColor="@color/colorPrimary"
                 android:textSize="25sp"/>
 
@@ -81,7 +81,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="45dp"
                     android:layout_marginStart="45dp"
-                    android:inputType="text|textCapCharacters"
+                    android:inputType="textCapCharacters"
                     android:lines="1"/>
             </android.support.design.widget.TextInputLayout>
 
@@ -106,18 +106,18 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="45dp"
                     android:layout_marginStart="45dp"
-                    android:inputType="text|textCapCharacters"
+                    android:inputType="textCapCharacters"
                     android:lines="1"/>
             </android.support.design.widget.TextInputLayout>
 
-<!--            &lt;!&ndash; PROGRESS BAR &ndash;&gt;
-            <ProgressBar
-                android:id="@+id/profile_activity_progress_bar"
-                android:layout_width="30dip"
-                android:layout_height="30dip"
-                android:layout_gravity="center"
-                android:layout_marginTop="20dp"
-                android:visibility="invisible"/>-->
+            <!--            &lt;!&ndash; PROGRESS BAR &ndash;&gt;
+                        <ProgressBar
+                            android:id="@+id/profile_activity_progress_bar"
+                            android:layout_width="30dip"
+                            android:layout_height="30dip"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="20dp"
+                            android:visibility="invisible"/>-->
 
             <TextView
                 android:id="@+id/plongee_titre_txt"
@@ -214,25 +214,25 @@
 
 
             <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="40dp">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/email_txt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="40dp"
-                android:layout_marginEnd="40dp">
+                android:layout_marginEnd="45dp"
+                android:layout_marginStart="45dp"
+                android:enabled="false"
+                android:inputType="textPassword|textVisiblePassword"
+                android:lines="1"
+                android:visibility="visible"/>
 
-                <android.support.design.widget.TextInputEditText
-                    android:id="@+id/email_txt"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="45dp"
-                    android:layout_marginStart="45dp"
-                    android:enabled="false"
-                    android:inputType="textPassword|textVisiblePassword"
-                    android:lines="1"
-                    android:visibility="visible"/>
+        </android.support.design.widget.TextInputLayout>
 
-            </android.support.design.widget.TextInputLayout>
-
-<!--            <TextView
+            <TextView
                 android:id="@+id/password_txt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -241,8 +241,7 @@
                 android:shadowColor="@color/colorAccent"
                 android:text="Mot de passe :"
                 android:textColor="@color/colorPrimary"
-                android:textSize="18sp"/>-->
-<!--
+                android:textSize="18sp"/>
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
@@ -261,7 +260,7 @@
                     android:lines="1"
                     android:visibility="visible"/>
 
-            </android.support.design.widget.TextInputLayout>-->
+            </android.support.design.widget.TextInputLayout>
 
             <ProgressBar
                 android:id="@+id/progress_bar"
@@ -292,7 +291,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="30dp"
-                android:visibility="invisible"
+                android:visibility="gone"
                 android:background="@color/colorPrimary"
                 android:text="Supprimez votre compte"
                 android:textColor="@android:color/white"/>
