@@ -272,7 +272,7 @@ public class CovoiturageConducteursActivity extends BaseActivity {
             verificationChampsVides();
         }
     }
-    
+
     /**
      * Methode permettant de recuperer le nom et le prenom de la personne connectée. Ainsi, seule une personne connectée
      * avec un compte precis pourra creer un covoiturage.
@@ -290,26 +290,6 @@ public class CovoiturageConducteursActivity extends BaseActivity {
                 }
             }
         });
-/*        String username = getCurrentUser().getDisplayName();
-        String nom = null, prenom = null;
-        String[] parts;
-        assert username != null;
-        if (username.contains(" ")) {
-            parts = username.split(" ");
-            try {
-                if (parts[1] != null) nom = parts[1].toUpperCase();
-                else nom = "";
-            } catch (ArrayIndexOutOfBoundsException e1) {
-                Log.e("TAG", "ArrayOutOfBoundException " + e1.getMessage());
-            }
-            if (parts[0] != null) prenom = parts[0].toUpperCase();
-            else prenom = "";
-        } else {
-            nom = username;
-            prenom = "";
-        }
-        mNom.setText(nom);
-        mPrenom.setText(prenom);*/
     }
 
 
