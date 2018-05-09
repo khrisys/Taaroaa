@@ -22,7 +22,7 @@
         android:gravity="center_vertical|center_horizontal"
         android:linksClickable="false"
         android:longClickable="false"
-        android:text="Bonjour. \nBienvenue sur l'application de gestion d'un club de plongée sous-marine."
+        android:text="@string/titre_app"
         android:textColor="@android:color/black"
         android:textIsSelectable="false"
         android:textSize="20sp"
@@ -59,6 +59,21 @@
             app:layout_constraintEnd_toEndOf="parent"/>
     </android.support.design.widget.TextInputLayout>
 -->
+
+    <Button
+        android:id="@+id/creation_compte_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginEnd="30dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="70dp"
+        android:background="@color/colorPrimary"
+        android:gravity="center"
+        android:minHeight="50dp"
+        android:text="@string/creez_votre_compte"
+        android:textColor="@android:color/white"/>
+
     <Button
         android:id="@+id/connection_valid_btn"
         android:layout_width="match_parent"
@@ -70,7 +85,7 @@
         android:background="@color/colorPrimary"
         android:gravity="center"
         android:minHeight="50dp"
-        android:text="Connectez vous"
+        android:text="@string/connectez_vous"
         android:textColor="@android:color/white"/>
 
 
@@ -83,19 +98,19 @@
         android:layout_marginStart="50dp"
         android:layout_marginTop="70dp"
         android:background="@color/colorPrimary"
-        android:text="Deconnectez vous"
+        android:text="@string/deconnectez_vous"
         android:textColor="@android:color/white"/>
 
     <EditText
         android:id="@+id/mdp_oubli_lien"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="60dp"
+        android:layout_marginBottom="40dp"
         android:layout_marginStart="20dp"
         android:height="40dp"
         android:ems="10"
         android:freezesText="false"
-        android:text="mot de passe oublié ?"
+        android:text="@string/mot_de_passe_oubli"
         android:textColor="@color/colorPrimary"
         android:textColorHighlight="@color/colorAccent"
         android:textIsSelectable="true"
@@ -104,7 +119,9 @@
     <TextView
         android:id="@+id/test_coordinator"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"/>
 
 
 

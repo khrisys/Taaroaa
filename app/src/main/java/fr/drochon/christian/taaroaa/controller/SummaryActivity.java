@@ -9,23 +9,29 @@ import android.view.View;
 import android.widget.Button;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.auth.AccountCreateActivity;
+import fr.drochon.christian.taaroaa.auth.AccountModificationActivity;
+import fr.drochon.christian.taaroaa.auth.SearchUserActivity;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
 import fr.drochon.christian.taaroaa.course.CoursesPupilsActivity;
 import fr.drochon.christian.taaroaa.course.CoursesSupervisorsActivity;
 import fr.drochon.christian.taaroaa.covoiturage.CovoiturageAccueilActivity;
+import fr.drochon.christian.taaroaa.model.User;
 
 public class SummaryActivity extends BaseActivity {
 
-    Button mAdherent;
+    Button mCompte;
+    Button mModifCompte;
     Button mCours;
     Button mSortie;
 
@@ -33,17 +39,67 @@ public class SummaryActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_summary);
-        configureToolbar();
-
-        mAdherent = findViewById(R.id.adherents_btn);
 
         ActionBar actionBar = getSupportActionBar();
+        assert actionBar != null;
         actionBar.setDisplayShowHomeEnabled(true);
 
-        mAdherent.setOnClickListener(new View.OnClickListener() {
+        mCompte = findViewById(R.id.adherents_btn);
+        mModifCompte = findViewById(R.id.modif_adherents_btn);
+
+        configureToolbar();
+        showPannelModification();
+
+
+        /*
+        Affichage de l'activité de creation de compte ou de modification de compte en fonction de l'existence
+        en bdd ou non de l'utilisateur connecté
+         */
+        mCompte.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(SummaryActivity.this, AccountCreateActivity.class);
+
+                final FirebaseFirestore db = FirebaseFirestore.getInstance();
+                db.collection("users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot documentSnapshots) {
+                        if (documentSnapshots.size() != 0) {
+                            List<DocumentSnapshot> ds = documentSnapshots.getDocuments();
+                            for (DocumentSnapshot doc : ds) {
+                                Map<String, Object> user = doc.getData();
+                                //TODO  passe dans les 2 conditions en fonction de l'id. comme ca boucle, on passe dans les2 et ca arrive sur la creation de compte
+                                if (user.get("uid").equals(getCurrentUser().getUid())) {
+                                    // Si l'user connecté n'existe pas en bdd, on affiche l'ecran de creation
+                                    if(user.get("fonction") != null) {
+                                        User u = new User(user.get("uid").toString(), user.get("nom").toString(), user.get("prenom").toString(), user.get("licence").toString(),
+                                                user.get("email").toString(), user.get("niveau").toString(), user.get("fonction").toString());
+                                        Intent intent = new Intent(SummaryActivity.this, AccountModificationActivity.class).putExtra("user", u);
+                                        startActivity(intent);
+                                        break;
+                                    }
+                                    else {
+                                        Intent intent = new Intent(SummaryActivity.this, AccountCreateActivity.class);
+                                        startActivity(intent);
+                                    }
+                                }
+                                // nouvel utilisateur
+                                else {
+                                    Intent intent = new Intent(SummaryActivity.this, AccountCreateActivity.class);
+                                    startActivity(intent);
+                                }
+                            }
+                        }
+                    }
+                });
+
+            }
+        });
+
+
+        mModifCompte.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(SummaryActivity.this, SearchUserActivity.class);
                 startActivity(intent);
             }
         });
@@ -122,5 +178,33 @@ public class SummaryActivity extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         return optionsToolbar(this, item);
+    }
+
+
+    // --------------------
+    // UI
+    // --------------------
+
+    /**
+     * Fonction permettant d'afficher ou non la tuile de moficiation d'un adherent
+     */
+    private void showPannelModification() {
+        //TODO afficher le graphique du panneau de modif si l'utilisateur connecté est un encadrant
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference documentReference = db.collection("users").document(Objects.requireNonNull(getCurrentUser()).getUid());
+        documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if (documentSnapshot.exists()) {
+                    Map<String, Object> user = documentSnapshot.getData();
+                    if (user.get("fonction") == null || !user.get("fonction").equals("Moniteur")) {
+                        mModifCompte.setVisibility(View.GONE);
+                    }
+                    //lors de la creation d'un compte, enleve la tuile de modification d'un compte
+                } else {
+                    mModifCompte.setVisibility(View.GONE);
+                }
+            }
+        });
     }
 }

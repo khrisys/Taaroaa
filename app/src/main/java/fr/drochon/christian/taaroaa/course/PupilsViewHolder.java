@@ -7,20 +7,11 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -59,7 +50,7 @@ public class PupilsViewHolder extends RecyclerView.ViewHolder {
 
         mCourseList = new ArrayList<>();
 
-        // Affichage de la notification
+        // Affichage du contenu de la cellule sous forle de notification
         // j'utilise l'ecouteur sur la cellule et recupere les informations pour les affihcer dans une notification
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override

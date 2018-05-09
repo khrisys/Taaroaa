@@ -19,12 +19,16 @@
     <!-- MAIN ACTIVITY -->
     <string name="error_not_connected">Vous devez d\'abord vous connecter !</string>
     <string name="error_authentication_canceled">Authentification annulée&#8230;</string>
-    <string name="connection_end">Vous êtes actuellement déconnecté de l\'application !</string>
+    <string name="connection_end">Vous venez de vous déconnecter de l\'application !\nA bientôt!</string>
     <string name="error_no_internet">Aucune connexion internet !</string>
     <string name="error_unknown_error">Une erreur inconnue s\'est produite&#8230;</string>
     <string name="connection_succeed">Authentification réussie !</string>
     <string name="button_login_text_logged">Afficher le profil</string>
     <string name="button_login_text_not_logged">Connexion</string>
+    <string name="titre_app">Bonjour.  Bienvenue sur l\'application de gestion d\'un club de plongée sous-marine.</string>
+    <string name="connectez_vous">Connectez vous</string>
+    <string name="deconnectez_vous">Deconnectez vous</string>
+    <string name="mot_de_passe_oubli">mot de passe oublié ?</string>
 
     <!-- LOGIN ACTIVITY -->
     <string name="toolbar_title_login_activity">Votre Profil</string>
@@ -32,22 +36,38 @@
     <string name="text_view_email">Adresse email :</string>
     <string name="button_update_account">Mettre à jour le nom d\'utilisateur</string>
     <string name="button_delete_account">Supprimer mon compte</string>
-    <string name="button_create_account">Connectez vous</string>
     <string name="button_go_summary">Allez au sommaire</string>
-    <string name="button_sign_out_account">Déconnexion</string>
     <string name="info_no_email_found">Auncune adresse email</string>
     <string name="info_no_username_found">Aucun nom d\'utilisateur</string>
     <string name="popup_message_confirmation_delete_account">Etes vous sûr(e) de vouloir supprimer votre compte ?</string>
     <string name="popup_message_choice_yes">Oui !</string>
     <string name="popup_message_choice_no">Non</string>
-    <string name="check_box_is_mentor">Etes-vous un mentor ?</string>
 
-    <!--ACCOUNT ACTIVITY-->
+    <!--ACCOUNT CREATE AND MODIFICATION USER ACTIVITIES-->
     <string name="alertDialog_account">Voulez vous réellement supprimer votre compte ?</string>
     <string name="alertDialog_delete">Vous avez supprimé votre compte !</string>
     <string name="alertDialog_cancel">Vous n\'avez pas supprimé votre compte. \nVous diposez encore de vos informations personnelles. </string>
-    <string name="update_account">Vous avez mis à jour votre compte !</string>
+    <string name="update_account">Le compte a été mis à jour !</string>
     <string name="create_account">Vous avez créé votre compte. \n\tMerci !</string>
+    <string name="complete_account">Complétez votre compte</string>
+    <string name="modifiez_votre_compte">Modifiez votre compte</string>
+    <string name="modifiez_le_compte">Modifiez le compte adhérent</string>
+    <string name="email">Email :</string>
+    <string name="compte">Compte</string>
+    <string name="fonction_au_sein_du_club">Fonction au sein du club :</string>
+    <string name="niveau_de_plongee_acquis">Niveau de plongée acquis :</string>
+    <string name="numero_de_licence_optionnel">Numéro de licence (optionnel) :</string>
+    <string name="plongee">Plongée</string>
+    <string name="nom">Nom :</string>
+    <string name="prenom">Prénom :</string>
+    <string name="personnel">Personnel</string>
+    <string name="creez_votre_compte">Créez votre compte</string>
+    <string name="bienvenue_sur_votre_compte">Bienvenue sur votre compte</string>
+    <string name="modifiez_le_compte_d_un_adherent">Modifiez le compte d\'un adhérent</string>
+    <string name="verif_every_fields_complete">Merci de saisir tous les champs du formulaire !</string>
+    <string name="modif_ecran_titre">Veuillez saisir le nom et prenom de la personne recherchée</string>
+    <string name="empty_list_users_txt">Il n\'y actuellement aucune personne inscrite au club avec le nom recherché</string>
+    <string name="recherche_adherent_btn">Recherchez un adhérent</string>
 
     <!--COURSES ACTIVITIES-->
     <string name="button_create_course">Créez un cours</string>
@@ -55,14 +75,34 @@
     <string name="error_empty_fields">Merci de saisir ce champ !</string>
     <string name="empty_list_txt">Il n\'y actuellement pas de cours à cette date</string>
     <string name="create_course">Vous avez créé un nouveau cours. \n\tMerci !</string>
+    <string name="course_deconnexion">Déconnexion</string>
+    <string name="sommaire">Sommaire</string>
 
     <!-- COVOITURAGE ACTIVITY -->
+    <string name="covoit_txt">Covoiturage</string>
     <string name="proposer_covoit_btn">Proposez un covoiturage</string>
     <string name="inscription_covoit_txt">Cliquez sur le nom d\'un conducteur pour vous inscrire à un covoiturage.</string>
     <string name="empty_list_covoit_txt">Il n\'y actuellement pas de covoiturage proposé</string>
     <string name="nom_des_passagers">Nom des passagers :</string>
     <string name="type_de_vehicule">Type de véhicule :</string>
+    <string name="nombre_de_passagers">Nombre de passager(s) :</string>
+    <string name="reservez_btn">Réservez</string>
+    <string name="nom_du_passager_responsable">Nom du passager / responsable :</string>
+    <string name="passager">Passager</string>
+    <string name="type_du_vehicule">Type du véhicule :</string>
+    <string name="places_disponibles">Places disponibles :</string>
+      <string name="heure_depart_trajet_retour">Heure départ trajet retour</string>
+    <string name="heure_du_retour">Heure du retour</string>
+    <string name="date_de_retour">Date de retour</string>
+    <string name="heure_depart_trajet_aller">Heure départ trajet aller</string>
+    <string name="heure_du_depart">Heure du départ</string>
+    <string name="date_de_depart">Date de départ</string>
+    <string name="horaires">Horaires</string>
     <string name="nombre_de_places_disponibles">Nombre de places disponibles :</string>
+    <string name="nom">Nom :</string>
+    <string name="prenom">Prénom :</string>
+    <string name="conducteur">Conducteur</string>
+
 
     <!-- FACEBOOK PURPOSE -->
     <!--<string name="facebook_application_id" translatable="false">420763051691337</string>
@@ -82,17 +122,5 @@
     <string name="title_activity_courses_pupils">Cours prépa balbla</string>
     <string name="title_activity_test">TestActivity</string>
     <string name="title_activity_covoiturage_vehicules">CovoiturageVehiculesActivity</string>
-    <string name="heure_depart_trajet_retour">Heure départ trajet retour</string>
-    <string name="heure_du_retour">Heure du retour</string>
-    <string name="date_de_retour">Date de retour</string>
-    <string name="heure_depart_trajet_aller">Heure départ trajet aller</string>
-    <string name="heure_du_depart">Heure du départ</string>
-    <string name="date_de_depart">Date de départ</string>
-    <string name="horaires">Horaires</string>
-    <string name="type_du_vehicule">Type du véhicule :</string>
-    <string name="nombre_de_places_disponibles">Nombre de places disponibles :</string>
-    <string name="nom">Nom :</string>
-    <string name="prenom">Prénom :</string>
-    <string name="conducteur">Conducteur</string>
 
 </resources>

@@ -1,11 +1,11 @@
 package fr.drochon.christian.taaroaa.auth;
 
-import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,14 +24,14 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -45,7 +45,7 @@ import fr.drochon.christian.taaroaa.model.User;
 
 import static android.widget.Toast.LENGTH_SHORT;
 
-public class AccountCreateActivity extends BaseActivity {
+public class AccountModificationActivity extends BaseActivity {
 
     public static final int GET_USERNAME = 40;
     // identifiant pour identifier la requete REST
@@ -57,21 +57,19 @@ public class AccountCreateActivity extends BaseActivity {
     TextInputEditText mNom;
     TextInputEditText mLicence;
     Spinner mNiveauPlongeespinner;
-    //Spinner mFonctionAuClubspinner;
+    Spinner mFonctionAuClubspinner;
     TextInputEditText mEmail;
-    TextInputEditText mPassword;
     ProgressBar mProgressBar;
-    Button mCreateAccount;
+    Button mModificationCompte;
     Button mSuppressionCompte;
-    //MenuItem mItemView;
     TextView mTitrePage;
-    String fonction;
-
+    Intent mIntent;
+    static User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_account_create);
+        setContentView(R.layout.activity_account_modification);
 
         //setTitle("Création de compte");
         mTitrePage = findViewById(R.id.titre_page_compte_txt);
@@ -80,23 +78,18 @@ public class AccountCreateActivity extends BaseActivity {
         mNom = findViewById(R.id.nom_txt);
         mLicence = findViewById(R.id.licence_txt);
         mNiveauPlongeespinner = findViewById(R.id.niveau_spinner);
-        mNiveauPlongeespinner.setEnabled(true);
-        //mFonctionAuClubspinner = findViewById(R.id.fonction_spinner);
+        mNiveauPlongeespinner.setEnabled(false);
+        mFonctionAuClubspinner = findViewById(R.id.fonction_spinner);
         mEmail = findViewById(R.id.email_txt);
         mProgressBar = findViewById(R.id.progress_bar);
-        mCreateAccount = findViewById(R.id.modificiation_compte_btn);
+        mModificationCompte = findViewById(R.id.modificiation_compte_btn);
         //TODO n'afficher le bouton de suppression qu'aux proprieraires des comptes
         mSuppressionCompte = findViewById(R.id.suppression_compte_btn);
-        // recup de la barre de rehcerche pour ne pas qu'elle soit null (non declarée dans BaseActivity)
-        //mItemView = findViewById(R.id.app_bar_search_adherents);
-        fonction = "Plongeur"; // la fonction par defaut d'un adhrent qui créé son compte a pour fonction "Plongeur"
 
         configureToolbar();
-
-        //showManagementSupervisors();
+        showAttributes();
         // methode à appeler APRES l'initialisation des variables, sinon les variables auront des references null
         this.updateUIWhenCreating(); // recuperation des informations de l'user actuel
-
 
         //TODO verifier que tous les champs soient remplis
 
@@ -108,10 +101,10 @@ public class AccountCreateActivity extends BaseActivity {
         //Lorsqu'un utilisateur a rempli correctement le formulaire, il est renvoyé à la page Sommaire
         // 1 - lorsqu'un plongeur est connecté, le menu deroulant des fonctions est desactivé; tous les autres champs sont acesssibles.
         // 2 - lorsqu'un encadrant est connecté, tous les chamos sont en lecture seule, sauf le menu deroulant des fonctions
-        mCreateAccount.setOnClickListener(new View.OnClickListener() {
+        mModificationCompte.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                createUserInFirebase();
+                updateUserInFirebase(); // update dans firebase
                 //updateData(mNom.getText().toString(), mPrenom.getText().toString());
                 startSummaryActivity();
             }
@@ -122,21 +115,22 @@ public class AccountCreateActivity extends BaseActivity {
         mSuppressionCompte.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final AlertDialog.Builder adb = new AlertDialog.Builder(AccountCreateActivity.this);
+                final AlertDialog.Builder adb = new AlertDialog.Builder(AccountModificationActivity.this);
                 adb.setTitle(R.string.alertDialog_account);
                 adb.setIcon(android.R.drawable.ic_dialog_alert);
                 adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         EditText editText = findViewById(R.id.alertdialog_ok_account);
-                        Toast.makeText(AccountCreateActivity.this, editText.getText(), Toast.LENGTH_LONG).show();
-                        deleteUserFromFirebase();
-                        //deleteUser();
+                        Toast.makeText(AccountModificationActivity.this, editText.getText(), Toast.LENGTH_LONG).show();
+                        //deleteUserFromFirebase();
+                        deleteUser();
+                        signOutUserFromFirebase();
                         startMainActivity();
                     }
                 }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         EditText editText = findViewById(R.id.alertdialog_delete_account);
-                        Toast.makeText(AccountCreateActivity.this, editText.getText(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(AccountModificationActivity.this, editText.getText(), Toast.LENGTH_LONG).show();
                         //finish();
                         //TODO est ce qu'on change d'ecran ou pas ?
                     }
@@ -157,18 +151,18 @@ public class AccountCreateActivity extends BaseActivity {
         // Apply the adapter to the spinner
         mNiveauPlongeespinner.setAdapter(adapterNiveau);
 
-/*        // Create an ArrayAdapter using the string array and a default spinner layout
+        // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.fonctions_array, android.R.layout.simple_spinner_item);
         // Specify the layout to use when the list of choices appears
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
-        mFonctionAuClubspinner.setAdapter(adapter);*/
+        mFonctionAuClubspinner.setAdapter(adapter);
     }
 
     @Override
     public int getFragmentLayout() {
-        return R.layout.activity_account_create;
+        return R.layout.activity_account_modification;
     }
 
     /**
@@ -191,15 +185,55 @@ public class AccountCreateActivity extends BaseActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.account_create_menu, menu);
-
+/*
         // recup de l'item de recherche des adherents
-        //mItemView = menu.findItem(R.id.app_bar_search_adherents);
-        //searchAndModifPupils();
+        mItemView = menu.findItem(R.id.app_bar_search_adherents);
+        searchAndModifPupils();*/
 
         return true; // true affiche le menu
     }
 
+/*    *//**
+     * Methode permettant de gerer la barre de recherche des adherents pour l'affichage de leurs comptes
+     * afin que les encadrants puissent les modifier.
+     *//*
+    private void searchAndModifPupils() {
 
+        android.widget.SearchView searchView = (android.widget.SearchView) mItemView.getActionView();
+        searchView.setQueryHint("Modifiez un compte");
+        searchView.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+        searchView.setOnQueryTextListener(new android.widget.SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String name) {
+                // decomposition du nom et du prenom recu dans le param name
+                String nom = null, prenom = null;
+                String[] parts;
+                if (name.contains(" ")) {
+                    parts = name.split(" ");
+                    try {
+                        if (parts[1] != null) nom = parts[1];
+                        else nom = "";
+                    } catch (ArrayIndexOutOfBoundsException e1) {
+                        Log.e("TAG", "ArrayOutOfBoundException " + e1.getMessage());
+                    }
+                    if (parts[0] != null) prenom = parts[0];
+                    else prenom = "";
+                } else {
+                    nom = name;
+                    prenom = "";
+                }
+                System.out.println("clic");
+                showSearchedDatas(name, prenom);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                System.out.println(newText);
+                return true;
+            }
+        });
+    }*/
 
     /**
      * recuperation  du clic d'un user.
@@ -218,7 +252,7 @@ public class AccountCreateActivity extends BaseActivity {
      * Methode permettant de changer d'ecran lors d'une connexion valide
      */
     private void startSummaryActivity() {
-        Intent intent = new Intent(AccountCreateActivity.this, SummaryActivity.class);
+        Intent intent = new Intent(AccountModificationActivity.this, SummaryActivity.class);
         startActivity(intent);
     }
 
@@ -226,7 +260,7 @@ public class AccountCreateActivity extends BaseActivity {
      * Methode permettant de revenir à la page d'accueil lorsqu'un utilisateur a supprimer son compte
      */
     private void startMainActivity() {
-        Intent intent = new Intent(AccountCreateActivity.this, MainActivity.class);
+        Intent intent = new Intent(AccountModificationActivity.this, MainActivity.class);
         startActivity(intent);
     }
 
@@ -241,8 +275,7 @@ public class AccountCreateActivity extends BaseActivity {
     private void updateUIWhenCreating() {
 
         if (this.getCurrentUser() != null) { // retourne un user FirebaseUser. Permettra de remplir toutes les vues de l'activité
-            getInformationsNewUser();
-            //TODO afficher toutes les informations d'un user*/
+            getAndShowUserDatas();
         }
     }
 
@@ -256,93 +289,13 @@ public class AccountCreateActivity extends BaseActivity {
         }
     }
 
-    /**
-     * Methode permettant de recuperer les informations d'un user qui vient de creer un compte et de les afficher à l'ecran
-     */
-    private void getInformationsNewUser() {
-        String username = Objects.requireNonNull(getCurrentUser()).getDisplayName();
-        String email = getCurrentUser().getEmail();
-        String nom = null, prenom = null;
-        String[] parts;
-        assert username != null;
-        if (username.contains(" ")) {
-            parts = username.split(" ");
-            try {
-                if (parts[1] != null) nom = parts[1];
-                else nom = "";
-            } catch (ArrayIndexOutOfBoundsException e1) {
-                Log.e("TAG", "ArrayOutOfBoundException " + e1.getMessage());
-            }
-            if (parts[0] != null) prenom = parts[0];
-            else prenom = "";
-        } else {
-            nom = username;
-            prenom = "";
-        }
-        mNom.setText(nom);
-        mPrenom.setText(prenom);
-        mEmail.setText(email);
-        mNiveauPlongeespinner.setEnabled(true);
-        mCreateAccount.setText(R.string.complete_account);
-        mSuppressionCompte.setVisibility(View.VISIBLE);
-    }
-
 
     /**
-     * Methode permettant de recuperer depuis la bdd et d'afficher les données de l'utilisateur actuellement connecté
-     */
-    private void getAndShowUserDatas() {
-        DocumentReference docRef1 = FirebaseFirestore.getInstance().collection("users").document(getCurrentUser().getUid()); // recup ref de l'obj courant en bdd de stockage
-        // un DocumentReference fait référence à un emplacement de document dans une base de données Firestore et peut être utilisé pour
-        // écrire, lire ou écouter l'emplacement. Il peut exister ou non un document à l'emplacement référencé.
-
-        docRef1.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot doc = task.getResult(); //Un DocumentSnapshot contient des données lues à partir d'un document dans votre base de données Firestore.
-                    if (doc.exists()) {
-                        mSuppressionCompte.setEnabled(true);
-                        //String uid = FirebaseAuth.getInstance().getUid();
-                        String nom = (String) doc.get("nom");
-                        String prenom = (String) doc.get("prenom");
-                        String email = (String) doc.get("email");
-                        String licence = (String) doc.get("licence");
-                        String niveau = (String) doc.get("niveau");
-
-                        mNom.setText(nom);
-                        mPrenom.setText(prenom);
-                        mEmail.setText(email);
-                        mLicence.setText(licence);
-                        mNiveauPlongeespinner.setSelection(getIndexSpinner(mNiveauPlongeespinner, niveau));
-                    }
-                }
-            }
-        })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                    }
-                });
-    }
-
-    /**
-     * Methode permettant de signaler une erreur lorsqu'un champ est resté vide alors que la soumission du formulaire a été faite.
-     */
-    private void verificationChampsVides() {
-
-        final String nom = mNom.getText().toString();
-        final String prenom = mPrenom.getText().toString();
-        if (nom.isEmpty()) mNom.setError("Merci de saisir ce champ !");
-        if (prenom.isEmpty()) mPrenom.setError("Merci de saisir ce champ !");
-    }
-/*
-    *//**
      * Methode permettant de donner acces à la fonction d'un adherent si l'utilisateur connecté est un encadrant ou un initiateur.
      * Ceci permettra de changer la fonction d'un adherent par un encadrant.
      * Cette methode desactive toutes les autres options pour empecher les erreurs de manipulation.
-     *//*
-    private void showManagementSupervisors() {
+     */
+    private void showAttributes() {
 
         if (this.getCurrentUser() != null) {
             FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -354,12 +307,13 @@ public class AccountCreateActivity extends BaseActivity {
                     if (documentSnapshot.exists()) {
                         //TODO ajout d'un titre à la page de modif
                         Object ds = documentSnapshot.get("fonction");
-                        Object uid = documentSnapshot.get("uid");
+                        Object nom = documentSnapshot.get("nom");
+                        Object prenom = documentSnapshot.get("prenom");
                         // moniteur etant sur un autre compte que le sien dès la premiere connexion ??
-                       *//* if (ds.equals("Moniteur") && !uid.equals(getCurrentUser().getUid())) {
-                            //TODO ajouter un titre à la page
-                            mTitrePage.setText("Modifiez le compte d'un adhérent");
-                            mItemView.setVisible(false);
+                        if (ds.equals("Moniteur") && !nom.equals(user.getNom()) && !prenom.equals(user.getPrenom())) {
+                            //TODO ici, j'update mon propre compte au lieu de celui de l'adherent
+                            mTitrePage.setText(R.string.modifiez_le_compte_d_un_adherent);
+                            //mItemView.setVisible(false);
                             mPrenom.setEnabled(false);
                             mNom.setEnabled(false);
                             mLicence.setEnabled(false);
@@ -370,12 +324,28 @@ public class AccountCreateActivity extends BaseActivity {
                             mSuppressionCompte.setVisibility(View.INVISIBLE);
 
                             // moniteur etant sur son propre compte
-                        } *//*
-
-                        // moniteur etant sur son propre compte
-                        if (ds.equals("Moniteur") && uid.equals(getCurrentUser().getUid())) {
+                        } else if (ds.equals("Moniteur") && nom.equals(user.getNom()) && prenom.equals(user.getPrenom())) {
+                            mTitrePage.setText(R.string.bienvenue_sur_votre_compte);
+                            //mItemView.setVisible(true);
+                            mPrenom.setEnabled(true);
+                            mNom.setEnabled(true);
+                            mLicence.setEnabled(true);
                             mNiveauPlongeespinner.setEnabled(true);
                             mLinearLayoutFonctionAdherent.setVisibility(View.VISIBLE);
+                            mModificationCompte.setText(R.string.modifiez_votre_compte);
+                            //Affichage du bouton de suppression uniquement aux proprietaires d'un compte
+                           mSuppressionCompte.setVisibility(View.VISIBLE);
+
+                            // adherent non moniteur sur son propre compte
+                        } else if (!ds.equals("Moniteur")) {
+                            mTitrePage.setText(R.string.bienvenue_sur_votre_compte);
+                            //mItemView.setVisible(true);
+                            mPrenom.setEnabled(true);
+                            mNom.setEnabled(true);
+                            mLicence.setEnabled(true);
+                            mNiveauPlongeespinner.setEnabled(false);
+                            mLinearLayoutFonctionAdherent.setVisibility(View.INVISIBLE);
+                            mModificationCompte.setText(R.string.modifiez_votre_compte);
                             //Affichage du bouton de suppression uniquement aux proprietaires d'un compte
                             mSuppressionCompte.setVisibility(View.VISIBLE);
                         }
@@ -383,75 +353,11 @@ public class AccountCreateActivity extends BaseActivity {
                 }
             });
         }
-    }*/
+    }
 
     // --------------------
     // REST REQUETES
     // --------------------
-
-
-
-    /**
-     * Methode permettant la creation d'un user dans le bdd. En cas d'insertion ou de probleme,
-     * la fonction renverra une notification à l'utilisateur.
-     */
-    private void createUserInFirebase() {
-
-        // pas d'id pour un objet non créé
-        String uid = FirebaseAuth.getInstance().getUid();
-        this.mProgressBar.setVisibility(View.VISIBLE);
-        String nom = this.mNom.getText().toString();
-        String prenom = this.mPrenom.getText().toString();
-        String licence = this.mLicence.getText().toString();
-        String niveau = this.mNiveauPlongeespinner.getSelectedItem().toString();
-        String email = this.mEmail.getText().toString();
-
-
-        final FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        if (!nom.isEmpty() && !prenom.isEmpty() && !niveau.isEmpty() && !fonction.isEmpty() && !email.isEmpty()) {
-
-            Map<String, Object> user = new HashMap<>();
-            user.put("uid", uid);
-            user.put("nom", nom.toUpperCase());
-            user.put("prenom", prenom.toUpperCase());
-            user.put("licence", licence);
-            user.put("niveau", niveau);
-            user.put("fonction", fonction);
-            user.put("email", email);
-            db.collection("users").document(uid).set(user)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Toast.makeText(AccountCreateActivity.this, R.string.create_account,
-                                    Toast.LENGTH_SHORT).show();
-                            startSummaryActivity(); // renvoi l'user sur la page sommaire   pres validation de la creation de l'user
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(AccountCreateActivity.this, "ERROR" + e.toString(),
-                                    Toast.LENGTH_SHORT).show();
-                            Log.d("TAG", e.toString());
-                        }
-                    });
-        } else {
-            //TODO verifier si l'alertdialog ici affiche les bonnes informations attendues
-            final AlertDialog.Builder adb = new AlertDialog.Builder(AccountCreateActivity.this);
-            adb.setTitle(R.string.alertDialog_account);
-            adb.setIcon(android.R.drawable.ic_dialog_alert);
-            adb.setTitle(R.string.verif_every_fields_complete);
-            adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    // rien à appeler. pas la peine de faire de toast
-                }
-            });
-            adb.show(); // affichage de l'artdialog
-            verificationChampsVides();
-        }
-    }
-
 
     /**
      * Cette methode ne comprend pas l'update d'une fonction dans le club, car seul les encadrants du club peuvent
@@ -464,16 +370,40 @@ public class AccountCreateActivity extends BaseActivity {
         String prenom = this.mPrenom.getText().toString();
         String licence = this.mLicence.getText().toString();
         String niveau = this.mNiveauPlongeespinner.getSelectedItem().toString();
-        //String fonction = this.mFonctionAuClubspinner.getSelectedItem().toString();
+        String fonction = this.mFonctionAuClubspinner.getSelectedItem().toString();
         String email = this.mEmail.getText().toString();
-        String password = this.mPassword.getText().toString();
 
-        if (this.getCurrentUser() != null) {
+        if (user.getUid() != null) {
             //TODO alert dialog lorsque tous les champs ne sont pas remplis
             if (!nom.isEmpty() && !nom.equals(getString(R.string.info_no_username_found)) && !prenom.isEmpty() && !email.isEmpty()) { // verification que tous les champs vides soient remplis
-                //UserHelper.createUser(this.getCurrentUser().getUid(), nom, prenom, licence, email, niveau, fonction).addOnFailureListener(this.onFailureListener()).addOnSuccessListener(this.updateUIAfterRESTRequestsCompleted(UPDATE_USERNAME));
+                UserHelper.updateUser(user.getUid(), user.getNom().toUpperCase(), user.getPrenom().toUpperCase(), licence, user.getEmail(), niveau, fonction).
+                        addOnFailureListener(this.onFailureListener()).
+                        addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Toast.makeText(AccountModificationActivity.this, R.string.update_account,
+                                        Toast.LENGTH_SHORT).show();
+                                updateUIAfterRESTRequestsCompleted(UPDATE_USERNAME);
+                            }
+                        });
             }
         }
+    }
+
+    /**
+     * Methode permettant de recuperer et d'afficher les données de l'utilisateur actuellement connecté depuis
+     * l'activité Sommaire qui a determiné que l'utilisateur voulant afficher ses informations etait enregistré en bdd.
+     */
+    private void getAndShowUserDatas() {
+        mIntent  = getIntent();
+        user = (User) Objects.requireNonNull(mIntent.getExtras()).getSerializable("user");
+        assert user != null;
+        mNom.setText(user.getNom());
+        mPrenom.setText(user.getPrenom());
+        mLicence.setText(user.getLicence());
+        mNiveauPlongeespinner.setSelection(getIndexSpinner(mNiveauPlongeespinner, user.getNiveauPlongeur()));
+        mFonctionAuClubspinner.setSelection(getIndexSpinner(mFonctionAuClubspinner, user.getFonction()));
+        mEmail.setText(user.getEmail());
     }
 
     /**
@@ -497,11 +427,10 @@ public class AccountCreateActivity extends BaseActivity {
                                 String nom = (String) doc.get("nom");
                                 String prenom = (String) doc.get("prenom");
                                 String email = (String) doc.get("email");
-                                String password = (String) doc.get("password");
-                                //String fonction = (String) doc.get("fonction");
+                                String fonction = (String) doc.get("fonction");
                                 String licence = (String) doc.get("licence");
                                 String niveau = (String) doc.get("niveau");
-                                mTitrePage.setText("Modifiez le compte d'un adhérent ");
+                                mTitrePage.setText(R.string.modifiez_le_compte_d_un_adherent);
                                 mNom.setText(nom);
                                 mNom.setEnabled(false);
                                 mPrenom.setText(prenom);
@@ -510,8 +439,8 @@ public class AccountCreateActivity extends BaseActivity {
                                 mLicence.setText(licence);
                                 mLicence.setEnabled(false);
                                 mNiveauPlongeespinner.setSelection(getIndexSpinner(mNiveauPlongeespinner, niveau));
-                                //mFonctionAuClubspinner.setSelection(getIndexSpinner(mFonctionAuClubspinner, fonction));
-                                mSuppressionCompte.setVisibility(View.INVISIBLE);
+                                mFonctionAuClubspinner.setSelection(getIndexSpinner(mFonctionAuClubspinner, fonction));
+                                //mSuppressionCompte.setVisibility(View.INVISIBLE);
                                 break;
                             }
                         }
@@ -533,17 +462,16 @@ public class AccountCreateActivity extends BaseActivity {
      * un utilisateur connecté. Si cet utilisateur est un moniteur, la fonction prend en charge si celui ci veut
      * updater son propre compte ou celui d'un autre adherent.
      */
-    private void updateData() {
+    private void updateData(final String nom, final String prenom) {
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         this.mProgressBar.setVisibility(View.VISIBLE);
-        final String nom = this.mNom.getText().toString();
-        final String prenom = this.mPrenom.getText().toString();
+        /*final String nom = this.mNom.getText().toString();
+        final String prenom = this.mPrenom.getText().toString();*/
         final String licence = this.mLicence.getText().toString();
         final String niveau = this.mNiveauPlongeespinner.getSelectedItem().toString();
-        //final String fonction = this.mFonctionAuClubspinner.getSelectedItem().toString();
+        final String fonction = this.mFonctionAuClubspinner.getSelectedItem().toString();
         final String email = this.mEmail.getText().toString();
-        final String password = this.mPassword.getText().toString();
 
         final CollectionReference cr = db.collection("users");
         cr.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -552,8 +480,8 @@ public class AccountCreateActivity extends BaseActivity {
                 if (task.isSuccessful()) {
                     //mise à jour du compte de la personne connectée exceptée moniteur
                     List<DocumentSnapshot> users = task.getResult().getDocuments();
-                    for(int i = 0; i < users.size(); i++) {
-                       // recuperation des infos de la personne connectée
+                    for (int i = 0; i < users.size(); i++) {
+                        // recuperation des infos de la personne connectée
                         Map<String, Object> user = users.get(i).getData();
                         if (user.get("nom").equals(nom)) { //TODO a changer : condition sur l'uid : recuperer l'uid de l'adherent
                             user.put("nom", nom);
@@ -568,14 +496,14 @@ public class AccountCreateActivity extends BaseActivity {
                                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                                             @Override
                                             public void onSuccess(Void aVoid) {
-                                                Toast.makeText(AccountCreateActivity.this, R.string.update_account,
+                                                Toast.makeText(AccountModificationActivity.this, R.string.update_account,
                                                         Toast.LENGTH_SHORT).show();
                                             }
                                         })
                                         .addOnFailureListener(new OnFailureListener() {
                                             @Override
                                             public void onFailure(@NonNull Exception e) {
-                                                Toast.makeText(AccountCreateActivity.this, "ERROR" + e.toString(),
+                                                Toast.makeText(AccountModificationActivity.this, "ERROR" + e.toString(),
                                                         Toast.LENGTH_LONG).show();
                                                 Log.d("TAG", e.toString());
                                             }
@@ -608,7 +536,6 @@ public class AccountCreateActivity extends BaseActivity {
                                                 user1.setFonction(fonction);
                                                 user1.setEmail(email);
 
-
                                                 // verification que tous les champs vides soient remplis
                                                 if (!nom.isEmpty() && !nom.equals(getString(R.string.info_no_username_found)) && !prenom.isEmpty() && !email.isEmpty()) {
                                                     UserHelper.updateUser(user1.getUid(), user1.getNom(), user1.getPrenom(), user1.getLicence(), user1.getEmail(), user1.getNiveauPlongeur(), user1.getFonction());
@@ -622,7 +549,7 @@ public class AccountCreateActivity extends BaseActivity {
                             }).addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                                 @Override
                                 public void onSuccess(QuerySnapshot documentSnapshots) {
-                                    Toast.makeText(AccountCreateActivity.this, R.string.update_account,
+                                    Toast.makeText(AccountModificationActivity.this, R.string.update_account,
                                             Toast.LENGTH_LONG).show();
                                 }
                             });
@@ -644,7 +571,7 @@ public class AccountCreateActivity extends BaseActivity {
                 .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                Toast.makeText(AccountCreateActivity.this, R.string.alertDialog_delete,
+                Toast.makeText(AccountModificationActivity.this, R.string.alertDialog_delete,
                         LENGTH_SHORT).show();
             }
         });
@@ -661,14 +588,16 @@ public class AccountCreateActivity extends BaseActivity {
             //TODO mettre une notification si elle n'arrive pas avoir ajouté le deleteuser ci dessus
             AuthUI.getInstance()
                     .delete(this) // methode utilisée par le singleton authUI.getInstance()
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Toast.makeText(AccountCreateActivity.this, R.string.alertDialog_delete,
-                                    LENGTH_SHORT).show();
-                            updateUIAfterRESTRequestsCompleted(DELETE_USER_TASK);
-                        }
-                    });
+                    .addOnSuccessListener(this, this.updateUIAfterRESTRequestsCompleted(DELETE_USER_TASK));
         }
     }
+    /*
+     *//**
+     * Methode permettant à un utilisateur de se deconnecter retournant un objet de type Task permettant d erealiser ces appels de maniere asynchrone
+     *//*
+    private void signOutUserFromFirebase() {
+        AuthUI.getInstance()
+                .signOut(this) // methode utilisée par le singleton authUI.getInstance()
+                .addOnSuccessListener(this, this.updateUIAfterRESTRequestsCompleted(SIGN_OUT_TASK));
+    }*/
 }

@@ -25,8 +25,10 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import fr.drochon.christian.taaroaa.R;
+import fr.drochon.christian.taaroaa.auth.AccountCreateActivity;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
 
 import static fr.drochon.christian.taaroaa.R.drawable;
@@ -44,13 +46,9 @@ public class MainActivity extends BaseActivity {
 
     //FOR DATA CONNEXION
     private static final int SIGN_OUT_TASK = 10;
-    private static final int DELETE_USER_TASK = 20;
-    private static final int UPDATE_USERNAME = 30;
 
-
-    TextView mTextView;
-    /*@BindView(id.deconnexion_btn) Button mDeconnexion;
-    @BindView(id.connection_valid_btn) Button mConnexion;*/
+    // FOR COMMUNICATION
+    Button mCreation;
     Button mConnexion;
     Button mDeconnexion;
     TextView mTextViewHiddenForSnackbar;
@@ -72,6 +70,7 @@ public class MainActivity extends BaseActivity {
         configureToolbar();
 
         mTextViewHiddenForSnackbar = findViewById(R.id.test_coordinator);
+        mCreation = findViewById(R.id.creation_compte_btn);
         mConnexion = findViewById(id.connection_valid_btn);
         mDeconnexion = findViewById(id.deconnexion_btn);
 
@@ -79,9 +78,21 @@ public class MainActivity extends BaseActivity {
         // --------------------
         // LISTENERS
         // --------------------
-        /**
-         * Lancement de la page de connection lors d'un clic sur le bouton "Connectez vous"
-         */
+
+        // lancement de l'activité de creation de compte
+        mCreation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!isCurrentUserLogged()) {
+                    startAccountCreationActivity(); // creation de compte
+                    /*//CREATION DU USER
+                    createUserInFirestore();
+                    startSummaryActivity(); // connecté : renvoyé vers le sommaire*/
+                }
+            }
+        });
+
+        // Lancement de la page de connection à un compte existant
         mConnexion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -95,9 +106,7 @@ public class MainActivity extends BaseActivity {
             }
         });
 
-        /**
-         * Deconnexion de l'utilisateur
-         */
+        // Deconnexion de l'utilisateur
         mDeconnexion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -159,6 +168,11 @@ public class MainActivity extends BaseActivity {
      */
     private void startSummaryActivity() {
         Intent intent = new Intent(MainActivity.this, SummaryActivity.class);
+        startActivity(intent);
+    }
+
+    private void startAccountCreationActivity(){
+        Intent intent = new Intent(MainActivity.this, AccountCreateActivity.class);
         startActivity(intent);
     }
 
@@ -252,15 +266,6 @@ public class MainActivity extends BaseActivity {
     // --------------------
 
     /**
-     * Methode permettant à un utilisateur de se deconnecter retournant un objet de type Task permettant d erealiser ces appels de maniere asynchrone
-     */
-    private void signOutUserFromFirebase() {
-        AuthUI.getInstance()
-                .signOut(this) // methode utilisée par le singleton authUI.getInstance()
-                .addOnSuccessListener(this, this.updateUIAfterRESTRequestsCompleted(SIGN_OUT_TASK));
-    }
-
-    /**
      * Methode de creation d'un utilisateur, avec condition de creation en fonction de l'existance ou non d'un user dejà en bdd,
      * et decomposant le nom et le prenom saisi à l'enregistrement de la personne.
      */
@@ -286,6 +291,7 @@ public class MainActivity extends BaseActivity {
                         // decomposition du nom et du prenom recu dans username
                         String nom = null, prenom = null;
                         String[] parts;
+                        assert username != null;
                         if (username.contains(" ")) {
                             parts = username.split(" ");
                             try {
@@ -309,10 +315,14 @@ public class MainActivity extends BaseActivity {
                 }
             });
         }
+        // si l(utilisateur n'a pas de compte , on lui en fait creer un
+        else {
+            startSignInActivity();
+        }
     }
 
     /**
-     * Methode permettan de creer un user lorsque celui ci vient de se connecter pour la 1ere fois.
+     * Methode permettant de creer un user lorsque celui ci vient de se connecter pour la 1ere fois.
      *
      * @param uid
      * @param nom
@@ -327,7 +337,7 @@ public class MainActivity extends BaseActivity {
         newContact.put("nom", nom);
         newContact.put("prenom", prenom);
         newContact.put("email", email);
-        db.collection("users").document(getCurrentUser().getUid()).set(newContact)
+        db.collection("users").document(Objects.requireNonNull(getCurrentUser()).getUid()).set(newContact)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {

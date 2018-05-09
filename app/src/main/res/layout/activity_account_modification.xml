@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--suppress ALL -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    tools:context=".auth.AccountCreateActivity">
+    android:layout_height="match_parent"
+    tools:context=".auth.AccountModificationActivity"
+    android:orientation="horizontal">
 
     <ScrollView
         android:id="@+id/scrollview_ecran"
@@ -37,7 +35,7 @@
                 android:gravity="center"
                 android:layout_marginTop="30dp"
                 android:layout_marginBottom="20dp"
-                android:text="Bienvenue sur votre compte"
+                android:text="@string/modifiez_le_compte_d_un_adherent"
                 android:textColor="@color/colorPrimary"
                 android:textSize="25sp"/>
 
@@ -48,7 +46,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="20dp"
-                android:text="Personnel"
+                android:text="@string/personnel"
                 android:textAlignment="center"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="30sp"
@@ -67,7 +65,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="60dp"
                 android:shadowColor="@color/colorAccent"
-                android:text="Prénom :"
+                android:text="@string/prenom"
                 android:textColor="@color/colorPrimary"
                 android:textSize="18sp"/>
 
@@ -81,7 +79,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="45dp"
                     android:layout_marginStart="45dp"
-                    android:inputType="textCapCharacters"
+                    android:enabled="false"
+                    android:inputType="text|textCapCharacters"
                     android:lines="1"/>
             </android.support.design.widget.TextInputLayout>
 
@@ -92,7 +91,7 @@
                 android:layout_marginStart="60dp"
                 android:layout_marginTop="10dp"
                 android:shadowColor="@color/colorAccent"
-                android:text="Nom :"
+                android:text="@string/nom"
                 android:textColor="@color/colorPrimary"
                 android:textSize="18sp"/>
 
@@ -106,18 +105,10 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="45dp"
                     android:layout_marginStart="45dp"
-                    android:inputType="textCapCharacters"
+                    android:enabled="false"
+                    android:inputType="text|textCapCharacters"
                     android:lines="1"/>
             </android.support.design.widget.TextInputLayout>
-
-            <!--            &lt;!&ndash; PROGRESS BAR &ndash;&gt;
-                        <ProgressBar
-                            android:id="@+id/profile_activity_progress_bar"
-                            android:layout_width="30dip"
-                            android:layout_height="30dip"
-                            android:layout_gravity="center"
-                            android:layout_marginTop="20dp"
-                            android:visibility="invisible"/>-->
 
             <TextView
                 android:id="@+id/plongee_titre_txt"
@@ -125,7 +116,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="70dp"
-                android:text="Plongée"
+                android:text="@string/plongee"
                 android:textAlignment="center"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="30sp"
@@ -144,7 +135,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="60dp"
                 android:shadowColor="@color/colorAccent"
-                android:text="Numéro de licence (optionnel) :"
+                android:text="@string/numero_de_licence_optionnel"
                 android:textColor="@color/colorPrimary"
                 android:textSize="18sp"/>
 
@@ -158,6 +149,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="45dp"
                     android:layout_marginStart="45dp"
+                    android:enabled="false"
                     android:inputType="text"
                     android:lines="1"/>
             </android.support.design.widget.TextInputLayout>
@@ -169,7 +161,7 @@
                 android:layout_marginStart="60dp"
                 android:layout_marginTop="10dp"
                 android:shadowColor="@color/colorAccent"
-                android:text="Niveau de plongée acquis :"
+                android:text="@string/niveau_de_plongee_acquis"
                 android:textColor="@color/colorPrimary"
                 android:textSize="18sp"/>
 
@@ -183,13 +175,40 @@
                 android:minHeight="40dp"
                 android:visibility="visible"/>
 
+            <LinearLayout
+                android:id="@+id/linearLayoutFonctionAdherent"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/titre_fonction_txt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="60dp"
+                    android:layout_marginTop="10dp"
+                    android:shadowColor="@color/colorAccent"
+                    android:text="@string/fonction_au_sein_du_club"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="18sp"/>
+
+                <Spinner
+                    android:id="@+id/fonction_spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="150dp"
+                    android:layout_marginStart="70dp"
+                    android:fadeScrollbars="true"
+                    android:minHeight="40dp"/>
+            </LinearLayout>
+
             <TextView
                 android:id="@+id/compte_titre_txt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginTop="70dp"
-                android:text="Compte"
+                android:layout_marginTop="20dp"
+                android:text="@string/compte"
                 android:textAlignment="center"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="30sp"
@@ -208,40 +227,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="60dp"
                 android:shadowColor="@color/colorAccent"
-                android:text="Email :"
+                android:text="@string/email"
                 android:textColor="@color/colorPrimary"
                 android:textSize="18sp"/>
 
-
-            <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="40dp"
-            android:layout_marginEnd="40dp">
-
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/email_txt"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="45dp"
-                android:layout_marginStart="45dp"
-                android:enabled="false"
-                android:inputType="textPassword|textVisiblePassword"
-                android:lines="1"
-                android:visibility="visible"/>
-
-        </android.support.design.widget.TextInputLayout>
-
-            <TextView
-                android:id="@+id/password_txt"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="60dp"
-                android:layout_marginTop="10dp"
-                android:shadowColor="@color/colorAccent"
-                android:text="Mot de passe :"
-                android:textColor="@color/colorPrimary"
-                android:textSize="18sp"/>
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
@@ -250,12 +239,12 @@
                 android:layout_marginEnd="40dp">
 
                 <android.support.design.widget.TextInputEditText
-                    android:id="@+id/password_input"
+                    android:id="@+id/email_txt"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="45dp"
                     android:layout_marginStart="45dp"
-                    android:textColor="@color/colorPrimary"
+                    android:enabled="false"
                     android:inputType="textPassword|textVisiblePassword"
                     android:lines="1"
                     android:visibility="visible"/>
@@ -283,7 +272,7 @@
                 android:layout_margin="30dp"
                 android:height="60dp"
                 android:background="@color/colorPrimary"
-                android:text="Créez votre compte"
+                android:text="@string/modifiez_le_compte"
                 android:textColor="@android:color/white"/>
 
             <Button
@@ -291,9 +280,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="30dp"
-                android:visibility="gone"
                 android:background="@color/colorPrimary"
-                android:text="Supprimez votre compte"
+                android:text="Supprimez le compte"
                 android:textColor="@android:color/white"/>
 
         </LinearLayout>

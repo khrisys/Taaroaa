@@ -30,10 +30,6 @@ dependencies {
     /*recuperation d'une recyclerview*/
     implementation 'com.android.support:recyclerview-v7:26.1.0'
 
-    //GLIDE
-    implementation 'com.github.bumptech.glide:glide:4.3.1'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.3.1'
-
     //BUTTERKNIFE : met à disposition les annotations @BindView et @OnClick
     implementation 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'

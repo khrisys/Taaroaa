@@ -60,15 +60,11 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
         mNomConducteur.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO recuperer l'objet Covoiturage avec les champs manquants à justement rajouter ici.Se reperer à l'id de l'objet covoiturage
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
                 db.collection("covoiturage").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot documentSnapshots) {
-                        if(documentSnapshots.size() != 0){
-
-
-                        }
+                      
                     }
                 });
             }

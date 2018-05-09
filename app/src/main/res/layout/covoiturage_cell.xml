@@ -16,10 +16,12 @@
         android:layout_marginTop="20dp"
         android:background="#E3F2FD"
         android:clickable="true"
+        android:focusable="true"
         android:gravity="center"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textColor="#2196F3"
         android:textStyle="bold"/>
+
 
     <FrameLayout
         android:id="@+id/covoit_passager_framelayout"
@@ -91,7 +93,9 @@
             android:layout_marginEnd="40dp"
             android:layout_marginStart="60dp"
             android:layout_marginTop="3dp"
-            android:text="@string/nombre_de_places_disponibles"
+
+            android:text="@string/places_disponibles"
+
             android:textSize="20sp"/>
 
         <Spinner
