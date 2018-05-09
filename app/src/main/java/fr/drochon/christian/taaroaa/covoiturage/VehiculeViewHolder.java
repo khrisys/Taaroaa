@@ -114,13 +114,16 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
                                             }
                                         });
                                         adb.show();
-
+                                        break;
                                     }
+
                                 }
                             }
-                        }
+                        }startActivityCovoituragePassagers();
                     }
+
                 });
+
             }
         });
     }
@@ -184,6 +187,11 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
      */
     private void startActivityCovoiturageVehicule() {
         Intent intent = new Intent(itemView.getContext(), CovoiturageVehiclesActivity.class);
+        itemView.getContext().startActivity(intent);
+    }
+
+    private void startActivityCovoituragePassagers() {
+        Intent intent = new Intent(itemView.getContext(), CovoituragePassagersActivity.class).putExtra("covoit", sCovoiturage);
         itemView.getContext().startActivity(intent);
     }
 

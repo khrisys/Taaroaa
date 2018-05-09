@@ -15,15 +15,15 @@
         android:layout_height="wrap_content"
         android:layout_weight="0.33"
         android:weightSum="1"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
         <Button
             android:id="@+id/modif_adherents_btn"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginStart="7dp"
+            android:layout_marginEnd="7dp"
             android:layout_marginTop="7dp"
-            android:layout_marginBottom="7dp"
             android:layout_weight="0.6"
             android:background="@color/colorPrimary"
             android:text="Modifiez un compte"
@@ -35,9 +35,10 @@
             android:id="@+id/adherents_btn"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="7dp"
+
             android:layout_marginBottom="7dp"
             android:layout_marginStart="7dp"
+            android:layout_marginTop="7dp"
             android:layout_marginEnd="7dp"
             android:layout_weight="0.4"
             android:background="@color/colorPrimary"
