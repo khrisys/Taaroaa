@@ -52,6 +52,10 @@ public class AdapterCoursesPupils extends FirestoreRecyclerAdapter<Course, Pupil
                 .inflate(R.layout.list_cell, parent, false));// creation de la viewholder avec en param la vue du layout
     }
 
+    // --------------------
+    // INTERFACE LISTENER
+    // --------------------
+
     @Override
     public void onDataChanged() {
         super.onDataChanged();

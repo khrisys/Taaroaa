@@ -4,7 +4,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
@@ -24,10 +23,8 @@ import fr.drochon.christian.taaroaa.model.Course;
 public class SupervisorsViewHolder extends RecyclerView.ViewHolder {
 
     // DATA
-    List<Course> mCourseList;
+    private List<Course> mCourseList;
     // CELLULES
-    RecyclerView mRecyclerViewCoursesSupervisors;
-    LinearLayout mLinearLayout;
     @BindView(R.id.course_subject_supervisors)
     TextView mCourseSubject;
     @BindView(R.id.course_type_supervisors)
@@ -54,8 +51,6 @@ public class SupervisorsViewHolder extends RecyclerView.ViewHolder {
         // liaison des elements du layout recyclerview et list_cell avec les variables declarées ici
         ButterKnife.bind(this, itemView);
 
-        mRecyclerViewCoursesSupervisors = itemView.findViewById(R.id.recyclerViewCoursesSupervisors);
-        mLinearLayout = itemView.findViewById(R.id.supervisors_linear_layout);
         mCourseList = new ArrayList<>();
 
         // Affichage de la notification de l'ensemble des informations des cours
@@ -111,7 +106,7 @@ public class SupervisorsViewHolder extends RecyclerView.ViewHolder {
      */
     public String stDateToString(Date horaireDuCours) {
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy", Locale.FRANCE);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EE dd MMM yyyy", Locale.FRANCE);
         String dateDuCours = dateFormat.format(horaireDuCours);
         return dateDuCours;
 

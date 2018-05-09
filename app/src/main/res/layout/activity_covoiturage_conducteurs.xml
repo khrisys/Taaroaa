@@ -20,7 +20,8 @@
         android:fadingEdge="horizontal|vertical"
         android:scrollbarStyle="insideOverlay"
         android:visibility="visible"
-        tools:targetApi="lollipop">
+        tools:targetApi="lollipop"
+        tools:ignore="MissingConstraints">
 
 
         <LinearLayout
@@ -33,7 +34,6 @@
                 android:id="@+id/titre_page_compte_txt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
                 android:layout_marginTop="30dp"
                 android:gravity="center"
                 android:text="@string/proposer_covoit_btn"
@@ -64,10 +64,10 @@
                 android:id="@+id/titre_prenom_txt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
                 android:layout_marginStart="60dp"
+                android:layout_marginTop="10dp"
                 android:shadowColor="@color/colorAccent"
-                android:text="@string/prenom"
+                android:text="@string/pr_nom"
                 android:textColor="@color/colorPrimary"
                 android:textSize="18sp"/>
 
@@ -82,7 +82,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="45dp"
                     android:layout_marginStart="45dp"
-                    android:inputType="text"
+                    android:inputType="textCapCharacters"
+                    android:enabled="false"
                     android:lines="1"/>
             </android.support.design.widget.TextInputLayout>
 
@@ -108,7 +109,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="45dp"
                     android:layout_marginStart="45dp"
-                    android:inputType="text"
+                    android:inputType="textCapCharacters"
+                    android:enabled="false"
                     android:lines="1"/>
             </android.support.design.widget.TextInputLayout>
 
@@ -134,7 +136,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="45dp"
                     android:layout_marginStart="45dp"
-                    android:inputType="text"
+                    android:inputType="number"
                     android:lines="1"/>
             </android.support.design.widget.TextInputLayout>
 
@@ -190,8 +192,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="horizontal"
-                android:baselineAligned="false">
+                android:baselineAligned="false"
+                android:layout_marginTop="5dp"
+                android:orientation="horizontal">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -218,7 +221,7 @@
                         android:layout_height="wrap_content"
                         android:ems="10"
                         android:gravity="center"
-                        android:inputType="text"
+                        android:inputType="date"
                         android:lines="1"
                         android:onClick="showDatePickerDialog"
                         android:textAppearance="@style/TextAppearance.AppCompat"
@@ -251,7 +254,7 @@
                         android:ems="10"
                         android:gravity="center"
                         android:hint="@string/heure_depart_trajet_aller"
-                        android:inputType="text"
+                        android:inputType="time"
                         android:linksClickable="false"
                         android:longClickable="false"
                         android:onClick="showTimePickerDialog"
@@ -260,8 +263,43 @@
 
                 </LinearLayout>
 
+
             </LinearLayout>
 
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="50dp"
+                >
+
+                <TextView
+                    android:id="@+id/depart_aller_txt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
+                    android:shadowColor="@color/colorAccent"
+                    android:text="@string/lieu_de_depart"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="18sp"/>
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="-15dp">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/lieu_depart"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:inputType="textCapCharacters"
+                        android:lines="1"/>
+                </android.support.design.widget.TextInputLayout>
+            </LinearLayout>
 
             <!-- AFFICHER UNE DATE ET UNE HEURE DE RETOUR -->
 
@@ -269,14 +307,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="horizontal"
-                android:baselineAligned="false">
+                android:baselineAligned="false"
+                android:layout_marginTop="5dp"
+                android:orientation="horizontal">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"
                     android:orientation="vertical"
+                    android:layout_marginTop="5dp"
                     tools:ignore="NestedWeights">
 
                     <TextView
@@ -296,9 +336,9 @@
                         android:layout_height="wrap_content"
                         android:ems="10"
                         android:gravity="center"
-                        android:inputType="text"
+                        android:inputType="date"
                         android:lines="1"
-                        android:onClick="showDatePickerDialog"
+                        android:onClick="showDatePickerDialog2"
                         android:textAppearance="@style/TextAppearance.AppCompat"
                         android:textColor="@color/colorPrimary"/>
 
@@ -328,14 +368,47 @@
                         android:ems="10"
                         android:gravity="center"
                         android:hint="@string/heure_depart_trajet_retour"
-                        android:inputType="text"
+                        android:inputType="time"
                         android:linksClickable="false"
                         android:longClickable="false"
-                        android:onClick="showTimePickerDialog"
+                        android:onClick="showTimePickerDialog2"
                         android:textAppearance="@style/TextAppearance.AppCompat"
                         android:textColor="@color/colorPrimary"/>
                 </LinearLayout>
 
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="50dp">
+
+                <TextView
+                    android:id="@+id/arrivee_retour_txt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
+                    android:shadowColor="@color/colorAccent"
+                    android:text="@string/lieu_d_arrivee"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="18sp"/>
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="-15dp">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/lieu_arrivee"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:inputType="textCapCharacters"
+                        android:lines="1"/>
+                </android.support.design.widget.TextInputLayout>
             </LinearLayout>
 
             <ProgressBar
@@ -346,52 +419,73 @@
                 android:layout_gravity="center"
                 android:layout_marginEnd="40dp"
                 android:layout_marginStart="40dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="10dp"
                 android:background="@android:color/holo_green_light"
                 android:clickable="false"
                 android:foregroundGravity="center"
-                android:visibility="invisible"/>
+                android:visibility="gone"/>
 
             <View
                 android:id="@+id/divider3"
                 android:layout_width="match_parent"
-                android:layout_marginTop="10dp"
-                android:layout_height="3dp"
+                android:layout_height="1dp"
+                android:layout_marginTop="40dp"
                 android:background="?android:attr/listDivider"
                 />
 
             <Button
-                android:id="@+id/proposition_covoit_btn"
+            android:id="@+id/proposition_covoit_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="40dp"
+            android:layout_marginBottom="50dp"
+            android:height="60dp"
+            android:background="@color/colorPrimary"
+            android:lines="2"
+            android:text="@string/proposer_covoit_btn"
+            android:textColor="@android:color/white"/>
+
+            <Button
+                android:id="@+id/suppression_covoit_btn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="40dp"
+                android:layout_marginStart="40dp"
+                android:layout_marginEnd="40dp"
                 android:height="60dp"
-                android:lines="2"
                 android:background="@color/colorPrimary"
-                android:text="@string/proposer_covoit_btn"
+                android:lines="2"
+                android:visibility="gone"
+                android:text="@string/supprimez_un_covoiturage"
                 android:textColor="@android:color/white"/>
-
 
         </LinearLayout>
 
+
     </ScrollView>
 
-    <!--    <EditText
-            android:id="@+id/alertdialog_ok_account"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="text"
-            android:textSize="@android:dimen/notification_large_icon_height"
-            android:text="@string/alertDialog_delete"
-            android:visibility="invisible"/>
+    <EditText
+        android:id="@+id/alertdialog_ok_covoit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:text="Saisir la string correspondante"
+        android:textSize="@android:dimen/notification_large_icon_height"
+        android:visibility="invisible"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp"
+        tools:ignore="MissingConstraints"/>
 
-        <EditText
-            android:id="@+id/alertdialog_delete_account"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="@android:dimen/notification_large_icon_height"
-            android:inputType="text"
-            android:text="@string/alertDialog_cancel"
-            android:visibility="invisible"/>-->
+    <EditText
+        android:id="@+id/alertdialog_delete_account"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:text="Saisir la string correspodante"
+        android:textSize="@android:dimen/notification_large_icon_height"
+        android:visibility="invisible"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp"
+        tools:ignore="MissingConstraints"/>
 
 </android.support.constraint.ConstraintLayout>

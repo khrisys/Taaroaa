@@ -591,13 +591,4 @@ public class AccountModificationActivity extends BaseActivity {
                     .addOnSuccessListener(this, this.updateUIAfterRESTRequestsCompleted(DELETE_USER_TASK));
         }
     }
-    /*
-     *//**
-     * Methode permettant à un utilisateur de se deconnecter retournant un objet de type Task permettant d erealiser ces appels de maniere asynchrone
-     *//*
-    private void signOutUserFromFirebase() {
-        AuthUI.getInstance()
-                .signOut(this) // methode utilisée par le singleton authUI.getInstance()
-                .addOnSuccessListener(this, this.updateUIAfterRESTRequestsCompleted(SIGN_OUT_TASK));
-    }*/
 }

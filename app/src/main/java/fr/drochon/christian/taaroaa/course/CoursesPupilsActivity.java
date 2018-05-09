@@ -158,7 +158,7 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
      */
     @Override
     public void onDataChanged() {
-        mTextView.setVisibility(this.mAdapterCoursesPupils.getItemCount() == 0 ? View.VISIBLE : View.INVISIBLE);
+        mTextView.setVisibility(this.mAdapterCoursesPupils.getItemCount() == 0 ? View.VISIBLE : View.GONE);
     }
 
     // --------------------

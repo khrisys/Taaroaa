@@ -15,34 +15,6 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-
-        <TextView
-            android:id="@+id/covoit_presentation_txt"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:layout_marginEnd="40dp"
-            android:layout_marginStart="40dp"
-            android:enabled="false"
-            android:gravity="center_vertical|center_horizontal"
-            android:linksClickable="false"
-            android:longClickable="false"
-            android:singleLine="false"
-            android:text="@string/modif_ecran_titre"
-            android:textAlignment="gravity"
-            android:textColor="@android:color/black"
-            android:textIsSelectable="false"
-            android:textSize="20sp"
-            android:textStyle="bold"/>
-
-        <View
-            android:id="@+id/divider0"
-            android:layout_width="match_parent"
-            android:layout_marginTop="10dp"
-            android:layout_height="3dp"
-            android:background="?android:attr/listDivider"
-            />
-
         <android.support.v7.widget.SearchView
             android:id="@+id/searchbar_user"
             android:layout_width="match_parent"

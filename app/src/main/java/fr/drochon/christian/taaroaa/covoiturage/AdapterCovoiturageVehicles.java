@@ -37,7 +37,7 @@ public class AdapterCovoiturageVehicles extends FirestoreRecyclerAdapter<Covoitu
      * @see #onBindViewHolder(RecyclerView.ViewHolder, int)
      */
     @Override
-    protected void onBindViewHolder(@NonNull VehiculeViewHolder holder, int position, @NonNull Covoiturage model) {
+    protected void onBindViewHolder(@NonNull final VehiculeViewHolder holder, int position, @NonNull final Covoiturage model) {
         holder.updateWithCovoiturage(model);
     }
 
@@ -54,13 +54,17 @@ public class AdapterCovoiturageVehicles extends FirestoreRecyclerAdapter<Covoitu
                 .inflate(R.layout.covoiturage_cell, parent, false));// creation de la viewholder avec en param la vue du layout
     }
 
+    // --------------------
+    // INTERFACE LISTENER
+    // --------------------
+
+    public interface Listener {
+        void onDataChanged();
+    }
+
     @Override
     public void onDataChanged() {
         super.onDataChanged();
         this.callback.onDataChanged();
-    }
-
-    public interface Listener {
-        void onDataChanged();
     }
 }
