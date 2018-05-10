@@ -38,7 +38,6 @@ import java.util.List;
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
 import fr.drochon.christian.taaroaa.model.Course;
-import fr.drochon.christian.taaroaa.model.User;
 
 /**
  * creer l'ihm
@@ -138,7 +137,7 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
     }
 
     /**
-     * recuperation  du clic d'un user.
+     * recuperation  du clic d'un user sur une option de la toolbar.
      * On utilise un switch ici car il peut y avoir plusieurs options.
      * Surtout ne pas oublier le "true" apres chaque case sinon, ce sera toujours le dernier case qui sera executé!
      *
@@ -159,7 +158,7 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
      */
     @Override
     public void onDataChanged() {
-        mTextView.setVisibility(this.mAdapterCoursesPupils.getItemCount() == 0 ? View.VISIBLE : View.INVISIBLE);
+        mTextView.setVisibility(this.mAdapterCoursesPupils.getItemCount() == 0 ? View.VISIBLE : View.GONE);
     }
 
     // --------------------
@@ -191,7 +190,7 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
 
     /**
      * La methode generateOptionsForAdapter utilise la methode query, precedemment definit dans la classe MessageHelper
-     * permettra à la recyclerview d'afficher en temps reel le resultat de cette requete (la liste des derniers messages du chat correspondant, soit android/firebase/bug).
+     * permettra à la recyclerview d'afficher en temps reel le resultat de cette requete (la liste de tous les cours (ou triés par date)).
      */
     private FirestoreRecyclerOptions<Course> generateOptionsForAdapter(Query query) {
         return new FirestoreRecyclerOptions.Builder<Course>()

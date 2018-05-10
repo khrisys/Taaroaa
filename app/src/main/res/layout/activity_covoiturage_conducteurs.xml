@@ -20,7 +20,8 @@
         android:fadingEdge="horizontal|vertical"
         android:scrollbarStyle="insideOverlay"
         android:visibility="visible"
-        tools:targetApi="lollipop">
+        tools:targetApi="lollipop"
+        tools:ignore="MissingConstraints">
 
 
         <LinearLayout
@@ -33,10 +34,9 @@
                 android:id="@+id/titre_page_compte_txt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
                 android:layout_marginTop="30dp"
                 android:gravity="center"
-                android:text="Proposez un covoiturage"
+                android:text="@string/proposer_covoit_btn"
                 android:textColor="@color/colorPrimary"
                 android:textSize="25sp"/>
 
@@ -47,7 +47,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="20dp"
-                android:text="Conducteur"
+                android:text="@string/conducteur"
                 android:textAlignment="center"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="30sp"
@@ -64,10 +64,10 @@
                 android:id="@+id/titre_prenom_txt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
                 android:layout_marginStart="60dp"
+                android:layout_marginTop="10dp"
                 android:shadowColor="@color/colorAccent"
-                android:text="Prénom : "
+                android:text="@string/pr_nom"
                 android:textColor="@color/colorPrimary"
                 android:textSize="18sp"/>
 
@@ -82,7 +82,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="45dp"
                     android:layout_marginStart="45dp"
-                    android:inputType="text"
+                    android:inputType="textCapCharacters"
+                    android:enabled="false"
                     android:lines="1"/>
             </android.support.design.widget.TextInputLayout>
 
@@ -93,7 +94,7 @@
                 android:layout_marginStart="60dp"
                 android:layout_marginTop="10dp"
                 android:shadowColor="@color/colorAccent"
-                android:text="Nom :"
+                android:text="@string/nom"
                 android:textColor="@color/colorPrimary"
                 android:textSize="18sp"/>
 
@@ -108,7 +109,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="45dp"
                     android:layout_marginStart="45dp"
-                    android:inputType="text"
+                    android:inputType="textCapCharacters"
+                    android:enabled="false"
                     android:lines="1"/>
             </android.support.design.widget.TextInputLayout>
 
@@ -119,7 +121,7 @@
                 android:layout_marginStart="60dp"
                 android:layout_marginTop="10dp"
                 android:shadowColor="@color/colorAccent"
-                android:text="Nombre de places disponibles :"
+                android:text="@string/nombre_de_places_disponibles"
                 android:textColor="@color/colorPrimary"
                 android:textSize="18sp"/>
 
@@ -134,7 +136,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="45dp"
                     android:layout_marginStart="45dp"
-                    android:inputType="text"
+                    android:inputType="number"
                     android:lines="1"/>
             </android.support.design.widget.TextInputLayout>
 
@@ -149,7 +151,7 @@
                     android:layout_marginStart="60dp"
                     android:layout_marginTop="10dp"
                     android:shadowColor="@color/colorAccent"
-                    android:text="Type du véhicule :"
+                    android:text="@string/type_du_vehicule"
                     android:textColor="@color/colorPrimary"
                     android:textSize="18sp"/>
 
@@ -171,7 +173,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="50dp"
-                android:text="Horaires"
+                android:text="@string/horaires"
                 android:textAlignment="center"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="30sp"
@@ -190,13 +192,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:baselineAligned="false"
+                android:layout_marginTop="5dp"
                 android:orientation="horizontal">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    tools:ignore="NestedWeights">
 
                     <TextView
                         android:id="@+id/date_depart_txt"
@@ -205,7 +210,7 @@
                         android:layout_marginStart="10dp"
                         android:gravity="center"
                         android:shadowColor="@color/colorAccent"
-                        android:text="Date de départ"
+                        android:text="@string/date_de_depart"
                         android:textColor="@color/colorPrimary"
                         android:textSize="18sp"/>
 
@@ -216,7 +221,7 @@
                         android:layout_height="wrap_content"
                         android:ems="10"
                         android:gravity="center"
-                        android:inputType="text"
+                        android:inputType="date"
                         android:lines="1"
                         android:onClick="showDatePickerDialog"
                         android:textAppearance="@style/TextAppearance.AppCompat"
@@ -238,7 +243,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
                         android:shadowColor="@color/colorAccent"
-                        android:text="Heure du départ"
+                        android:text="@string/heure_du_depart"
                         android:textColor="@color/colorPrimary"
                         android:textSize="18sp"/>
 
@@ -248,8 +253,8 @@
                         android:layout_height="wrap_content"
                         android:ems="10"
                         android:gravity="center"
-                        android:hint="Heure départ trajet aller"
-                        android:inputType="text"
+                        android:hint="@string/heure_depart_trajet_aller"
+                        android:inputType="time"
                         android:linksClickable="false"
                         android:longClickable="false"
                         android:onClick="showTimePickerDialog"
@@ -258,8 +263,43 @@
 
                 </LinearLayout>
 
+
             </LinearLayout>
 
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="50dp"
+                >
+
+                <TextView
+                    android:id="@+id/depart_aller_txt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
+                    android:shadowColor="@color/colorAccent"
+                    android:text="@string/lieu_de_depart"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="18sp"/>
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="-15dp">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/lieu_depart"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:inputType="textCapCharacters"
+                        android:lines="1"/>
+                </android.support.design.widget.TextInputLayout>
+            </LinearLayout>
 
             <!-- AFFICHER UNE DATE ET UNE HEURE DE RETOUR -->
 
@@ -267,13 +307,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:baselineAligned="false"
+                android:layout_marginTop="5dp"
                 android:orientation="horizontal">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:layout_marginTop="5dp"
+                    tools:ignore="NestedWeights">
 
                     <TextView
                         android:id="@+id/date_retour_txt"
@@ -282,7 +326,7 @@
                         android:layout_marginStart="10dp"
                         android:gravity="center"
                         android:shadowColor="@color/colorAccent"
-                        android:text="Date de retour"
+                        android:text="@string/date_de_retour"
                         android:textColor="@color/colorPrimary"
                         android:textSize="18sp"/>
 
@@ -292,9 +336,9 @@
                         android:layout_height="wrap_content"
                         android:ems="10"
                         android:gravity="center"
-                        android:inputType="text"
+                        android:inputType="date"
                         android:lines="1"
-                        android:onClick="showDatePickerDialog"
+                        android:onClick="showDatePickerDialog2"
                         android:textAppearance="@style/TextAppearance.AppCompat"
                         android:textColor="@color/colorPrimary"/>
 
@@ -313,7 +357,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
                         android:shadowColor="@color/colorAccent"
-                        android:text="Heure du retour"
+                        android:text="@string/heure_du_retour"
                         android:textColor="@color/colorPrimary"
                         android:textSize="18sp"/>
 
@@ -323,138 +367,49 @@
                         android:layout_height="wrap_content"
                         android:ems="10"
                         android:gravity="center"
-                        android:hint="Heure départ trajet retour"
-                        android:inputType="text"
+                        android:hint="@string/heure_depart_trajet_retour"
+                        android:inputType="time"
                         android:linksClickable="false"
                         android:longClickable="false"
-                        android:onClick="showTimePickerDialog"
+                        android:onClick="showTimePickerDialog2"
                         android:textAppearance="@style/TextAppearance.AppCompat"
                         android:textColor="@color/colorPrimary"/>
                 </LinearLayout>
 
             </LinearLayout>
 
-
-            <!--<TextView
-                android:id="@+id/titre_numero_licence_txt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="60dp"
-                android:shadowColor="@color/colorAccent"
-                android:text="Numéro de licence (optionnel) :"
-                android:textColor="@color/colorPrimary"
-                android:textSize="18sp"/>
-
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <android.support.design.widget.TextInputEditText
-                    android:id="@+id/licence_txt"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="45dp"
-                    android:layout_marginStart="45dp"
-                    android:inputType="text"
-                    android:lines="1"/>
-            </android.support.design.widget.TextInputLayout>
-
-            <TextView
-                android:id="@+id/titre_niveau_txt"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="60dp"
-                android:layout_marginTop="10dp"
-                android:shadowColor="@color/colorAccent"
-                android:text="Niveau de plongée effectif :"
-                android:textColor="@color/colorPrimary"
-                android:textSize="18sp"/>
-
-            <Spinner
-                android:id="@+id/niveau_spinner"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="200dp"
-                android:layout_marginStart="70dp"
-                android:fadeScrollbars="true"
-                android:minHeight="30dp"
-                android:visibility="visible"/>
-
             <LinearLayout
-                android:id="@+id/linearLayoutFonctionAdherent"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:visibility="invisible">
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="50dp">
 
                 <TextView
-                    android:id="@+id/titre_fonction_txt"
+                    android:id="@+id/arrivee_retour_txt"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="60dp"
+                    android:layout_marginStart="10dp"
                     android:layout_marginTop="10dp"
                     android:shadowColor="@color/colorAccent"
-                    android:text="Fonction au sein du club :"
+                    android:text="@string/lieu_d_arrivee"
                     android:textColor="@color/colorPrimary"
                     android:textSize="18sp"/>
 
-                <Spinner
-                    android:id="@+id/fonction_spinner"
+                <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="200dp"
-                    android:layout_marginStart="70dp"
-                    android:fadeScrollbars="true"
-                    android:minHeight="30dp"
-                    android:visibility="visible"/>-->
-            <!-- </LinearLayout>-->
+                    android:layout_marginTop="-15dp">
 
-            <!--            <TextView
-                            android:id="@+id/compte_titre_txt"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_marginTop="20dp"
-                            android:text="Compte"
-                            android:textAlignment="center"
-                            android:textColor="@color/colorPrimaryDark"
-                            android:textSize="30sp"
-                            android:textStyle="bold"/>
-
-                        <View
-                            android:id="@+id/divider3"
-                            android:layout_width="match_parent"
-                            android:layout_height="2dp"
-                            android:background="?android:attr/listDivider"
-                            />
-
-                        <TextView
-                            android:id="@+id/titre_email_txt"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="60dp"
-                            android:shadowColor="@color/colorAccent"
-                            android:text="Email :"
-                            android:textColor="@color/colorPrimary"
-                            android:textSize="18sp"/>
-
-
-                        <android.support.design.widget.TextInputLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
-
-                            <android.support.design.widget.TextInputEditText
-                                android:id="@+id/email_txt"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginEnd="45dp"
-                                android:layout_marginStart="45dp"
-                                android:enabled="false"
-                                android:inputType="textPassword|textVisiblePassword"
-                                android:lines="1"
-                                android:visibility="visible"/>
-
-                        </android.support.design.widget.TextInputLayout>-->
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/lieu_arrivee"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:inputType="textCapCharacters"
+                        android:lines="1"/>
+                </android.support.design.widget.TextInputLayout>
+            </LinearLayout>
 
             <ProgressBar
                 android:id="@+id/progress_bar"
@@ -464,52 +419,73 @@
                 android:layout_gravity="center"
                 android:layout_marginEnd="40dp"
                 android:layout_marginStart="40dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="10dp"
                 android:background="@android:color/holo_green_light"
                 android:clickable="false"
                 android:foregroundGravity="center"
-                android:visibility="invisible"/>
+                android:visibility="gone"/>
 
             <View
                 android:id="@+id/divider3"
                 android:layout_width="match_parent"
-                android:layout_marginTop="10dp"
-                android:layout_height="3dp"
+                android:layout_height="1dp"
+                android:layout_marginTop="40dp"
                 android:background="?android:attr/listDivider"
                 />
 
             <Button
-                android:id="@+id/proposition_covoit_btn"
+            android:id="@+id/proposition_covoit_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="40dp"
+            android:layout_marginBottom="50dp"
+            android:height="60dp"
+            android:background="@color/colorPrimary"
+            android:lines="2"
+            android:text="@string/proposer_covoit_btn"
+            android:textColor="@android:color/white"/>
+
+            <Button
+                android:id="@+id/suppression_covoit_btn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="40dp"
+                android:layout_marginStart="40dp"
+                android:layout_marginEnd="40dp"
                 android:height="60dp"
-                android:lines="2"
                 android:background="@color/colorPrimary"
-                android:text="Validez votre proposition de covoiturage"
+                android:lines="2"
+                android:visibility="gone"
+                android:text="@string/supprimez_un_covoiturage"
                 android:textColor="@android:color/white"/>
-
 
         </LinearLayout>
 
+
     </ScrollView>
 
-    <!--    <EditText
-            android:id="@+id/alertdialog_ok_account"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="text"
-            android:textSize="@android:dimen/notification_large_icon_height"
-            android:text="@string/alertDialog_delete"
-            android:visibility="invisible"/>
+    <EditText
+        android:id="@+id/alertdialog_ok_covoit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:text="Saisir la string correspondante"
+        android:textSize="@android:dimen/notification_large_icon_height"
+        android:visibility="invisible"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp"
+        tools:ignore="MissingConstraints"/>
 
-        <EditText
-            android:id="@+id/alertdialog_delete_account"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="@android:dimen/notification_large_icon_height"
-            android:inputType="text"
-            android:text="@string/alertDialog_cancel"
-            android:visibility="invisible"/>-->
+    <EditText
+        android:id="@+id/alertdialog_delete_account"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:text="Saisir la string correspodante"
+        android:textSize="@android:dimen/notification_large_icon_height"
+        android:visibility="invisible"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp"
+        tools:ignore="MissingConstraints"/>
 
 </android.support.constraint.ConstraintLayout>

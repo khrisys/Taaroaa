@@ -1,52 +1,115 @@
 package fr.drochon.christian.taaroaa.model;
 
-import java.sql.Date;
+import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
-public class Covoiturage {
+public class Covoiturage implements Serializable {
 
-    String id;
-    String mNomConducteur;
-    int mNbPlacesDispo;
-    Date mDateAller;
-    Date mDateRetour;
-    Date mHeureAller;
-    Date mHeureRetour;
-    String mTypeVehicule;
-    Reservation mReservation;
-    List<User> mListPassagers;
+    /*
+    LES NOMS DES VARIABLES DOIVENT CORRESPONDRENT AU NOM DES CHAMPS DE LA BDD AVEC LA LETTRE "m" EN DEBUT
+     */
+    private String id;
+    private String mNomConducteur;
+    private String mPrenomConducteur;
+    private String mNbPlacesDispo;
+    private String mNbPlacesReservees;
+    private Date mHoraireAller;
+    private Date mHoraireRetour;
+    private String mTypeVehicule;
+    private String mLieuDepartAller;
+    private String mLieuDepartRetour;
+    //private Reservation mReservation;
+    private List<String> mListPassagers;
+
+    public Covoiturage() {
+    }
 
     public Covoiturage(String id) {
         this.id = id;
     }
 
-    public Covoiturage(String id, String nomConducteur, int nbPlacesDispo, Date dateAller, Date dateRetour, Date heureAller, Date heureRetour, String typeVehicule) {
+
+    /**
+     * Constructeur utilisé lorsqu'aucun passager n'est inscrit à un covoiturage
+     * @param id
+     * @param nomCoducteur
+     * @param prenomCoducteur
+     * @param nbPlacesDispo
+     * @param typeVehicule
+     * @param horaireAller
+     * @param horaireRetour
+     */
+    public Covoiturage(String id, String nomCoducteur, String prenomCoducteur, String nbPlacesDispo, String typeVehicule, Date horaireAller, Date horaireRetour, String lieuDeparttAller, String lieuDepartRetour) {
         this.id = id;
-        mNomConducteur = nomConducteur;
+        mNomConducteur = nomCoducteur;
+        mPrenomConducteur = prenomCoducteur;
         mNbPlacesDispo = nbPlacesDispo;
-        mDateAller = dateAller;
-        mDateRetour = dateRetour;
-        mHeureAller = heureAller;
-        mHeureRetour = heureRetour;
+        mHoraireAller = horaireAller;
+        mHoraireRetour = horaireRetour;
         mTypeVehicule = typeVehicule;
+        mLieuDepartAller = lieuDeparttAller;
+        mLieuDepartRetour = lieuDepartRetour;
     }
 
-    public Covoiturage(String id, String nomConducteur, int nbPlacesDispo, Date dateAller, Date dateRetour, Date heureAller, Date heureRetour, String typeVehicule, Reservation reservation, List<User> listPassagers) {
+
+    //
+    public Covoiturage(String id, String nomConducteur, String prenomConducteur, String nbPlacesDispo, String typeVehicule, Date horaireAller, Date horaireRetour,
+                         String lieuDeparttAller, String lieuDepartRetour, List<String> passagers) {
         this.id = id;
         mNomConducteur = nomConducteur;
+        mPrenomConducteur = prenomConducteur;
         mNbPlacesDispo = nbPlacesDispo;
-        mDateAller = dateAller;
-        mDateRetour = dateRetour;
-        mHeureAller = heureAller;
-        mHeureRetour = heureRetour;
+        mHoraireAller = horaireAller;
+        mHoraireRetour = horaireRetour;
         mTypeVehicule = typeVehicule;
-        mReservation = reservation;
-        mListPassagers = listPassagers;
+        mLieuDepartAller = lieuDeparttAller;
+        mLieuDepartRetour = lieuDepartRetour;
+        mListPassagers = passagers;
     }
+
+    public Covoiturage(String id, String nomCoducteur, String prenomCoducteur, String nbPlacesDispo, String nbPlacesReservees, String typeVehicule, Date horaireAller, Date horaireRetour,
+                       String lieuDeparttAller, String lieuDepartRetour, List<String> passagers) {
+        this.id = id;
+        mNomConducteur = nomCoducteur;
+        mPrenomConducteur = prenomCoducteur;
+        mNbPlacesDispo = nbPlacesDispo;
+        mNbPlacesReservees = nbPlacesReservees;
+        mHoraireAller = horaireAller;
+        mHoraireRetour = horaireRetour;
+        mTypeVehicule = typeVehicule;
+        mLieuDepartAller = lieuDeparttAller;
+        mLieuDepartRetour = lieuDepartRetour;
+        mListPassagers = passagers;
+    }
+
+/*    public Covoiturage(String id, String nomCoducteur, String prenomCoducteur, String nbPlacesDispo, String typeVehicule, Date horaireAller, Date horaireRetour, List<User> passagers, Reservation reservation) {
+        this.id = id;
+        mNomConducteur = nomCoducteur;
+        mPrenomConducteur = prenomCoducteur;
+        mNbPlacesDispo = nbPlacesDispo;
+        mHoraireAller = horaireAller;
+        mHoraireRetour = horaireRetour;
+        mTypeVehicule = typeVehicule;
+        mListPassagers = passagers;
+        mReservation = reservation;
+    }*/
+
+/*
+    public Covoiturage(String id, String nomConducteur, String prenomConducteur, String nbPlacesDispo, String typeVehicule, String horaireAller, String horaireRetour, List<User> passagers) {
+        this.id = id;
+        mNomConducteur = nomConducteur;
+        mPrenomConducteur = prenomConducteur;
+        mNbPlacesDispo = nbPlacesDispo;
+        mHoraireAllerStr = horaireAller;
+        mHoraireRetourStr = horaireRetour;
+        mTypeVehicule = typeVehicule;
+        mListPassagers = passagers;
+    }
+*/
 
 
     //GETTERS AND SETTERS
-
 
     public String getId() {
         return id;
@@ -64,44 +127,44 @@ public class Covoiturage {
         mNomConducteur = nomConducteur;
     }
 
-    public int getNbPlacesDispo() {
+    public String getPrenomConducteur() {
+        return mPrenomConducteur;
+    }
+
+    public void setPrenomConducteur(String prenomConducteur) {
+        mPrenomConducteur = prenomConducteur;
+    }
+
+    public String getNbPlacesDispo() {
         return mNbPlacesDispo;
     }
 
-    public void setNbPlacesDispo(int nbPlacesDispo) {
+    public void setNbPlacesDispo(String nbPlacesDispo) {
         mNbPlacesDispo = nbPlacesDispo;
     }
 
-    public Date getDateAller() {
-        return mDateAller;
+    public String getNbPlacesReservees() {
+        return mNbPlacesReservees;
     }
 
-    public void setDateAller(Date dateAller) {
-        mDateAller = dateAller;
+    public void setNbPlacesReservees(String nbPlacesReservees) {
+        mNbPlacesReservees = nbPlacesReservees;
     }
 
-    public Date getDateRetour() {
-        return mDateRetour;
+    public Date getHoraireAller() {
+        return mHoraireAller;
     }
 
-    public void setDateRetour(Date dateRetour) {
-        mDateRetour = dateRetour;
+    public void setHoraireAller(Date horaireAller) {
+        mHoraireAller = horaireAller;
     }
 
-    public Date getHeureAller() {
-        return mHeureAller;
+    public Date getHoraireRetour() {
+        return mHoraireRetour;
     }
 
-    public void setHeureAller(Date heureAller) {
-        mHeureAller = heureAller;
-    }
-
-    public Date getHeureRetour() {
-        return mHeureRetour;
-    }
-
-    public void setHeureRetour(Date heureRetour) {
-        mHeureRetour = heureRetour;
+    public void setHoraireRetour(Date horaireRetour) {
+        mHoraireRetour = horaireRetour;
     }
 
     public String getTypeVehicule() {
@@ -112,19 +175,36 @@ public class Covoiturage {
         mTypeVehicule = typeVehicule;
     }
 
+    public String getLieuDepartAller() {
+        return mLieuDepartAller;
+    }
+
+    public void setLieuDepartAller(String lieuDepartAller) {
+        mLieuDepartAller = lieuDepartAller;
+    }
+
+    public String getLieuDepartRetour() {
+        return mLieuDepartRetour;
+    }
+
+    public void setLieuDepartRetour(String lieuDepartRetour) {
+        mLieuDepartRetour = lieuDepartRetour;
+    }
+
+    /*
     public Reservation getReservation() {
         return mReservation;
     }
 
     public void setReservation(Reservation reservation) {
         mReservation = reservation;
-    }
+    }*/
 
-    public List<User> getListPassagers() {
+    public List<String> getListPassagers() {
         return mListPassagers;
     }
 
-    public void setListPassagers(List<User> listPassagers) {
-        mListPassagers = listPassagers;
+    public void setListPassagers(List<String> listPassagers) {
+        this.mListPassagers = listPassagers;
     }
 }

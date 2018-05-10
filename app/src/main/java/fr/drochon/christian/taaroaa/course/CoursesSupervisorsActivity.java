@@ -125,7 +125,7 @@ public class CoursesSupervisorsActivity extends BaseActivity implements AdapterC
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.course_supervisors_menu, menu);
+        //getMenuInflater().inflate(R.menu.course_supervisors_menu, menu);
         return true; // true affiche le menu
     }
 

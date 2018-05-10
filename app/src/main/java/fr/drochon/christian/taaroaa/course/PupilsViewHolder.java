@@ -4,23 +4,13 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -33,10 +23,8 @@ import fr.drochon.christian.taaroaa.model.Course;
 public class PupilsViewHolder extends RecyclerView.ViewHolder {
 
     // DATA
-    List<Course> mCourseList;
+    private List<Course> mCourseList;
     // CELLULES
-    RecyclerView mRecyclerViewCoursesPupils;
-    LinearLayout mLinearLayout;
     @BindView(R.id.list_cell_course_subject)
     TextView mCourseSubject;
     @BindView(R.id.liste_cell_course_type)
@@ -54,12 +42,9 @@ public class PupilsViewHolder extends RecyclerView.ViewHolder {
         // liaison des elements du layout recyclerview et list_cell avec les variables declarées ici
         ButterKnife.bind(this, itemView);
 
-        mRecyclerViewCoursesPupils = itemView.findViewById(R.id.recyclerViewCoursesPupils);
-        mLinearLayout = itemView.findViewById(R.id.list_supervisors_linear_layout);
-
         mCourseList = new ArrayList<>();
 
-        // Affichage de la notification
+        // Affichage du contenu de la cellule sous forle de notification
         // j'utilise l'ecouteur sur la cellule et recupere les informations pour les affihcer dans une notification
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -85,50 +70,15 @@ public class PupilsViewHolder extends RecyclerView.ViewHolder {
      */
     public void updateWithCourse(final Course course) {
         // ajout des Cours dans une liste afin de les retrouver pour l'affichage de chaque cours particulier sous forme de notification
-
+        mCourseList.add(course);
         mCourseType.setText(course.getTypeCours());
         mCourseSubject.setText( Html.fromHtml("<b>Sujet : </b>" + course.getSujetDuCours()));
-        mCourseList.add(course);
-/*        // Affichage en fonction du niveau de la personne connectée
-        final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        DocumentReference currentUser = db.collection("users").document(firebaseUser.getUid());
-
-        currentUser.addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                if (documentSnapshot.exists()) {
-                    Map<String, Object> user = documentSnapshot.getData();
-
-                    if (user.get("niveau") != null) {
-                        // si le niveau du cours correspond au niveau de l'utilisateur connecté, on affiche le cours
-                        if (user.get("niveau").equals(course.getNiveauDuCours())) {
-                            mCourseList.add(course);
-                            showListCourses(mCourseList);
-                        }
-                    } else {
-                        //TODO notification à l'user de se creer un compte pour cacceder aux cours
-                      *//*  AlertDialog.Builder adb = new AlertDialog.Builder();
-                        adb.setTitle(R.string.alertDialog_account);
-                        adb.setIcon(android.R.drawable.ic_dialog_alert);
-                        adb.setTitle("Merci de completer votre compte pour acceder à la liste des cours !");
-                        adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                // rien à appeler. pas la peine de faire de toast
-                            }
-                        });
-                        adb.show(); // affichage de l'artdialog*//*
-                    }
-                }
-            }
-        });*/
     }
 
 
     // --------------------
     // HEURE & DATE PARSING
     // --------------------
-
 
     /**
      * Methode permettant de formatter une date en string avec locale en francais
@@ -137,7 +87,7 @@ public class PupilsViewHolder extends RecyclerView.ViewHolder {
      */
     public String  stDateToString(Date horaireDuCours){
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy", Locale.FRANCE);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE dd MMM yyyy", Locale.FRANCE);
         String dateDuCours = dateFormat.format(horaireDuCours);
         return dateDuCours;
 

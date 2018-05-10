@@ -15,28 +15,26 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-
-        <TextView
-            android:id="@+id/covoit_presentation_txt"
+        <android.support.v7.widget.SearchView
+            android:id="@+id/searchbar_user"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
+            android:layout_marginBottom="10dp"
             android:layout_marginEnd="40dp"
             android:layout_marginStart="40dp"
-            android:enabled="false"
-            android:gravity="center_vertical|center_horizontal"
-            android:linksClickable="false"
-            android:longClickable="false"
-            android:singleLine="false"
-            android:text="@string/modif_ecran_titre"
-            android:textAlignment="gravity"
-            android:textColor="@android:color/black"
-            android:textIsSelectable="false"
-            android:textSize="20sp"
-            android:textStyle="bold"/>
+            android:layout_marginTop="30dp"
+            android:background="@drawable/round_corner_toogle"
+            android:clickable="true"
+            android:focusable="true"
+            android:inputType="textCapCharacters"
+            android:minHeight="50dp"
+            android:visibility="visible"
+            app:iconifiedByDefault="false"
+            app:queryHint="@string/recherche_adherent_btn">
+        </android.support.v7.widget.SearchView>
 
         <View
-            android:id="@+id/divider"
+            android:id="@+id/divider1"
             android:layout_width="match_parent"
             android:layout_marginTop="10dp"
             android:layout_height="3dp"
@@ -51,8 +49,7 @@
             android:orientation="vertical"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-            <!-- MESSAGE RECYCLER VIEW EMPTY -->
-            <TextView
+<!--            <TextView
                 android:id="@+id/empty_list_textview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -61,7 +58,7 @@
                 android:layout_marginEnd="30dp"
                 android:text="@string/empty_list_users_txt"
                 android:textAlignment="center"
-                />
+                />-->
 
             <!--RECYCLER VIEW-->
             <ScrollView
@@ -72,7 +69,6 @@
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/recyclerViewSearchedUser"
-                    android:layout_marginTop="10dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical|center_horizontal"
@@ -81,22 +77,7 @@
             </ScrollView>
         </LinearLayout>
 
-        <android.support.v7.widget.SearchView
-            android:id="@+id/searchbar_user"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="40dp"
-            android:layout_marginStart="40dp"
-            android:layout_marginTop="40dp"
-            android:background="@drawable/round_corner_toogle"
-            android:clickable="true"
-            android:focusable="true"
-            app:iconifiedByDefault="false"
-            android:inputType="text"
-            android:minHeight="50dp"
-            android:visibility="visible"
-            app:queryHint="@string/recherche_adherent_btn">
-        </android.support.v7.widget.SearchView>
+
 
 <!--        <Button
             android:id="@+id/search_valid_btn"

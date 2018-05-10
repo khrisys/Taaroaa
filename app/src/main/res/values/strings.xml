@@ -47,7 +47,7 @@
     <string name="alertDialog_account">Voulez vous réellement supprimer votre compte ?</string>
     <string name="alertDialog_delete">Vous avez supprimé votre compte !</string>
     <string name="alertDialog_cancel">Vous n\'avez pas supprimé votre compte. \nVous diposez encore de vos informations personnelles. </string>
-    <string name="update_account">Vous avez mis à jour votre compte !</string>
+    <string name="update_account">Le compte a été mis à jour !</string>
     <string name="create_account">Vous avez créé votre compte. \n\tMerci !</string>
     <string name="complete_account">Complétez votre compte</string>
     <string name="modifiez_votre_compte">Modifiez votre compte</string>
@@ -61,6 +61,7 @@
     <string name="nom">Nom :</string>
     <string name="prenom">Prénom :</string>
     <string name="personnel">Personnel</string>
+    <string name="creez_votre_compte">Créez votre compte</string>
     <string name="bienvenue_sur_votre_compte">Bienvenue sur votre compte</string>
     <string name="modifiez_le_compte_d_un_adherent">Modifiez le compte d\'un adhérent</string>
     <string name="verif_every_fields_complete">Merci de saisir tous les champs du formulaire !</string>
@@ -74,18 +75,42 @@
     <string name="error_empty_fields">Merci de saisir ce champ !</string>
     <string name="empty_list_txt">Il n\'y actuellement pas de cours à cette date</string>
     <string name="create_course">Vous avez créé un nouveau cours. \n\tMerci !</string>
+    <string name="course_deconnexion">Déconnexion</string>
+    <string name="sommaire">Sommaire</string>
 
     <!-- COVOITURAGE ACTIVITY -->
-    <string name="proposer_covoit_btn">Proposez une covoiturage</string>
-    <string name="inscription_covoit_txt">Cliquez sur le nom d\'un conducteur pour vous inscrire à un covoiturage.</string>
+    <string name="covoit_txt">Covoiturage</string>
+    <string name="proposer_covoit_btn">Proposez un covoiturage</string>
+    <string name="inscription_covoit_txt">Cliquez sur un covoiturage pour effectuer une réservation.</string>
     <string name="empty_list_covoit_txt">Il n\'y actuellement pas de covoiturage proposé</string>
     <string name="nom_des_passagers">Nom des passagers :</string>
     <string name="nombre_de_passagers">Nombre de passager(s) :</string>
     <string name="reservez_btn">Réservez</string>
     <string name="nom_du_passager_responsable">Nom du passager / responsable :</string>
     <string name="passager">Passager</string>
+    <string name="inscription">Inscription</string>
     <string name="type_du_vehicule">Type du véhicule :</string>
     <string name="places_disponibles">Places disponibles :</string>
+    <string name="alertDialog_delete_covoit">Voulez vous réellement supprimer ce covoiturage ?</string>
+    <string name="alertDialog_places_restantes">Il n\'y a pas suffisamment de places disponibles pour votre demande.</string>
+    <string name="rectif_demande">Vous avez saisi un trop grand nombre de place à réserver.\nMerci de rectifier votre demande !</string>
+    <string name="rectif_demande2">Désolé, il n\'y a plus de place disponible pour ce covoiturage !</string>
+    <string name="create_covoit">Vous avez créé un covoiturage. \n\tMerci !</string>
+    <string name="create_passager">Vous avez réservé un covoiturage ! </string>
+    <string name="delete_covoit">Vous avez supprimé votre covoiturage !</string>
+    <string name="conducteur">Conducteur</string>
+    <string name="pr_nom">Prénom :</string>
+    <string name="nombre_de_places_disponibles">Nombre de places disponibles :</string>
+    <string name="horaires">Horaires</string>
+    <string name="date_de_depart">Date de départ</string>
+    <string name="heure_du_depart">Heure du départ</string>
+    <string name="heure_depart_trajet_aller">Heure départ trajet aller</string>
+    <string name="date_de_retour">Date de retour</string>
+    <string name="heure_du_retour">Heure du retour</string>
+    <string name="heure_depart_trajet_retour">Heure départ trajet retour</string>
+    <string name="lieu_de_depart">Lieu de départ à l\'aller :</string>
+    <string name="lieu_d_arrivee">Lieu d\'arrivée au retour :</string>
+    <string name="passagers">Passagers :</string>
 
     <!-- FACEBOOK PURPOSE -->
     <!--<string name="facebook_application_id" translatable="false">420763051691337</string>
@@ -105,6 +130,7 @@
     <string name="title_activity_courses_pupils">Cours prépa balbla</string>
     <string name="title_activity_test">TestActivity</string>
     <string name="title_activity_covoiturage_vehicules">CovoiturageVehiculesActivity</string>
+    <string name="supprimez_un_covoiturage">Supprimez un covoiturage</string>
 
 
 </resources>
