@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import fr.drochon.christian.taaroaa.R;
+import fr.drochon.christian.taaroaa.api.CovoiturageHelper;
 import fr.drochon.christian.taaroaa.api.UserHelper;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
 import fr.drochon.christian.taaroaa.controller.MainActivity;
@@ -193,48 +194,6 @@ public class AccountModificationActivity extends BaseActivity {
         return true; // true affiche le menu
     }
 
-/*    *//**
-     * Methode permettant de gerer la barre de recherche des adherents pour l'affichage de leurs comptes
-     * afin que les encadrants puissent les modifier.
-     *//*
-    private void searchAndModifPupils() {
-
-        android.widget.SearchView searchView = (android.widget.SearchView) mItemView.getActionView();
-        searchView.setQueryHint("Modifiez un compte");
-        searchView.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
-        searchView.setOnQueryTextListener(new android.widget.SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String name) {
-                // decomposition du nom et du prenom recu dans le param name
-                String nom = null, prenom = null;
-                String[] parts;
-                if (name.contains(" ")) {
-                    parts = name.split(" ");
-                    try {
-                        if (parts[1] != null) nom = parts[1];
-                        else nom = "";
-                    } catch (ArrayIndexOutOfBoundsException e1) {
-                        Log.e("TAG", "ArrayOutOfBoundException " + e1.getMessage());
-                    }
-                    if (parts[0] != null) prenom = parts[0];
-                    else prenom = "";
-                } else {
-                    nom = name;
-                    prenom = "";
-                }
-                System.out.println("clic");
-                showSearchedDatas(name, prenom);
-                return true;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                System.out.println(newText);
-                return true;
-            }
-        });
-    }*/
-
     /**
      * recuperation  du clic d'un user.
      * On utilise un switch ici car il peut y avoir plusieurs options.
@@ -248,25 +207,9 @@ public class AccountModificationActivity extends BaseActivity {
         return optionsToolbar(this, item);
     }
 
-    /**
-     * Methode permettant de changer d'ecran lors d'une connexion valide
-     */
-    private void startSummaryActivity() {
-        Intent intent = new Intent(AccountModificationActivity.this, SummaryActivity.class);
-        startActivity(intent);
-    }
-
-    /**
-     * Methode permettant de revenir à la page d'accueil lorsqu'un utilisateur a supprimer son compte
-     */
-    private void startMainActivity() {
-        Intent intent = new Intent(AccountModificationActivity.this, MainActivity.class);
-        startActivity(intent);
-    }
-
 
     // --------------------
-    // RECUPERATION DES INFORMATIONS USER
+    // UI
     // --------------------
 
     /**
@@ -289,6 +232,25 @@ public class AccountModificationActivity extends BaseActivity {
         }
     }
 
+    /**
+     * Methode permettant de changer d'ecran lors d'une connexion valide
+     */
+    private void startSummaryActivity() {
+        Intent intent = new Intent(AccountModificationActivity.this, SummaryActivity.class);
+        startActivity(intent);
+    }
+
+    /**
+     * Methode permettant de revenir à la page d'accueil lorsqu'un utilisateur a supprimer son compte
+     */
+    private void startMainActivity() {
+        Intent intent = new Intent(AccountModificationActivity.this, MainActivity.class);
+        startActivity(intent);
+    }
+
+    // --------------------
+    // REST REQUETES
+    // --------------------
 
     /**
      * Methode permettant de donner acces à la fonction d'un adherent si l'utilisateur connecté est un encadrant ou un initiateur.
@@ -334,7 +296,7 @@ public class AccountModificationActivity extends BaseActivity {
                             mLinearLayoutFonctionAdherent.setVisibility(View.VISIBLE);
                             mModificationCompte.setText(R.string.modifiez_votre_compte);
                             //Affichage du bouton de suppression uniquement aux proprietaires d'un compte
-                           mSuppressionCompte.setVisibility(View.VISIBLE);
+                            mSuppressionCompte.setVisibility(View.VISIBLE);
 
                             // adherent non moniteur sur son propre compte
                         } else if (!ds.equals("Moniteur")) {
@@ -355,28 +317,29 @@ public class AccountModificationActivity extends BaseActivity {
         }
     }
 
-    // --------------------
-    // REST REQUETES
-    // --------------------
-
     /**
      * Cette methode ne comprend pas l'update d'une fonction dans le club, car seul les encadrants du club peuvent
      * le faire, et cette fonctionnalité est donc reservée à une fonction particuliere.
      */
     private void updateUserInFirebase() {
 
-        this.mProgressBar.setVisibility(View.VISIBLE);
+
         String nom = this.mNom.getText().toString();
         String prenom = this.mPrenom.getText().toString();
-        String licence = this.mLicence.getText().toString();
-        String niveau = this.mNiveauPlongeespinner.getSelectedItem().toString();
-        String fonction = this.mFonctionAuClubspinner.getSelectedItem().toString();
         String email = this.mEmail.getText().toString();
 
         if (user.getUid() != null) {
             //TODO alert dialog lorsque tous les champs ne sont pas remplis
             if (!nom.isEmpty() && !nom.equals(getString(R.string.info_no_username_found)) && !prenom.isEmpty() && !email.isEmpty()) { // verification que tous les champs vides soient remplis
-                UserHelper.updateUser(user.getUid(), user.getNom().toUpperCase(), user.getPrenom().toUpperCase(), licence, user.getEmail(), niveau, fonction).
+
+                // Update de la bdd covoiturage si l'user à updater a créé des covoiturages.
+                // Cette fonction est appelée avant la fonction d'update de la bdd user
+                updateCovoituragesIfCreated();
+
+                // Update de la bdd user
+                this.mProgressBar.setVisibility(View.VISIBLE);
+                UserHelper.updateUser(user.getUid(), this.mNom.getText().toString().toUpperCase(), this.mPrenom.getText().toString().toUpperCase(), this.mLicence.getText().toString(),
+                        this.mEmail.getText().toString(), this.mNiveauPlongeespinner.getSelectedItem().toString(), this.mFonctionAuClubspinner.getSelectedItem().toString()).
                         addOnFailureListener(this.onFailureListener()).
                         addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
@@ -388,6 +351,40 @@ public class AccountModificationActivity extends BaseActivity {
                         });
             }
         }
+    }
+
+    /**
+     * Methode permettant de faire un update eventuel sur le nom et le prenom des covoiturages crées par l'utilisateur
+     * si celui ci effectue ici un update sur son nom ou son prenom
+     */
+    private void updateCovoituragesIfCreated(){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("covoiturages").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot documentSnapshots) {
+                if(documentSnapshots.size() > 0){
+                    List<DocumentSnapshot> covoits = documentSnapshots.getDocuments();
+                    for (DocumentSnapshot covoiturage: covoits) {
+                        Map<String, Object> covoit = covoiturage.getData();
+                        if(covoit.get("nomConducteur").equals(user.getNom()) && covoit.get("prenomConducteur").equals(user.getPrenom())){
+                            CovoiturageHelper.updateCovoiturage(covoit.get("id").toString(), mNom.getText().toString(), mPrenom.getText().toString())
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    System.out.println("nok");
+                                }
+                            })
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            // rien ici
+                                        }
+                                    });
+                        }
+                    }
+                }
+            }
+        });
     }
 
     /**
@@ -538,7 +535,10 @@ public class AccountModificationActivity extends BaseActivity {
 
                                                 // verification que tous les champs vides soient remplis
                                                 if (!nom.isEmpty() && !nom.equals(getString(R.string.info_no_username_found)) && !prenom.isEmpty() && !email.isEmpty()) {
-                                                    UserHelper.updateUser(user1.getUid(), user1.getNom(), user1.getPrenom(), user1.getLicence(), user1.getEmail(), user1.getNiveauPlongeur(), user1.getFonction());
+                                                    UserHelper.updateUser(user1.getUid(), user1.getNom(), user1.getPrenom(), user1.getLicence(), user1.getEmail(),
+                                                            user1.getNiveauPlongeur(), user1.getFonction());
+                                                    // MAJ des eventuels covoiturages créés par cet adherent
+                                                    CovoiturageHelper.updateCovoiturage(user1.getUid(), user1.getNom(), user1.getPrenom());
                                                 } else {
                                                     //TODO alert dialog lorsque tous les champs ne sont pas remplis
                                                 }
