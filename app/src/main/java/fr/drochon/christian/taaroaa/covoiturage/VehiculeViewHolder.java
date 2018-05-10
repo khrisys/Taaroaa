@@ -7,12 +7,14 @@ import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -39,6 +41,8 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
     LinearLayout mGlobalClic;
     @BindView(R.id.covoit_conducteur_nom)
     TextView mNomConducteur;
+    @BindView(R.id.poubelle_btn)
+    ImageButton mPoubelleImg;
     @BindView(R.id.passager_titre_txt)
     TextView mTitrePassager;
     @BindView(R.id.passager_spinner)
@@ -59,6 +63,7 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
     TextView mAller;
     @BindView(R.id.retour_txt)
     TextView mRetour;
+    FirebaseFirestore db;
     private Covoiturage sCovoiturage;
     //DATA
     private List<Covoiturage> mCovoiturageList;
@@ -79,13 +84,25 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
 
         mCovoiturageList = new ArrayList<>();
         mListPassagers = new ArrayList<>();
+        db = FirebaseFirestore.getInstance();
+
+
+        // --------------------
+        // LISTENERS
+        // --------------------
 
         // clic sur le nom du conducteur qui renvoi l'utilisateur à la page de reservation
         mGlobalClic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // recup des users
-                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                startActivityCovoituragePassagers();
+            }
+        });
+
+        // suppression d'un covoiturage
+        mPoubelleImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 db.collection("users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot documentSnapshots) {
@@ -95,38 +112,38 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
                                 final Map<String, Object> user = ds.getData();
                                 // comparaison entre les users cde la bdd et l'user ayant créé le covoiturage
                                 if (mNomConducteur.getText().equals(user.get("prenom") + "  " + user.get("nom"))) {
-                                    // connaitre si des users se sont inscrits dans le convoit
-                                    if (mPassagerSpinner.getSelectedItem() == null) {
-                                        //alterdialog de suppression de covoit
-                                        final AlertDialog.Builder adb = new AlertDialog.Builder(itemView.getContext());
-                                        adb.setTitle(R.string.alertDialog_delete_covoit);
-                                        adb.setIcon(android.R.drawable.ic_dialog_alert);
-                                        adb.setTitle(R.string.alertDialog_delete_covoit);
-                                        adb.setPositiveButton("SUPPRIMER ?", new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                deleteCovoiturageInFirebase(user.get("prenom").toString(), user.get("nom").toString());
-                                            }
-                                        });
-                                        adb.setNegativeButton("ANNULER", new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                // rien : rester sur l'ecran actuel
-                                            }
-                                        });
-                                        adb.show();
-                                        break;
-                                    }
-
+                                    //alterdialog de suppression de covoit
+                                    final AlertDialog.Builder adb = new AlertDialog.Builder(itemView.getContext());
+                                    adb.setTitle(R.string.alertDialog_delete_covoit);
+                                    adb.setIcon(android.R.drawable.ic_dialog_alert);
+                                    adb.setTitle(R.string.alertDialog_delete_covoit);
+                                    adb.setPositiveButton("SUPPRIMER ?", new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            deleteCovoiturageInFirebase(user.get("prenom").toString(), user.get("nom").toString());
+                                            startActivityCovoiturageVehicule();
+                                        }
+                                    });
+                                    adb.setNegativeButton("ANNULER", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            // rien : rester sur l'ecran actuel
+                                        }
+                                    });
+                                    adb.show();
                                 }
                             }
-                        }startActivityCovoituragePassagers();
+                        }
                     }
 
                 });
-
             }
         });
     }
+
+
+    // --------------------
+    // UI
+    // --------------------
 
     /**
      * Methode appellée via l'adapter. Cette methode mettra à jour les differentes view du viewholder en fonction de l'utilisateur connecté
@@ -143,11 +160,13 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
         for (int i = 0; i < mCovoiturageList.size(); i++) {
             String username = covoiturage.getPrenomConducteur() + "  " + covoiturage.getNomConducteur();
             mNomConducteur.setText(username);
-            if (covoiturage.getListPassagers() != null) {
+            // affichage evetnuel de la poubelle des covoits de l'user actuellement connecté
+            showPoubelle(covoiturage);
 
-                // --------------------
-                // REMPLISSAGE SPINNER
-                // --------------------
+            // --------------------
+            // REMPLISSAGE SPINNER
+            // --------------------
+            if (covoiturage.getListPassagers() != null) {
                 // Create an ArrayAdapter using the string array and a default spinner layout
                 ArrayAdapter<String> adapterNiveau = new ArrayAdapter<String>(itemView.getContext(), android.R.layout.simple_spinner_item, mListPassagers);
                 // Specify the layout to use when the list of choices appears
@@ -165,24 +184,6 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
     }
 
     /**
-     * Methode permettant de formatter une date en string avec locale en francais
-     *
-     * @param horaireDuCours
-     * @return
-     */
-    private String stDateToString(Date horaireDuCours) {
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE dd MMM yyyy ' à ' HH'h'mm", Locale.FRANCE);
-        String dateDuCours = dateFormat.format(horaireDuCours);
-        return dateDuCours;
-    }
-
-
-    // --------------------
-    // UI
-    // --------------------
-
-    /**
      * Methode permettant à l'utilisateur d'etre redirigé vers la pages principale des covoiturages
      */
     private void startActivityCovoiturageVehicule() {
@@ -190,6 +191,9 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
         itemView.getContext().startActivity(intent);
     }
 
+    /**
+     * Methode permettant à un utilisateur d'etre redirigé vers la page du detail des covoiturages
+     */
     private void startActivityCovoituragePassagers() {
         Intent intent = new Intent(itemView.getContext(), CovoituragePassagersActivity.class).putExtra("covoit", sCovoiturage);
         itemView.getContext().startActivity(intent);
@@ -219,6 +223,7 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
+                                            //TODO envoyer une notification à tous les passagers qui auraient été inscrits à ce covoiturage desormais supprimé
                                             Toast.makeText(itemView.getContext(), R.string.delete_covoit,
                                                     Toast.LENGTH_LONG).show();
                                             startActivityCovoiturageVehicule(); // renvoi l'user sur la page des covoiturages apres validation de la creation de l'user dans les covoit
@@ -230,4 +235,42 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
             }
         });
     }
+
+    /**
+     * Methode permettant de supprimer un covoiturage si l'utiliateur actuellement connecté est le createur
+     * d'un ou plusieurs covoiturage.
+     */
+    private void showPoubelle(final Covoiturage currentCovoit) {
+        final String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        db.collection("users").document(currentUserId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if (documentSnapshot.exists()) {
+                    final Map<String, Object> user = documentSnapshot.getData();
+                    if (currentCovoit.getNomConducteur().equals(user.get("nom").toString()) && currentCovoit.getPrenomConducteur().equals(user.get("prenom").toString())) {
+                        mPoubelleImg.setVisibility(View.VISIBLE);
+                    }
+                }
+            }
+        });
+    }
+
+
+    // --------------------
+    // DATES
+    // --------------------
+
+    /**
+     * Methode permettant de formatter une date en string avec locale en francais
+     *
+     * @param horaireDuCours
+     * @return
+     */
+    private String stDateToString(Date horaireDuCours) {
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE dd MMM yyyy ' à ' HH'h'mm", Locale.FRANCE);
+        String dateDuCours = dateFormat.format(horaireDuCours);
+        return dateDuCours;
+    }
+
 }
