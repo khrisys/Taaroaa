@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
@@ -63,11 +64,13 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
     TextView mAller;
     @BindView(R.id.retour_txt)
     TextView mRetour;
-    FirebaseFirestore db;
-    private Covoiturage sCovoiturage;
+
     //DATA
     private List<Covoiturage> mCovoiturageList;
     private List<String> mListPassagers;
+    private FirebaseFirestore db;
+    private Covoiturage sCovoiturage;
+
 
     /**
      * Contructeur qui prend en param la vue affichée.
@@ -91,11 +94,26 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
         // LISTENERS
         // --------------------
 
-        // clic sur le nom du conducteur qui renvoi l'utilisateur à la page de reservation
         mGlobalClic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivityCovoituragePassagers();
+
+                // clic sur le nom du conducteur qui renvoi l'utilisateur à la page de reservation
+                if (Integer.parseInt(sCovoiturage.getNbPlacesDispo()) > 0)
+                    startActivityCovoituragePassagers();
+                //alterdialog de covoit complet et renvoi vers la page des covoiturages
+                else {
+                    final AlertDialog.Builder adb = new AlertDialog.Builder(itemView.getContext());
+                    adb.setTitle("Covoiturage complet !");
+                    adb.setIcon(android.R.drawable.ic_dialog_alert);
+                    adb.setTitle("Ce covoiturage est complet !");
+                    adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            startActivityCovoiturageVehicule();
+                        }
+                    });
+                    adb.show();
+                }
             }
         });
 
@@ -150,7 +168,7 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
      *
      * @param covoiturage
      */
-    @SuppressLint("ResourceType")
+    @SuppressLint({"ResourceType", "SetTextI18n"})
     public void updateWithCovoiturage(final Covoiturage covoiturage) {
         // ajout des Covoit dans une liste afin de les retrouver pour l'affichage de chaque cours particulier sous forme de notification
         mCovoiturageList.add(covoiturage);
@@ -176,7 +194,11 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
             }
         }
         mTypeVehicule.setText(covoiturage.getTypeVehicule());
-        mNbPlaceDispo.setText(covoiturage.getNbPlacesDispo());
+        String ratioPlaces = covoiturage.getNbPlacesDispo() + "/" + covoiturage.getNbPlacesTotal();
+        if (Integer.parseInt(covoiturage.getNbPlacesDispo()) > 0)
+            mNbPlaceDispo.setText(Html.fromHtml("<font color='green'><b>" + ratioPlaces + "</b></font>"));
+        else
+            mNbPlaceDispo.setText(Html.fromHtml("<font color='red'><b>" + ratioPlaces + "</b></font>"));
         mAller.setText(stDateToString(covoiturage.getHoraireAller()));
         mRetour.setText(stDateToString(covoiturage.getHoraireRetour()));
         mLieuDepart.setText(covoiturage.getLieuDepartAller());
