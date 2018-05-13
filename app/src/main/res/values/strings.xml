@@ -100,7 +100,7 @@
     <string name="delete_covoit">Vous avez supprimé votre covoiturage !</string>
     <string name="conducteur">Conducteur</string>
     <string name="pr_nom">Prénom :</string>
-    <string name="nombre_de_places_disponibles">Nombre de places disponibles :</string>
+    <string name="nombre_de_places_proposees">Nombre de places proposées :</string>
     <string name="horaires">Horaires</string>
     <string name="date_de_depart">Date de départ</string>
     <string name="heure_du_depart">Heure du départ</string>

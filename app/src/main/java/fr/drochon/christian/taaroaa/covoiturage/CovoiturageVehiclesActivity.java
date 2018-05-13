@@ -38,11 +38,12 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
     LinearLayout mLinearLayoutRecycleView;
     ScrollView mScrollViewRecyclerView;
     RecyclerView mRecyclerViewVehicules;
+
+    // FOR DATA
+    private AdapterCovoiturageVehicles mAdapterCovoiturageVehicles;
     List<Covoiturage> listCovoiturages;
     List<String> listPassagers;
     Covoiturage covoiturage;
-    // FOR DATA
-    private AdapterCovoiturageVehicles mAdapterCovoiturageVehicles;
 
     // --------------------
     // LIFECYCLE
@@ -67,8 +68,6 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
         configureRecyclerView();
         configureToolbar();
 
-
-
         // --------------------
         // LISTENERS
         // --------------------
@@ -85,10 +84,6 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
         });
     }
 
-    @Override
-    public int getFragmentLayout() {
-        return 0;
-    }
 
     // --------------------
     // TOOLBAR
@@ -122,6 +117,11 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
     // --------------------
     // UI
     // --------------------
+
+    @Override
+    public int getFragmentLayout() {
+        return 0;
+    }
 
     /**
      * Configuration de la recyclerview
@@ -166,7 +166,7 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
     }
 
     // --------------------
-    // SEARCH REQUESTS
+    // REST REQUESTS
     // --------------------
 
     /**
@@ -177,7 +177,7 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
     private Query getAllCovoiturages() {
 
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
-        Query mQuery = db.collection("covoiturages"); //.orderBy("nomConducteur", Query.Direction.ASCENDING);
+        Query mQuery = db.collection("covoiturages").orderBy("horaireAller", Query.Direction.ASCENDING);
         mQuery.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot documentSnapshots) {
@@ -191,7 +191,7 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
 
                         // recuperation de l'objet covoiturage
                         covoiturage = new Covoiturage(covoit.get("id").toString(), covoit.get("nomConducteur").toString(), covoit.get("prenomConducteur").toString(),
-                                covoit.get("nbPlacesDispo").toString(), covoit.get("typeVehicule").toString(), stStringToDate(covoit.get("horaireAller").toString()),
+                                covoit.get("nbPlacesDispo").toString(), covoit.get("nbPlacesTotal").toString(), covoit.get("typeVehicule").toString(), stStringToDate(covoit.get("horaireAller").toString()),
                                 stStringToDate(covoit.get("horaireRetour").toString()), covoit.get("lieuDepartAller").toString(), covoit.get("lieuDepartRetour").toString(), listPassagers);
                     }
                 }

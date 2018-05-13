@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
@@ -63,11 +64,13 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
     TextView mAller;
     @BindView(R.id.retour_txt)
     TextView mRetour;
-    FirebaseFirestore db;
-    private Covoiturage sCovoiturage;
+
     //DATA
     private List<Covoiturage> mCovoiturageList;
     private List<String> mListPassagers;
+    private FirebaseFirestore db;
+    private Covoiturage sCovoiturage;
+
 
     /**
      * Contructeur qui prend en param la vue affichée.
@@ -150,7 +153,7 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
      *
      * @param covoiturage
      */
-    @SuppressLint("ResourceType")
+    @SuppressLint({"ResourceType", "SetTextI18n"})
     public void updateWithCovoiturage(final Covoiturage covoiturage) {
         // ajout des Covoit dans une liste afin de les retrouver pour l'affichage de chaque cours particulier sous forme de notification
         mCovoiturageList.add(covoiturage);
@@ -176,7 +179,9 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
             }
         }
         mTypeVehicule.setText(covoiturage.getTypeVehicule());
-        mNbPlaceDispo.setText(covoiturage.getNbPlacesDispo());
+        String ratioPlaces = covoiturage.getNbPlacesDispo() + "/"+ covoiturage.getNbPlacesTotal();
+        if (Integer.parseInt(covoiturage.getNbPlacesDispo()) > 0) mNbPlaceDispo.setText(Html.fromHtml("<font color='green'>" + ratioPlaces+ "</font>"));
+        else mNbPlaceDispo.setText(Html.fromHtml("<font color='red'>" + ratioPlaces + "</font>"));
         mAller.setText(stDateToString(covoiturage.getHoraireAller()));
         mRetour.setText(stDateToString(covoiturage.getHoraireRetour()));
         mLieuDepart.setText(covoiturage.getLieuDepartAller());

@@ -13,7 +13,7 @@ public class Covoiturage implements Serializable {
     private String mNomConducteur;
     private String mPrenomConducteur;
     private String mNbPlacesDispo;
-    private String mNbPlacesReservees;
+    private String mNbPlacesTotal;
     private Date mHoraireAller;
     private Date mHoraireRetour;
     private String mTypeVehicule;
@@ -68,13 +68,13 @@ public class Covoiturage implements Serializable {
         mListPassagers = passagers;
     }
 
-    public Covoiturage(String id, String nomCoducteur, String prenomCoducteur, String nbPlacesDispo, String nbPlacesReservees, String typeVehicule, Date horaireAller, Date horaireRetour,
+    public Covoiturage(String id, String nomConducteur, String prenomConducteur, String nbPlacesDispo, String nbPlacesTotal, String typeVehicule, Date horaireAller, Date horaireRetour,
                        String lieuDeparttAller, String lieuDepartRetour, List<String> passagers) {
         this.id = id;
-        mNomConducteur = nomCoducteur;
-        mPrenomConducteur = prenomCoducteur;
+        mNomConducteur = nomConducteur;
+        mPrenomConducteur = prenomConducteur;
         mNbPlacesDispo = nbPlacesDispo;
-        mNbPlacesReservees = nbPlacesReservees;
+        mNbPlacesTotal = nbPlacesTotal;
         mHoraireAller = horaireAller;
         mHoraireRetour = horaireRetour;
         mTypeVehicule = typeVehicule;
@@ -82,31 +82,6 @@ public class Covoiturage implements Serializable {
         mLieuDepartRetour = lieuDepartRetour;
         mListPassagers = passagers;
     }
-
-/*    public Covoiturage(String id, String nomCoducteur, String prenomCoducteur, String nbPlacesDispo, String typeVehicule, Date horaireAller, Date horaireRetour, List<User> passagers, Reservation reservation) {
-        this.id = id;
-        mNomConducteur = nomCoducteur;
-        mPrenomConducteur = prenomCoducteur;
-        mNbPlacesDispo = nbPlacesDispo;
-        mHoraireAller = horaireAller;
-        mHoraireRetour = horaireRetour;
-        mTypeVehicule = typeVehicule;
-        mListPassagers = passagers;
-        mReservation = reservation;
-    }*/
-
-/*
-    public Covoiturage(String id, String nomConducteur, String prenomConducteur, String nbPlacesDispo, String typeVehicule, String horaireAller, String horaireRetour, List<User> passagers) {
-        this.id = id;
-        mNomConducteur = nomConducteur;
-        mPrenomConducteur = prenomConducteur;
-        mNbPlacesDispo = nbPlacesDispo;
-        mHoraireAllerStr = horaireAller;
-        mHoraireRetourStr = horaireRetour;
-        mTypeVehicule = typeVehicule;
-        mListPassagers = passagers;
-    }
-*/
 
 
     //GETTERS AND SETTERS
@@ -143,12 +118,12 @@ public class Covoiturage implements Serializable {
         mNbPlacesDispo = nbPlacesDispo;
     }
 
-    public String getNbPlacesReservees() {
-        return mNbPlacesReservees;
+    public String getNbPlacesTotal() {
+        return mNbPlacesTotal;
     }
 
-    public void setNbPlacesReservees(String nbPlacesReservees) {
-        mNbPlacesReservees = nbPlacesReservees;
+    public void setNbPlacesTotal(String nbPlacesTotal) {
+        mNbPlacesTotal = nbPlacesTotal;
     }
 
     public Date getHoraireAller() {

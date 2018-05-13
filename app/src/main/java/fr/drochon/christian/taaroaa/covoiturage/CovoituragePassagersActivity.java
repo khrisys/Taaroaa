@@ -118,6 +118,14 @@ public class CovoituragePassagersActivity extends BaseActivity {
     // --------------------
 
     /**
+     * Methode permettant de desactiver les champs de saisi en cas de covoiturage complet
+     */
+    private void updateUI() {
+        if (Integer.parseInt(covoiturage.getNbPlacesDispo()) == 0) {
+            mTitreInscription.setEnabled(false);
+        }
+    }
+    /**
      * Methode permettant d'afficher les informations de l'user sur l'ecran AccountCreateActivity lorsqu'un user vient de creer un compte
      */
     private void updateUIWhenCreating() {
@@ -137,21 +145,6 @@ public class CovoituragePassagersActivity extends BaseActivity {
             getAndShowDatas();
             updateUI();
         }
-    }
-
-    /**
-     * Methode permettant de recuperer et d'afficher toutes les informations d'un covoiturage
-     */
-    private void getAndShowDatas() {
-        mIntent = getIntent();
-        covoiturage = (Covoiturage) Objects.requireNonNull(mIntent.getExtras()).getSerializable("covoit");
-        assert covoiturage != null;
-
-        mNomConducteur.setText(Html.fromHtml("<b>Conducteur : </b>" + covoiturage.getPrenomConducteur() + " " + covoiturage.getNomConducteur()));
-        mDateDepart.setText(Html.fromHtml("<b>Aller : départ le </b>" + stDateToString(covoiturage.getHoraireAller()) + "<b> depuis </b>" + covoiturage.getLieuDepartAller()));
-        mDateretour.setText(Html.fromHtml("<b>Retour : départ le </b>" + stDateToString(covoiturage.getHoraireRetour()) + "<b> jusqu'à </b>" + covoiturage.getLieuDepartRetour()));
-        mNbPlaceDispo.setText(Html.fromHtml("<b>Nombre de places disponibles : </b>" + covoiturage.getNbPlacesDispo()));
-        mTypeVehicule.setText(Html.fromHtml("<b>Type Véhicule : </b>" + covoiturage.getTypeVehicule()));
     }
 
     /**
@@ -186,19 +179,27 @@ public class CovoituragePassagersActivity extends BaseActivity {
         return false;
     }
 
-    /**
-     * Methode permettant de desactiver les champs de saisi en cas de covoiturage complet
-     */
-    private void updateUI() {
-        if (Integer.parseInt(covoiturage.getNbPlacesDispo()) == 0) {
-            mTitreInscription.setEnabled(false);
-        }
-    }
 
 
     // --------------------
     // REST REQUETES
     // --------------------
+
+
+    /**
+     * Methode permettant de recuperer et d'afficher toutes les informations d'un covoiturage
+     */
+    private void getAndShowDatas() {
+        mIntent = getIntent();
+        covoiturage = (Covoiturage) Objects.requireNonNull(mIntent.getExtras()).getSerializable("covoit");
+        assert covoiturage != null;
+
+        mNomConducteur.setText(Html.fromHtml("<b>Conducteur : </b>" + covoiturage.getPrenomConducteur() + " " + covoiturage.getNomConducteur()));
+        mDateDepart.setText(Html.fromHtml("<b>Aller : départ le </b>" + stDateToString(covoiturage.getHoraireAller()) + "<b> depuis </b>" + covoiturage.getLieuDepartAller()));
+        mDateretour.setText(Html.fromHtml("<b>Retour : départ le </b>" + stDateToString(covoiturage.getHoraireRetour()) + "<b> jusqu'à </b>" + covoiturage.getLieuDepartRetour()));
+        mNbPlaceDispo.setText(Html.fromHtml("<b>Places disponibles : </b>" + covoiturage.getNbPlacesDispo()  + " / " + covoiturage.getNbPlacesTotal()));
+        mTypeVehicule.setText(Html.fromHtml("<b>Type Véhicule : </b>" + covoiturage.getTypeVehicule()));
+    }
 
     /**
      * Methode permettant la creation d'un user dans le bdd. En cas d'insertion ou de probleme,
@@ -212,7 +213,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
             int nbPlacesRestantes = calculNbPlacesRestantes();
 
             // verif que le nb de places demandées ne depassent pas le nb de places dispo
-            if (nbPlacesRestantes < 0 && Integer.parseInt(covoiturage.getNbPlacesDispo()) > 0) {
+            if (nbPlacesRestantes < 0 && Integer.parseInt(covoiturage.getNbPlacesDispo()) >= 0) {
                 mNomPassager.setText("");
                 mNbPassager.setText("");
                 mProgressBar.setVisibility(View.GONE);
@@ -227,7 +228,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
                     }
                 });
                 adb.show(); // affichage de l'artdialog
-            } else if (nbPlacesRestantes < 0 && Integer.parseInt(covoiturage.getNbPlacesDispo()) == 0) {
+/*            } else if (nbPlacesRestantes < 0 && Integer.parseInt(covoiturage.getNbPlacesDispo()) == 0) {
                 final AlertDialog.Builder adb = new AlertDialog.Builder(CovoituragePassagersActivity.this);
                 adb.setTitle(R.string.alertDialog_places_restantes);
                 adb.setIcon(android.R.drawable.ic_dialog_alert);
@@ -237,7 +238,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
                         startActivityCovoiturageVehicule();
                     }
                 });
-                adb.show(); // affichage de l'artdialog
+                adb.show(); // affichage de l'artdialog*/
             } else {
                 String placesRestantes = String.valueOf(nbPlacesRestantes);
                 mNbPlaceDispo.setText(placesRestantes);
