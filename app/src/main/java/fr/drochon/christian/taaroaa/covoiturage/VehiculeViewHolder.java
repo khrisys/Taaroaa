@@ -94,14 +94,14 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
         // LISTENERS
         // --------------------
 
-        // clic sur le nom du conducteur qui renvoi l'utilisateur à la page de reservation
         mGlobalClic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(Integer.parseInt(sCovoiturage.getNbPlacesDispo()) > 0)
-                startActivityCovoituragePassagers();
+                // clic sur le nom du conducteur qui renvoi l'utilisateur à la page de reservation
+                if (Integer.parseInt(sCovoiturage.getNbPlacesDispo()) > 0)
+                    startActivityCovoituragePassagers();
+                //alterdialog de covoit complet et renvoi vers la page des covoiturages
                 else {
-                    //alterdialog de covoit complet et renvoi vres la page des covoiturages
                     final AlertDialog.Builder adb = new AlertDialog.Builder(itemView.getContext());
                     adb.setTitle("Covoiturage complet !");
                     adb.setIcon(android.R.drawable.ic_dialog_alert);
@@ -193,9 +193,11 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
             }
         }
         mTypeVehicule.setText(covoiturage.getTypeVehicule());
-        String ratioPlaces = covoiturage.getNbPlacesDispo() + "/"+ covoiturage.getNbPlacesTotal();
-        if (Integer.parseInt(covoiturage.getNbPlacesDispo()) > 0) mNbPlaceDispo.setText(Html.fromHtml("<font color='green'><b>" + ratioPlaces+ "</b></font>"));
-        else mNbPlaceDispo.setText(Html.fromHtml("<font color='red'><b>" + ratioPlaces + "</b></font>"));
+        String ratioPlaces = covoiturage.getNbPlacesDispo() + "/" + covoiturage.getNbPlacesTotal();
+        if (Integer.parseInt(covoiturage.getNbPlacesDispo()) > 0)
+            mNbPlaceDispo.setText(Html.fromHtml("<font color='green'><b>" + ratioPlaces + "</b></font>"));
+        else
+            mNbPlaceDispo.setText(Html.fromHtml("<font color='red'><b>" + ratioPlaces + "</b></font>"));
         mAller.setText(stDateToString(covoiturage.getHoraireAller()));
         mRetour.setText(stDateToString(covoiturage.getHoraireRetour()));
         mLieuDepart.setText(covoiturage.getLieuDepartAller());

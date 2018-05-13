@@ -31,19 +31,17 @@ import fr.drochon.christian.taaroaa.model.Covoiturage;
 public class CovoiturageVehiclesActivity extends BaseActivity implements AdapterCovoiturageVehicles.Listener {
 
     // FOR COMMUNICATION
-    TextView mTextView;
     TextView mTextViewEmptyListRecyclerView;
     CoordinatorLayout mCoordinatorLayoutRoot;
     LinearLayout mLinearLayoutVehicule;
     LinearLayout mLinearLayoutRecycleView;
     ScrollView mScrollViewRecyclerView;
     RecyclerView mRecyclerViewVehicules;
-
-    // FOR DATA
-    private AdapterCovoiturageVehicles mAdapterCovoiturageVehicles;
     List<Covoiturage> listCovoiturages;
     List<String> listPassagers;
     Covoiturage covoiturage;
+    // FOR DATA
+    private AdapterCovoiturageVehicles mAdapterCovoiturageVehicles;
 
     // --------------------
     // LIFECYCLE
@@ -54,6 +52,7 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
         setContentView(R.layout.activity_covoiturage_vehicules);
         //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         //setSupportActionBar(toolbar);
+
 
         mTextViewEmptyListRecyclerView = findViewById(R.id.empty_list_textview);
         mCoordinatorLayoutRoot = findViewById(R.id.coordinatorLayoutRoot);
@@ -152,6 +151,7 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
                 .setLifecycleOwner(this)
                 .build();
     }
+
 
     // --------------------
     // CALLBACK

@@ -5,13 +5,17 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
+import android.text.Editable;
 import android.text.Html;
+import android.text.InputType;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -30,18 +34,22 @@ public class CovoituragePassagersActivity extends BaseActivity {
     static Covoiturage covoiturage;
     TextInputEditText mNomConducteur;
     TextInputEditText mDateDepart;
-    TextInputEditText mHeureDepart;
     TextInputEditText mDateretour;
-    TextInputEditText mHeureRetour;
     TextInputEditText mNbPlaceDispo;
     TextInputEditText mTypeVehicule;
     TextInputEditText mNomPassager;
     TextInputEditText mNbPassager;
     LinearLayout mTitreInscription;
+    LinearLayout mLinearChampsDynamiques;
+    TextView mTitrePassager;
+    TextInputEditText mNbPassagerInput;
 
     Button mReservation;
     Intent mIntent;
     ProgressBar mProgressBar;
+    TextInputEditText mFieldNamePassengers;
+    int inputs;
+    List<TextInputEditText> listNamePassengers;
 
     // --------------------
     // LIFECYCLE
@@ -57,14 +65,38 @@ public class CovoituragePassagersActivity extends BaseActivity {
         mDateretour = findViewById(R.id.date_retour_txt);
         mNbPlaceDispo = findViewById(R.id.nb_place_dispo_txt);
         mTypeVehicule = findViewById(R.id.type_vehicule_txt);
-        mNomPassager = findViewById(R.id.nom_passager_input);
-        mNbPassager = findViewById(R.id.nb_passager_input);
         mReservation = findViewById(R.id.reservation_covoit_btn);
         mProgressBar = findViewById(R.id.progress_bar);
         mTitreInscription = findViewById(R.id.titre_inscription);
+        mLinearChampsDynamiques = findViewById(R.id.linearLayoutDynamique);
+
+        mTitrePassager = findViewById(R.id.nom_passager_txt);
+        mNbPassagerInput = findViewById(R.id.nb_passager_input);
+
+        listNamePassengers = new ArrayList<>();
 
         this.configureToolbar();
         this.updateUIWhenCreating();
+
+        // --------------------
+        // LISTENERS
+        // --------------------
+
+        mNbPassagerInput.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                showFieldsNamePassengers(s);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
 
         mReservation.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -113,6 +145,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
         return optionsToolbar(this, item);
     }
 
+
     // --------------------
     // UI
     // --------------------
@@ -125,6 +158,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
             mTitreInscription.setEnabled(false);
         }
     }
+
     /**
      * Methode permettant d'afficher les informations de l'user sur l'ecran AccountCreateActivity lorsqu'un user vient de creer un compte
      */
@@ -156,35 +190,69 @@ public class CovoituragePassagersActivity extends BaseActivity {
     }
 
     /**
-     * Methode permettant de signaler une erreur lorsqu'un champ est resté vide alors que la soumission du formulaire a été faite.
+     * Methode permettant de signaler une erreur lorsqu'un champ de nom de passager est resté vide alors que la soumission du formulaire a été faite.
      */
     private boolean verificationChampsVides() {
-
-        if (!mNomPassager.getText().toString().isEmpty() && !mNbPassager.getText().toString().isEmpty())
-            return true;
-        else if (mNomPassager.getText().toString().isEmpty() && mNbPassager.getText().toString().isEmpty()) {
-            mProgressBar.setVisibility(View.GONE);
-            mNomPassager.setError("Merci de saisir ce champ !");
-            mNbPassager.setError("Merci de saisir ce champ !");
-            return false;
-        } else if (mNomPassager.getText().toString().isEmpty()) {
-            mProgressBar.setVisibility(View.GONE);
-            mNomPassager.setError("Merci de saisir ce champ !");
-            return false;
-        } else if (mNbPassager.getText().toString().isEmpty()) {
-            mProgressBar.setVisibility(View.GONE);
-            mNbPassager.setError("Merci de saisir ce champ !");
-            return false;
+        for (int i = 0; i < listNamePassengers.size(); i++) {
+            if (listNamePassengers.get(i).getText().toString().equals("")) {
+                listNamePassengers.get(i).setError("Merci de saisir ce champs !");
+                return false;
+            }
         }
-        return false;
+
+        return true;
     }
 
+    /**
+     * Methode permettant d'afficher dynamiquement le nb de champ saisi par l'utilisateur correspondant au nb
+     * de passager voulu pour saisir le nom de chacun des passagers
+     */
+    private void showFieldsNamePassengers(CharSequence charSequence) {
+        if (!mNbPassagerInput.getText().toString().equals("")) {
+            // empecher un user de demander trop de places en fonction des places dispos
+            if (calculNbPlacesRestantes() < 0) {
+                final AlertDialog.Builder adb = new AlertDialog.Builder(CovoituragePassagersActivity.this);
+                adb.setTitle(R.string.rectif_demande);
+                adb.setIcon(android.R.drawable.ic_dialog_alert);
+                adb.setMessage(R.string.alertDialog_places_restantes);
+                adb.setPositiveButton("MODIFIER", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        mNbPassagerInput.setText("");
+                    }
+                });
+                adb.show();
+            } else {
+                // condition de creation des champs nom passager dynamique
+                if (!mNbPassagerInput.getText().toString().equals("")) {
+                    mReservation.setEnabled(true);
+                    mTitrePassager.setVisibility(View.VISIBLE);
+                    inputs = Integer.parseInt(charSequence.toString());
+                    if (inputs > 0) {
+                        // creation des champs nom passager dynamiquement
+                        for (int i = 0; i < inputs; i++) {
+
+                            mFieldNamePassengers = new TextInputEditText(this);
+                            mFieldNamePassengers.setHint("Saisir le nom du passager");
+                            mFieldNamePassengers.setInputType(InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
+
+                            mLinearChampsDynamiques.addView(mFieldNamePassengers);
+                            listNamePassengers.add(i, mFieldNamePassengers);
+                        }
+                    }
+                }
+            }
+        } else {
+            mTitrePassager.setVisibility(View.GONE);
+            mReservation.setEnabled(false);
+            mLinearChampsDynamiques.removeAllViews();
+            listNamePassengers.clear();
+        }
+    }
 
 
     // --------------------
     // REST REQUETES
     // --------------------
-
 
     /**
      * Methode permettant de recuperer et d'afficher toutes les informations d'un covoiturage
@@ -197,7 +265,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
         mNomConducteur.setText(Html.fromHtml("<b>Conducteur : </b>" + covoiturage.getPrenomConducteur() + " " + covoiturage.getNomConducteur()));
         mDateDepart.setText(Html.fromHtml("<b>Aller : départ le </b>" + stDateToString(covoiturage.getHoraireAller()) + "<b> depuis </b>" + covoiturage.getLieuDepartAller()));
         mDateretour.setText(Html.fromHtml("<b>Retour : départ le </b>" + stDateToString(covoiturage.getHoraireRetour()) + "<b> jusqu'à </b>" + covoiturage.getLieuDepartRetour()));
-        mNbPlaceDispo.setText(Html.fromHtml("<b>Places disponibles : </b>" + covoiturage.getNbPlacesDispo()  + " / " + covoiturage.getNbPlacesTotal()));
+        mNbPlaceDispo.setText(Html.fromHtml("<b>Places disponibles : </b>" + covoiturage.getNbPlacesDispo() + " / " + covoiturage.getNbPlacesTotal()));
         mTypeVehicule.setText(Html.fromHtml("<b>Type Véhicule : </b>" + covoiturage.getTypeVehicule()));
     }
 
@@ -207,47 +275,34 @@ public class CovoituragePassagersActivity extends BaseActivity {
      */
     private void createPassagerInCovoiturage() {
 
-        this.mProgressBar.setVisibility(View.VISIBLE);
+        int nbPlacesRestantes = calculNbPlacesRestantes();
 
-        if (verificationChampsVides()) {
-            int nbPlacesRestantes = calculNbPlacesRestantes();
-
-            // verif que le nb de places demandées ne depassent pas le nb de places dispo
-            if (nbPlacesRestantes < 0 && Integer.parseInt(covoiturage.getNbPlacesDispo()) >= 0) {
-                mNomPassager.setText("");
-                mNbPassager.setText("");
-                mProgressBar.setVisibility(View.GONE);
-                // alertdialog
-                final AlertDialog.Builder adb = new AlertDialog.Builder(CovoituragePassagersActivity.this);
-                adb.setTitle(R.string.alertDialog_places_restantes);
-                adb.setIcon(android.R.drawable.ic_dialog_alert);
-                adb.setTitle(R.string.rectif_demande);
-                adb.setPositiveButton("MODIFIER", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        // rien à appeler. pas la peine de faire de toast
-                    }
-                });
-                adb.show(); // affichage de l'artdialog
-/*            } else if (nbPlacesRestantes < 0 && Integer.parseInt(covoiturage.getNbPlacesDispo()) == 0) {
-                final AlertDialog.Builder adb = new AlertDialog.Builder(CovoituragePassagersActivity.this);
-                adb.setTitle(R.string.alertDialog_places_restantes);
-                adb.setIcon(android.R.drawable.ic_dialog_alert);
-                adb.setTitle(R.string.rectif_demande2);
-                adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        startActivityCovoiturageVehicule();
-                    }
-                });
-                adb.show(); // affichage de l'artdialog*/
-            } else {
+        // empecher un user de demander trop de places en fonction des places dispos
+        if (nbPlacesRestantes < 0 && listNamePassengers.size() > Integer.parseInt(covoiturage.getNbPlacesDispo())) {
+            final AlertDialog.Builder adb = new AlertDialog.Builder(CovoituragePassagersActivity.this);
+            adb.setTitle(R.string.rectif_demande);
+            adb.setIcon(android.R.drawable.ic_dialog_alert);
+            adb.setMessage(R.string.alertDialog_places_restantes);
+            adb.setPositiveButton("MODIFIER", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    mNbPassagerInput.setText("");
+                }
+            });
+            adb.show();
+            // si le nb de places demandées est bon, on insere tous les noms des passagers dans la bdd
+        } else {
+            if (verificationChampsVides()) {
                 String placesRestantes = String.valueOf(nbPlacesRestantes);
                 mNbPlaceDispo.setText(placesRestantes);
                 List<String> listPassagers = new ArrayList<>();
                 listPassagers.addAll(covoiturage.getListPassagers());
 
                 // ajout des infos du passager dans l'objet covoiturage
-                listPassagers.add(mNomPassager.getText().toString());
+                for (int i = 0; i < listNamePassengers.size(); i++) {
+                    listPassagers.add(listNamePassengers.get(i).getText().toString());
+                }
 
+                this.mProgressBar.setVisibility(View.VISIBLE);
                 //CRUD
                 CovoiturageHelper.updateCovoiturage(covoiturage.getId(), placesRestantes, listPassagers)
                         .addOnFailureListener(this.onFailureListener())
@@ -264,18 +319,16 @@ public class CovoituragePassagersActivity extends BaseActivity {
     }
 
     /**
-     * Methode permettant de calculer le nombre de place restantes dans un covoiturage
+     * Methode de calcul du nombre de places restantes dans un covoiturage
      *
      * @return
      */
     private int calculNbPlacesRestantes() {
-        String passagers = mNbPassager.getText().toString();
+        String passagers = mNbPassagerInput.getText().toString();
         int nbPassagers = Integer.parseInt(passagers);
         int nbPlacesDispo = Integer.parseInt(covoiturage.getNbPlacesDispo());
         int nbPlacesRestantes = nbPlacesDispo - nbPassagers;
 
         return nbPlacesRestantes;
     }
-
-
 }
