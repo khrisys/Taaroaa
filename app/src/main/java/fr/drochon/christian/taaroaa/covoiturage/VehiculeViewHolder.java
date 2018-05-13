@@ -98,7 +98,21 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
         mGlobalClic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(Integer.parseInt(sCovoiturage.getNbPlacesDispo()) > 0)
                 startActivityCovoituragePassagers();
+                else {
+                    //alterdialog de covoit complet et renvoi vres la page des covoiturages
+                    final AlertDialog.Builder adb = new AlertDialog.Builder(itemView.getContext());
+                    adb.setTitle("Covoiturage complet !");
+                    adb.setIcon(android.R.drawable.ic_dialog_alert);
+                    adb.setTitle("Ce covoiturage est complet !");
+                    adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            startActivityCovoiturageVehicule();
+                        }
+                    });
+                    adb.show();
+                }
             }
         });
 
@@ -180,8 +194,8 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
         }
         mTypeVehicule.setText(covoiturage.getTypeVehicule());
         String ratioPlaces = covoiturage.getNbPlacesDispo() + "/"+ covoiturage.getNbPlacesTotal();
-        if (Integer.parseInt(covoiturage.getNbPlacesDispo()) > 0) mNbPlaceDispo.setText(Html.fromHtml("<font color='green'>" + ratioPlaces+ "</font>"));
-        else mNbPlaceDispo.setText(Html.fromHtml("<font color='red'>" + ratioPlaces + "</font>"));
+        if (Integer.parseInt(covoiturage.getNbPlacesDispo()) > 0) mNbPlaceDispo.setText(Html.fromHtml("<font color='green'><b>" + ratioPlaces+ "</b></font>"));
+        else mNbPlaceDispo.setText(Html.fromHtml("<font color='red'><b>" + ratioPlaces + "</b></font>"));
         mAller.setText(stDateToString(covoiturage.getHoraireAller()));
         mRetour.setText(stDateToString(covoiturage.getHoraireRetour()));
         mLieuDepart.setText(covoiturage.getLieuDepartAller());
