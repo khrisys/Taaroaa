@@ -21,6 +21,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -168,14 +169,15 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
     // --------------------
 
     /**
-     * Requete en bdd pour recuperer tous les covoiturages existants
+     * Requete en bdd pour recuperer et afficher tous les covoiturages existants, excepté ceux dont la date de retour est passée.
+     * Les covoiturages sont affichés par ordre de date de retour decroissante.
      *
      * @return query
      */
     private Query getAllCovoiturages() {
 
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
-        Query mQuery = db.collection("covoiturages").orderBy("horaireAller", Query.Direction.ASCENDING);
+        Query mQuery = db.collection("covoiturages").orderBy("horaireRetour",Query.Direction.ASCENDING).whereGreaterThan("horaireRetour", Calendar.getInstance().getTime());
         mQuery.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot documentSnapshots) {

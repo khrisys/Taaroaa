@@ -3,6 +3,10 @@ package fr.drochon.christian.taaroaa.covoiturage;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.LightingColorFilter;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.text.Editable;
@@ -214,7 +218,11 @@ public class CovoituragePassagersActivity extends BaseActivity {
             if (calculNbPlacesRestantes() < 0) {
                 final AlertDialog.Builder adb = new AlertDialog.Builder(CovoituragePassagersActivity.this);
                 adb.setTitle(R.string.rectif_demande);
-                adb.setIcon(android.R.drawable.ic_dialog_alert);
+                // ajouter une couleur à l'icon de warning
+                Drawable warning = getResources().getDrawable(android.R.drawable.ic_dialog_alert);
+                ColorFilter filter = new LightingColorFilter( Color.RED, Color.BLUE);
+                warning.setColorFilter(filter);
+                adb.setIcon(warning);
                 adb.setMessage(R.string.alertDialog_places_restantes);
                 adb.setPositiveButton("MODIFIER", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
@@ -282,7 +290,11 @@ public class CovoituragePassagersActivity extends BaseActivity {
         if (nbPlacesRestantes < 0 && listNamePassengers.size() > Integer.parseInt(covoiturage.getNbPlacesDispo())) {
             final AlertDialog.Builder adb = new AlertDialog.Builder(CovoituragePassagersActivity.this);
             adb.setTitle(R.string.rectif_demande);
-            adb.setIcon(android.R.drawable.ic_dialog_alert);
+            // ajouter une couleur à l'icon de warning
+            Drawable warning = getResources().getDrawable(android.R.drawable.ic_dialog_alert);
+            ColorFilter filter = new LightingColorFilter( Color.RED, Color.BLUE);
+            warning.setColorFilter(filter);
+            adb.setIcon(warning);
             adb.setMessage(R.string.alertDialog_places_restantes);
             adb.setPositiveButton("MODIFIER", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
