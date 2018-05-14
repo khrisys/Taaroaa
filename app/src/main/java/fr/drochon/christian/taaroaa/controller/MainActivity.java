@@ -35,6 +35,7 @@ import static fr.drochon.christian.taaroaa.R.drawable;
 import static fr.drochon.christian.taaroaa.R.id;
 import static fr.drochon.christian.taaroaa.R.layout;
 import static fr.drochon.christian.taaroaa.R.string;
+import static fr.drochon.christian.taaroaa.R.string.app_name;
 import static fr.drochon.christian.taaroaa.R.style;
 
 //import fr.drochon.christian.taaroaa.R;
@@ -43,10 +44,8 @@ public class MainActivity extends BaseActivity {
 
     //Id de connexion dans l'activité courante
     private static final int RC_SIGN_IN = 123;
-
     //FOR DATA CONNEXION
     private static final int SIGN_OUT_TASK = 10;
-
     // FOR COMMUNICATION
     Button mCreation;
     Button mConnexion;
@@ -68,6 +67,9 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(layout.activity_main);
         configureToolbar();
+        giveToolbarAName(app_name);
+
+
 
         mTextViewHiddenForSnackbar = findViewById(R.id.test_coordinator);
         mCreation = findViewById(R.id.creation_compte_btn);

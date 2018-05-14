@@ -55,6 +55,7 @@ public class SearchUserActivity extends BaseActivity {
 
         configureRecyclerView();
         configureToolbar();
+        this.giveToolbarAName(R.string.account_search_name);
 
         // --------------------
         // LISTENERS

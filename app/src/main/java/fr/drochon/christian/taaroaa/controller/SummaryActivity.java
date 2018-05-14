@@ -49,6 +49,7 @@ public class SummaryActivity extends BaseActivity {
 
         configureToolbar();
         showPannelModification();
+        giveToolbarAName(R.string.summary_name);
 
 
         /*

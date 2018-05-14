@@ -37,11 +37,12 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
     LinearLayout mLinearLayoutRecycleView;
     ScrollView mScrollViewRecyclerView;
     RecyclerView mRecyclerViewVehicules;
+
+    // FOR DATA
+    private AdapterCovoiturageVehicles mAdapterCovoiturageVehicles;
     List<Covoiturage> listCovoiturages;
     List<String> listPassagers;
     Covoiturage covoiturage;
-    // FOR DATA
-    private AdapterCovoiturageVehicles mAdapterCovoiturageVehicles;
 
     // --------------------
     // LIFECYCLE
@@ -66,6 +67,8 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
 
         configureRecyclerView();
         configureToolbar();
+        this.giveToolbarAName(R.string.covoit_vehicule_name);
+        giveToolbarAName(R.string.covoit_vehicule_name);
 
         // --------------------
         // LISTENERS
@@ -77,8 +80,6 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
             public void onClick(View view) {
                 Intent intent = new Intent(CovoiturageVehiclesActivity.this, CovoiturageConducteursActivity.class);
                 startActivity(intent);
-            /*    Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();*/
             }
         });
     }

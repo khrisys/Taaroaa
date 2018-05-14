@@ -20,6 +20,7 @@ public class CovoiturageAccueilActivity extends BaseActivity {
         setContentView(R.layout.activity_covoiturage_accueil);
         btn = findViewById(R.id.creation_covoit_btn);
         configureToolbar();
+        giveToolbarAName(R.string.covoit_accueil_name);
 
 
         btn.setOnClickListener(new View.OnClickListener() {

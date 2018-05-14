@@ -88,6 +88,7 @@ public class AccountModificationActivity extends BaseActivity {
         mSuppressionCompte = findViewById(R.id.suppression_compte_btn);
 
         configureToolbar();
+        this.giveToolbarAName(R.string.account_modif_name);
         showAttributes();
         // methode à appeler APRES l'initialisation des variables, sinon les variables auront des references null
         this.updateUIWhenCreating(); // recuperation des informations de l'user actuel

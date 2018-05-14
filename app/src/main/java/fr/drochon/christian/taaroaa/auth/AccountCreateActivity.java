@@ -88,6 +88,7 @@ public class AccountCreateActivity extends BaseActivity {
         fonction = "Plongeur"; // la fonction par defaut d'un adhrent qui créé son compte a pour fonction "Plongeur"
 
         configureToolbar();
+        giveToolbarAName(R.string.account_create_name);
 
         //showManagementSupervisors();
         // methode à appeler APRES l'initialisation des variables, sinon les variables auront des references null

@@ -74,7 +74,6 @@ public class CoursesManagementActivity extends BaseActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_courses_management);
-        configureToolbar();
 
         mMoniteurCours = findViewById(R.id.monitor_txt);
         mSujetCours = findViewById(R.id.sujet_txt);
@@ -82,6 +81,11 @@ public class CoursesManagementActivity extends BaseActivity {
         mNiveauCours = findViewById(R.id.niveau_plongee_spinner);
         mCreerCours = findViewById(R.id.creation_compte_btn);
         mDateCours = findViewById(R.id.dateText);
+
+        configureToolbar();
+        giveToolbarAName(R.string.course_management_name);
+
+
         // hint pour la date du edittext
         Date currentTime = Calendar.getInstance().getTime();
         SimpleDateFormat sdf = new SimpleDateFormat("dd / MM / yyyy");
@@ -175,7 +179,7 @@ public class CoursesManagementActivity extends BaseActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.course_management_menu, menu);
-        return true; // true affiche le menu app_bar_search_adherents
+        return true;
     }
 
     /**

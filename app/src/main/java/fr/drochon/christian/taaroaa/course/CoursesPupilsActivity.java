@@ -30,7 +30,6 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -82,9 +81,10 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
         mScrollView = findViewById(R.id.scrollviewRecyclerView);
         mFloatingActionButton = findViewById(R.id.fab);
         calendrierClique = new Date();
-        listSnapshot = new ArrayList<DocumentSnapshot>();
+
         configureRecyclerView();
         configureToolbar();
+        giveToolbarAName(R.string.course_pupils_name);
         showFloatingButton();
 
         // --------------------

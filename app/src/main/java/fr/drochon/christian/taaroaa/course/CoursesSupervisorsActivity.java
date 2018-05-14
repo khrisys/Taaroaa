@@ -79,6 +79,7 @@ public class CoursesSupervisorsActivity extends BaseActivity implements AdapterC
 
         configureRecyclerView();
         configureToolbar();
+        giveToolbarAName(R.string.course_supervisors_name);
 
         //setTitle("Planning encadrants");
 

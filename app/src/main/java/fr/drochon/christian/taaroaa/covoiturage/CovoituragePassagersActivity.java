@@ -76,6 +76,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
         listNamePassengers = new ArrayList<>();
 
         this.configureToolbar();
+        this.giveToolbarAName(R.string.covoit_passager_name);
         this.updateUIWhenCreating();
 
         // --------------------

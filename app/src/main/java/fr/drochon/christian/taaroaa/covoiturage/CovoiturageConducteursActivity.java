@@ -81,6 +81,7 @@ public class CovoiturageConducteursActivity extends BaseActivity {
         mNotifCreationCovoit = findViewById(R.id.alertdialog_ok_covoit);
 
         configureToolbar();
+        giveToolbarAName(R.string.covoit_conducteur_name);
         findCurrentUser();
 
         // --------------------
