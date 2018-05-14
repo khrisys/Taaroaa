@@ -51,9 +51,6 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_covoiturage_vehicules);
-        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        //setSupportActionBar(toolbar);
-
 
         mTextViewEmptyListRecyclerView = findViewById(R.id.empty_list_textview);
         mCoordinatorLayoutRoot = findViewById(R.id.coordinatorLayoutRoot);
@@ -62,19 +59,19 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
         mScrollViewRecyclerView = findViewById(R.id.scrollviewRecyclerView);
         mRecyclerViewVehicules = findViewById(R.id.recyclerViewCovoitVehicules);
 
-        listCovoiturages = new ArrayList<Covoiturage>();
+        listCovoiturages = new ArrayList<>();
         listPassagers = new ArrayList<>();
 
-        configureRecyclerView();
-        configureToolbar();
+        this.configureRecyclerView();
+        this.configureToolbar();
         this.giveToolbarAName(R.string.covoit_vehicule_name);
-        giveToolbarAName(R.string.covoit_vehicule_name);
+        this.giveToolbarAName(R.string.covoit_vehicule_name);
 
         // --------------------
         // LISTENERS
         // --------------------
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
