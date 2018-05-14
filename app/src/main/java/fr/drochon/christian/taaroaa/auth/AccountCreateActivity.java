@@ -3,6 +3,10 @@ package fr.drochon.christian.taaroaa.auth;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.LightingColorFilter;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
@@ -121,7 +125,11 @@ public class AccountCreateActivity extends BaseActivity {
             public void onClick(View v) {
                 final AlertDialog.Builder adb = new AlertDialog.Builder(AccountCreateActivity.this);
                 adb.setTitle(R.string.alertDialog_account);
-                adb.setIcon(android.R.drawable.ic_dialog_alert);
+                // ajouter une couleur à l'icon de warning
+                Drawable warning = getResources().getDrawable(android.R.drawable.ic_dialog_alert);
+                ColorFilter filter = new LightingColorFilter( Color.RED, Color.BLUE);
+                warning.setColorFilter(filter);
+                adb.setIcon(warning);
                 adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         EditText editText = findViewById(R.id.alertdialog_ok_account);

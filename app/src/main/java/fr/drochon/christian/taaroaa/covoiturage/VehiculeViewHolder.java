@@ -4,6 +4,10 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.LightingColorFilter;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.View;
@@ -104,7 +108,7 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
                 else {
                     final AlertDialog.Builder adb = new AlertDialog.Builder(itemView.getContext());
                     adb.setTitle("Covoiturage complet !");
-                    adb.setIcon(android.R.drawable.ic_dialog_alert);
+                    adb.setIcon(android.R.drawable.ic_delete);
                     adb.setTitle("Ce covoiturage est complet !");
                     adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
@@ -129,10 +133,16 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
                                 final Map<String, Object> user = ds.getData();
                                 // comparaison entre les users cde la bdd et l'user ayant créé le covoiturage
                                 if (mNomConducteur.getText().equals(user.get("prenom") + "  " + user.get("nom"))) {
-                                    //alterdialog de suppression de covoit
+                                    //suppression de covoit
                                     final AlertDialog.Builder adb = new AlertDialog.Builder(itemView.getContext());
                                     adb.setTitle(R.string.alertDialog_delete_covoit);
+
+                                    // ajouter une couleur à l'icon de warning
+                                    Drawable warning = itemView.getResources().getDrawable(android.R.drawable.ic_dialog_alert);
+                                    ColorFilter filter = new LightingColorFilter( Color.RED, Color.BLUE);
+                                    warning.setColorFilter(filter);
                                     adb.setIcon(android.R.drawable.ic_dialog_alert);
+
                                     adb.setTitle(R.string.alertDialog_delete_covoit);
                                     adb.setPositiveButton("SUPPRIMER ?", new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int which) {

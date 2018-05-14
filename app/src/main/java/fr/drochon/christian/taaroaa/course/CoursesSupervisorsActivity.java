@@ -38,14 +38,13 @@ import fr.drochon.christian.taaroaa.model.Course;
  * creer l'ihm
  * Cette classe permet l'affichage IHM de l'ensemble des messages dans le chat. Contient une recycler view
  * On y implemente MentorChatActivity pour gerer la recyclerview
- *
+ * <p>
  * On implement aussi un Listener qui nous permet d'etre alerter si la liste de message est vide grace au callback onDataChanged()
  * pour afficher un message à l'user
  */
 public class CoursesSupervisorsActivity extends BaseActivity implements AdapterCoursesSupervisors.Listener {
 
     // CONTIENT LA RECYCLERVIEW
-
 
 
     // FOR DESIGN
@@ -121,7 +120,7 @@ public class CoursesSupervisorsActivity extends BaseActivity implements AdapterC
     // --------------------
 
     /**
-     *  Fait appel au fichier xml menu pour definir les icones.
+     * Fait appel au fichier xml menu pour definir les icones.
      * Definit differentes options dans le menu caché.
      */
     @Override
@@ -178,20 +177,6 @@ public class CoursesSupervisorsActivity extends BaseActivity implements AdapterC
         recyclerView.setAdapter(this.mAdapterCoursesSupervisors);// l'adapter s'occupe du contenu
     }
 
-
-/*    public void notifCompleteAccount(){
-        AlertDialog.Builder adb = new AlertDialog.Builder(this);
-        adb.setTitle(R.string.alertDialog_account);
-        adb.setIcon(android.R.drawable.ic_dialog_alert);
-        adb.setTitle("Merci de completer votre compte pour acceder à la liste des cours !");
-        adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                // rien à appeler. pas la peine de faire de toast
-            }
-        });
-        adb.show(); // affichage de l'artdialog
-    }*/
-
     /**
      * Requete en bdd pour recuperer tous les cours existants
      *
@@ -207,7 +192,7 @@ public class CoursesSupervisorsActivity extends BaseActivity implements AdapterC
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
                 // condition de creation d'un user ou affichage simple d'un message indiquant que l'user existe dejà en bdd.
                 // Avec les uid, il ne peut y avoir de doublon, on peut donc etre sur qu'il n'y a qu'un seule doc qui existe s'il en existe un.
-                if(documentSnapshots != null) {
+                if (documentSnapshots != null) {
                     if (documentSnapshots.size() != 0) {
                         Log.e("TAG", "Le document existe !");
                         // liste des docs
@@ -221,6 +206,7 @@ public class CoursesSupervisorsActivity extends BaseActivity implements AdapterC
 
     /**
      * Methode permettant de recuperer l'integralité de la liste des snapshots et d'en faire des objets "Course"
+     *
      * @param documentSnapshot
      */
     private void readDataInList(final List<DocumentSnapshot> documentSnapshot) {
