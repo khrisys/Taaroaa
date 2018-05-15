@@ -173,13 +173,13 @@ public class CovoiturageConducteursActivity extends BaseActivity {
             mHeureretour.setError("Merci de renseigner ce champ !");
             mHeureretour.requestFocus();
         }
-        else mHeureretour.append("");
+        else mHeureretour.setError(null);
 
         if (mDateRetour.getText().toString().isEmpty()){
             mDateRetour.setError("Merci de renseigner ce champ !");
             mDateRetour.requestFocus();
         }
-        else mDateRetour.append("");
+        else mDateRetour.setError(null);
 
 
         if(mLieuDepart.getText().toString().isEmpty()) {
@@ -191,13 +191,13 @@ public class CovoiturageConducteursActivity extends BaseActivity {
             mHeureDepart.setError("Merci de renseigner ce champ !");
             mHeureDepart.requestFocus();
         }
-        else mHeureDepart.append(" ");
+        else mHeureDepart.setError(null);
 
         if (mDateDepart.getText().toString().isEmpty()){
             mDateDepart.setError("Merci de renseigner ce champ !");
             mDateDepart.requestFocus();
         }
-        else mDateDepart.append(" ");
+        else mDateDepart.setError(null);
 
 
 
