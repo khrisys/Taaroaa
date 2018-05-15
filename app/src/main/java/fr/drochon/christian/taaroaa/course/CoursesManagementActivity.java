@@ -348,11 +348,24 @@ public class CoursesManagementActivity extends BaseActivity {
         final String sujet = mSujetCours.getText().toString();
         final String dateCours = mDateCours.getText().toString();
         final String heureCours = mHeureCours.getText().toString();
-        if (moniteur.isEmpty()) mMoniteurCours.setError("Merci de saisir ce champ !");
-        if (sujet.isEmpty()) mSujetCours.setError("Merci de saisir ce champ !");
-        if (dateCours.isEmpty()) mDateCours.setError("Merci de saisir ce champ !");
-        if (heureCours.isEmpty()) mHeureCours.setError("Merci de saisir ce champ !");
-        //if(heureCours.isEmpty()) mHeureCours.setError("Merci de saisir ce champ !"); else mDateCours.append(" ");
+        if (dateCours.isEmpty()) {
+            mDateCours.setError("Merci de renseigner ce champ !");
+            mDateCours.requestFocus();
+        }
+        else mDateCours.append("");
+        if (heureCours.isEmpty()) {
+            mHeureCours.setError("Merci de renseigner ce champ !");
+            mHeureCours.requestFocus();
+        }
+        else mHeureCours.append("");
+        if (sujet.isEmpty()) {
+            mSujetCours.setError("Merci de renseigner ce champ !");
+            mSujetCours.requestFocus();
+        }
+        if (moniteur.isEmpty()) {
+            mMoniteurCours.setError("Merci de renseigner ce champ !");
+            mMoniteurCours.requestFocus();
+        }
     }
 
     /**

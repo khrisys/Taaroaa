@@ -77,6 +77,8 @@ public class MainActivity extends BaseActivity {
         mDeconnexion = findViewById(id.deconnexion_btn);
 
 
+
+
         // --------------------
         // LISTENERS
         // --------------------

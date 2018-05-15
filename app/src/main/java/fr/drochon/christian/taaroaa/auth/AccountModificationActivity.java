@@ -112,7 +112,7 @@ public class AccountModificationActivity extends BaseActivity {
             public void onClick(View v) {
                 updateUserInFirebase(); // update dans firebase
                 //updateData(mNom.getText().toString(), mPrenom.getText().toString());
-                startSummaryActivity();
+
             }
         });
 
@@ -258,6 +258,17 @@ public class AccountModificationActivity extends BaseActivity {
         startActivity(intent);
     }
 
+    /**
+     * Methode permettant de signaler une erreur lorsqu'un champ est resté vide alors que la soumission du formulaire a été faite.
+     */
+    private void verificationChampsVides() {
+
+        final String nom = mNom.getText().toString();
+        final String prenom = mPrenom.getText().toString();
+        if (nom.isEmpty()) { mNom.setError("Merci de renseigner ce champ !"); mNom.isFocused(); } else mNom.getText().toString();
+        if (prenom.isEmpty()) { mPrenom.setError("Merci de renseigner ce champ !"); mPrenom.isFocused(); } else mPrenom.getText().toString();
+    }
+
     // --------------------
     // REST REQUETES
     // --------------------
@@ -316,7 +327,7 @@ public class AccountModificationActivity extends BaseActivity {
                             mNom.setEnabled(true);
                             mLicence.setEnabled(true);
                             mNiveauPlongeespinner.setEnabled(false);
-                            mLinearLayoutFonctionAdherent.setVisibility(View.INVISIBLE);
+                            mLinearLayoutFonctionAdherent.setVisibility(View.GONE);
                             mModificationCompte.setText(R.string.modifiez_votre_compte);
                             //Affichage du bouton de suppression uniquement aux proprietaires d'un compte
                             mSuppressionCompte.setVisibility(View.VISIBLE);
@@ -330,16 +341,15 @@ public class AccountModificationActivity extends BaseActivity {
     /**
      * Cette methode ne comprend pas l'update d'une fonction dans le club, car seul les encadrants du club peuvent
      * le faire, et cette fonctionnalité est donc reservée à une fonction particuliere.
+     * Si la creation se deroule correctement, l'user est renvoyé vers la page "Sommaire".
      */
     private void updateUserInFirebase() {
-
 
         String nom = this.mNom.getText().toString();
         String prenom = this.mPrenom.getText().toString();
         String email = this.mEmail.getText().toString();
 
         if (user.getUid() != null) {
-            //TODO alert dialog lorsque tous les champs ne sont pas remplis
             if (!nom.isEmpty() && !nom.equals(getString(R.string.info_no_username_found)) && !prenom.isEmpty() && !email.isEmpty()) { // verification que tous les champs vides soient remplis
 
                 // Update de la bdd covoiturage si l'user à updater a créé des covoiturages.
@@ -357,9 +367,11 @@ public class AccountModificationActivity extends BaseActivity {
                                 Toast.makeText(AccountModificationActivity.this, R.string.update_account,
                                         Toast.LENGTH_SHORT).show();
                                 updateUIAfterRESTRequestsCompleted(UPDATE_USERNAME);
+                                startSummaryActivity();
                             }
                         });
             }
+            else verificationChampsVides();
         }
     }
 

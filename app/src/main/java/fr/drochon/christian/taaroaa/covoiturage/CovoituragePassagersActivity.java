@@ -195,14 +195,30 @@ public class CovoituragePassagersActivity extends BaseActivity {
     }
 
     /**
-     * Methode permettant de signaler une erreur lorsqu'un champ de nom de passager est resté vide alors que la soumission du formulaire a été faite.
+     * Methode permettant de signaler une erreur lorsqu'un champ de nom de passager est resté vide
+     * alors que la soumission du formulaire a été faite.
      */
     private boolean verificationChampsVides() {
+        //int i = 0;
+        if(!mNbPassagerInput.getText().toString().equals(""))
+            /*while(i < listNamePassengers.size()){
+                if (listNamePassengers.get(i).getText().toString().equals("")) {
+                    listNamePassengers.get(i).setError("Merci de renseigner ce champ !");
+                    i++;
+                }
+                return false;
+            }*/
         for (int i = 0; i < listNamePassengers.size(); i++) {
             if (listNamePassengers.get(i).getText().toString().equals("")) {
-                listNamePassengers.get(i).setError("Merci de saisir ce champs !");
+                listNamePassengers.get(i).setError("Merci de renseigner ce champ !");
+                listNamePassengers.get(i).requestFocus();
                 return false;
             }
+        }
+        else {
+            mNbPassagerInput.setError("Merci de renseigner ce champ !");
+            mNbPassagerInput.requestFocus();
+            return false;
         }
 
         return true;
@@ -233,7 +249,6 @@ public class CovoituragePassagersActivity extends BaseActivity {
             } else {
                 // condition de creation des champs nom passager dynamique
                 if (!mNbPassagerInput.getText().toString().equals("")) {
-                    mReservation.setEnabled(true);
                     mTitrePassager.setVisibility(View.VISIBLE);
                     inputs = Integer.parseInt(charSequence.toString());
                     if (inputs > 0) {
@@ -252,7 +267,6 @@ public class CovoituragePassagersActivity extends BaseActivity {
             }
         } else {
             mTitrePassager.setVisibility(View.GONE);
-            mReservation.setEnabled(false);
             mLinearChampsDynamiques.removeAllViews();
             listNamePassengers.clear();
         }
@@ -338,9 +352,12 @@ public class CovoituragePassagersActivity extends BaseActivity {
      */
     private int calculNbPlacesRestantes() {
         String passagers = mNbPassagerInput.getText().toString();
-        int nbPassagers = Integer.parseInt(passagers);
-        int nbPlacesDispo = Integer.parseInt(covoiturage.getNbPlacesDispo());
-        int nbPlacesRestantes = nbPlacesDispo - nbPassagers;
+        int nbPassagers = 0;
+        if(!passagers.equals("")) {
+            nbPassagers = Integer.parseInt(passagers);
+        }
+            int nbPlacesDispo = Integer.parseInt(covoiturage.getNbPlacesDispo());
+            int nbPlacesRestantes = nbPlacesDispo - nbPassagers;
 
         return nbPlacesRestantes;
     }

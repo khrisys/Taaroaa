@@ -161,24 +161,50 @@ public class CovoiturageConducteursActivity extends BaseActivity {
      */
     private void verificationChampsVides() {
 
-        if (mPrenom.getText().toString().isEmpty()) mPrenom.setError("Merci de saisir ce champ !");
-        if (mNom.getText().toString().isEmpty()) mNom.setError("Merci de saisir ce champ !");
-        if (mNbPlaceTotal.getText().toString().isEmpty())
-            mNbPlaceTotal.setError("Merci de saisir ce champ !");
-        if(mLieuDepart.getText().toString().isEmpty()) mLieuDepart.setError("Merci de saisir ce champ !");
-        if(mLieuArrivee.getText().toString().isEmpty()) mLieuArrivee.setError("Merci de saisir ce champs !");
-        if (mDateDepart.getText().toString().isEmpty())
-            mDateDepart.setError("Merci de saisir ce champ !");
-        else mDateDepart.append(" ");
-        if (mDateRetour.getText().toString().isEmpty())
-            mDateRetour.setError("Merci de saisir ce champ !");
-        else mDateRetour.append(" ");
-        if (mHeureDepart.getText().toString().isEmpty())
-            mHeureDepart.setError("Merci de saisir ce champ !");
+        if (mPrenom.getText().toString().isEmpty()) mPrenom.setError("Merci de renseigner ce champ !");
+        if (mNom.getText().toString().isEmpty()) mNom.setError("Merci de renseigner ce champ !");
+
+        if(mLieuArrivee.getText().toString().isEmpty()) {
+            mLieuArrivee.setError("Merci de renseigner ce champ !");
+            mLieuArrivee.requestFocus();
+        }
+
+        if(mHeureretour.getText().toString().isEmpty()){
+            mHeureretour.setError("Merci de renseigner ce champ !");
+            mHeureretour.requestFocus();
+        }
+        else mHeureretour.append("");
+
+        if (mDateRetour.getText().toString().isEmpty()){
+            mDateRetour.setError("Merci de renseigner ce champ !");
+            mDateRetour.requestFocus();
+        }
+        else mDateRetour.append("");
+
+
+        if(mLieuDepart.getText().toString().isEmpty()) {
+            mLieuDepart.setError("Merci de renseigner ce champ !");
+            mLieuDepart.requestFocus();
+        }
+
+        if (mHeureDepart.getText().toString().isEmpty()){
+            mHeureDepart.setError("Merci de renseigner ce champ !");
+            mHeureDepart.requestFocus();
+        }
         else mHeureDepart.append(" ");
-        if (mHeureretour.getText().toString().isEmpty())
-            mHeureretour.setError("Merci de saisir ce champ !");
-        else mHeureretour.append(" ");
+
+        if (mDateDepart.getText().toString().isEmpty()){
+            mDateDepart.setError("Merci de renseigner ce champ !");
+            mDateDepart.requestFocus();
+        }
+        else mDateDepart.append(" ");
+
+
+
+        if (mNbPlaceTotal.getText().toString().isEmpty()){
+            mNbPlaceTotal.setError("Merci de renseigner ce champ !");
+            mNbPlaceTotal.requestFocus();
+        }
         mProgressBar.setVisibility(View.GONE);
     }
 
