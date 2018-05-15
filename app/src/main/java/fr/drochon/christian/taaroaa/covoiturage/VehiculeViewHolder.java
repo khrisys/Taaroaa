@@ -101,6 +101,7 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
         mGlobalClic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 // clic sur le nom du conducteur qui renvoi l'utilisateur à la page de reservation
                 if (Integer.parseInt(sCovoiturage.getNbPlacesDispo()) > 0)
                     startActivityCovoituragePassagers();
