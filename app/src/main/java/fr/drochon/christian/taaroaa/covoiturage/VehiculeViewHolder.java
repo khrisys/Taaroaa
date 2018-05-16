@@ -78,7 +78,7 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
 
     /**
      * Contructeur qui prend en param la vue affichée.
-     * Je recupere les 2 textview du layout list_cell.
+     * Je recupere les 2 textview du layout pupils_cell.
      * responsable du clic sur les cellules.
      *
      * @param itemView : cellule d'une liste comprenant le nom du conducteur, la liste des passagers pour le covoiturage,
@@ -86,7 +86,7 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
      */
     public VehiculeViewHolder(final View itemView) {
         super(itemView);
-        // liaison des elements du layout recyclerview et list_cell avec les variables declarées ici
+        // liaison des elements du layout recyclerview et pupils_cell avec les variables declarées ici
         ButterKnife.bind(this, itemView);
 
         mCovoiturageList = new ArrayList<>();

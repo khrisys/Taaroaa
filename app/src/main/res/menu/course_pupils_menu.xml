@@ -16,6 +16,4 @@
         tools:icon="@drawable/notification_action_background"
         tools:ignore="PrivateResource"/>
 
-
-
 </menu>

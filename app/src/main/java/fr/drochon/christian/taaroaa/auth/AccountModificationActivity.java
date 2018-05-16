@@ -282,11 +282,11 @@ public class AccountModificationActivity extends BaseActivity {
                 @Override
                 public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                     if (documentSnapshot.exists()) {
+
+                        // creation de la fonction d'un plongeur si elle n'existe pas, notamment
+                        // lorsuq'un user vient juste de creer son compte et veut acceder à son compte tout de suite apres (depuis la tuile du sommaire)
                         Object fonction;
-                        if(documentSnapshot.get("fonction") == null){
-                            fonction = "Plongeur";
-                        }
-                        else fonction = documentSnapshot.get("fonction");
+                        if(documentSnapshot.get("fonction") == null) fonction = "Plongeur"; else fonction = documentSnapshot.get("fonction");
 
                         Object nom = documentSnapshot.get("nom");
                         Object prenom = documentSnapshot.get("prenom");

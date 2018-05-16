@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--suppress ALL -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".course.CoursesManagementActivity">
+
 
     <ScrollView
         android:id="@+id/scrollview_ecran"
@@ -37,7 +36,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="30dp"
-                android:text="Moniteur"
+                android:text="@string/moniteur"
                 android:textAlignment="center"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="30sp"
@@ -56,7 +55,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="60dp"
                 android:shadowColor="@color/colorAccent"
-                android:text="Nom du moniteur :"
+                android:text="@string/nom_du_moniteur"
                 android:textColor="@color/colorPrimary"
                 android:textSize="18sp"/>
 
@@ -81,7 +80,7 @@
                 android:layout_marginStart="60dp"
                 android:layout_marginTop="10dp"
                 android:shadowColor="@color/colorAccent"
-                android:text="Sujet du cours :"
+                android:text="@string/sujet_du_cours"
                 android:textColor="@color/colorPrimary"
                 android:textSize="18sp"/>
 
@@ -106,7 +105,7 @@
                 android:layout_marginStart="60dp"
                 android:layout_marginTop="10dp"
                 android:shadowColor="@color/colorAccent"
-                android:text="Niveau de plongée effectif :"
+                android:text="@string/niveau_de_plongee_effectif"
                 android:textColor="@color/colorPrimary"
                 android:textSize="18sp"/>
 
@@ -127,7 +126,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="70dp"
-                android:text="Apprenants"
+                android:text="@string/apprenants"
                 android:textAlignment="center"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="30sp"
@@ -146,35 +145,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="60dp"
                 android:shadowColor="@color/colorAccent"
-                android:text="Niveau de plongée"
+                android:text="@string/niveau_de_plong_e"
                 android:textColor="@color/colorPrimary"
                 android:textSize="18sp"/>
-
-            <!--
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <android.support.design.widget.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="45dp"
-                    android:layout_marginStart="45dp"
-                    android:inputType="text"
-                    android:lines="1"/>
-            </android.support.design.widget.TextInputLayout>
-
-            <TextView
-                android:id="@+id/niveau_txt"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="60dp"
-                android:layout_marginTop="10dp"
-                android:shadowColor="@color/colorAccent"
-                android:text="Niveau de plongée effectif :"
-                android:textColor="@color/colorPrimary"
-                android:textSize="18sp"/>
--->
 
             <Spinner
                 android:id="@+id/niveau_plongee_spinner"
@@ -193,7 +166,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="70dp"
-                android:text="Planning"
+                android:text="@string/planning"
                 android:textAlignment="center"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="30sp"
@@ -210,7 +183,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:orientation="horizontal"
             android:layout_weight="1">
 
@@ -218,7 +191,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_weight="0.5">
+            android:layout_weight="0.5"
+            tools:ignore="NestedWeights">
 
             <TextView
                 android:id="@+id/titre_time_txt"
@@ -227,7 +201,7 @@
                 android:layout_marginStart="10dp"
                 android:gravity="center"
                 android:shadowColor="@color/colorAccent"
-                android:text="Heure du cours"
+                android:text="@string/heure_du_cours"
                 android:textColor="@color/colorPrimary"
                 android:textSize="18sp"/>
 
@@ -259,7 +233,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:shadowColor="@color/colorAccent"
-                android:text="Date du cours"
+                android:text="@string/date_du_cours"
                 android:textColor="@color/colorPrimary"
                 android:textSize="18sp"/>
 
