@@ -25,6 +25,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -34,6 +35,7 @@ import java.util.Locale;
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
 import fr.drochon.christian.taaroaa.model.Course;
+import fr.drochon.christian.taaroaa.model.User;
 
 /**
  * creer l'ihm
@@ -48,19 +50,21 @@ public class CoursesSupervisorsActivity extends BaseActivity implements AdapterC
     // CONTIENT LA RECYCLERVIEW
 
 
+    static User user;
     // FOR DESIGN
     CoordinatorLayout mCoordinatorLayout;
-    String calendrierClique;
     LinearLayout mLinearLayout;
     CalendarView mCalendarView;
     RecyclerView recyclerView;
     TextView mTextView;
     ScrollView mScrollView;
     FloatingActionButton mFloatingActionButton;
+    Date calendrierClique;
+    Date calendrierFinJournee;
 
+    //Configure Adapter & RecyclerView
     // FOR DATA
-    private AdapterCoursesSupervisors mAdapterCoursesSupervisors;
-
+    private AdapterCoursesSupervisors mAdapterCoursesSupervisors = new AdapterCoursesSupervisors(generateOptionsForAdapter(queryAllCourses()), this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +80,10 @@ public class CoursesSupervisorsActivity extends BaseActivity implements AdapterC
         mTextView = findViewById(R.id.empty_list_textview_supervisors);
         mScrollView = findViewById(R.id.scrollview_calendrier_supervisors);
         mFloatingActionButton = findViewById(R.id.fab_supervisors);
+
+        calendrierClique = new Date();
+        calendrierFinJournee = new Date();
+        user = new User();
 
         configureRecyclerView();
         configureToolbar();
@@ -104,8 +112,24 @@ public class CoursesSupervisorsActivity extends BaseActivity implements AdapterC
             public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
                 Calendar calendar = Calendar.getInstance();
                 calendar.set(year, month, dayOfMonth);
-                DateFormat sdf = new SimpleDateFormat("EEE dd MMM yyyy", Locale.FRANCE);
-                calendrierClique = sdf.format(calendar.getTime());
+                // formattage de la date pour le debut et la fin de journée
+                DateFormat dateFormatEntree = new SimpleDateFormat("dd MM yyyy", Locale.FRANCE);
+                DateFormat dateFormatSortie = new SimpleDateFormat("dd MM yyyy HH:mm:ss", Locale.FRANCE);
+                String s = dateFormatEntree.format(calendar.getTime());
+                String ss = s.concat(" 00:00:00");
+                String sss = s.concat(" 23:59:59");
+                try {
+                    calendrierClique = dateFormatSortie.parse(ss);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                try {
+                    calendrierFinJournee = dateFormatSortie.parse(sss);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                configureRecyclerViewSorted();
             }
         });
     }
@@ -156,7 +180,7 @@ public class CoursesSupervisorsActivity extends BaseActivity implements AdapterC
     }
 
     // --------------------
-    // UI
+    // ADAPTER ET RECYCLERVIEW
     // --------------------
 
     /**
@@ -166,8 +190,6 @@ public class CoursesSupervisorsActivity extends BaseActivity implements AdapterC
      */
     private void configureRecyclerView() {
 
-        //Configure Adapter & RecyclerView
-        mAdapterCoursesSupervisors = new AdapterCoursesSupervisors(generateOptionsForAdapter(queryAllCourses()), this);
         mAdapterCoursesSupervisors.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onItemRangeInserted(int positionStart, int itemCount) { // c'est cette ligne de code qui insere les données dans la recyclerview
@@ -179,6 +201,41 @@ public class CoursesSupervisorsActivity extends BaseActivity implements AdapterC
     }
 
     /**
+     * Configuration de l'adapter et de la recyclerview
+     * Cette methode créé l'adapter et lui passe en param la requete de tri des cours en fonction
+     * de la date cliquée sur le calendrier
+     */
+    private void configureRecyclerViewSorted() {
+        mAdapterCoursesSupervisors = new AdapterCoursesSupervisors(generateOptionsForAdapter(queryCoursesFiltered()), this);
+        mAdapterCoursesSupervisors.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onItemRangeInserted(int positionStart, int itemCount) { // c'est cette ligne de code qui insere les données dans la recyclerview
+                recyclerView.smoothScrollToPosition(mAdapterCoursesSupervisors.getItemCount()); // Scroll to bottom on new messages
+            }
+        });
+        recyclerView.setLayoutManager(new LinearLayoutManager(this)); // layoutmanager indique comment seront positionnés les elements (linearlayout)
+        recyclerView.setAdapter(this.mAdapterCoursesSupervisors);// l'adapter s'occupe du contenu
+        onDataChanged(); // appel explicite du callback pour l'affichage d'un message en cas d'absence de cours à la date cliquée
+    }
+
+
+    /**
+     * La methode generateOptionsForAdapter utilise la methode query, precedemment definit dans la classe MessageHelper
+     * permettra à la recyclerview d'afficher en temps reel le resultat de cette requete (la liste des derniers messages du chat correspondant, soit android/firebase/bug).
+     */
+    private FirestoreRecyclerOptions<Course> generateOptionsForAdapter(Query query) {
+        return new FirestoreRecyclerOptions.Builder<Course>()
+                .setQuery(query, Course.class)
+                .setLifecycleOwner(this)
+                .build();
+    }
+
+
+    // --------------------
+    // REQUETES
+    // --------------------
+
+    /**
      * Requete en bdd pour recuperer tous les cours existants
      *
      * @return query
@@ -186,7 +243,6 @@ public class CoursesSupervisorsActivity extends BaseActivity implements AdapterC
     private Query queryAllCourses() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        // Query mq = CourseHelper.getCoursesCollection().document().collection("users");
         Query mQuery = db.collection("courses").orderBy("horaireDuCours", Query.Direction.ASCENDING);
         mQuery.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
@@ -203,6 +259,28 @@ public class CoursesSupervisorsActivity extends BaseActivity implements AdapterC
             }
         });
         return mQuery;
+    }
+
+    /**
+     * Methode permettant de requeter avec les conditions suivantes :
+     * n'affiche que les cours de la personne connectée + n'affiche que les cours du jour de la date cliquée
+     * @return query
+     */
+    private Query queryCoursesFiltered() {
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        Query mQ = db.collection("courses").orderBy("horaireDuCours").startAt(calendrierClique).endAt(calendrierFinJournee);
+        mQ.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+                if (documentSnapshots != null) {
+                    if (documentSnapshots.size() != 0) {
+                        readDataInList(documentSnapshots.getDocuments());
+                    }
+                }
+            }
+        });
+        return mQ;
     }
 
     /**
@@ -230,18 +308,6 @@ public class CoursesSupervisorsActivity extends BaseActivity implements AdapterC
             course.setSujetDuCours(sujetDuCours);
             course.setTypeCours(typeCours);
             course.setHoraireDuCours(horaireDuCours); // format date
-            //course.setTimeDuCours(timeDuCours);
         }
-    }
-
-    /**
-     * La methode generateOptionsForAdapter utilise la methode query, precedemment definit dans la classe MessageHelper
-     * permettra à la recyclerview d'afficher en temps reel le resultat de cette requete (la liste des derniers messages du chat correspondant, soit android/firebase/bug).
-     */
-    private FirestoreRecyclerOptions<Course> generateOptionsForAdapter(Query query) {
-        return new FirestoreRecyclerOptions.Builder<Course>()
-                .setQuery(query, Course.class)
-                .setLifecycleOwner(this)
-                .build();
     }
 }

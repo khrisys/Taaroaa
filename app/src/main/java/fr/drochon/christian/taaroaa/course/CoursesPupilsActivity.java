@@ -275,8 +275,6 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
         }
     }
 
-
-
     public void notifCompleteAccount() {
         AlertDialog.Builder adb = new AlertDialog.Builder(this);
         // ajouter une couleur à l'icon de warning
