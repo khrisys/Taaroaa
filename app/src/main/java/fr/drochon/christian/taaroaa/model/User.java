@@ -33,6 +33,13 @@ public class User implements Serializable{
         mEmail = email;
     }
 
+    public User(String uid, String nom, String prenom, String email) {
+        this.uid = uid;
+        mNom = nom;
+        mPrenom = prenom;
+        mEmail = email;
+    }
+
     public User(String uid, String nom, String prenom, String licence, String email, String niveauPlongeur, String fonction) {
         this.uid = uid;
         mNom = nom;

@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import fr.drochon.christian.taaroaa.R;
-import fr.drochon.christian.taaroaa.auth.AccountCreateActivity;
 import fr.drochon.christian.taaroaa.auth.AccountModificationActivity;
 import fr.drochon.christian.taaroaa.auth.SearchUserActivity;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
@@ -70,7 +69,7 @@ public class SummaryActivity extends BaseActivity {
                                 Map<String, Object> user = doc.getData();
                                 //TODO  passe dans les 2 conditions en fonction de l'id. comme ca boucle, on passe dans les2 et ca arrive sur la creation de compte
                                 if (user.get("uid").equals(getCurrentUser().getUid())) {
-                                    // Si l'user connecté n'existe pas en bdd, on affiche l'ecran de creation
+                                    // Si l'user connecté existe en bdd, on recupere l'ensemble de l'objet user et on le passe en param de l'activité
                                     if(user.get("fonction") != null) {
                                         User u = new User(user.get("uid").toString(), user.get("nom").toString(), user.get("prenom").toString(), user.get("licence").toString(),
                                                 user.get("email").toString(), user.get("niveau").toString(), user.get("fonction").toString());
@@ -78,16 +77,21 @@ public class SummaryActivity extends BaseActivity {
                                         startActivity(intent);
                                         break;
                                     }
+                                    // Si l'user connecté vient juste de creer son compte, on recupere ses seules infos disponibles et on les passe en param de l'activité de modif d'un compte
                                     else {
-                                        Intent intent = new Intent(SummaryActivity.this, AccountCreateActivity.class);
+                                        User u = new User(user.get("uid").toString(), user.get("nom").toString(), user.get("prenom").toString(), user.get("email").toString());
+                                        Intent intent = new Intent(SummaryActivity.this, AccountModificationActivity.class).putExtra("user", u);
                                         startActivity(intent);
-                                    }
-                                }
+                                        break;
+
+
+                            }
+                        }
                                 // nouvel utilisateur
-                                else {
+                               /* else {
                                     Intent intent = new Intent(SummaryActivity.this, AccountCreateActivity.class);
                                     startActivity(intent);
-                                }
+                                }*/
                             }
                         }
                     }

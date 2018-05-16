@@ -76,7 +76,6 @@ public class AccountModificationActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account_modification);
 
-        //setTitle("Création de compte");
         mTitrePage = findViewById(R.id.titre_page_compte_txt);
         mLinearLayoutFonctionAdherent = findViewById(R.id.linearLayoutFonctionAdherent);
         mPrenom = findViewById(R.id.prenom_txt);
@@ -196,11 +195,6 @@ public class AccountModificationActivity extends BaseActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.account_create_menu, menu);
-/*
-        // recup de l'item de recherche des adherents
-        mItemView = menu.findItem(R.id.app_bar_search_adherents);
-        searchAndModifPupils();*/
-
         return true; // true affiche le menu
     }
 
@@ -288,12 +282,16 @@ public class AccountModificationActivity extends BaseActivity {
                 @Override
                 public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                     if (documentSnapshot.exists()) {
-                        //TODO ajout d'un titre à la page de modif
-                        Object ds = documentSnapshot.get("fonction");
+                        Object fonction;
+                        if(documentSnapshot.get("fonction") == null){
+                            fonction = "Plongeur";
+                        }
+                        else fonction = documentSnapshot.get("fonction");
+
                         Object nom = documentSnapshot.get("nom");
                         Object prenom = documentSnapshot.get("prenom");
                         // moniteur etant sur un autre compte que le sien dès la premiere connexion ??
-                        if (ds.equals("Moniteur") && !nom.equals(user.getNom()) && !prenom.equals(user.getPrenom())) {
+                        if (fonction.equals("Moniteur") && !nom.equals(user.getNom()) && !prenom.equals(user.getPrenom())) {
                             //TODO ici, j'update mon propre compte au lieu de celui de l'adherent
                             mTitrePage.setText(R.string.modifiez_le_compte_d_un_adherent);
                             //mItemView.setVisible(false);
@@ -307,7 +305,7 @@ public class AccountModificationActivity extends BaseActivity {
                             mSuppressionCompte.setVisibility(View.INVISIBLE);
 
                             // moniteur etant sur son propre compte
-                        } else if (ds.equals("Moniteur") && nom.equals(user.getNom()) && prenom.equals(user.getPrenom())) {
+                        } else if (fonction.equals("Moniteur") && nom.equals(user.getNom()) && prenom.equals(user.getPrenom())) {
                             mTitrePage.setText(R.string.bienvenue_sur_votre_compte);
                             //mItemView.setVisible(true);
                             mPrenom.setEnabled(true);
@@ -320,7 +318,7 @@ public class AccountModificationActivity extends BaseActivity {
                             mSuppressionCompte.setVisibility(View.VISIBLE);
 
                             // adherent non moniteur sur son propre compte
-                        } else if (!ds.equals("Moniteur")) {
+                        } else if (!fonction.equals("Moniteur")) {
                             mTitrePage.setText(R.string.bienvenue_sur_votre_compte);
                             //mItemView.setVisible(true);
                             mPrenom.setEnabled(true);

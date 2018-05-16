@@ -42,6 +42,12 @@ public class UserHelper {
         return UserHelper.getUsersCollection().document(uid).set(userToCreate);
     }
 
+    public static Task<Void> createUser(String uid, String nom, String prenom, String email) {
+        // creation de l'objet User
+        User userToCreate = new User(uid, nom, prenom , email);
+        return UserHelper.getUsersCollection().document(uid).set(userToCreate);
+    }
+
     // --- GET ---
 
     public static Task<DocumentSnapshot> getUser(String uid){

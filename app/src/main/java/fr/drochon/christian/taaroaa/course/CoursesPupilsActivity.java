@@ -5,15 +5,17 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.LightingColorFilter;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,6 +25,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -33,14 +36,19 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
 import fr.drochon.christian.taaroaa.model.Course;
+import fr.drochon.christian.taaroaa.model.User;
 
 /**
  * creer l'ihm
@@ -57,18 +65,18 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
 
     // FOR DESIGN
     CoordinatorLayout mCoordinatorLayout;
-    Date calendrierClique;
     LinearLayout mLinearLayout;
     CalendarView mCalendarView;
     RecyclerView recyclerView;
     TextView mTextView;
     ScrollView mScrollView;
     FloatingActionButton mFloatingActionButton;
-
     // FOR DATA
     private AdapterCoursesPupils mAdapterCoursesPupils;
     List<DocumentSnapshot> listSnapshot;
-
+    Date calendrierClique;
+    Date calendrierFinJournee;
+    static User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,11 +93,15 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
         mScrollView = findViewById(R.id.scrollviewRecyclerView);
         mFloatingActionButton = findViewById(R.id.fab);
         calendrierClique = new Date();
+        calendrierFinJournee = new Date();
+        listSnapshot = new ArrayList<>();
+        user = new User();
 
-        configureRecyclerView();
+        getLevelConnectedUser();
         configureToolbar();
-        giveToolbarAName(R.string.course_pupils_name);
+        //giveToolbarAName(R.string.course_pupils_name);
         showFloatingButton();
+        //configureRecyclerView();
 
         // --------------------
         // LISTENERS
@@ -112,13 +124,36 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
             public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
                 Calendar calendar = Calendar.getInstance();
                 calendar.set(year, month, dayOfMonth);
-                //DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-                calendrierClique = calendar.getTime();
+                calendrierFinJournee = calendar.getTime();
 
+                // formattage de la date en debut de journée
+                DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.FRANCE);
+                String s = dateFormat.format(calendar.getTime());
+                String ss = s + " 00:00:00";
+                try {
+                    calendrierClique = dateFormat.parse(ss);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                configureRecyclerViewSorted();
             }
         });
     }
 
+    /**
+     * Dispatch onResume() to fragments.  Note that for better inter-operation
+     * with older versions of the platform, at the point of this call the
+     * fragments attached to the activity are <em>not</em> resumed.  This means
+     * that in some cases the previous state may still be saved, not allowing
+     * fragment transactions that modify the state.  To correctly interact
+     * with fragments in their proper state, you should instead override
+     * {@link #onResumeFragments()}.
+     */
+    @Override
+    protected void onResume() {
+        super.onResume();
+        configureRecyclerView();
+    }
 
     @Override
     public int getFragmentLayout() {
@@ -153,6 +188,27 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
         return optionsToolbar(this, item);
     }
 
+
+    /**
+     * Methode permettant de donner un nom à la page courante de l'application
+     * @param title
+     */
+    private void giveToolbarAName(String title){
+        ActionBar ab = getSupportActionBar();
+        assert ab != null;
+        ab.setDisplayShowCustomEnabled(true);
+        ActionBar.LayoutParams layoutParams = new ActionBar.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL|Gravity.CENTER_VERTICAL);
+
+        TextView tv = new TextView(this);
+        tv.setGravity(View.TEXT_ALIGNMENT_CENTER);
+        tv.setTextColor(Color.WHITE);
+        tv.setTextSize(20f);
+        tv.setTypeface(tv.getTypeface(), Typeface.BOLD);
+        tv.setText(title);
+
+        ab.setCustomView(tv, layoutParams);
+    }
+
     // --------------------
     // CALLBACK
     // --------------------
@@ -166,21 +222,15 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
     }
 
     // --------------------
-    // UI
+    // ADAPTER ET RECYCLERVIEW
     // --------------------
 
     /**
-     * Configuration de la recyclerview
-     * Cette methode créé l'adapter et lui passe en param pas mal d'informations 'comme par ex l'objet FireStoreRecyclerOptions generé par la methode
-     * generateOptionsForAdapter.
+     * Configuration de l'adapter et de la recyclerview
+     * Cette methode créé l'adapter et lui passe en param l'ensemble des cours existants
      */
     private void configureRecyclerView() {
-
-        // application du filtre sur la liste des cours
-        filterDateCalendar();
-        //Configure Adapter & RecyclerView
-            mAdapterCoursesPupils = new AdapterCoursesPupils(generateOptionsForAdapter(queryAllCourses()), this);
-            //mAdapterCoursesPupils = new AdapterCoursesPupils(generateOptionsForAdapter(queryDateCourses(calendrierClique)), this);
+        mAdapterCoursesPupils = new AdapterCoursesPupils(generateOptionsForAdapter(queryAllCourses()), this);
         mAdapterCoursesPupils.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onItemRangeInserted(int positionStart, int itemCount) { // c'est cette ligne de code qui insere les données dans la recyclerview
@@ -191,6 +241,23 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
         recyclerView.setAdapter(this.mAdapterCoursesPupils);// l'adapter s'occupe du contenu
     }
 
+    /**
+     * Configuration de l'adapter et de la recyclerview
+     * Cette methode créé l'adapter et lui passe en param la requete de tri des cours en fonction
+     * de la date cliquée sur le calendrier
+     */
+    private void configureRecyclerViewSorted() {
+        //Configure Adapter & RecyclerView
+        mAdapterCoursesPupils = new AdapterCoursesPupils(generateOptionsForAdapter(queryCoursesFiltered()), this);
+        mAdapterCoursesPupils.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onItemRangeInserted(int positionStart, int itemCount) { // c'est cette ligne de code qui insere les données dans la recyclerview
+                recyclerView.smoothScrollToPosition(mAdapterCoursesPupils.getItemCount()); // Scroll to bottom on new messages
+            }
+        });
+        recyclerView.setLayoutManager(new LinearLayoutManager(this)); // layoutmanager indique comment seront positionnés les elements (linearlayout)
+        recyclerView.setAdapter(this.mAdapterCoursesPupils);// l'adapter s'occupe du contenu
+    }
 
     /**
      * La methode generateOptionsForAdapter utilise la methode query, precedemment definit dans la classe MessageHelper
@@ -203,22 +270,29 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
                 .build();
     }
 
+    // --------------------
+    // UI
+    // --------------------
+
     /**
      * Methode permettant d'afficher le floating button à l'ecran si l'utilisateur est un encadrant ou un initiateur.
      */
     private void showFloatingButton() {
 
         if (this.getCurrentUser() != null) {
+/*            if(user.getFonction().equals("Moniteur") || user.getFonction().equals("Initiateur")){
+                mFloatingActionButton.setVisibility(View.VISIBLE);
+            }*/
             FirebaseFirestore db = FirebaseFirestore.getInstance();
             DocumentReference mQuery = db.collection("users").document(getCurrentUser().getUid());
 
             mQuery.addSnapshotListener(new EventListener<DocumentSnapshot>() {
                 @Override
                 public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                    if(documentSnapshot.exists()){
+                    if (documentSnapshot.exists()) {
                         Object ds = documentSnapshot.get("fonction");
                         //TODO : decision : est ce que je met le bouton dispo pour les initiateurs?
-                        if(ds.equals("Moniteur") || ds.equals("Initiateur"))
+                        if (ds.equals("Moniteur") || ds.equals("Initiateur"))
                             mFloatingActionButton.setVisibility(View.VISIBLE);
                     }
                 }
@@ -226,11 +300,13 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
         }
     }
 
+
+
     public void notifCompleteAccount() {
         AlertDialog.Builder adb = new AlertDialog.Builder(this);
         // ajouter une couleur à l'icon de warning
         Drawable warning = getResources().getDrawable(android.R.drawable.ic_dialog_alert);
-        ColorFilter filter = new LightingColorFilter( Color.RED, Color.BLUE);
+        ColorFilter filter = new LightingColorFilter(Color.RED, Color.BLUE);
         warning.setColorFilter(filter);
         adb.setIcon(warning);
         adb.setTitle("Merci de completer votre compte pour acceder à la liste des cours !");
@@ -239,7 +315,7 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
                 // rien à appeler. pas la peine de faire de toast
             }
         });
-        adb.show(); // affichage de l'artdialog
+        adb.show();
     }
 
 
@@ -248,25 +324,20 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
     // --------------------
 
     /**
-     * Requete en bdd pour recuperer tous les cours existants
+     * Requete en bdd pour recuperer tous les cours existants filtré par niveau du plongeur
+     * connecté sur l'application.
      *
      * @return query
      */
     private Query queryAllCourses() {
-        // Affichage en fonction du niveau de la personne connectée
-        //final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        Query mQuery = db.collection("courses").orderBy("horaireDuCours", Query.Direction.ASCENDING);
+        Query mQuery = db.collection("courses").whereEqualTo("niveauDuCours", user.getNiveauPlongeur());
         mQuery.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-                // condition de creation d'un user ou affichage simple d'un message indiquant que l'user existe dejà en bdd.
-                // Avec les uid, il ne peut y avoir de doublon, on peut donc etre sur qu'il n'y a qu'un seule doc qui existe s'il en existe un.
                 if (documentSnapshots != null) {
                     if (documentSnapshots.size() != 0) {
-                        Log.e("TAG", "Le document existe !");
-                        // liste des docs
                         readDataInList(documentSnapshots.getDocuments());
                     }
                 }
@@ -275,21 +346,16 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
         return mQuery;
     }
 
-    private Query queryDateCourses(Object dateCours) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private Query queryCoursesFiltered() {
 
-        Query mQ = db.collection("courses").whereEqualTo("horaireDuCours", dateCours);
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        Query mQ = db.collection("courses").orderBy("horaireDuCours").startAt(calendrierClique).endAt(calendrierFinJournee);
         mQ.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-                // condition de creation d'un user ou affichage simple d'un message indiquant que l'user existe dejà en bdd.
-                // Avec les uid, il ne peut y avoir de doublon, on peut donc etre sur qu'il n'y a qu'un seule doc qui existe s'il en existe un.
                 if (documentSnapshots != null) {
                     if (documentSnapshots.size() != 0) {
-                        Log.e("TAG", "Le document existe !");
-                        // liste des docs
-                        listSnapshot.addAll(documentSnapshots.getDocuments());
-                        readDataInList(listSnapshot);
+                        readDataInList(documentSnapshots.getDocuments());
                     }
                 }
             }
@@ -325,6 +391,46 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
         }
     }
 
+    /**
+     * Methode permettant de recuperer le niveau de l'utilisateur actuellement connecté.
+     * Ceicp ermet d'afficher en titre de page le niveau des cours données.
+     */
+    private void getLevelConnectedUser(){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("users").whereEqualTo("uid", getCurrentUser().getUid()).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot documentSnapshots) {
+                if(documentSnapshots.size() != 0){
+                    List<DocumentSnapshot> ds = documentSnapshots.getDocuments();
+                    for( int i = 0; i < ds.size(); i++){
+                        Map<String, Object> map = ds.get(i).getData();
+                        user.setFonction(map.get("fonction").toString()); // utile pour l'affichage du floatingbutton
+                        // affichage de la toolbar avec le niveau de la personne connectée
+                        user.setNiveauPlongeur(map.get("niveau").toString());
+                        String s = "Cours de niveau " + user.getNiveauPlongeur();
+                        giveToolbarAName(s);
+                    }
+                }
+            }
+        });
+      /*  .addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+                if(documentSnapshots.size() != 0){
+                    List<DocumentSnapshot> ds = documentSnapshots.getDocuments();
+                    for( int i = 0; i < ds.size(); i++){
+                        Map<String, Object> map = ds.get(i).getData();
+                        user.setFonction(map.get("fonction").toString()); // utile pour l'affichage du floatingbutton
+                        // affichage de la toolbar avec le niveau de la personne connectée
+                        user.setNiveauPlongeur(map.get("niveau").toString());
+                        String s = "Cours de niveau " + user.getNiveauPlongeur();
+                        giveToolbarAName(s);
+                    }
+                }
+            }
+        });*/
+
+    }
 
     /**
      * Methode permettant de filtrer les cours à afficher sur l'ecran des eleves lorsqu'un utilisateur clique sur une date du calendrier.
@@ -345,11 +451,9 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
                         DocumentSnapshot map = documentSnapshots.getDocuments().get(i);
                         Object horaireDuCours = map.getData().get("horaireDuCours");
                         // formatage des donnees recues de la bdd et du clic sur la calendrier et condition
-                        DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                        DateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.FRANCE);
                         if (sdf.format(horaireDuCours).equals(sdf.format(calendrierClique))) {
-                            System.out.println("ok");
-                            queryDateCourses(horaireDuCours);
-                            configureRecyclerView();
+                            configureRecyclerViewSorted();
                         }
                     }
                 }

@@ -94,6 +94,15 @@
     <string name="create_course">Vous avez créé un nouveau cours. \n\tMerci !</string>
     <string name="course_deconnexion">Déconnexion</string>
     <string name="sommaire">Sommaire</string>
+    <string name="moniteur">Moniteur</string>
+    <string name="nom_du_moniteur">Nom du moniteur :</string>
+    <string name="sujet_du_cours">Sujet du cours :</string>
+    <string name="niveau_de_plongee_effectif">Niveau de plongée effectif :</string>
+    <string name="apprenants">Apprenants</string>
+    <string name="niveau_de_plong_e">Niveau de plongée</string>
+    <string name="planning">Planning</string>
+    <string name="heure_du_cours">Heure du cours</string>
+    <string name="date_du_cours">Date du cours</string>
 
     <!-- COVOITURAGE ACTIVITY -->
     <string name="covoit_txt">Covoiturage</string>
@@ -148,6 +157,7 @@
     <string name="title_activity_test">TestActivity</string>
     <string name="title_activity_covoiturage_vehicules">CovoiturageVehiculesActivity</string>
     <string name="supprimez_un_covoiturage">Supprimez un covoiturage</string>
+
 
 
 </resources>
