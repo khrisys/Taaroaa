@@ -33,6 +33,20 @@ public class User implements Serializable{
         mEmail = email;
     }
 
+    /**
+     * Creation d'user lors de la recuperation des infos juste apres la creation d'un compte via l'auth firabse
+     * @param uid
+     * @param nom
+     * @param prenom
+     * @param email
+     */
+    public User(String uid, String nom, String prenom, String email) {
+        this.uid = uid;
+        mNom = nom;
+        mPrenom = prenom;
+        mEmail = email;
+    }
+
     public User(String uid, String nom, String prenom, String licence, String email, String niveauPlongeur, String fonction) {
         this.uid = uid;
         mNom = nom;

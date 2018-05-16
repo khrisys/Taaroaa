@@ -2,13 +2,18 @@ package fr.drochon.christian.taaroaa.base;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Gravity;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
@@ -69,8 +74,28 @@ public abstract class BaseActivity extends AppCompatActivity {
         // ajout d'un icone de l'appli à l'actionbar en haut à gauche
         assert ab != null;
         ab.setDisplayShowHomeEnabled(true);
-        ab.setIcon(R.mipmap.ic_launcher);
+        ab.setIcon(R.mipmap.logo);
         //ab.setTitle(R.string.app_name);
+    }
+
+    /**
+     * Methode permettant de donner un nom à chacune des pages de l'application
+     * @param title
+     */
+    protected void giveToolbarAName(int title){
+        ActionBar ab = getSupportActionBar();
+        assert ab != null;
+        ab.setDisplayShowCustomEnabled(true);
+        ActionBar.LayoutParams layoutParams = new ActionBar.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL|Gravity.CENTER_VERTICAL);
+
+        TextView tv = new TextView(this);
+        tv.setGravity(View.TEXT_ALIGNMENT_CENTER);
+        tv.setTextColor(Color.WHITE);
+        tv.setTextSize(20f);
+        tv.setTypeface(tv.getTypeface(), Typeface.BOLD);
+        tv.setText(title);
+
+        ab.setCustomView(tv, layoutParams);
     }
 
     /**

@@ -49,7 +49,7 @@ public class AdapterCoursesPupils extends FirestoreRecyclerAdapter<Course, Pupil
     @Override
     public PupilsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new PupilsViewHolder(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.list_cell, parent, false));// creation de la viewholder avec en param la vue du layout
+                .inflate(R.layout.pupils_cell, parent, false));// creation de la viewholder avec en param la vue du layout
     }
 
     // --------------------

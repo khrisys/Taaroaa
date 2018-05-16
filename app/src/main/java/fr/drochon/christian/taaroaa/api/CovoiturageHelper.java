@@ -36,6 +36,13 @@ public class CovoiturageHelper {
     /**
      * Mehode permettant de mettre à jour un covoiturage
      */
+    public static Task<Void> updateCovoiturage(String id, String nomConducteur, String prenomConducteur) {
+        return CovoiturageHelper.getCovoituragesCollection().document(id).update("id", id,  "nomConducteur", nomConducteur, "prenomConducteur", prenomConducteur);
+    }
+
+    /**
+     * Mehode permettant de mettre à jour un covoiturage lors de la saisie de passagers s'inscrivant à un covoiturage
+     */
     public static Task<Void> updateCovoiturage(String id, String nbPlacesDispo, List<String> passagers) {
         return CovoiturageHelper.getCovoituragesCollection().document(id).update("id", id,  "nbPlacesDispo", nbPlacesDispo, "listPassagers", passagers);
     }

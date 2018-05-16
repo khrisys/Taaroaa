@@ -1,10 +1,9 @@
 package fr.drochon.christian.taaroaa.course;
 
-import android.app.AlertDialog;
+import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -40,6 +39,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TimeZone;
 
 import fr.drochon.christian.taaroaa.R;
@@ -58,7 +58,9 @@ public class CoursesManagementActivity extends BaseActivity {
     private static final int UPDATE_USERNAME = 30;
 
     // id objets graphiques
+    @SuppressLint("StaticFieldLeak")
     static TextInputEditText mHeureCours;
+    @SuppressLint("StaticFieldLeak")
     static TextInputEditText mDateCours;
     TextInputEditText mMoniteurCours;
     TextInputEditText mSujetCours;
@@ -74,7 +76,6 @@ public class CoursesManagementActivity extends BaseActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_courses_management);
-        configureToolbar();
 
         mMoniteurCours = findViewById(R.id.monitor_txt);
         mSujetCours = findViewById(R.id.sujet_txt);
@@ -82,16 +83,21 @@ public class CoursesManagementActivity extends BaseActivity {
         mNiveauCours = findViewById(R.id.niveau_plongee_spinner);
         mCreerCours = findViewById(R.id.creation_compte_btn);
         mDateCours = findViewById(R.id.dateText);
+
+        configureToolbar();
+        giveToolbarAName(R.string.course_management_name);
+
+
         // hint pour la date du edittext
         Date currentTime = Calendar.getInstance().getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd / MM / yyyy");
+        SimpleDateFormat sdf = new SimpleDateFormat("EEE dd MMM yyyy", Locale.FRANCE);
         sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
         String d = sdf.format(currentTime);
         mDateCours.setHint(d);
 
         //hint pour l'heure du edittext
         mHeureCours = findViewById(R.id.timeText);
-        SimpleDateFormat sdf1 = new SimpleDateFormat("HH:mm:ss");
+        SimpleDateFormat sdf1 = new SimpleDateFormat("HH:mm:ss", Locale.FRANCE);
         sdf1.setTimeZone(TimeZone.getTimeZone("GMT"));
         String s = sdf1.format(currentTime);
         mHeureCours.setHint(s);
@@ -175,7 +181,7 @@ public class CoursesManagementActivity extends BaseActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.course_management_menu, menu);
-        return true; // true affiche le menu app_bar_search_adherents
+        return true;
     }
 
     /**
@@ -312,17 +318,6 @@ public class CoursesManagementActivity extends BaseActivity {
                         }
                     });
         } else {
-            //TODO verifier si l'alertdialog ici affiche les bonnes informations attendues
-            final AlertDialog.Builder adb = new AlertDialog.Builder(CoursesManagementActivity.this);
-            adb.setTitle(R.string.alertDialog_account);
-            adb.setIcon(android.R.drawable.ic_dialog_alert);
-            adb.setTitle("Merci de saisir tous les champs du formulaire !");
-            adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    // rien à appeler. pas la peine de faire de toast
-                }
-            });
-            adb.show(); // affichage de l'artdialog
             verificationChampsVides();
         }
     }
@@ -332,15 +327,24 @@ public class CoursesManagementActivity extends BaseActivity {
      */
     private void verificationChampsVides() {
 
-        final String moniteur = mMoniteurCours.getText().toString();
-        final String sujet = mSujetCours.getText().toString();
-        final String dateCours = mDateCours.getText().toString();
-        final String heureCours = mHeureCours.getText().toString();
-        if (moniteur.isEmpty()) mMoniteurCours.setError("Merci de saisir ce champ !");
-        if (sujet.isEmpty()) mSujetCours.setError("Merci de saisir ce champ !");
-        if (dateCours.isEmpty()) mDateCours.setError("Merci de saisir ce champ !");
-        if (heureCours.isEmpty()) mHeureCours.setError("Merci de saisir ce champ !");
-        //if(heureCours.isEmpty()) mHeureCours.setError("Merci de saisir ce champ !"); else mDateCours.append(" ");
+        if (mDateCours.getText().toString().equals("")) {
+            mDateCours.setError("Merci de renseigner ce champ !");
+            mDateCours.requestFocus();
+        }
+        else mDateCours.setError(null);
+        if (mHeureCours.getText().toString().equals("")) {
+            mHeureCours.setError("Merci de renseigner ce champ !");
+            mHeureCours.requestFocus();
+        }
+        else mHeureCours.setError(null);
+        if (mSujetCours.getText().toString().isEmpty()) {
+            mSujetCours.setError("Merci de renseigner ce champ !");
+            mSujetCours.requestFocus();
+        }
+        if (mMoniteurCours.getText().toString().isEmpty()) {
+            mMoniteurCours.setError("Merci de renseigner ce champ !");
+            mMoniteurCours.requestFocus();
+        }
     }
 
     /**
@@ -364,7 +368,7 @@ public class CoursesManagementActivity extends BaseActivity {
         String heureCours = mHeureCours.getText().toString();
         String horaireCours = dateCoursTxt + " " + heureCours;
         Date horaireCoursFormat = null;
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MM yyyy HH:mm:ss Z");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MM yyyy HH:mm:ss Z", Locale.FRANCE);
         try {
             horaireCoursFormat = simpleDateFormat.parse(horaireCours);
         } catch (ParseException e) {
@@ -374,13 +378,10 @@ public class CoursesManagementActivity extends BaseActivity {
 
         DocumentReference reference2 = getCoursesCollection().document(id);
         Query reference1 = CourseHelper.getCourse(reference2.getId());
-        if (reference2 != null) {
-            //TODO alert dialog lorsque tous les champs ne sont pas remplis.
-            if (!moniteur.isEmpty() && !sujet.isEmpty() && !heureCours.isEmpty()) { // verification que tous les champs vides soient remplis
-                CourseHelper.updateCourse(id, typeCours, sujet, niveauCours, moniteur, horaireCoursFormat)
-                        .addOnFailureListener(this.onFailureListener())
-                        .addOnSuccessListener(this.updateUIAfterRESTRequestsCompleted(UPDATE_USERNAME));
-            }
+        if (!moniteur.isEmpty() && !sujet.isEmpty() && !heureCours.isEmpty()) { // verification que tous les champs vides soient remplis
+            CourseHelper.updateCourse(id, typeCours, sujet, niveauCours, moniteur, horaireCoursFormat)
+                    .addOnFailureListener(this.onFailureListener())
+                    .addOnSuccessListener(this.updateUIAfterRESTRequestsCompleted(UPDATE_USERNAME));
         }
     }
 
@@ -431,22 +432,23 @@ public class CoursesManagementActivity extends BaseActivity {
          * @param savedInstanceState
          * @return
          */
+        @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             final Calendar c = Calendar.getInstance();
             int year = c.get(Calendar.YEAR);
             int month = c.get(Calendar.MONTH);
             int day = c.get(Calendar.DAY_OF_MONTH);
-            return new DatePickerDialog(getActivity(), this, year, month, day + 1);
+            return new DatePickerDialog(Objects.requireNonNull(getActivity()), this, year, month, day + 1);
         }
 
         /**
          * Affiche la date choisi par l'utilisateur
          *
          * @param view       picker associé au dialog
-         * @param year
+         * @param year       annee
          * @param month      (0 à 11)
-         * @param dayOfMonth
+         * @param dayOfMonth jour du mois
          */
         @Override
         public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
@@ -468,12 +470,9 @@ public class CoursesManagementActivity extends BaseActivity {
          * @param savedInstanceState
          * @return
          */
+        @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            //UTC
-/*            final String format = "dd-MMM-yyyy HH:mm:ss";
-            final SimpleDateFormat dateFormatGmt = new SimpleDateFormat(format);
-            dateFormatGmt.setTimeZone(TimeZone.getTimeZone("UTC"));*/
 
             final Calendar c = Calendar.getInstance();
             int hour = c.get(Calendar.HOUR_OF_DAY);

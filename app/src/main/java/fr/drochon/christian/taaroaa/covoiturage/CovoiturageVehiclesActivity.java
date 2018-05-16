@@ -21,6 +21,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -31,18 +32,18 @@ import fr.drochon.christian.taaroaa.model.Covoiturage;
 public class CovoiturageVehiclesActivity extends BaseActivity implements AdapterCovoiturageVehicles.Listener {
 
     // FOR COMMUNICATION
-    TextView mTextView;
     TextView mTextViewEmptyListRecyclerView;
     CoordinatorLayout mCoordinatorLayoutRoot;
     LinearLayout mLinearLayoutVehicule;
     LinearLayout mLinearLayoutRecycleView;
     ScrollView mScrollViewRecyclerView;
     RecyclerView mRecyclerViewVehicules;
+
+    // FOR DATA
+    private AdapterCovoiturageVehicles mAdapterCovoiturageVehicles;
     List<Covoiturage> listCovoiturages;
     List<String> listPassagers;
     Covoiturage covoiturage;
-    // FOR DATA
-    private AdapterCovoiturageVehicles mAdapterCovoiturageVehicles;
 
     // --------------------
     // LIFECYCLE
@@ -51,8 +52,6 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_covoiturage_vehicules);
-        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        //setSupportActionBar(toolbar);
 
         mTextViewEmptyListRecyclerView = findViewById(R.id.empty_list_textview);
         mCoordinatorLayoutRoot = findViewById(R.id.coordinatorLayoutRoot);
@@ -61,34 +60,28 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
         mScrollViewRecyclerView = findViewById(R.id.scrollviewRecyclerView);
         mRecyclerViewVehicules = findViewById(R.id.recyclerViewCovoitVehicules);
 
-        listCovoiturages = new ArrayList<Covoiturage>();
+        listCovoiturages = new ArrayList<>();
         listPassagers = new ArrayList<>();
 
-        configureRecyclerView();
-        configureToolbar();
-
-
+        this.configureRecyclerView();
+        this.configureToolbar();
+        this.giveToolbarAName(R.string.covoit_vehicule_name);
+        this.giveToolbarAName(R.string.covoit_vehicule_name);
 
         // --------------------
         // LISTENERS
         // --------------------
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(CovoiturageVehiclesActivity.this, CovoiturageConducteursActivity.class);
                 startActivity(intent);
-            /*    Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();*/
             }
         });
     }
 
-    @Override
-    public int getFragmentLayout() {
-        return 0;
-    }
 
     // --------------------
     // TOOLBAR
@@ -123,6 +116,11 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
     // UI
     // --------------------
 
+    @Override
+    public int getFragmentLayout() {
+        return 0;
+    }
+
     /**
      * Configuration de la recyclerview
      * Cette methode créé l'adapter et lui passe en param pas mal d'informations 'comme par ex l'objet FireStoreRecyclerOptions generé par la methode
@@ -153,6 +151,7 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
                 .build();
     }
 
+
     // --------------------
     // CALLBACK
     // --------------------
@@ -166,18 +165,19 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
     }
 
     // --------------------
-    // SEARCH REQUESTS
+    // REST REQUESTS
     // --------------------
 
     /**
-     * Requete en bdd pour recuperer tous les covoiturages existants
+     * Requete en bdd pour recuperer et afficher tous les covoiturages existants, excepté ceux dont la date de retour est passée.
+     * Les covoiturages sont affichés par ordre de date de retour decroissante.
      *
      * @return query
      */
     private Query getAllCovoiturages() {
 
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
-        Query mQuery = db.collection("covoiturages"); //.orderBy("nomConducteur", Query.Direction.ASCENDING);
+        Query mQuery = db.collection("covoiturages").orderBy("horaireRetour",Query.Direction.ASCENDING).whereGreaterThan("horaireRetour", Calendar.getInstance().getTime());
         mQuery.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot documentSnapshots) {
@@ -191,7 +191,7 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
 
                         // recuperation de l'objet covoiturage
                         covoiturage = new Covoiturage(covoit.get("id").toString(), covoit.get("nomConducteur").toString(), covoit.get("prenomConducteur").toString(),
-                                covoit.get("nbPlacesDispo").toString(), covoit.get("typeVehicule").toString(), stStringToDate(covoit.get("horaireAller").toString()),
+                                covoit.get("nbPlacesDispo").toString(), covoit.get("nbPlacesTotal").toString(), covoit.get("typeVehicule").toString(), stStringToDate(covoit.get("horaireAller").toString()),
                                 stStringToDate(covoit.get("horaireRetour").toString()), covoit.get("lieuDepartAller").toString(), covoit.get("lieuDepartRetour").toString(), listPassagers);
                     }
                 }

@@ -44,7 +44,7 @@ public class CovoiturageConducteursActivity extends BaseActivity {
     static TextInputEditText mHeureretour;
     TextInputEditText mPrenom;
     TextInputEditText mNom;
-    TextInputEditText mNbPlaceDispo;
+    TextInputEditText mNbPlaceTotal;
     Spinner mTypeVehicule;
     TextView mLieuDepart;
     TextView mLieuArrivee;
@@ -59,7 +59,7 @@ public class CovoiturageConducteursActivity extends BaseActivity {
 
         mPrenom = findViewById(R.id.prenom_txt);
         mNom = findViewById(R.id.nom_txt);
-        mNbPlaceDispo = findViewById(R.id.nombre_place_dispo_txt);
+        mNbPlaceTotal = findViewById(R.id.nombre_place_dispo_txt);
         mTypeVehicule = findViewById(R.id.type_vehicule_spinner);
         mDateDepart = findViewById(R.id.date_depart_input);
         mHeureDepart = findViewById(R.id.heure_depart_input);
@@ -72,6 +72,7 @@ public class CovoiturageConducteursActivity extends BaseActivity {
         mNotifCreationCovoit = findViewById(R.id.alertdialog_ok_covoit);
 
         configureToolbar();
+        giveToolbarAName(R.string.covoit_conducteur_name);
         findCurrentUser();
 
         // --------------------
@@ -105,47 +106,6 @@ public class CovoiturageConducteursActivity extends BaseActivity {
     }
 
     // --------------------
-    // UI
-    // --------------------
-
-    @Override
-    public int getFragmentLayout() {
-        return 0;
-    }
-
-    private void startMainCovoitActivity() {
-        Intent intent = new Intent(CovoiturageConducteursActivity.this, CovoiturageVehiclesActivity.class);
-        startActivity(intent);
-    }
-
-    /**
-     * Methode permettant de signaler une erreur lorsqu'un champ est resté vide alors que la soumission du formulaire a été faite.
-     */
-    private void verificationChampsVides() {
-
-        if (mPrenom.getText().toString().isEmpty()) mPrenom.setError("Merci de saisir ce champ !");
-        if (mNom.getText().toString().isEmpty()) mNom.setError("Merci de saisir ce champ !");
-        if (mNbPlaceDispo.getText().toString().isEmpty())
-            mNbPlaceDispo.setError("Merci de saisir ce champ !");
-        if(mLieuDepart.getText().toString().isEmpty()) mLieuDepart.setError("Merci de saisir ce champ !");
-        if(mLieuArrivee.getText().toString().isEmpty()) mLieuArrivee.setError("Merci de saisir ce champs !");
-        if (mDateDepart.getText().toString().isEmpty())
-            mDateDepart.setError("Merci de saisir ce champ !");
-        else mDateDepart.append(" ");
-        if (mDateRetour.getText().toString().isEmpty())
-            mDateRetour.setError("Merci de saisir ce champ !");
-        else mDateRetour.append(" ");
-        if (mHeureDepart.getText().toString().isEmpty())
-            mHeureDepart.setError("Merci de saisir ce champ !");
-        else mHeureDepart.append(" ");
-        if (mHeureretour.getText().toString().isEmpty())
-            mHeureretour.setError("Merci de saisir ce champ !");
-        else mHeureretour.append(" ");
-        mProgressBar.setVisibility(View.GONE);
-    }
-
-
-    // --------------------
     // TOOLBAR
     // --------------------
 
@@ -173,6 +133,72 @@ public class CovoiturageConducteursActivity extends BaseActivity {
     }
 
 
+    // --------------------
+    // UI
+    // --------------------
+
+    @Override
+    public int getFragmentLayout() {
+        return 0;
+    }
+
+    private void startMainCovoitActivity() {
+        Intent intent = new Intent(CovoiturageConducteursActivity.this, CovoiturageVehiclesActivity.class);
+        startActivity(intent);
+    }
+
+    /**
+     * Methode permettant de signaler une erreur lorsqu'un champ est resté vide alors que la soumission du formulaire a été faite.
+     */
+    private void verificationChampsVides() {
+
+        if (mPrenom.getText().toString().isEmpty()) mPrenom.setError("Merci de renseigner ce champ !");
+        if (mNom.getText().toString().isEmpty()) mNom.setError("Merci de renseigner ce champ !");
+
+        if(mLieuArrivee.getText().toString().isEmpty()) {
+            mLieuArrivee.setError("Merci de renseigner ce champ !");
+            mLieuArrivee.requestFocus();
+        }
+
+        if(mHeureretour.getText().toString().isEmpty()){
+            mHeureretour.setError("Merci de renseigner ce champ !");
+            mHeureretour.requestFocus();
+        }
+        else mHeureretour.setError(null);
+
+        if (mDateRetour.getText().toString().isEmpty()){
+            mDateRetour.setError("Merci de renseigner ce champ !");
+            mDateRetour.requestFocus();
+        }
+        else mDateRetour.setError(null);
+
+
+        if(mLieuDepart.getText().toString().isEmpty()) {
+            mLieuDepart.setError("Merci de renseigner ce champ !");
+            mLieuDepart.requestFocus();
+        }
+
+        if (mHeureDepart.getText().toString().isEmpty()){
+            mHeureDepart.setError("Merci de renseigner ce champ !");
+            mHeureDepart.requestFocus();
+        }
+        else mHeureDepart.setError(null);
+
+        if (mDateDepart.getText().toString().isEmpty()){
+            mDateDepart.setError("Merci de renseigner ce champ !");
+            mDateDepart.requestFocus();
+        }
+        else mDateDepart.setError(null);
+
+
+
+        if (mNbPlaceTotal.getText().toString().isEmpty()){
+            mNbPlaceTotal.setError("Merci de renseigner ce champ !");
+            mNbPlaceTotal.requestFocus();
+        }
+        mProgressBar.setVisibility(View.GONE);
+    }
+
 
 
     // --------------------
@@ -190,7 +216,8 @@ public class CovoiturageConducteursActivity extends BaseActivity {
         final String id = CovoiturageHelper.getCovoituragesCollection().document().getId();
         String prenom = mPrenom.getText().toString();
         String nom = mNom.getText().toString();
-        String nbPlacesDispo = mNbPlaceDispo.getText().toString();
+        String nbPlacesDispo = mNbPlaceTotal.getText().toString();
+        String nbPlacesTotal = mNbPlaceTotal.getText().toString();
         String typeVehicule = mTypeVehicule.getSelectedItem().toString();
         String dateAller = mDateDepart.getText().toString();
         String dateRetour = mDateRetour.getText().toString();
@@ -199,7 +226,8 @@ public class CovoiturageConducteursActivity extends BaseActivity {
         String heureDepart = mHeureDepart.getText().toString();
         String heureRetour = mHeureretour.getText().toString();
         List<User> users = new ArrayList<>();
-        Reservation reservation = new Reservation();
+        //TODO rajouter le champs reservation lorsque les sorties seront gerees
+        //Reservation reservation = new Reservation();
 
         // formattage des dates
         String horaireAller = dateAller + " " + heureDepart;
@@ -231,6 +259,7 @@ public class CovoiturageConducteursActivity extends BaseActivity {
             covoit.put("nomConducteur", nom.toUpperCase());
             covoit.put("prenomConducteur", prenom.toUpperCase());
             covoit.put("nbPlacesDispo", nbPlacesDispo);
+            covoit.put("nbPlacesTotal", nbPlacesTotal);
             covoit.put("typeVehicule", typeVehicule);
             covoit.put("horaireAller", horaireDelAller);
             covoit.put("horaireRetour", horaireDuRetour);
@@ -257,7 +286,7 @@ public class CovoiturageConducteursActivity extends BaseActivity {
                         }
                     });
         }
-        // prise en charge des champs non vides
+        // Affichage des champs non vides
         else {
             verificationChampsVides();
         }

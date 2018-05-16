@@ -3,21 +3,18 @@ package fr.drochon.christian.taaroaa.controller;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
 import android.app.LoaderManager.LoaderCallbacks;
-
 import android.content.CursorLoader;
 import android.content.Loader;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
-
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -29,13 +26,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.drochon.christian.taaroaa.R;
+import fr.drochon.christian.taaroaa.base.BaseActivity;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
 /**
  * A login screen that offers login via email/password.
  */
-public class PasswordActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
+public class PasswordActivity extends BaseActivity implements LoaderCallbacks<Cursor> {
 
     /**
      * Id to identity READ_CONTACTS permission request.
@@ -63,8 +61,7 @@ public class PasswordActivity extends AppCompatActivity implements LoaderCallbac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_password);
-
-        setTitle("Mot de passe");
+        giveToolbarAName(R.string.password_name);
 
         // Set up the login form.
         mEmailView = findViewById(R.id.email);
@@ -81,6 +78,11 @@ public class PasswordActivity extends AppCompatActivity implements LoaderCallbac
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+    }
+
+    @Override
+    public int getFragmentLayout() {
+        return 0;
     }
 
     private void populateAutoComplete() {

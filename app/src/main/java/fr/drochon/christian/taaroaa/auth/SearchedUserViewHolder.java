@@ -32,14 +32,14 @@ public class SearchedUserViewHolder extends RecyclerView.ViewHolder {
 
     /**
      * Contructeur qui prend en param la vue affichée.
-     * Je recupere les 2 textview du layout list_cell.
+     * Je recupere les 2 textview du layout pupils_cell.
      * responsable du clic sur les cellules.
      *
      * @param itemView : cellule d'une liste comprenant le nom prenom et email de la personne recherchée.
      */
     public SearchedUserViewHolder(View itemView) {
         super(itemView);
-        // liaison des elements du layout recyclerview et list_cell avec les variables declarées ici
+        // liaison des elements du layout recyclerview et pupils_cell avec les variables declarées ici
         ButterKnife.bind(this, itemView);
 
         mRecyclerView = itemView.findViewById(R.id.recyclerViewSearchedUser);

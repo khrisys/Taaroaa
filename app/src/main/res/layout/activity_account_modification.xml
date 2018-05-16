@@ -56,6 +56,8 @@
                 android:id="@+id/divider"
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
                 android:background="?android:attr/listDivider"
                 />
 
@@ -63,6 +65,7 @@
                 android:id="@+id/titre_prenom_txt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
                 android:layout_marginStart="60dp"
                 android:shadowColor="@color/colorAccent"
                 android:text="@string/prenom"
@@ -126,6 +129,8 @@
                 android:id="@+id/divider2"
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
                 android:background="?android:attr/listDivider"
                 />
 
@@ -133,6 +138,7 @@
                 android:id="@+id/titre_numero_licence_txt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
                 android:layout_marginStart="60dp"
                 android:shadowColor="@color/colorAccent"
                 android:text="@string/numero_de_licence_optionnel"
@@ -179,6 +185,7 @@
                 android:id="@+id/linearLayoutFonctionAdherent"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:visibility="gone"
                 android:orientation="vertical">
 
                 <TextView
@@ -207,7 +214,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="50dp"
                 android:text="@string/compte"
                 android:textAlignment="center"
                 android:textColor="@color/colorPrimaryDark"
@@ -218,6 +225,8 @@
                 android:id="@+id/divider3"
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
                 android:background="?android:attr/listDivider"
                 />
 
@@ -225,6 +234,7 @@
                 android:id="@+id/titre_email_txt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
                 android:layout_marginStart="60dp"
                 android:shadowColor="@color/colorAccent"
                 android:text="@string/email"
@@ -263,7 +273,7 @@
                 android:background="@android:color/holo_green_light"
                 android:clickable="false"
                 android:foregroundGravity="center"
-                android:visibility="invisible"/>
+                android:visibility="gone"/>
 
             <Button
                 android:id="@+id/modificiation_compte_btn"

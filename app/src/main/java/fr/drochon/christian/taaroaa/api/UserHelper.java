@@ -1,23 +1,11 @@
 package fr.drochon.christian.taaroaa.api;
 
-import android.support.annotation.NonNull;
-import android.support.constraint.solver.widgets.Snapshot;
-import android.util.Log;
-import android.widget.Toast;
-
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import fr.drochon.christian.taaroaa.controller.MainActivity;
 import fr.drochon.christian.taaroaa.model.User;
 
 /**
@@ -54,6 +42,12 @@ public class UserHelper {
         return UserHelper.getUsersCollection().document(uid).set(userToCreate);
     }
 
+    public static Task<Void> createUser(String uid, String nom, String prenom, String email) {
+        // creation de l'objet User
+        User userToCreate = new User(uid, nom, prenom , email);
+        return UserHelper.getUsersCollection().document(uid).set(userToCreate);
+    }
+
     // --- GET ---
 
     public static Task<DocumentSnapshot> getUser(String uid){
@@ -68,6 +62,14 @@ public class UserHelper {
     }
 
     // --- UPDATE ---
+    /**
+     * Mehode permettant de mettre à jour un utilisateur.
+     * Auncun utilisateur ne peut updater son adresse email pour eviter de perdre don addresse en la cgngeant trop souvent.
+     */
+    public static Task<Void> updateUser(String uid) {
+        return UserHelper.getUsersCollection().document(uid).update("uid", uid);
+    }
+
     /**
      * Mehode permettant de mettre à jour un utilisateur.
      * Auncun utilisateur ne peut updater son adresse email pour eviter de perdre don addresse en la cgngeant trop souvent.
