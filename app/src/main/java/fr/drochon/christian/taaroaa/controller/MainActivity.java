@@ -31,7 +31,6 @@ import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.auth.AccountCreateActivity;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
 
-import static fr.drochon.christian.taaroaa.R.drawable;
 import static fr.drochon.christian.taaroaa.R.id;
 import static fr.drochon.christian.taaroaa.R.layout;
 import static fr.drochon.christian.taaroaa.R.string;
@@ -162,7 +161,7 @@ public class MainActivity extends BaseActivity {
                                         new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build(), //GOOGLE
                                         new AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER).build())) // FACEBOOK
                         .setIsSmartLockEnabled(false, true)
-                        .setLogo(drawable.logo_vgt)
+                        .setLogo(R.mipmap.logo1)
                         .build(),
                 RC_SIGN_IN); // identifiant de connexion
     }

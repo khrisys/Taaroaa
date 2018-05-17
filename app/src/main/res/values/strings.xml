@@ -139,8 +139,8 @@
     <string name="passagers">Passagers :</string>
 
     <!-- FACEBOOK PURPOSE -->
-    <!--<string name="facebook_application_id" translatable="false">420763051691337</string>
-    <string name="facebook_login_protocol_scheme" translatable="false" tools:ignore="UnusedResources">fb420763051691337</string>-->
+    <string name="facebook_application_id" translatable="false">420763051691337</string>
+    <string name="facebook_login_protocol_scheme" translatable="false" tools:ignore="UnusedResources">fb420763051691337</string>
     <string name="taaroaa">Taaroaa</string>
     <string name="title_activity_password">Mot de passe oublié ?</string>
     <string name="prompt_email">Email</string>

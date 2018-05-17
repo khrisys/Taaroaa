@@ -1,9 +1,11 @@
 package fr.drochon.christian.taaroaa.course;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -243,8 +245,8 @@ public class CoursesManagementActivity extends BaseActivity {
                     mDateCours.setText(course.getDateDuCours().toString());
                     mHeureCours.setText(course.getTimeDuCours().toString());
                 } else {
-                    System.out.println("le doc n'existe pas");
                     mCreerCours.setText(R.string.button_create_course);
+
                 }
             }
         });
@@ -288,37 +290,54 @@ public class CoursesManagementActivity extends BaseActivity {
             e.printStackTrace();
         }
 
-
-        final FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        if (!moniteur.isEmpty() && !sujet.isEmpty() && !mDateCours.getText().toString().isEmpty() && !mHeureCours.getText().toString().isEmpty()) {
-
-            Map<String, Object> newCourse = new HashMap<>();
-            newCourse.put("id", id);
-            newCourse.put("niveauDuCours", niveauCours);
-            newCourse.put("nomDuMoniteur", moniteur);
-            newCourse.put("sujetDuCours", sujet);
-            newCourse.put("typeCours", typeCours);
-            newCourse.put("horaireDuCours", horaireDuCours);
-            db.collection("courses").document(id).set(newCourse)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Toast.makeText(CoursesManagementActivity.this, R.string.create_course,
-                                    Toast.LENGTH_SHORT).show();
-                            startCoursesSupervisorsActivity(); // renvoi l'encadrant sur la page de tous les cours
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(CoursesManagementActivity.this, "ERROR" + e.toString(),
-                                    Toast.LENGTH_SHORT).show();
-                            Log.d("TAG", e.toString());
-                        }
-                    });
+        //verification de la coherence des champs de saisie date et heure
+        if (horaireDuCours != null && horaireDuCours.before(Calendar.getInstance().getTime())) {
+            final AlertDialog.Builder adb = new AlertDialog.Builder(CoursesManagementActivity.this);
+            adb.setTitle("Date inccorecte");
+            adb.setIcon(android.R.drawable.ic_delete);
+            adb.setMessage("Le jour du départ ne peut pas être défini avant la date du jour !");
+            adb.setPositiveButton("MODIFIER", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    mDateCours.setText("");
+                    mDateCours.setError(null);
+                    mHeureCours.setText("");
+                    mHeureCours.setError(null);
+                    mHeureCours.requestFocus();
+                }
+            });
+            adb.show();
         } else {
-            verificationChampsVides();
+            final FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+            if (!moniteur.isEmpty() && !sujet.isEmpty() && !mDateCours.getText().toString().isEmpty() && !mHeureCours.getText().toString().isEmpty()) {
+
+                Map<String, Object> newCourse = new HashMap<>();
+                newCourse.put("id", id);
+                newCourse.put("niveauDuCours", niveauCours);
+                newCourse.put("nomDuMoniteur", moniteur);
+                newCourse.put("sujetDuCours", sujet);
+                newCourse.put("typeCours", typeCours);
+                newCourse.put("horaireDuCours", horaireDuCours);
+                db.collection("courses").document(id).set(newCourse)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Toast.makeText(CoursesManagementActivity.this, R.string.create_course,
+                                        Toast.LENGTH_SHORT).show();
+                                startCoursesSupervisorsActivity(); // renvoi l'encadrant sur la page de tous les cours
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(CoursesManagementActivity.this, "ERROR" + e.toString(),
+                                        Toast.LENGTH_SHORT).show();
+                                Log.d("TAG", e.toString());
+                            }
+                        });
+            } else {
+                verificationChampsVides();
+            }
         }
     }
 
@@ -330,13 +349,11 @@ public class CoursesManagementActivity extends BaseActivity {
         if (mDateCours.getText().toString().equals("")) {
             mDateCours.setError("Merci de renseigner ce champ !");
             mDateCours.requestFocus();
-        }
-        else mDateCours.setError(null);
+        } else mDateCours.setError(null);
         if (mHeureCours.getText().toString().equals("")) {
             mHeureCours.setError("Merci de renseigner ce champ !");
             mHeureCours.requestFocus();
-        }
-        else mHeureCours.setError(null);
+        } else mHeureCours.setError(null);
         if (mSujetCours.getText().toString().isEmpty()) {
             mSujetCours.setError("Merci de renseigner ce champ !");
             mSujetCours.requestFocus();
