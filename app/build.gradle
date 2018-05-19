@@ -45,8 +45,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-core:11.8.0' //version ok sinon pb 11.8.0
 
     // NOTIFICATION
-    implementation "com.android.support:support-compat:26.1.0"
     implementation 'com.google.firebase:firebase-messaging:11.8.0'
+    implementation "com.android.support:support-compat:26.1.0"
 
     // FirebaseUI
     //implementation 'com.firebaseui:firebase-ui-storage:3.1.3'

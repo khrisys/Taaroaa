@@ -68,14 +68,10 @@ public class MainActivity extends BaseActivity {
         configureToolbar();
         giveToolbarAName(app_name);
 
-
-
         mTextViewHiddenForSnackbar = findViewById(R.id.test_coordinator);
         mCreation = findViewById(R.id.creation_compte_btn);
         mConnexion = findViewById(id.connection_valid_btn);
         mDeconnexion = findViewById(id.deconnexion_btn);
-
-
 
 
         // --------------------
@@ -87,6 +83,7 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 if (!isCurrentUserLogged()) {
+
                     startAccountCreationActivity(); // creation de compte
                     /*//CREATION DU USER
                     createUserInFirestore();
