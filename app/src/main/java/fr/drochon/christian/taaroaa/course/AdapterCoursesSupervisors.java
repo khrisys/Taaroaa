@@ -12,7 +12,12 @@ import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.model.Course;
 
 /**
- * l'adapter s'occupe de l'ensemble du contenu alors que le viewholder s'occupe des specificités d'une cellule
+ * l'adapter s'occupe de l'ensemble du contenu alors que le viewholder s'occupe des specificités d'une cellule.
+ *
+ * Adapter permettant de creer des cellules d'un FirestoreRecyclerView avec des données provenant de l'activité CoursesSupervisorsActivity.
+ * Le FirestoreRecyclerAdapter (disponible dans la librairie "firebaseui") permet de gerer la MAJ en temps reel d'un recyclerview afin de
+ * refleter exactement la bdd firestore, de mettre en cache toutes les données afin d'y avoir acces meme sans internet.
+ *
  */
 public class AdapterCoursesSupervisors extends FirestoreRecyclerAdapter<Course, SupervisorsViewHolder> {
 

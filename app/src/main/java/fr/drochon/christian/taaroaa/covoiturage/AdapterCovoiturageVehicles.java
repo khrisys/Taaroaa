@@ -11,6 +11,14 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.model.Covoiturage;
 
+/**
+ * l'adapter s'occupe de l'ensemble du contenu alors que le viewholder s'occupe des specificités d'une cellule.
+ *
+ * Adapter permettant de creer des cellules d'un FirestoreRecyclerView avec des données provenant de l'activité CovoiturageVehiclesActivity.
+ * Le FirestoreRecyclerAdapter (disponible dans la librairie "firebaseui") permet de gerer la MAJ en temps reel d'un recyclerview afin de
+ * refleter exactement la bdd firestore, de mettre en cache toutes les données afin d'y avoir acces meme sans internet.
+ *
+ */
 public class AdapterCovoiturageVehicles extends FirestoreRecyclerAdapter<Covoiturage, VehiculeViewHolder> {
 
     //FOR COMMUNICATION

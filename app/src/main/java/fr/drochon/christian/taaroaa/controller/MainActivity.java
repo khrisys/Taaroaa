@@ -141,6 +141,9 @@ public class MainActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         this.updateUIWhenResuming(); // affiche la vue lorsque le tel est dans le cycle de vie onResume()
+
+        //CRASHLYTICS : force application to crash
+        //Crashlytics.getInstance().crash();
     }
 
 

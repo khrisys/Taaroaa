@@ -13,6 +13,12 @@ import java.util.List;
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.model.User;
 
+/**
+ * Adapter permettant de creer des cellules d'un FirestoreRecyclerView avec des données provenant de l'activité SearchUserActivity.
+ * Le FirestoreRecyclerAdapter (disponible dans la librairie "firebaseui") permet de gerer la MAJ en temps reel d'un recyclerview afin de
+ * refleter exactement la bdd firestore, de mettre en cache toutes les données afin d'y avoir acces meme sans internet.
+ *
+ */
 public class AdapterSearchedUser extends FirestoreRecyclerAdapter<User, SearchedUserViewHolder> {
 
     List<User> users;
