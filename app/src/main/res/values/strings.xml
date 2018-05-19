@@ -84,7 +84,7 @@
     <string name="verif_every_fields_complete">Merci de saisir tous les champs du formulaire !</string>
     <string name="modif_ecran_titre">Veuillez saisir le nom et prenom de la personne recherchée</string>
     <string name="empty_list_users_txt">Il n\'y actuellement aucune personne inscrite au club avec le nom recherché</string>
-    <string name="recherche_adherent_btn">Recherchez un adhérent</string>
+    <string name="recherche_adherent_btn">Tapez le nom d\'un adhérent</string>
 
     <!--COURSES ACTIVITIES-->
     <string name="button_create_course">Créez un cours</string>

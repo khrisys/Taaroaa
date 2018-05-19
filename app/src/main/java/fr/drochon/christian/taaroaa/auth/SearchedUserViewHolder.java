@@ -69,8 +69,8 @@ public class SearchedUserViewHolder extends RecyclerView.ViewHolder {
         mSearchedUserList.add(user);
 
         for (int i = 0; i < mSearchedUserList.size(); i++) {
-            mNomSearched.setText(user.getNom());
             mPrenomSearched.setText(user.getPrenom());
+            mNomSearched.setText(user.getNom());
             mEmailSearched.setText(user.getEmail());
         }
 

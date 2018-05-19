@@ -13,7 +13,6 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -192,8 +191,7 @@ public class SearchUserActivity extends BaseActivity {
      */
     private Query getAllUsers() {
 
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        Query mQuery = db.collection("users").orderBy("nom", Query.Direction.ASCENDING);
+        Query mQuery = setupDb().collection("users").orderBy("nom", Query.Direction.ASCENDING);
         mQuery.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -217,9 +215,8 @@ public class SearchUserActivity extends BaseActivity {
      * @return query
      */
     private Query getFilteredUser(final String nom) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        Query mQ = db.collection("users").orderBy("nom").startAt(nom).endAt(nom+'\uf8ff');
+        Query mQ = setupDb().collection("users").orderBy("nom").startAt(nom).endAt(nom+'\uf8ff');
         mQ.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot documentSnapshots) {
@@ -263,8 +260,7 @@ public class SearchUserActivity extends BaseActivity {
      * Methode permettant de remplir la liste de tous les utilisateurs contenus dans la bdd
      */
     private void getListUsers(){
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        setupDb().collection("users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot documentSnapshots) {
                 if (documentSnapshots.size() != 0) {

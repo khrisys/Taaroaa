@@ -26,6 +26,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -238,6 +239,23 @@ public abstract class BaseActivity extends AppCompatActivity {
                 .signOut(this) // methode utilisée par le singleton authUI.getInstance()
                 .addOnSuccessListener(this, this.updateUIAfterRESTRequestsCompleted(SIGN_OUT_TASK));
     }
+
+    protected FirebaseFirestore setupDb(){
+        // [START get_firestore_instance]
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        // [END get_firestore_instance]
+
+        // [START set_firestore_settings]
+
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(true)
+                .build();
+
+        db.setFirestoreSettings(settings);
+// [END set_firestore_settings]
+        return db;
+    }
+
 
     // --------------------
     // HEURE & DATE PARSING

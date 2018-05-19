@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,15 +23,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -275,8 +270,7 @@ public class AccountModificationActivity extends BaseActivity {
     private void showAttributes() {
 
         if (this.getCurrentUser() != null) {
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
-            DocumentReference mQuery = db.collection("users").document(getCurrentUser().getUid());
+            DocumentReference mQuery = setupDb().collection("users").document(getCurrentUser().getUid());
 
             mQuery.addSnapshotListener(new EventListener<DocumentSnapshot>() {
                 @Override
@@ -378,8 +372,7 @@ public class AccountModificationActivity extends BaseActivity {
      * si celui ci effectue ici un update sur son nom ou son prenom
      */
     private void updateCovoituragesIfCreated(){
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("covoiturages").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        setupDb().collection("covoiturages").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot documentSnapshots) {
                 if(documentSnapshots.size() > 0){
@@ -424,170 +417,10 @@ public class AccountModificationActivity extends BaseActivity {
     }
 
     /**
-     * Methode permettant de recuperer et d'afficher les données de l'utilisateur recherché par un encadrant
-     * pour que celui ci effectue une modification du compte de l'adherent.
-     */
-    private void showSearchedDatas(final String name, final String prenom) {
-        CollectionReference docRef1 = FirebaseFirestore.getInstance().collection("users");
-
-        docRef1.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    List<DocumentSnapshot> docs = task.getResult().getDocuments(); //Un DocumentSnapshot contient des données lues à partir d'un document de la base de données Firestore.
-                    if (docs.size() != 0) {
-                        for (DocumentSnapshot ds : docs) {
-                            Map<String, Object> doc = ds.getData();
-                            if (doc.get("nom").equals(name) &&
-                                    (doc.get("prenom").equals(prenom) || prenom.equals(""))) {
-                                // modification du compte d'un adherent que l'on recupere via son champ sur l'ecran
-                                String nom = (String) doc.get("nom");
-                                String prenom = (String) doc.get("prenom");
-                                String email = (String) doc.get("email");
-                                String fonction = (String) doc.get("fonction");
-                                String licence = (String) doc.get("licence");
-                                String niveau = (String) doc.get("niveau");
-                                mTitrePage.setText(R.string.modifiez_le_compte_d_un_adherent);
-                                mNom.setText(nom);
-                                mNom.setEnabled(false);
-                                mPrenom.setText(prenom);
-                                mPrenom.setEnabled(false);
-                                mEmail.setText(email);
-                                mLicence.setText(licence);
-                                mLicence.setEnabled(false);
-                                mNiveauPlongeespinner.setSelection(getIndexSpinner(mNiveauPlongeespinner, niveau));
-                                mFonctionAuClubspinner.setSelection(getIndexSpinner(mFonctionAuClubspinner, fonction));
-                                //mSuppressionCompte.setVisibility(View.INVISIBLE);
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-        })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        System.out.println("nok");
-                    }
-                });
-    }
-
-    /**
-     * Methode permettant de mettre à jour les données de n'importe quel adherent du club, mais aussi de mettre à jour
-     * les données niveau et fonction d'un adherent par un encadrant. Cette fonction permet aussi de pouvoir updater
-     * un utilisateur connecté. Si cet utilisateur est un moniteur, la fonction prend en charge si celui ci veut
-     * updater son propre compte ou celui d'un autre adherent.
-     */
-    private void updateData(final String nom, final String prenom) {
-        final FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        this.mProgressBar.setVisibility(View.VISIBLE);
-        /*final String nom = this.mNom.getText().toString();
-        final String prenom = this.mPrenom.getText().toString();*/
-        final String licence = this.mLicence.getText().toString();
-        final String niveau = this.mNiveauPlongeespinner.getSelectedItem().toString();
-        final String fonction = this.mFonctionAuClubspinner.getSelectedItem().toString();
-        final String email = this.mEmail.getText().toString();
-
-        final CollectionReference cr = db.collection("users");
-        cr.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    //mise à jour du compte de la personne connectée exceptée moniteur
-                    List<DocumentSnapshot> users = task.getResult().getDocuments();
-                    for (int i = 0; i < users.size(); i++) {
-                        // recuperation des infos de la personne connectée
-                        Map<String, Object> user = users.get(i).getData();
-                        if (user.get("nom").equals(nom)) { //TODO a changer : condition sur l'uid : recuperer l'uid de l'adherent
-                            user.put("nom", nom);
-                            user.put("prenom", prenom);
-                            user.put("licence", licence);
-                            user.put("niveau", niveau);
-                            user.put("fonction", fonction);
-                            user.put("email", email);
-
-                            if (!nom.isEmpty() && !nom.equals(getString(R.string.info_no_username_found)) && !prenom.isEmpty() && !email.isEmpty()) {
-                                db.collection("users").document(getCurrentUser().getUid()).set(user)
-                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                            @Override
-                                            public void onSuccess(Void aVoid) {
-                                                Toast.makeText(AccountModificationActivity.this, R.string.update_account,
-                                                        Toast.LENGTH_SHORT).show();
-                                            }
-                                        })
-                                        .addOnFailureListener(new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception e) {
-                                                Toast.makeText(AccountModificationActivity.this, "ERROR" + e.toString(),
-                                                        Toast.LENGTH_LONG).show();
-                                                Log.d("TAG", e.toString());
-                                            }
-                                        });
-                            } else {
-                                //TODO alert dialog lorsque tous les champs ne sont pas remplis
-                            }
-                            // mise à jour d'une personne autre qu'un encadrant
-                        } else if (user.get("fonction").equals("Moniteur") && !user.get("uid").equals(getCurrentUser().getUid())) {
-
-                        /*final String niveau = mNiveauPlongeespinner.getSelectedItem().toString();
-                        final String fonction = mFonctionAuClubspinner.getSelectedItem().toString();*/
-
-                            final FirebaseFirestore db = FirebaseFirestore.getInstance();
-                            final CollectionReference crf = db.collection("users");
-                            crf.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                @Override
-                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                    if (task.isSuccessful()) {
-                                        List<DocumentSnapshot> u = task.getResult().getDocuments();
-                                        for (int i = 0; i < u.size(); i++) {
-                                            if (u.get(i).get("nom").equals(nom) &&
-                                                    (u.get(i).get("prenom").equals(prenom) || prenom.contentEquals(""))) {
-                                                User user1 = new User(u.get(i).getId());
-
-                                                user1.setNom(nom);
-                                                user1.setPrenom(prenom);
-                                                user1.setLicence(licence);
-                                                user1.setNiveauPlongeur(niveau);
-                                                user1.setFonction(fonction);
-                                                user1.setEmail(email);
-
-                                                // verification que tous les champs vides soient remplis
-                                                if (!nom.isEmpty() && !nom.equals(getString(R.string.info_no_username_found)) && !prenom.isEmpty() && !email.isEmpty()) {
-                                                    UserHelper.updateUser(user1.getUid(), user1.getNom(), user1.getPrenom(), user1.getLicence(), user1.getEmail(),
-                                                            user1.getNiveauPlongeur(), user1.getFonction());
-                                                    // MAJ des eventuels covoiturages créés par cet adherent
-                                                    CovoiturageHelper.updateCovoiturage(user1.getUid(), user1.getNom(), user1.getPrenom());
-                                                } else {
-                                                    //TODO alert dialog lorsque tous les champs ne sont pas remplis
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }).addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                                @Override
-                                public void onSuccess(QuerySnapshot documentSnapshots) {
-                                    Toast.makeText(AccountModificationActivity.this, R.string.update_account,
-                                            Toast.LENGTH_LONG).show();
-                                }
-                            });
-                        }
-                    }
-                }
-            }
-        });
-
-    }
-
-    /**
      * Methode permettant de supprimer un utilisateur
      */
     private void deleteUser() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        db.collection("users").document(getCurrentUser().getUid())
+        setupDb().collection("users").document(getCurrentUser().getUid())
                 .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {

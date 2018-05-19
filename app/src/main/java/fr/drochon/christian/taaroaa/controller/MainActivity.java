@@ -17,7 +17,6 @@ import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -72,7 +71,6 @@ public class MainActivity extends BaseActivity {
         mCreation = findViewById(R.id.creation_compte_btn);
         mConnexion = findViewById(id.connection_valid_btn);
         mDeconnexion = findViewById(id.deconnexion_btn);
-
 
         // --------------------
         // LISTENERS
@@ -174,7 +172,7 @@ public class MainActivity extends BaseActivity {
         startActivity(intent);
     }
 
-    private void startAccountCreationActivity(){
+    private void startAccountCreationActivity() {
         Intent intent = new Intent(MainActivity.this, AccountCreateActivity.class);
         startActivity(intent);
     }
@@ -275,8 +273,7 @@ public class MainActivity extends BaseActivity {
     private void createUserInFirestore() {
 
         if (this.getCurrentUser() != null) {
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
-            Query mQuery = db.collection("users").whereEqualTo("uid", getCurrentUser().getUid());
+            Query mQuery = setupDb().collection("users").whereEqualTo("uid", getCurrentUser().getUid());
 
             // RAJOUTER LE THIS DANS LE LUSTENER PERMET DE RESTREINDRE LE CONTEXT A CETTE ACTIVITE, EVITANT AINSI DE METTRE LES DONNEES
             // A JOUR A CHAUQE FOIS QU'IL Y A UN UPDATE DANS L'APP.
@@ -333,14 +330,14 @@ public class MainActivity extends BaseActivity {
      * @param email
      */
     private void addNewUser(String uid, String nom, String prenom, String email) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
 
         Map<String, Object> newContact = new HashMap<>();
         newContact.put("uid", uid);
         newContact.put("nom", nom);
         newContact.put("prenom", prenom);
         newContact.put("email", email);
-        db.collection("users").document(Objects.requireNonNull(getCurrentUser()).getUid()).set(newContact)
+        setupDb().collection("users").document(Objects.requireNonNull(getCurrentUser()).getUid()).set(newContact)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
