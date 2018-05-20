@@ -1,9 +1,12 @@
 package fr.drochon.christian.taaroaa.covoiturage;
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -43,6 +46,7 @@ import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.api.CovoiturageHelper;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
 import fr.drochon.christian.taaroaa.model.User;
+import fr.drochon.christian.taaroaa.notifications.TimeAlarm;
 
 import static java.util.Calendar.MINUTE;
 
@@ -61,6 +65,7 @@ public class CovoiturageConducteursActivity extends BaseActivity {
     ProgressBar mProgressBar;
     Button mValid;
     EditText mNotifCreationCovoit;
+    AlarmManager mAlarmManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,10 +85,14 @@ public class CovoiturageConducteursActivity extends BaseActivity {
         mProgressBar = findViewById(R.id.progress_bar);
         mValid = findViewById(R.id.proposition_covoit_btn);
         mNotifCreationCovoit = findViewById(R.id.alertdialog_ok_covoit);
+        //  l'AlarmManager permettra de réveiller le téléphone et d'executer du code à une date précise
+        mAlarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
-        configureToolbar();
-        giveToolbarAName(R.string.covoit_conducteur_name);
-        getInfosCurrentUser();
+
+
+        this.configureToolbar();
+        this.giveToolbarAName(R.string.covoit_conducteur_name);
+        this.getInfosCurrentUser();
 
         // --------------------
         // SPINNERS & REMPLISSAGE
@@ -162,53 +171,88 @@ public class CovoiturageConducteursActivity extends BaseActivity {
      */
     private void verificationChampsVides() {
 
-        if (mPrenom.getText().toString().isEmpty()) mPrenom.setError("Merci de renseigner ce champ !");
+        if (mPrenom.getText().toString().isEmpty())
+            mPrenom.setError("Merci de renseigner ce champ !");
         if (mNom.getText().toString().isEmpty()) mNom.setError("Merci de renseigner ce champ !");
 
-        if(mLieuArrivee.getText().toString().isEmpty()) {
+        if (mLieuArrivee.getText().toString().isEmpty()) {
             mLieuArrivee.setError("Merci de renseigner ce champ !");
             mLieuArrivee.requestFocus();
         }
 
-        if(mHeureretour.getText().toString().isEmpty()){
+        if (mHeureretour.getText().toString().isEmpty()) {
             mHeureretour.setError("Merci de renseigner ce champ !");
             mHeureretour.requestFocus();
-        }
-        else mHeureretour.setError(null);
+        } else mHeureretour.setError(null);
 
-        if (mDateRetour.getText().toString().isEmpty()){
+        if (mDateRetour.getText().toString().isEmpty()) {
             mDateRetour.setError("Merci de renseigner ce champ !");
             mDateRetour.requestFocus();
-        }
-        else mDateRetour.setError(null);
+        } else mDateRetour.setError(null);
 
 
-        if(mLieuDepart.getText().toString().isEmpty()) {
+        if (mLieuDepart.getText().toString().isEmpty()) {
             mLieuDepart.setError("Merci de renseigner ce champ !");
             mLieuDepart.requestFocus();
         }
 
-        if (mHeureDepart.getText().toString().isEmpty()){
+        if (mHeureDepart.getText().toString().isEmpty()) {
             mHeureDepart.setError("Merci de renseigner ce champ !");
             mHeureDepart.requestFocus();
-        }
-        else mHeureDepart.setError(null);
+        } else mHeureDepart.setError(null);
 
-        if (mDateDepart.getText().toString().isEmpty()){
+        if (mDateDepart.getText().toString().isEmpty()) {
             mDateDepart.setError("Merci de renseigner ce champ !");
             mDateDepart.requestFocus();
-        }
-        else mDateDepart.setError(null);
+        } else mDateDepart.setError(null);
 
 
-
-        if (mNbPlaceTotal.getText().toString().isEmpty()){
+        if (mNbPlaceTotal.getText().toString().isEmpty()) {
             mNbPlaceTotal.setError("Merci de renseigner ce champ !");
             mNbPlaceTotal.requestFocus();
         }
         mProgressBar.setVisibility(View.GONE);
     }
 
+    // --------------------
+    // ALARM NOTIFICATION
+    // --------------------
+
+    /**
+     * Methode permettant de generer une alarm dans le systeme du telephone de maniere à envoyer une notification à l'utilisateur
+     * 2 heures avant que le covoiturage aller parte.
+     */
+    private void alarmDepart(Date horaireDelAller) {
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(horaireDelAller);
+        Intent intent = new Intent(this, TimeAlarm.class).putExtra("hAller", String.valueOf(horaireDelAller));
+        PendingIntent operation = PendingIntent.getBroadcast(this, 7, intent, PendingIntent.FLAG_ONE_SHOT);
+        // reveil de l'alarm
+        mAlarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), operation);
+    }
+
+    /**
+     * Methode permettant de generer une alarm dans le systeme du telephone de maniere à envoyer une notification à l'utilisateur
+     * 2 heures avant que le covoiturage retour parte.
+     *
+     * @param dateFournie
+     */
+    private void alarmRetour(String dateFournie) {
+
+        Date dateProgrammee = null;
+        // Build a Notification object : interieur de lappli et renvoi vers une activité definie via l'intent plus haut
+        java.text.DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.FRANCE);
+        try {
+            dateProgrammee = dateFormat.parse(dateFournie);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Intent intent = new Intent(this, TimeAlarm.class);
+        PendingIntent operation = PendingIntent.getBroadcast(this, 7, intent, PendingIntent.FLAG_ONE_SHOT);
+        assert dateProgrammee != null;
+        mAlarmManager.set(AlarmManager.RTC_WAKEUP, dateProgrammee.getTime(), operation);
+    }
 
 
     // --------------------
@@ -238,29 +282,31 @@ public class CovoiturageConducteursActivity extends BaseActivity {
         //TODO rajouter le champs reservation lorsque les sorties seront gerees
         //Reservation reservation = new Reservation();
 
-        // formattage des dates
+        // formattage des dates : insertion de l'heure en format us en bdd
         String horaireAller = dateAller + " " + heureDepart;
         Date horaireDelAller = null;
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.US);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.FRANCE);
         try {
             horaireDelAller = simpleDateFormat.parse(horaireAller);
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
+
         String horaireRetour = dateRetour + " " + heureRetour;
         Date horaireDuRetour = null;
-        SimpleDateFormat simpleDateFormat1 = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.US);
+        SimpleDateFormat simpleDateFormat1 = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.FRANCE);
         try {
             horaireDuRetour = simpleDateFormat1.parse(horaireRetour);
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
+
         //verification de la coherence des champs de saisie date et heure
-        if(horaireDelAller != null && horaireDelAller.before(Calendar.getInstance().getTime())){
+        if (horaireDelAller != null && horaireDelAller.before(Calendar.getInstance().getTime())) {
             final AlertDialog.Builder adb = new AlertDialog.Builder(this);
-            adb.setTitle("Date inccorecte");
+            adb.setTitle("Date incorrecte");
             adb.setIcon(android.R.drawable.ic_delete);
             adb.setMessage("Le jour du départ ne peut pas être défini avant la date du jour !");
             adb.setPositiveButton("MODIFIER", new DialogInterface.OnClickListener() {
@@ -272,8 +318,7 @@ public class CovoiturageConducteursActivity extends BaseActivity {
                 }
             });
             adb.show();
-        }
-        else if(horaireDelAller != null && horaireDuRetour != null) {
+        } else if (horaireDelAller != null && horaireDuRetour != null) {
             if (horaireDuRetour.before(horaireDelAller)) {
                 final AlertDialog.Builder adb = new AlertDialog.Builder(this);
                 adb.setTitle("Dates inccorectes");
@@ -298,6 +343,11 @@ public class CovoiturageConducteursActivity extends BaseActivity {
                 if (!nom.isEmpty() && !prenom.isEmpty() && !nbPlacesDispo.isEmpty() && !dateAller.isEmpty() && !dateRetour.isEmpty()
                         && !heureDepart.isEmpty() && !heureRetour.isEmpty() && !lieuAller.isEmpty() && !lieuRetour.isEmpty()) {
 
+
+
+
+
+                    //creation de l'objet covoiturage et insertion dans la bdd
                     Map<String, Object> covoit = new HashMap<>();
                     covoit.put("id", id);
                     covoit.put("nomConducteur", nom.toUpperCase());
@@ -310,6 +360,10 @@ public class CovoiturageConducteursActivity extends BaseActivity {
                     covoit.put("lieuDepartAller", lieuAller);
                     covoit.put("lieuDepartRetour", lieuRetour);
                     covoit.put("listPassagers", users);
+
+                    // envoi de l'alarm à la classe TimeAlarm pour que les notifications soient prises en compte et envoyées au moment voulu
+                    this.alarmDepart(horaireDelAller);
+                    //this.alarmRetour(horaireRetour);
                     //TODO ligne à rajouter lors que l'obet Sortie existera
                     //covoit.put("reservation", null);
                     this.mProgressBar.setVisibility(View.VISIBLE);
@@ -343,12 +397,12 @@ public class CovoiturageConducteursActivity extends BaseActivity {
      * Methode permettant de recuperer le nom et le prenom de la personne connectée. Ainsi, seule une personne connectée
      * avec un compte precis pourra creer un covoiturage.
      */
-    private void getInfosCurrentUser(){
+    private void getInfosCurrentUser() {
         // recup de la personne connectée avec son uid
         setupDb().collection("users").document(getCurrentUser().getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                if(documentSnapshot.exists()){
+                if (documentSnapshot.exists()) {
                     Map<String, Object> user = documentSnapshot.getData();
                     mNom.setText(user.get("nom").toString());
                     mPrenom.setText(user.get("prenom").toString());
@@ -407,7 +461,7 @@ public class CovoiturageConducteursActivity extends BaseActivity {
             int year = c.get(Calendar.YEAR);
             int month = c.get(Calendar.MONTH);
             int day = c.get(Calendar.DAY_OF_MONTH);
-            return new DatePickerDialog(getActivity(), this, year, month, day + 1);
+            return new DatePickerDialog(getActivity(), this, year, month, day);
         }
 
         /**
@@ -420,10 +474,10 @@ public class CovoiturageConducteursActivity extends BaseActivity {
          */
         @Override
         public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-            if(getTag() == "dateDepart")
-            mDateDepart.setText(mDateDepart.getText() + "" + dayOfMonth + "-" +(month + 1) + "-" + year);
+            if (getTag() == "dateDepart")
+                mDateDepart.setText(mDateDepart.getText() + "" + dayOfMonth + "-" + (month + 1) + "-" + year);
             else if (getTag() == "dateRetour")
-            mDateRetour.setText(mDateRetour.getText() + "" + dayOfMonth + "-" + (month + 1) + "-" + year);
+                mDateRetour.setText(mDateRetour.getText() + "" + dayOfMonth + "-" + (month + 1) + "-" + year);
         }
     }
 
@@ -458,10 +512,10 @@ public class CovoiturageConducteursActivity extends BaseActivity {
          * @param minute
          */
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-            if(getTag() == "timeDepart")
-            mHeureDepart.setText(mHeureDepart.getText() + "" + hourOfDay + ":" + minute + ":00");
-            else if(getTag() == "timeRetour")
-            mHeureretour.setText(mHeureretour.getText() + "" + hourOfDay + ":" + minute + ":00");
+            if (getTag() == "timeDepart")
+                mHeureDepart.setText(mHeureDepart.getText() + "" + hourOfDay + ":" + minute + ":00");
+            else if (getTag() == "timeRetour")
+                mHeureretour.setText(mHeureretour.getText() + "" + hourOfDay + ":" + minute + ":00");
         }
     }
 

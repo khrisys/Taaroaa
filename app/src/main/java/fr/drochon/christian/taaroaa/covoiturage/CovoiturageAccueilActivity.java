@@ -1,22 +1,13 @@
 package fr.drochon.christian.taaroaa.covoiturage;
 
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
-import android.media.RingtoneManager;
 import android.os.Bundle;
-import android.support.v4.app.NotificationCompat;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
-import java.util.Calendar;
-import java.util.Date;
-
 import fr.drochon.christian.taaroaa.R;
-import fr.drochon.christian.taaroaa.auth.SearchUserActivity;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
 
 public class CovoiturageAccueilActivity extends BaseActivity {
@@ -32,11 +23,23 @@ public class CovoiturageAccueilActivity extends BaseActivity {
         giveToolbarAName(R.string.covoit_accueil_name);
 
 
-        // Build a Notification object : interieur de lappli et renvoi vers une activité definie via l'intent plus haut
-        Date date = Calendar.getInstance().getTime();
-        Date date1 = Calendar.getInstance().getTime();
-        if(date1.equals(date))
-        notif();
+
+ /*       // Build a Notification object : interieur de lappli et renvoi vers une activité definie via l'intent plus haut
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Europe/Paris"));
+        Date currentDate = calendar.getTime();
+        Date date1 = null;
+        DateFormat dateFormat = new SimpleDateFormat("dd MM yyyy HH:mm:ss", Locale.FRANCE);
+        dateFormat.setTimeZone(TimeZone.getTimeZone("Europe/Paris"));
+        String d = "20 05 2018 16:58:00";
+        try {
+            date1 = dateFormat.parse(d);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        if (currentDate.after(date1))
+            notif();
+*/
 
 
         btn.setOnClickListener(new View.OnClickListener() {
@@ -81,38 +84,42 @@ public class CovoiturageAccueilActivity extends BaseActivity {
         return optionsToolbar(this, item);
     }
 
-    public void notif() {
+/*    public void notif() {
 
-        // Créé un intent qui ouvre l'activité voulue
+        // Créé un intent qui renvoie l'user vers l'activité adequate
         Intent intent = new Intent(this, SearchUserActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 7, intent, PendingIntent.FLAG_ONE_SHOT);
 
-        // Create a Style for the Notification
+        // Affichage de la notificaion cliquée, celle qui renvoie vers l'activité voulue
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
-        inboxStyle.setBigContentTitle(getString(R.string.notification_title));
-        inboxStyle.addLine("test de notif");
+        //inboxStyle.setBigContentTitle(getString(R.string.notification_title));
+        inboxStyle.setBigContentTitle("TAAROAA"); // titre de la notif lorsq'uelle est ouverte
+        inboxStyle.addLine("Covoiturage"); // sous titre affuché lorsque la notif est affichée
+        inboxStyle.setSummaryText("Attention! Votre covoiturage partira de Millau dans 2 heures !"); // decription de la notif lorsqu'elle est ouverte
 
         String channelId = getString(R.string.default_notification_channel_id);
 
-            NotificationCompat.Builder notificationBuilder =
-                    new NotificationCompat.Builder(this, channelId)
-                            // Set the notification content
-                            .setSmallIcon(android.R.drawable.ic_notification_overlay)
-                            .setContentTitle(getString(R.string.app_name))
-                            .setContentText(getString(R.string.notification_title))
-                            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                            .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                            // Set the intent that will fire when the user taps the notification : renvoi vers l'activité definie
-                            .setContentIntent(pendingIntent)
-                            .setAutoCancel(true)
-                            // style permettant une notif de plusieurs lignes
-                            .setStyle(inboxStyle);
+        // Affichage de la notifqui apparait en premier à l'ecran. Affichage defini par la priorité
+        NotificationCompat.Builder notificationBuilder =
+                new NotificationCompat.Builder(this, channelId)
+                        // Set the notification content
+                        .setSmallIcon(android.R.drawable.ic_notification_overlay)
+                        .setContentTitle(getString(R.string.app_name))
+                        .setContentText(getString(R.string.notification_title))
+                        .setSubText("Covoiturage")
+                        .setPriority(NotificationCompat.PRIORITY_HIGH) //affiche la notif clairement en haut de l'app
+                        .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                        // Set the intent that will fire when the user taps the notification : renvoi vers l'activité definie
+                        .setContentIntent(pendingIntent)
+                        .setAutoCancel(true)
+                        // style permettant une seconde notif personnalisée comprenant plusieurs lignes
+                        .setStyle(inboxStyle);
 
-            int NOTIFICATION_ID = 7;
-            String NOTIFICATION_TAG = "TAAROAA";
-            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            assert notificationManager != null;
-            notificationManager.notify(NOTIFICATION_TAG, NOTIFICATION_ID, notificationBuilder.build());
-    }
+        int NOTIFICATION_ID = 7;
+        String NOTIFICATION_TAG = "TAAROAA";
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        assert notificationManager != null;
+        notificationManager.notify(NOTIFICATION_TAG, NOTIFICATION_ID, notificationBuilder.build());
+    }*/
 }
