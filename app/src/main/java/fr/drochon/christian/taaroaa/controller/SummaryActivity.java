@@ -11,7 +11,6 @@ import android.widget.Button;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.List;
@@ -59,8 +58,7 @@ public class SummaryActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
 
-                final FirebaseFirestore db = FirebaseFirestore.getInstance();
-                db.collection("users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                setupDb().collection("users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot documentSnapshots) {
                         if (documentSnapshots.size() != 0) {
@@ -115,8 +113,7 @@ public class SummaryActivity extends BaseActivity {
         mCours.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FirebaseFirestore db = FirebaseFirestore.getInstance();
-                db.collection("users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                setupDb().collection("users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot documentSnapshots) {
                         if (documentSnapshots.size() != 0) {
@@ -195,8 +192,7 @@ public class SummaryActivity extends BaseActivity {
      */
     private void showPannelModification() {
         //TODO afficher le graphique du panneau de modif si l'utilisateur connecté est un encadrant
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        DocumentReference documentReference = db.collection("users").document(Objects.requireNonNull(getCurrentUser()).getUid());
+        DocumentReference documentReference = setupDb().collection("users").document(Objects.requireNonNull(getCurrentUser()).getUid());
         documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {

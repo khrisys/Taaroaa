@@ -19,7 +19,6 @@ import android.widget.TextView;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -241,9 +240,7 @@ public class CoursesSupervisorsActivity extends BaseActivity implements AdapterC
      * @return query
      */
     private Query queryAllCourses() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        Query mQuery = db.collection("courses").orderBy("horaireDuCours", Query.Direction.ASCENDING);
+        Query mQuery = setupDb().collection("courses").orderBy("horaireDuCours", Query.Direction.ASCENDING);
         mQuery.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -267,9 +264,7 @@ public class CoursesSupervisorsActivity extends BaseActivity implements AdapterC
      * @return query
      */
     private Query queryCoursesFiltered() {
-
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        Query mQ = db.collection("courses").orderBy("horaireDuCours").startAt(calendrierClique).endAt(calendrierFinJournee);
+        Query mQ = setupDb().collection("courses").orderBy("horaireDuCours").startAt(calendrierClique).endAt(calendrierFinJournee);
         mQ.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {

@@ -28,7 +28,6 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -49,10 +48,10 @@ import static java.util.Calendar.MINUTE;
 
 public class CovoiturageConducteursActivity extends BaseActivity {
 
-    static TextInputEditText mDateDepart;
-    static TextInputEditText mHeureDepart;
-    static TextInputEditText mDateRetour;
-    static TextInputEditText mHeureretour;
+    private static TextInputEditText mDateDepart;
+    private static TextInputEditText mHeureDepart;
+    private static TextInputEditText mDateRetour;
+    private static TextInputEditText mHeureretour;
     TextInputEditText mPrenom;
     TextInputEditText mNom;
     TextInputEditText mNbPlaceTotal;
@@ -296,9 +295,6 @@ public class CovoiturageConducteursActivity extends BaseActivity {
                 });
                 adb.show();
             } else {
-                // Requetage et insertion en bdd
-                final FirebaseFirestore db = FirebaseFirestore.getInstance();
-
                 if (!nom.isEmpty() && !prenom.isEmpty() && !nbPlacesDispo.isEmpty() && !dateAller.isEmpty() && !dateRetour.isEmpty()
                         && !heureDepart.isEmpty() && !heureRetour.isEmpty() && !lieuAller.isEmpty() && !lieuRetour.isEmpty()) {
 
@@ -317,7 +313,7 @@ public class CovoiturageConducteursActivity extends BaseActivity {
                     //TODO ligne à rajouter lors que l'obet Sortie existera
                     //covoit.put("reservation", null);
                     this.mProgressBar.setVisibility(View.VISIBLE);
-                    db.collection("covoiturages").document(id).set(covoit)
+                    setupDb().collection("covoiturages").document(id).set(covoit)
                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
@@ -348,9 +344,8 @@ public class CovoiturageConducteursActivity extends BaseActivity {
      * avec un compte precis pourra creer un covoiturage.
      */
     private void getInfosCurrentUser(){
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
         // recup de la personne connectée avec son uid
-        db.collection("users").document(getCurrentUser().getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+        setupDb().collection("users").document(getCurrentUser().getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 if(documentSnapshot.exists()){

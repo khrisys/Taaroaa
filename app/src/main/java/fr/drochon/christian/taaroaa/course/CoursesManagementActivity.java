@@ -29,7 +29,6 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -220,8 +219,8 @@ public class CoursesManagementActivity extends BaseActivity {
      * @param uid
      */
     private void createOrUpdateAffichage(final String uid) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        Query mQuery = db.collection("courses").whereEqualTo("uid", uid);
+
+        Query mQuery = setupDb().collection("courses").whereEqualTo("uid", uid);
 
         // RAJOUTER LE THIS DANS LE 1ER ARG DU LUSTENER PERMET DE RESTREINDRE LE CONTEXT A CETTE ACTIVITE, EVITANT AINSI DE METTRE LES DONNEES
         // A JOUR A CHAUQE FOIS QU'IL Y A UN UPDATE DANS TOUTE L'APP.
@@ -307,8 +306,6 @@ public class CoursesManagementActivity extends BaseActivity {
             });
             adb.show();
         } else {
-            final FirebaseFirestore db = FirebaseFirestore.getInstance();
-
             if (!moniteur.isEmpty() && !sujet.isEmpty() && !mDateCours.getText().toString().isEmpty() && !mHeureCours.getText().toString().isEmpty()) {
 
                 Map<String, Object> newCourse = new HashMap<>();
@@ -318,7 +315,7 @@ public class CoursesManagementActivity extends BaseActivity {
                 newCourse.put("sujetDuCours", sujet);
                 newCourse.put("typeCours", typeCours);
                 newCourse.put("horaireDuCours", horaireDuCours);
-                db.collection("courses").document(id).set(newCourse)
+                setupDb().collection("courses").document(id).set(newCourse)
                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
