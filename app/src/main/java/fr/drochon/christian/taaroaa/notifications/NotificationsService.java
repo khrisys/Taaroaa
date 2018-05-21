@@ -16,6 +16,9 @@ import com.google.firebase.messaging.RemoteMessage;
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.auth.SearchUserActivity;
 
+/**
+ * Classe permettant de recevoir et d'afficher des messages depuis la bdd messaging de firebasefirestore.
+ */
 @SuppressLint("Registered")
 public class NotificationsService extends FirebaseMessagingService {
 
@@ -94,7 +97,7 @@ public class NotificationsService extends FirebaseMessagingService {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = "Message provenant de Firebase";
             String description = "Description de la chaine de notification";
-            int importance = NotificationManager.IMPORTANCE_HIGH;
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
             channel.setDescription(description);
             channel.setName(name);

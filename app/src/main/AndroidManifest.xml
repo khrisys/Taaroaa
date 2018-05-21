@@ -65,7 +65,9 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
         </service>
-        <receiver android:name=".notifications.TimeAlarm" />
+        <receiver android:name=".notifications.TimeAlarmCovoiturageAller" />
+        <receiver android:name=".notifications.TimeAlarmCovoiturageRetour" />
+        <receiver android:name=".notifications.TimeAlarmCourses" />
     </application>
 
 </manifest>

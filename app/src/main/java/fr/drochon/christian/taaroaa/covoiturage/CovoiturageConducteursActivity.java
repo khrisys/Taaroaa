@@ -41,12 +41,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.api.CovoiturageHelper;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
 import fr.drochon.christian.taaroaa.model.User;
-import fr.drochon.christian.taaroaa.notifications.TimeAlarm;
+import fr.drochon.christian.taaroaa.notifications.TimeAlarmCovoiturageAller;
+import fr.drochon.christian.taaroaa.notifications.TimeAlarmCovoiturageRetour;
 
 import static java.util.Calendar.MINUTE;
 
@@ -65,7 +67,9 @@ public class CovoiturageConducteursActivity extends BaseActivity {
     ProgressBar mProgressBar;
     Button mValid;
     EditText mNotifCreationCovoit;
-    AlarmManager mAlarmManager;
+    // DATAS
+    AlarmManager mAlarmManagerAller;
+    AlarmManager mAlarmManagerRetour;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,9 +89,10 @@ public class CovoiturageConducteursActivity extends BaseActivity {
         mProgressBar = findViewById(R.id.progress_bar);
         mValid = findViewById(R.id.proposition_covoit_btn);
         mNotifCreationCovoit = findViewById(R.id.alertdialog_ok_covoit);
-        //  l'AlarmManager permettra de réveiller le téléphone et d'executer du code à une date précise
-        mAlarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
+        //  les AlarmManager permettront de réveiller le téléphone et d'executer du code à une date précise
+        mAlarmManagerAller = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        mAlarmManagerRetour = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
 
         this.configureToolbar();
@@ -221,37 +226,33 @@ public class CovoiturageConducteursActivity extends BaseActivity {
     /**
      * Methode permettant de generer une alarm dans le systeme du telephone de maniere à envoyer une notification à l'utilisateur
      * 2 heures avant que le covoiturage aller parte.
+     *
+     * @param horaireDelAller date et heure de l'aller
      */
     private void alarmDepart(Date horaireDelAller) {
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(horaireDelAller);
-        Intent intent = new Intent(this, TimeAlarm.class).putExtra("hAller", String.valueOf(horaireDelAller));
-        PendingIntent operation = PendingIntent.getBroadcast(this, 7, intent, PendingIntent.FLAG_ONE_SHOT);
+        Intent intent = new Intent(this, TimeAlarmCovoiturageAller.class).putExtra("hAller", String.valueOf(horaireDelAller));
+        PendingIntent operation = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
         // reveil de l'alarm
-        mAlarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), operation);
+        mAlarmManagerAller.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), operation);
     }
 
     /**
      * Methode permettant de generer une alarm dans le systeme du telephone de maniere à envoyer une notification à l'utilisateur
      * 2 heures avant que le covoiturage retour parte.
      *
-     * @param dateFournie
+     * @param horaireDuRetour date et heure du retour
      */
-    private void alarmRetour(String dateFournie) {
+    private void alarmRetour(Date horaireDuRetour) {
 
-        Date dateProgrammee = null;
-        // Build a Notification object : interieur de lappli et renvoi vers une activité definie via l'intent plus haut
-        java.text.DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.FRANCE);
-        try {
-            dateProgrammee = dateFormat.parse(dateFournie);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        Intent intent = new Intent(this, TimeAlarm.class);
-        PendingIntent operation = PendingIntent.getBroadcast(this, 7, intent, PendingIntent.FLAG_ONE_SHOT);
-        assert dateProgrammee != null;
-        mAlarmManager.set(AlarmManager.RTC_WAKEUP, dateProgrammee.getTime(), operation);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(horaireDuRetour);
+        Intent intent1 = new Intent(this, TimeAlarmCovoiturageRetour.class).putExtra("hRetour", String.valueOf(horaireDuRetour));
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1, intent1, PendingIntent.FLAG_ONE_SHOT);
+        // reveil de l'alarm
+        mAlarmManagerRetour.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
     }
 
 
@@ -343,10 +344,6 @@ public class CovoiturageConducteursActivity extends BaseActivity {
                 if (!nom.isEmpty() && !prenom.isEmpty() && !nbPlacesDispo.isEmpty() && !dateAller.isEmpty() && !dateRetour.isEmpty()
                         && !heureDepart.isEmpty() && !heureRetour.isEmpty() && !lieuAller.isEmpty() && !lieuRetour.isEmpty()) {
 
-
-
-
-
                     //creation de l'objet covoiturage et insertion dans la bdd
                     Map<String, Object> covoit = new HashMap<>();
                     covoit.put("id", id);
@@ -360,12 +357,13 @@ public class CovoiturageConducteursActivity extends BaseActivity {
                     covoit.put("lieuDepartAller", lieuAller);
                     covoit.put("lieuDepartRetour", lieuRetour);
                     covoit.put("listPassagers", users);
-
-                    // envoi de l'alarm à la classe TimeAlarm pour que les notifications soient prises en compte et envoyées au moment voulu
-                    this.alarmDepart(horaireDelAller);
-                    //this.alarmRetour(horaireRetour);
                     //TODO ligne à rajouter lors que l'obet Sortie existera
                     //covoit.put("reservation", null);
+
+                    // envoi de l'alarm à la classe TimeAlarmCovoiturageAller pour que les notifications soient prises en compte et envoyées au moment voulu
+                    this.alarmDepart(horaireDelAller);
+                    this.alarmRetour(horaireDuRetour);
+
                     this.mProgressBar.setVisibility(View.VISIBLE);
                     setupDb().collection("covoiturages").document(id).set(covoit)
                             .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -399,7 +397,7 @@ public class CovoiturageConducteursActivity extends BaseActivity {
      */
     private void getInfosCurrentUser() {
         // recup de la personne connectée avec son uid
-        setupDb().collection("users").document(getCurrentUser().getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+        setupDb().collection("users").document(Objects.requireNonNull(getCurrentUser()).getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 if (documentSnapshot.exists()) {
@@ -461,7 +459,7 @@ public class CovoiturageConducteursActivity extends BaseActivity {
             int year = c.get(Calendar.YEAR);
             int month = c.get(Calendar.MONTH);
             int day = c.get(Calendar.DAY_OF_MONTH);
-            return new DatePickerDialog(getActivity(), this, year, month, day);
+            return new DatePickerDialog(Objects.requireNonNull(getActivity()), this, year, month, day);
         }
 
         /**
@@ -490,7 +488,7 @@ public class CovoiturageConducteursActivity extends BaseActivity {
         /**
          * Créé une nouvelle instance d'un datepicket et la renvoi
          *
-         * @param savedInstanceState
+         * @param savedInstanceState bundle
          * @return TimePickerDialog
          */
         @NonNull

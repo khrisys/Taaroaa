@@ -1,7 +1,5 @@
 package fr.drochon.christian.taaroaa.controller;
 
-import android.app.AlarmManager;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -49,8 +47,6 @@ public class MainActivity extends BaseActivity {
     Button mConnexion;
     Button mDeconnexion;
     TextView mTextViewHiddenForSnackbar;
-    public AlarmManager mAlarmManager;
-
 
     // --------------------
     // LIFE CYCLE
@@ -72,27 +68,6 @@ public class MainActivity extends BaseActivity {
         mCreation = findViewById(R.id.creation_compte_btn);
         mConnexion = findViewById(id.connection_valid_btn);
         mDeconnexion = findViewById(id.deconnexion_btn);
-        //  l'AlarmManager permettra de réveiller le téléphone et d'executer du code à une date précise
-        mAlarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-
-       /* AlarmManager mAlarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-
-        // Build a Notification object : interieur de lappli et renvoi vers une activité definie via l'intent plus haut
-        Date dateProgrammee = null;
-        DateFormat dateFormat = new SimpleDateFormat("dd MM yyyy HH:mm:ss", Locale.FRANCE);
-        dateFormat.setTimeZone(TimeZone.getTimeZone("Europe/Paris"));
-        String d = "20 05 2018 18:08:00";
-        try {
-            dateProgrammee = dateFormat.parse(d);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        Intent intent = new Intent(this, TimeAlarm.class);
-        PendingIntent operation = PendingIntent.getBroadcast(this, 7, intent, PendingIntent.FLAG_ONE_SHOT);
-        assert dateProgrammee != null;
-        mAlarmManager.set(AlarmManager.RTC_WAKEUP, dateProgrammee.getTime(), operation);
-
-*/
 
         // --------------------
         // LISTENERS

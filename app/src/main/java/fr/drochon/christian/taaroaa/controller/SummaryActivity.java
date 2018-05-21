@@ -50,6 +50,10 @@ public class SummaryActivity extends BaseActivity {
         giveToolbarAName(R.string.summary_name);
 
 
+        // --------------------
+        // LISTENERS
+        // --------------------
+
         /*
         Affichage de l'activité de creation de compte ou de modification de compte en fonction de l'existence
         en bdd ou non de l'utilisateur connecté
