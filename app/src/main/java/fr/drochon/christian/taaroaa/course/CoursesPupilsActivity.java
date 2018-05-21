@@ -227,6 +227,7 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
         });
         recyclerView.setLayoutManager(new LinearLayoutManager(this)); // layoutmanager indique comment seront positionnés les elements (linearlayout)
         recyclerView.setAdapter(this.mAdapterCoursesPupils);// l'adapter s'occupe du contenu
+        this.onDataChanged(); // appel du callback explicaite en cas d'affichage de cours pour des encadrants (qui reviendrait d'une notification)
     }
 
     /**
@@ -244,7 +245,7 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
         });
         recyclerView.setLayoutManager(new LinearLayoutManager(this)); // layoutmanager indique comment seront positionnés les elements (linearlayout)
         recyclerView.setAdapter(this.mAdapterCoursesPupils);// l'adapter s'occupe du contenu
-        onDataChanged(); // appel explicite du callback pour l'affichage d'un message en cas d'absence de cours à la date cliquée
+        this.onDataChanged(); // appel explicite du callback pour l'affichage d'un message en cas d'absence de cours à la date cliquée
     }
 
     /**

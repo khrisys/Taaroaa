@@ -1,5 +1,6 @@
 package fr.drochon.christian.taaroaa.covoiturage;
 
+import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
@@ -54,9 +55,13 @@ import static java.util.Calendar.MINUTE;
 
 public class CovoiturageConducteursActivity extends BaseActivity {
 
+    @SuppressLint("StaticFieldLeak")
     private static TextInputEditText mDateDepart;
+    @SuppressLint("StaticFieldLeak")
     private static TextInputEditText mHeureDepart;
+    @SuppressLint("StaticFieldLeak")
     private static TextInputEditText mDateRetour;
+    @SuppressLint("StaticFieldLeak")
     private static TextInputEditText mHeureretour;
     TextInputEditText mPrenom;
     TextInputEditText mNom;
@@ -140,7 +145,7 @@ public class CovoiturageConducteursActivity extends BaseActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.course_pupils_menu, menu);
-        return true; // true affiche le menu
+        return true;
     }
 
     /**
@@ -148,7 +153,7 @@ public class CovoiturageConducteursActivity extends BaseActivity {
      * On utilise un switch ici car il peut y avoir plusieurs options.
      * Surtout ne pas oublier le "true" apres chaque case sinon, ce sera toujours le dernier case qui sera executé!
      *
-     * @param item
+     * @param item menuitem
      * @return boolean
      */
     @Override
@@ -232,7 +237,9 @@ public class CovoiturageConducteursActivity extends BaseActivity {
     private void alarmDepart(Date horaireDelAller) {
 
         Calendar calendar = Calendar.getInstance();
+
         calendar.setTime(horaireDelAller);
+        calendar.add(Calendar.HOUR, -2);
         Intent intent = new Intent(this, TimeAlarmCovoiturageAller.class).putExtra("hAller", String.valueOf(horaireDelAller));
         PendingIntent operation = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
         // reveil de l'alarm
@@ -249,6 +256,7 @@ public class CovoiturageConducteursActivity extends BaseActivity {
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(horaireDuRetour);
+        calendar.add(Calendar.HOUR, -2);
         Intent intent1 = new Intent(this, TimeAlarmCovoiturageRetour.class).putExtra("hRetour", String.valueOf(horaireDuRetour));
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1, intent1, PendingIntent.FLAG_ONE_SHOT);
         // reveil de l'alarm
@@ -293,7 +301,6 @@ public class CovoiturageConducteursActivity extends BaseActivity {
             e.printStackTrace();
         }
 
-
         String horaireRetour = dateRetour + " " + heureRetour;
         Date horaireDuRetour = null;
         SimpleDateFormat simpleDateFormat1 = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.FRANCE);
@@ -336,7 +343,7 @@ public class CovoiturageConducteursActivity extends BaseActivity {
                         mHeureDepart.setError(null);
                         mHeureretour.setError(null);
                         mProgressBar.setVisibility(View.GONE);
-                        mDateDepart.requestFocus();
+                        //mDateDepart.requestFocus();
                     }
                 });
                 adb.show();
@@ -449,7 +456,7 @@ public class CovoiturageConducteursActivity extends BaseActivity {
         /**
          * Créé une instance de DatePicker et la renvoi
          *
-         * @param savedInstanceState
+         * @param savedInstanceState bundle
          * @return DatePickerDialog
          */
         @NonNull
@@ -466,9 +473,9 @@ public class CovoiturageConducteursActivity extends BaseActivity {
          * Affiche la date choisi par l'utilisateur
          *
          * @param view       picker associé au dialog
-         * @param year
+         * @param year       annee
          * @param month      (0 à 11)
-         * @param dayOfMonth
+         * @param dayOfMonth jour du mois
          */
         @Override
         public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
@@ -505,9 +512,9 @@ public class CovoiturageConducteursActivity extends BaseActivity {
         /**
          * Affichage de l'heure obtenue dans l'edittext
          *
-         * @param view
-         * @param hourOfDay
-         * @param minute
+         * @param view      timepicker
+         * @param hourOfDay heure du jour
+         * @param minute    minute de l'heure
          */
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
             if (getTag() == "timeDepart")

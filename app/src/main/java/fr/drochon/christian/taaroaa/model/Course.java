@@ -1,9 +1,6 @@
 package fr.drochon.christian.taaroaa.model;
 
-import java.sql.Time;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -11,7 +8,7 @@ import java.util.List;
 /**
  * Classe des cours dispensés au sein du club
  */
-public class Course {
+public class Course implements Serializable {
 
     private String mUid;
     private String mTypeCours;

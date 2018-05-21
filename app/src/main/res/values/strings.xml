@@ -1,17 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-
-    <!--ID d'application Facebook-->
-    <string name="facebook_app_id" translatable="false">2177677015844999</string>
-    <string name="fb_login_protocol_scheme" translatable="false" tools:ignore="UnusedResources">fb2177677015844999</string>
-
-
-    <string name="main_activity_description">Discute avec tes mentors, tout simplement.</string>
-
-    <string name="login">Connexion</string>
-    <string name="chat_with_mentor">Discute avec un mentor</string>
-
     <!-- NOTIFICATION SERVICE -->
     <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
     <string name="notification_title">"Vous avez reçu une notification"</string>
@@ -31,8 +20,6 @@
     <string name="account_modif_name">Modification de compte</string>
     <string name="account_search_name">Recherche adhérent</string>
 
-
-
     <!-- MAIN ACTIVITY -->
     <string name="error_not_connected">Vous devez d\'abord vous connecter !</string>
     <string name="error_authentication_canceled">Authentification annulée&#8230;</string>
@@ -40,6 +27,7 @@
     <string name="error_no_internet">Aucune connexion internet !</string>
     <string name="error_unknown_error">Une erreur inconnue s\'est produite&#8230;</string>
     <string name="connection_succeed">Authentification réussie !</string>
+    <string name="login">Connexion</string>
     <string name="button_login_text_logged">Afficher le profil</string>
     <string name="button_login_text_not_logged">Connexion</string>
     <string name="titre_app">Bonjour.  Bienvenue sur l\'application de gestion d\'un club de plongée sous-marine.</string>
@@ -138,9 +126,10 @@
     <string name="lieu_d_arrivee">Lieu d\'arrivée au retour :</string>
     <string name="passagers">Passagers :</string>
 
+    <!--ID d'application Facebook-->
+    <string name="facebook_app_id" translatable="false">2177677015844999</string>
+    <string name="fb_login_protocol_scheme" translatable="false" tools:ignore="UnusedResources">fb2177677015844999</string>
     <!-- FACEBOOK PURPOSE -->
-    <string name="facebook_application_id" translatable="false">420763051691337</string>
-    <string name="facebook_login_protocol_scheme" translatable="false" tools:ignore="UnusedResources">fb420763051691337</string>
     <string name="taaroaa">Taaroaa</string>
     <string name="title_activity_password">Mot de passe oublié ?</string>
     <string name="prompt_email">Email</string>
@@ -151,7 +140,7 @@
     <string name="error_invalid_password">Ce mot de passe est trop court</string>
     <string name="error_incorrect_password">Ce mot de passe est incorrect</string>
     <string name="error_field_required">Ce champ est requis</string>
-    <string name="permission_rationale">Accordez le droit d\'acceder à vos contacts pour fournir[...]</string>
+    <string name="permission_rationale">Accordez le droit d\'acceder à vos contacts pour fournir[…]</string>
     <string name="title_activity_courses_supervisors">Tous les cours</string>
     <string name="title_activity_courses_pupils">Cours prépa balbla</string>
     <string name="title_activity_test">TestActivity</string>

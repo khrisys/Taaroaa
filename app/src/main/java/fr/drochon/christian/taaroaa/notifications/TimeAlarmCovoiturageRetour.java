@@ -35,8 +35,7 @@ public class TimeAlarmCovoiturageRetour extends BroadcastReceiver {
 
         // recuperation de l'extra envoyé dans l'intent
         Bundle bundle = intent.getExtras();
-        assert bundle != null;
-        hRetour = bundle.getString("hRetour");
+        assert bundle != null;hRetour = bundle.getString("hRetour");
 
         // --------------------
         // CONVERSION COVOITURAGE RETOUR

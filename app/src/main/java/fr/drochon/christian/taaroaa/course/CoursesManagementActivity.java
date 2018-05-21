@@ -1,10 +1,13 @@
 package fr.drochon.christian.taaroaa.course;
 
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
@@ -47,6 +50,7 @@ import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.api.CourseHelper;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
 import fr.drochon.christian.taaroaa.model.Course;
+import fr.drochon.christian.taaroaa.notifications.TimeAlarmCourses;
 
 import static fr.drochon.christian.taaroaa.api.CourseHelper.getCoursesCollection;
 import static java.util.Calendar.MINUTE;
@@ -69,6 +73,9 @@ public class CoursesManagementActivity extends BaseActivity {
     Spinner mNiveauCours;
     Button mCreerCours;
 
+    // DATAS
+    AlarmManager mAlarmManager;
+
     // --------------------
     // CYCLE DE VIE
     // --------------------
@@ -84,6 +91,9 @@ public class CoursesManagementActivity extends BaseActivity {
         mNiveauCours = findViewById(R.id.niveau_plongee_spinner);
         mCreerCours = findViewById(R.id.creation_compte_btn);
         mDateCours = findViewById(R.id.dateText);
+
+        //  les AlarmManager permettront de réveiller le téléphone et d'executer du code à une date précise
+        mAlarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
         configureToolbar();
         giveToolbarAName(R.string.course_management_name);
@@ -251,6 +261,30 @@ public class CoursesManagementActivity extends BaseActivity {
         });
     }
 
+
+    /**
+     * Methode permettant de signaler une erreur lorsqu'un champ est resté vide alors que la soumission du formulaire a été faite.
+     */
+    private void verificationChampsVides() {
+
+        if (mDateCours.getText().toString().equals("")) {
+            mDateCours.setError("Merci de renseigner ce champ !");
+            mDateCours.requestFocus();
+        } else mDateCours.setError(null);
+        if (mHeureCours.getText().toString().equals("")) {
+            mHeureCours.setError("Merci de renseigner ce champ !");
+            mHeureCours.requestFocus();
+        } else mHeureCours.setError(null);
+        if (mSujetCours.getText().toString().isEmpty()) {
+            mSujetCours.setError("Merci de renseigner ce champ !");
+            mSujetCours.requestFocus();
+        }
+        if (mMoniteurCours.getText().toString().isEmpty()) {
+            mMoniteurCours.setError("Merci de renseigner ce champ !");
+            mMoniteurCours.requestFocus();
+        }
+    }
+
     /**
      * Methode permettant de renvoyer un encadrant sur sa page generale
      */
@@ -259,6 +293,27 @@ public class CoursesManagementActivity extends BaseActivity {
         startActivity(mIntent);
     }
 
+
+    // --------------------
+    // ALARM NOTIFICATION
+    // --------------------
+
+    /**
+     * Methode permettant de generer une alarm dans le systeme du telephone de maniere à envoyer une notification à l'utilisateur
+     * 2 heures avant que le cours ne demarre.
+     *
+     * @param course
+     */
+    private void alarmCours(Course course) {
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(course.getHoraireDuCours());
+        calendar.add(Calendar.HOUR, -2);
+        Intent intent = new Intent(this, TimeAlarmCourses.class).putExtra("cours", course);
+        PendingIntent operation = PendingIntent.getBroadcast(this, 2, intent, PendingIntent.FLAG_ONE_SHOT);
+        // reveil de l'alarm
+        mAlarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), operation);
+    }
 
     // --------------------
     // REST REQUETES
@@ -315,6 +370,13 @@ public class CoursesManagementActivity extends BaseActivity {
                 newCourse.put("sujetDuCours", sujet);
                 newCourse.put("typeCours", typeCours);
                 newCourse.put("horaireDuCours", horaireDuCours);
+
+                Course course = new Course(id, typeCours, sujet, niveauCours, moniteur, horaireDuCours);
+
+                // alarm pour notification sur le cours créé
+                this.alarmCours(course);
+
+                // creation du cours et insertion en bdd
                 setupDb().collection("courses").document(id).set(newCourse)
                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
@@ -335,29 +397,6 @@ public class CoursesManagementActivity extends BaseActivity {
             } else {
                 verificationChampsVides();
             }
-        }
-    }
-
-    /**
-     * Methode permettant de signaler une erreur lorsqu'un champ est resté vide alors que la soumission du formulaire a été faite.
-     */
-    private void verificationChampsVides() {
-
-        if (mDateCours.getText().toString().equals("")) {
-            mDateCours.setError("Merci de renseigner ce champ !");
-            mDateCours.requestFocus();
-        } else mDateCours.setError(null);
-        if (mHeureCours.getText().toString().equals("")) {
-            mHeureCours.setError("Merci de renseigner ce champ !");
-            mHeureCours.requestFocus();
-        } else mHeureCours.setError(null);
-        if (mSujetCours.getText().toString().isEmpty()) {
-            mSujetCours.setError("Merci de renseigner ce champ !");
-            mSujetCours.requestFocus();
-        }
-        if (mMoniteurCours.getText().toString().isEmpty()) {
-            mMoniteurCours.setError("Merci de renseigner ce champ !");
-            mMoniteurCours.requestFocus();
         }
     }
 
@@ -453,7 +492,7 @@ public class CoursesManagementActivity extends BaseActivity {
             int year = c.get(Calendar.YEAR);
             int month = c.get(Calendar.MONTH);
             int day = c.get(Calendar.DAY_OF_MONTH);
-            return new DatePickerDialog(Objects.requireNonNull(getActivity()), this, year, month, day + 1);
+            return new DatePickerDialog(Objects.requireNonNull(getActivity()), this, year, month, day);
         }
 
         /**
