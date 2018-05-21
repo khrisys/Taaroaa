@@ -1,7 +1,10 @@
 package fr.drochon.christian.taaroaa.covoiturage;
 
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -26,6 +29,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -36,6 +40,7 @@ import butterknife.ButterKnife;
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.api.CovoiturageHelper;
 import fr.drochon.christian.taaroaa.model.Covoiturage;
+import fr.drochon.christian.taaroaa.notifications.TimeAlarmCovoiturageSuppression;
 
 public class VehiculeViewHolder extends RecyclerView.ViewHolder {
 
@@ -74,6 +79,7 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
     private List<String> mListPassagers;
     private FirebaseFirestore db;
     private Covoiturage sCovoiturage;
+    private AlarmManager mAlarmManager;
 
 
     /**
@@ -92,6 +98,7 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
         mCovoiturageList = new ArrayList<>();
         mListPassagers = new ArrayList<>();
         db = FirebaseFirestore.getInstance();
+        mAlarmManager = (AlarmManager) itemView.getContext().getSystemService(Context.ALARM_SERVICE);
 
 
         // --------------------
@@ -105,7 +112,7 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
                 // clic sur le nom du conducteur qui renvoi l'utilisateur à la page de reservation
                 if (Integer.parseInt(sCovoiturage.getNbPlacesDispo()) > 0)
                     startActivityCovoituragePassagers();
-                //alterdialog de covoit complet et renvoi vers la page des covoiturages
+                    //alterdialog de covoit complet et renvoi vers la page des covoiturages
                 else {
                     final AlertDialog.Builder adb = new AlertDialog.Builder(itemView.getContext());
                     adb.setTitle("Covoiturage complet !");
@@ -140,7 +147,7 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
 
                                     // ajouter une couleur à l'icon de warning
                                     Drawable warning = itemView.getResources().getDrawable(android.R.drawable.ic_dialog_alert);
-                                    ColorFilter filter = new LightingColorFilter( Color.RED, Color.BLUE);
+                                    ColorFilter filter = new LightingColorFilter(Color.RED, Color.BLUE);
                                     warning.setColorFilter(filter);
                                     adb.setIcon(android.R.drawable.ic_dialog_alert);
 
@@ -148,6 +155,16 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
                                     adb.setPositiveButton("SUPPRIMER ?", new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int which) {
                                             deleteCovoiturageInFirebase(user.get("prenom").toString(), user.get("nom").toString());
+
+                                            //TODO notification aux passagers que le covoit est annulé
+                                            Calendar calendar = Calendar.getInstance();
+                                            calendar.getTime();
+                                            Intent intent = new Intent(itemView.getContext(), TimeAlarmCovoiturageSuppression.class)
+                                                    .putExtra("covoit", sCovoiturage);
+                                            PendingIntent operation = PendingIntent.getBroadcast(itemView.getContext(), 3, intent, PendingIntent.FLAG_ONE_SHOT);
+                                            // reveil de l'alarm
+                                            mAlarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), operation);
+
                                             startActivityCovoiturageVehicule();
                                         }
                                     });
