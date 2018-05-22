@@ -310,7 +310,8 @@ public class CovoituragePassagersActivity extends BaseActivity {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(covoiturage.getHoraireRetour());
         calendar.add(Calendar.HOUR, -2);
-        Intent intent1 = new Intent(this, TimeAlarmCovoiturageRetour.class).putExtra("hRetour", String.valueOf(covoiturage.getHoraireRetour()));
+        Intent intent1 = new Intent(this, TimeAlarmCovoiturageRetour.class)
+                .putExtra("hRetour", String.valueOf(covoiturage.getHoraireRetour()));
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1, intent1, PendingIntent.FLAG_ONE_SHOT);
         // reveil de l'alarm
         mAlarmManagerRetour.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
@@ -373,6 +374,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
                 for (int i = 0; i < listNamePassengers.size(); i++) {
                     listPassagers.add(listNamePassengers.get(i).getText().toString().toUpperCase());
                     // notification d'alarme à chacun des passagers : mais il faut que le nom rentré correspondent à quelque chose!
+                    //TODO faire une requete pour boucler sur les users et recuperer les passagers par leurs noms et prenom pour notifier le depart du covoit souscris. Sur ces personnes :  declencher l'alarm
                     this.alarmDepart();
                     this.alarmRetour();
                 }

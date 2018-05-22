@@ -157,6 +157,7 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
                                             deleteCovoiturageInFirebase(user.get("prenom").toString(), user.get("nom").toString());
 
                                             //TODO notification aux passagers que le covoit est annulé
+                                            //TODO faire une requete pour boucler sur les users et recuperer les passagers du covoit annulé par leurs noms et prenom. Sur ces personnes :  declencher l'alarm
                                             Calendar calendar = Calendar.getInstance();
                                             calendar.getTime();
                                             Intent intent = new Intent(itemView.getContext(), TimeAlarmCovoiturageSuppression.class)

@@ -1,5 +1,8 @@
 package fr.drochon.christian.taaroaa.course;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -26,6 +29,7 @@ import android.widget.TextView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -44,9 +48,11 @@ import java.util.Map;
 import java.util.Objects;
 
 import fr.drochon.christian.taaroaa.R;
+import fr.drochon.christian.taaroaa.api.UserHelper;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
 import fr.drochon.christian.taaroaa.model.Course;
 import fr.drochon.christian.taaroaa.model.User;
+import fr.drochon.christian.taaroaa.notifications.TimeAlarmCourses;
 
 /**
  * creer l'ihm
@@ -75,6 +81,7 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
     Date calendrierClique;
     Date calendrierFinJournee;
     static User user;
+    AlarmManager mAlarmManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,10 +100,13 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
         calendrierFinJournee = new Date();
         listSnapshot = new ArrayList<>();
         user = new User();
+        //  les AlarmManager permettront de réveiller le téléphone et d'executer du code à une date précise
+        mAlarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
 
         getLevelConnectedUser();
         configureToolbar();
+        //alarmConnectedUser();
 
         // --------------------
         // LISTENERS
@@ -148,6 +158,11 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
         return R.layout.activity_courses_pupils;
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        alarmConnectedUser();
+    }
 
     // --------------------
     // TOOLBAR
@@ -289,6 +304,57 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
             }
         });
         adb.show();
+    }
+
+    // --------------------
+    // ALARM NOTIFICATION
+    // --------------------
+
+    /**
+     * Methode permettant de generer une alarm dans le systeme du telephone de maniere à envoyer une notification à l'utilisateur
+     * 2 heures avant que le cours ne demarre.
+     *
+     * @param course
+     */
+    private void alarmCours(Course course) {
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(course.getHoraireDuCours());
+        calendar.add(Calendar.HOUR, -2);
+        if(Calendar.getInstance().getTime().after(calendar.getTime()) && Calendar.getInstance().getTime().before(course.getHoraireDuCours())) {
+            Intent intent = new Intent(this, TimeAlarmCourses.class).putExtra("cours", course);
+            PendingIntent operation = PendingIntent.getBroadcast(this, 2, intent, PendingIntent.FLAG_ONE_SHOT);
+            // reveil de l'alarm
+            mAlarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), operation);
+        }
+    }
+
+    private void alarmConnectedUser(){
+
+        Task<DocumentSnapshot> ds = UserHelper.getUser(Objects.requireNonNull(getCurrentUser()).getUid());
+        if(ds.isSuccessful()) {
+            Map<String, Object> user = ds.getResult().getData();
+            final String userLevel = user.get("niveau").toString();
+
+            // boucle sur tous les cours, de maniere à recuperer toutes les alarms postées sur les cours du niveau de la personne connectée
+            setupDb().collection("courses").addSnapshotListener(new EventListener<QuerySnapshot>() {
+                @Override
+                public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+                    if (documentSnapshots.size() != 0) {
+                        List<DocumentSnapshot> ds = documentSnapshots.getDocuments();
+                        for (DocumentSnapshot documentSnapshot : ds) {
+                            Map<String, Object> cours = documentSnapshot.getData();
+                            Course course = new Course(cours.get("id").toString(), cours.get("typeCours").toString(), cours.get("sujetDuCours").toString(),
+                                    cours.get("niveauDuCours").toString(), cours.get("nomDuMoniteur").toString(), (Date) cours.get("horaireDuCours"));
+                            String niveau = cours.get("niveauDuCours").toString();
+                            if (userLevel.equals(niveau))
+                                // alarm pour notification sur le cours créé
+                                alarmCours(course);
+                        }
+                    }
+                }
+            });
+        }
     }
 
 

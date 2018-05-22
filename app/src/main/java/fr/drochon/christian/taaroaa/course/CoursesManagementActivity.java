@@ -75,6 +75,7 @@ public class CoursesManagementActivity extends BaseActivity {
 
     // DATAS
     AlarmManager mAlarmManager;
+    private  static Course sCourse;
 
     // --------------------
     // CYCLE DE VIE
@@ -371,10 +372,8 @@ public class CoursesManagementActivity extends BaseActivity {
                 newCourse.put("typeCours", typeCours);
                 newCourse.put("horaireDuCours", horaireDuCours);
 
-                Course course = new Course(id, typeCours, sujet, niveauCours, moniteur, horaireDuCours);
-
-                // alarm pour notification sur le cours créé
-                this.alarmCours(course);
+                sCourse = new Course(id, typeCours, sujet, niveauCours, moniteur, horaireDuCours);
+                this.alarmCours(sCourse);
 
                 // creation du cours et insertion en bdd
                 setupDb().collection("courses").document(id).set(newCourse)
@@ -399,6 +398,25 @@ public class CoursesManagementActivity extends BaseActivity {
             }
         }
     }
+/*
+    *//**
+     * Methode permettant de recuperer l'objet User connecté
+     *//*
+    private void getConnectedUser(){
+        setupDb().collection("users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot documentSnapshots) {
+                if (documentSnapshots.size() != 0) {
+                    List<DocumentSnapshot> ds = documentSnapshots.getDocuments();
+                    for (int i = 0; i < ds.size(); i++) {
+                        Map<String, Object> map = ds.get(i).getData();
+                        User user = new User(map.get("uid").toString(), map.get("nom").toString(), map.get("prenom").toString());
+                        listUsers.add(user);
+                    }
+                }
+            }
+        });
+    }*/
 
     /**
      * Cette methode ne comprend pas l'update d'une fonction dans le club, car seul les encadrants du club peuvent

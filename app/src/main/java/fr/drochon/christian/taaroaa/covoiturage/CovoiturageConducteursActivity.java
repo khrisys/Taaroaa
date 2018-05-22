@@ -242,6 +242,7 @@ public class CovoiturageConducteursActivity extends BaseActivity {
         calendar.add(Calendar.HOUR, -2);
         Intent intent = new Intent(this, TimeAlarmCovoiturageAller.class).putExtra("hAller", String.valueOf(horaireDelAller));
         PendingIntent operation = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+
         // reveil de l'alarm
         mAlarmManagerAller.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), operation);
     }
@@ -367,6 +368,7 @@ public class CovoiturageConducteursActivity extends BaseActivity {
                     //TODO ligne à rajouter lors que l'obet Sortie existera
                     //covoit.put("reservation", null);
 
+                    //TODO faire une requete pour boucler sur les users et recuperer les passagers par leurs noms et prenom. Sur ces personnes :  declencher l'alarm
                     // envoi de l'alarm à la classe TimeAlarmCovoiturageAller pour que les notifications soient prises en compte et envoyées au moment voulu
                     this.alarmDepart(horaireDelAller);
                     this.alarmRetour(horaireDuRetour);
