@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
 
     <!-- NOTIFICATION SERVICE -->
     <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
@@ -127,8 +127,8 @@
     <string name="passagers">Passagers :</string>
 
     <!--ID d'application Facebook-->
-    <string name="facebook_app_id" translatable="false">2177677015844999</string>
-    <string name="fb_login_protocol_scheme" translatable="false" tools:ignore="UnusedResources">fb2177677015844999</string>
+<!--    <string name="facebook_app_id" translatable="false">2177677015844999</string>
+    <string name="fb_login_protocol_scheme" translatable="false" tools:ignore="UnusedResources">fb2177677015844999</string>-->
     <!-- FACEBOOK PURPOSE -->
     <string name="taaroaa">Taaroaa</string>
     <string name="title_activity_password">Mot de passe oublié ?</string>

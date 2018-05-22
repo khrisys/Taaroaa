@@ -3,19 +3,14 @@ package fr.drochon.christian.taaroaa.course;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.ColorFilter;
-import android.graphics.LightingColorFilter;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
@@ -29,7 +24,6 @@ import android.widget.TextView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -48,7 +42,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import fr.drochon.christian.taaroaa.R;
-import fr.drochon.christian.taaroaa.api.UserHelper;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
 import fr.drochon.christian.taaroaa.model.Course;
 import fr.drochon.christian.taaroaa.model.User;
@@ -67,6 +60,7 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
     // CONTIENT LA RECYCLERVIEW
 
 
+    static User user;
     // FOR DESIGN
     CoordinatorLayout mCoordinatorLayout;
     LinearLayout mLinearLayout;
@@ -75,19 +69,18 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
     TextView mTextView;
     ScrollView mScrollView;
     FloatingActionButton mFloatingActionButton;
-    // FOR DATA
-    private AdapterCoursesPupils mAdapterCoursesPupils;
     List<DocumentSnapshot> listSnapshot;
     Date calendrierClique;
     Date calendrierFinJournee;
-    static User user;
     AlarmManager mAlarmManager;
+    // FOR DATA
+    private AdapterCoursesPupils mAdapterCoursesPupils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_courses_pupils);
-
+        // DESIGN
         mCoordinatorLayout = findViewById(R.id.pupils_layout_root);
         mLinearLayout = findViewById(R.id.linearLayoutRoot);
         mCalendarView = findViewById(R.id.calendrier_eleves);
@@ -95,18 +88,16 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
         mTextView = findViewById(R.id.empty_list_textview);
         mScrollView = findViewById(R.id.scrollviewRecyclerView);
         mFloatingActionButton = findViewById(R.id.fab);
-
+        // DATAS
         calendrierClique = new Date();
         calendrierFinJournee = new Date();
         listSnapshot = new ArrayList<>();
         user = new User();
-        //  les AlarmManager permettront de réveiller le téléphone et d'executer du code à une date précise
         mAlarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
 
         getLevelConnectedUser();
         configureToolbar();
-        //alarmConnectedUser();
 
         // --------------------
         // LISTENERS
@@ -129,7 +120,6 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
             public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
                 Calendar calendar = Calendar.getInstance();
                 calendar.set(year, month, dayOfMonth);
-                //calendrierFinJournee = calendar.getTime();
 
                 // formattage de la date pour le debut et la fin de journée
                 DateFormat dateFormatEntree = new SimpleDateFormat("dd MM yyyy", Locale.FRANCE);
@@ -158,11 +148,6 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
         return R.layout.activity_courses_pupils;
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        alarmConnectedUser();
-    }
 
     // --------------------
     // TOOLBAR
@@ -183,7 +168,7 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
      * On utilise un switch ici car il peut y avoir plusieurs options.
      * Surtout ne pas oublier le "true" apres chaque case sinon, ce sera toujours le dernier case qui sera executé!
      *
-     * @param item
+     * @param item menuitem
      * @return bool
      */
     @Override
@@ -191,16 +176,16 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
         return optionsToolbar(this, item);
     }
 
-
     /**
      * Methode permettant de donner un nom à la page courante de l'application
-     * @param title
+     *
+     * @param title titre de l'activité
      */
-    private void giveToolbarAName(String title){
+    private void giveToolbarAName(String title) {
         ActionBar ab = getSupportActionBar();
         assert ab != null;
         ab.setDisplayShowCustomEnabled(true);
-        ActionBar.LayoutParams layoutParams = new ActionBar.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL|Gravity.CENTER_VERTICAL);
+        ActionBar.LayoutParams layoutParams = new ActionBar.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL);
 
         TextView tv = new TextView(this);
         tv.setGravity(View.TEXT_ALIGNMENT_CENTER);
@@ -284,13 +269,13 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
     private void showFloatingButton() {
 
         if (this.getCurrentUser() != null) {
-            if(user.getFonction().equals("Moniteur") || user.getFonction().equals("Initiateur")){
+            if (user.getFonction().equals("Moniteur") || user.getFonction().equals("Initiateur")) {
                 mFloatingActionButton.setVisibility(View.VISIBLE);
             }
         }
     }
 
-    public void notifCompleteAccount() {
+/*    public void notifCompleteAccount() {
         AlertDialog.Builder adb = new AlertDialog.Builder(this);
         // ajouter une couleur à l'icon de warning
         Drawable warning = getResources().getDrawable(android.R.drawable.ic_dialog_alert);
@@ -304,42 +289,25 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
             }
         });
         adb.show();
-    }
+    }*/
 
     // --------------------
     // ALARM NOTIFICATION
     // --------------------
 
     /**
-     * Methode permettant de generer une alarm dans le systeme du telephone de maniere à envoyer une notification à l'utilisateur
-     * 2 heures avant que le cours ne demarre.
+     * Methode permettant de boucler sur tous les cours existants, de recuperer les cours correspondant au niveau de la personne connectée,
+     * de maniere à activer toutes les alarms postées sur les cours du niveau de la personne connectée
      *
-     * @param course
+     * @param userLevel niveau du plongeur connecté
      */
-    private void alarmCours(Course course) {
+    private void alarmConnectedUser(final String userLevel) {
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(course.getHoraireDuCours());
-        calendar.add(Calendar.HOUR, -2);
-        if(Calendar.getInstance().getTime().after(calendar.getTime()) && Calendar.getInstance().getTime().before(course.getHoraireDuCours())) {
-            Intent intent = new Intent(this, TimeAlarmCourses.class).putExtra("cours", course);
-            PendingIntent operation = PendingIntent.getBroadcast(this, 2, intent, PendingIntent.FLAG_ONE_SHOT);
-            // reveil de l'alarm
-            mAlarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), operation);
-        }
-    }
+        setupDb().collection("courses").addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
-    private void alarmConnectedUser(){
-
-        Task<DocumentSnapshot> ds = UserHelper.getUser(Objects.requireNonNull(getCurrentUser()).getUid());
-        if(ds.isSuccessful()) {
-            Map<String, Object> user = ds.getResult().getData();
-            final String userLevel = user.get("niveau").toString();
-
-            // boucle sur tous les cours, de maniere à recuperer toutes les alarms postées sur les cours du niveau de la personne connectée
-            setupDb().collection("courses").addSnapshotListener(new EventListener<QuerySnapshot>() {
-                @Override
-                public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+                try {
                     if (documentSnapshots.size() != 0) {
                         List<DocumentSnapshot> ds = documentSnapshots.getDocuments();
                         for (DocumentSnapshot documentSnapshot : ds) {
@@ -352,8 +320,31 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
                                 alarmCours(course);
                         }
                     }
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                    e1.getCause().getMessage();
+                    System.out.println("documentSnapshots is null");
                 }
-            });
+            }
+        });
+    }
+
+    /**
+     * Methode permettant de generer une alarm dans le systeme du telephone de maniere à envoyer une notification à l'utilisateur
+     * 2 heures avant que le cours ne demarre.
+     *
+     * @param course cours
+     */
+    private void alarmCours(Course course) {
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(course.getHoraireDuCours());
+        calendar.add(Calendar.HOUR, -2);
+        if (Calendar.getInstance().getTime().after(calendar.getTime()) && Calendar.getInstance().getTime().before(course.getHoraireDuCours())) {
+            Intent intent = new Intent(this, TimeAlarmCourses.class).putExtra("cours", course).putExtra("activity", CoursesPupilsActivity.class);
+            PendingIntent operation = PendingIntent.getBroadcast(this, 2, intent, PendingIntent.FLAG_ONE_SHOT);
+            // reveil de l'alarm
+            mAlarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), operation);
         }
     }
 
@@ -386,6 +377,7 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
     /**
      * Methode permettant de requeter avec les conditions suivantes :
      * n'affiche que les cours de la personne connectée + n'affiche que les cours du jour de la date cliquée
+     *
      * @return query
      */
     private Query queryCoursesFiltered() {
@@ -406,7 +398,7 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
     /**
      * Methode permettant de recuperer l'integralité de la liste des snapshots et d'en faire des objets "Course"
      *
-     * @param documentSnapshot
+     * @param documentSnapshot liste des elements recupérés de la requete de recuperation de tous les cours ayant un niveau de cours donné
      */
     private void readDataInList(final List<DocumentSnapshot> documentSnapshot) {
 
@@ -436,20 +428,25 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
      * Ceci permet d'afficher en titre de page le niveau des cours données, de lancer une requete prenant
      * en parametre le niveau d'un utilisateur dans l'adapter, et d'afficher ou non le floatingbutton
      * en fonction du niveau de l'utilisateur connecté.
+     * Cette methode permet egalement de gerer le lancement des notifications en fonction d'un user connecté,
+     * et fait en sorte qu'il ne recoive que les notifications des cours concernant son niveau de plongée.
      */
-    private void getLevelConnectedUser(){
+    private void getLevelConnectedUser() {
         setupDb().collection("users").whereEqualTo("uid", Objects.requireNonNull(getCurrentUser()).getUid()).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot documentSnapshots) {
-                if(documentSnapshots.size() != 0){
+                if (documentSnapshots.size() != 0) {
                     List<DocumentSnapshot> ds = documentSnapshots.getDocuments();
-                    for( int i = 0; i < ds.size(); i++){
+                    for (int i = 0; i < ds.size(); i++) {
                         Map<String, Object> map = ds.get(i).getData();
                         user.setFonction(map.get("fonction").toString()); // utile pour l'affichage du floatingbutton
+
                         // affichage de la toolbar avec le niveau de la personne connectée
                         user.setNiveauPlongeur(map.get("niveau").toString());
-                        String s = "Cours de niveau " + user.getNiveauPlongeur();
-                        giveToolbarAName(s);
+                        // lance une alarme de notification si le cours correspond au niveau du plongeur connecté
+                        alarmConnectedUser(user.getNiveauPlongeur());
+                        String name = "Cours de niveau " + user.getNiveauPlongeur();
+                        giveToolbarAName(name);
                         configureRecyclerView();
                         showFloatingButton();
                     }

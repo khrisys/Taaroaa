@@ -56,8 +56,13 @@ public class TimeAlarmCourses extends BroadcastReceiver {
             heureCoursStr = dateFormat2.format(dateCours);
         }
 
-        // Créé un nouvel intent qui renvoie l'user vers l'activité des cours de niveau
-        intent = new Intent(context, CoursesPupilsActivity.class);
+        // Créé un nouvel intent. Par contre, on ne renvoie pas l'user vers une nouvelle activité car on s'y trouve dejà.
+        // On ne l'y renvoie uniquement que si l'user n'est pas sur la page activityPupilsActivity au moment du declenchement de la notif.
+        // Sinon, ca fera une boucle infinie puisque la meme acticité sera rappellée sans cesse.
+        Object activity  = Objects.requireNonNull(intent.getExtras().get("activity"));
+        assert activity != null;
+        if(!activity.equals(CoursesPupilsActivity.class)) intent = new Intent(context, CoursesPupilsActivity.class);
+
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 2, intent, PendingIntent.FLAG_ONE_SHOT);
 
@@ -83,8 +88,8 @@ public class TimeAlarmCourses extends BroadcastReceiver {
                         // Set the notification content
                         .setSmallIcon(android.R.drawable.ic_notification_overlay)
                         .setContentTitle("TAAROAA")
-                        .setSubText("Cours de niveau " + cours.getNiveauDuCours())
-                        .setContentInfo("Votre prochain cours de " + cours.getTypeCours() + " démarrera dans 2 heures !")
+                        .setContentText("Cours de niveau " + cours.getNiveauDuCours())
+                        .setSubText("Votre prochain cours de " + cours.getTypeCours() + " démarrera à " + heureCoursStr + " !")
                         .setPriority(NotificationCompat.PRIORITY_HIGH) //affiche la notif clairement en haut de l'app
                         .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                         // Set the intent that will fire when the user taps the notification : renvoi vers l'activité definie
