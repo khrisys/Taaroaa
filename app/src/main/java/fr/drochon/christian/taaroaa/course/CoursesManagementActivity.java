@@ -142,8 +142,6 @@ public class CoursesManagementActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 showDatePickerDialog(v);
-
-                //if(mDateCours.getText().toString().isEmpty()) mDateCours.setError("Merci de saisir ce champ !"); else mDateCours.append(" ");
             }
         });
 
@@ -310,10 +308,13 @@ public class CoursesManagementActivity extends BaseActivity {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(course.getHoraireDuCours());
         calendar.add(Calendar.HOUR, -2);
-        Intent intent = new Intent(this, TimeAlarmCourses.class).putExtra("cours", course);
-        PendingIntent operation = PendingIntent.getBroadcast(this, 2, intent, PendingIntent.FLAG_ONE_SHOT);
-        // reveil de l'alarm
-        mAlarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), operation);
+        // condition de declenchement de l'alarm de 2h avant le commencement du cours jusqu'au demarrage effectif du cours
+        if (Calendar.getInstance().getTime().after(calendar.getTime()) && Calendar.getInstance().getTime().before(course.getHoraireDuCours())) {
+            Intent intent = new Intent(this, TimeAlarmCourses.class).putExtra("cours", course);
+            PendingIntent operation = PendingIntent.getBroadcast(this, 2, intent, PendingIntent.FLAG_ONE_SHOT);
+            // reveil de l'alarm
+            mAlarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), operation);
+        }
     }
 
     // --------------------
@@ -372,6 +373,7 @@ public class CoursesManagementActivity extends BaseActivity {
                 newCourse.put("typeCours", typeCours);
                 newCourse.put("horaireDuCours", horaireDuCours);
 
+                // creation d'un objet cours passé en param de l'alarme de notification
                 sCourse = new Course(id, typeCours, sujet, niveauCours, moniteur, horaireDuCours);
                 this.alarmCours(sCourse);
 

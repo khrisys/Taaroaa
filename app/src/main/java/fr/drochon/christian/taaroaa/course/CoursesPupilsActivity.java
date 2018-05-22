@@ -340,6 +340,7 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(course.getHoraireDuCours());
         calendar.add(Calendar.HOUR, -2);
+        // condition de declenchement de l'alarm de 2h avant le commencement du cours jusqu'au demarrage effectif du cours
         if (Calendar.getInstance().getTime().after(calendar.getTime()) && Calendar.getInstance().getTime().before(course.getHoraireDuCours())) {
             Intent intent = new Intent(this, TimeAlarmCourses.class).putExtra("cours", course).putExtra("activity", CoursesPupilsActivity.class);
             PendingIntent operation = PendingIntent.getBroadcast(this, 2, intent, PendingIntent.FLAG_ONE_SHOT);

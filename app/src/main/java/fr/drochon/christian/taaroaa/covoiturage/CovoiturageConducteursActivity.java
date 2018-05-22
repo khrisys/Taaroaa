@@ -237,14 +237,15 @@ public class CovoiturageConducteursActivity extends BaseActivity {
     private void alarmDepart(Date horaireDelAller) {
 
         Calendar calendar = Calendar.getInstance();
-
         calendar.setTime(horaireDelAller);
         calendar.add(Calendar.HOUR, -2);
-        Intent intent = new Intent(this, TimeAlarmCovoiturageAller.class).putExtra("hAller", String.valueOf(horaireDelAller));
-        PendingIntent operation = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
-
-        // reveil de l'alarm
-        mAlarmManagerAller.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), operation);
+        // condition de declenchement de l'alarm de 2h avant le depart jusqu'au demarrage effectif du covoit
+        if (Calendar.getInstance().getTime().after(calendar.getTime()) && Calendar.getInstance().getTime().before(horaireDelAller)) {
+            Intent intent = new Intent(this, TimeAlarmCovoiturageAller.class).putExtra("hAller", String.valueOf(horaireDelAller));
+            PendingIntent operation = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+            // reveil de l'alarm
+            mAlarmManagerAller.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), operation);
+        }
     }
 
     /**
@@ -258,10 +259,13 @@ public class CovoiturageConducteursActivity extends BaseActivity {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(horaireDuRetour);
         calendar.add(Calendar.HOUR, -2);
-        Intent intent1 = new Intent(this, TimeAlarmCovoiturageRetour.class).putExtra("hRetour", String.valueOf(horaireDuRetour));
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1, intent1, PendingIntent.FLAG_ONE_SHOT);
-        // reveil de l'alarm
-        mAlarmManagerRetour.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+        // condition de declenchement de l'alarm de 2h avant le depart jusqu'au demarrage effectif du covoit
+        if (Calendar.getInstance().getTime().after(calendar.getTime()) && Calendar.getInstance().getTime().before(horaireDuRetour)) {
+            Intent intent1 = new Intent(this, TimeAlarmCovoiturageRetour.class).putExtra("hRetour", String.valueOf(horaireDuRetour));
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1, intent1, PendingIntent.FLAG_ONE_SHOT);
+            // reveil de l'alarm
+            mAlarmManagerRetour.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+        }
     }
 
 
