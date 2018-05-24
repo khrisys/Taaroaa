@@ -1,5 +1,6 @@
 package fr.drochon.christian.taaroaa.covoiturage;
 
+import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
@@ -14,22 +15,27 @@ import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.text.Editable;
 import android.text.Html;
-import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import fr.drochon.christian.taaroaa.R;
@@ -42,6 +48,7 @@ import fr.drochon.christian.taaroaa.notifications.TimeAlarmCovoiturageRetour;
 public class CovoituragePassagersActivity extends BaseActivity {
 
 
+    private static Covoiturage covoiturage;
     TextInputEditText mNomConducteur;
     TextInputEditText mDateDepart;
     TextInputEditText mDateretour;
@@ -55,10 +62,11 @@ public class CovoituragePassagersActivity extends BaseActivity {
     Intent mIntent;
     ProgressBar mProgressBar;
     TextInputEditText mFieldNamePassengers;
+    Spinner mSpinnerPassagers;
     // DATAS
     int inputs;
-    List<TextInputEditText> listNamePassengers;
-    private static Covoiturage covoiturage;
+    List<String> listUsers;
+    List<String> listSelectedUsers;
     AlarmManager mAlarmManagerAller;
     AlarmManager mAlarmManagerRetour;
 
@@ -82,8 +90,10 @@ public class CovoituragePassagersActivity extends BaseActivity {
         mLinearChampsDynamiques = findViewById(R.id.linearLayoutDynamique);
         mTitrePassager = findViewById(R.id.nom_passager_txt);
         mNbPassagerInput = findViewById(R.id.nb_passager_input);
+        mNbPassagerInput.requestFocus();
 
-        listNamePassengers = new ArrayList<>();
+        listSelectedUsers = new ArrayList<>();
+        listUsers = new ArrayList<>();
         //  les AlarmManager permettront de réveiller le téléphone et d'executer du code à une date précise
         mAlarmManagerAller = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         mAlarmManagerRetour = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
@@ -91,6 +101,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
         this.configureToolbar();
         this.giveToolbarAName(R.string.covoit_passager_name);
         this.updateUIWhenCreating();
+        this.getAllUsers();
 
         // --------------------
         // LISTENERS
@@ -209,7 +220,8 @@ public class CovoituragePassagersActivity extends BaseActivity {
      */
     private boolean verificationChampsVides() {
         //int i = 0;
-        if(!mNbPassagerInput.getText().toString().equals(""))
+        if (!mNbPassagerInput.getText().toString().equals("")) {
+        }
             /*while(i < listNamePassengers.size()){
                 if (listNamePassengers.get(i).getText().toString().equals("")) {
                     listNamePassengers.get(i).setError("Merci de renseigner ce champ !");
@@ -217,13 +229,13 @@ public class CovoituragePassagersActivity extends BaseActivity {
                 }
                 return false;
             }*/
-        for (int i = 0; i < listNamePassengers.size(); i++) {
-            if (listNamePassengers.get(i).getText().toString().equals("")) {
-                listNamePassengers.get(i).setError("Merci de renseigner ce champ !");
-                listNamePassengers.get(i).requestFocus();
-                return false;
-            }
-        }
+            /*for (int i = 0; i < listNamePassengers.size(); i++) {
+                if (listNamePassengers.get(i).getText().toString().equals("")) {
+                    listNamePassengers.get(i).setError("Merci de renseigner ce champ !");
+                    listNamePassengers.get(i).requestFocus();
+                    return false;
+                }
+            }*/
         else {
             mNbPassagerInput.setError("Merci de renseigner ce champ !");
             mNbPassagerInput.requestFocus();
@@ -237,6 +249,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
      * Methode permettant d'afficher dynamiquement le nb de champ saisi par l'utilisateur correspondant au nb
      * de passager voulu pour saisir le nom de chacun des passagers
      */
+    @SuppressLint("SetTextI18n")
     private void showFieldsNamePassengers(CharSequence charSequence) {
         if (!mNbPassagerInput.getText().toString().equals("")) {
             // empecher un user de demander trop de places en fonction des places dispos
@@ -245,7 +258,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
                 adb.setTitle(R.string.rectif_demande);
                 // ajouter une couleur à l'icon de warning
                 Drawable warning = getResources().getDrawable(android.R.drawable.ic_dialog_alert);
-                ColorFilter filter = new LightingColorFilter( Color.RED, Color.BLUE);
+                ColorFilter filter = new LightingColorFilter(Color.RED, Color.BLUE);
                 warning.setColorFilter(filter);
                 adb.setIcon(warning);
                 adb.setMessage(R.string.alertDialog_places_restantes);
@@ -261,25 +274,78 @@ public class CovoituragePassagersActivity extends BaseActivity {
                     mTitrePassager.setVisibility(View.VISIBLE);
                     inputs = Integer.parseInt(charSequence.toString());
                     if (inputs > 0) {
-                        // creation des champs nom passager dynamiquement
+                        /*mFieldNamePassengers = new TextInputEditText(this);
+                        //mFieldNamePassengers.setHint("Saisir le nom du passager");
+                        mFieldNamePassengers.setInputType(InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
+                        // decomposition du nom et du prenom recu dans le param name
+                        String name = getCurrentUser().getDisplayName();
+                        String nom = null, prenom = null;
+                        String[] parts;
+                        assert name != null;
+                        if (name.contains(" ")) {
+                            parts = name.split(" ");
+                            try {
+                                if (parts[1] != null) nom = parts[1];
+                                else nom = "";
+                            } catch (ArrayIndexOutOfBoundsException e1) {
+                                Log.e("TAG", "ArrayOutOfBoundException " + e1.getMessage());
+                            }
+                            if (parts[0] != null) prenom = parts[0];
+                            else prenom = "";
+                        } else {
+                            nom = name;
+                            prenom = "";
+                        }
+                        mFieldNamePassengers.setText(prenom.toUpperCase() + " " + nom.toUpperCase());*/
+                        //mLinearChampsDynamiques.addView(mFieldNamePassengers);
+                        //listNamePassengers.add(mFieldNamePassengers);
+                        //listSelectedUsers.add(prenom.toUpperCase() + " " + nom.toUpperCase());
+
+
+                        // creation des champs spinner de passagers dynamiquement
                         for (int i = 0; i < inputs; i++) {
+                            // creation d'autant de spinner que desirés
+                            mSpinnerPassagers = new Spinner(this);
+                            // Create an ArrayAdapter using the string array and a default spinner layout
+                            ArrayAdapter<String> adapterUser = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, listUsers);
+                            // Specify the layout to use when the list of choices appears
+                            adapterUser.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                            // Apply the adapter to the spinner
+                            mSpinnerPassagers.setAdapter(adapterUser);
+                            // ajout dynamique du spinner au linearlayout
+                            mLinearChampsDynamiques.addView(mSpinnerPassagers);
+                            final String username = mSpinnerPassagers.getSelectedItem().toString();
+                            final int pos = mSpinnerPassagers.getSelectedItemPosition();
+                            // ajout à la liste des passagers les passagers choisis dans les spinners
+                            mSpinnerPassagers.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                                @Override
+                                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                                    //listSelectedUsers.add(mSpinnerPassagers.getSelectedItem().toString());
 
-                            mFieldNamePassengers = new TextInputEditText(this);
-                            mFieldNamePassengers.setHint("Saisir le nom du passager");
-                            mFieldNamePassengers.setInputType(InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
+                                    if(listSelectedUsers.contains(parent.getItemAtPosition(position).toString())){
+                                        listSelectedUsers.remove(parent.getItemAtPosition(position).toString());
+                                        mSpinnerPassagers.setSelection(parent.getFirstVisiblePosition());
+                                    }
 
-                            mLinearChampsDynamiques.addView(mFieldNamePassengers);
-                            listNamePassengers.add(i, mFieldNamePassengers);
+                                    listSelectedUsers.add(parent.getItemAtPosition(position).toString());
+                                }
+
+                                @Override
+                                public void onNothingSelected(AdapterView<?> parent) {
+
+                                }
+                            });
                         }
                     }
+                } else {
+                    mTitrePassager.setVisibility(View.GONE);
+                    mLinearChampsDynamiques.removeAllViews();
+                    listSelectedUsers.clear();
                 }
             }
-        } else {
-            mTitrePassager.setVisibility(View.GONE);
-            mLinearChampsDynamiques.removeAllViews();
-            listNamePassengers.clear();
         }
     }
+
 
 // --------------------
     // ALARM NOTIFICATION
@@ -328,6 +394,29 @@ public class CovoituragePassagersActivity extends BaseActivity {
     // --------------------
 
     /**
+     * Methode permettant de recuperer tous les utilisateurs existants en bdd, de maniere à pouvoir les
+     * afficher dans un spinner pour le choix des passagers d'un covoiturage.
+     *
+     * @return liste de tous les users de la bdd
+     */
+    private List<String> getAllUsers() {
+
+        setupDb().collection("users").orderBy("nom").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                if (queryDocumentSnapshots.size() != 0) {
+                    List<DocumentSnapshot> ds = queryDocumentSnapshots.getDocuments();
+                    for (DocumentSnapshot doc : ds) {
+                        Map<String, Object> user = doc.getData();
+                        listUsers.add(user.get("prenom") + " " + user.get("nom"));
+                    }
+                }
+            }
+        });
+        return listUsers;
+    }
+
+    /**
      * Methode permettant de recuperer et d'afficher toutes les informations d'un covoiturage
      */
     private void getAndShowDatas() {
@@ -351,13 +440,13 @@ public class CovoituragePassagersActivity extends BaseActivity {
         int nbPlacesRestantes = calculNbPlacesRestantes();
 
         // empecher un user de demander trop de places en fonction des places dispos
-        if (nbPlacesRestantes < 0 && listNamePassengers.size() > Integer.parseInt(covoiturage.getNbPlacesDispo())) {
+        if (nbPlacesRestantes < 0 && listSelectedUsers.size() > Integer.parseInt(covoiturage.getNbPlacesDispo())) {
 
             final AlertDialog.Builder adb = new AlertDialog.Builder(CovoituragePassagersActivity.this);
             adb.setTitle(R.string.rectif_demande);
             // ajouter une couleur à l'icon de warning
             Drawable warning = getResources().getDrawable(android.R.drawable.ic_dialog_alert);
-            ColorFilter filter = new LightingColorFilter( Color.RED, Color.BLUE);
+            ColorFilter filter = new LightingColorFilter(Color.RED, Color.BLUE);
             warning.setColorFilter(filter);
             adb.setIcon(warning);
             adb.setMessage(R.string.alertDialog_places_restantes);
@@ -377,8 +466,8 @@ public class CovoituragePassagersActivity extends BaseActivity {
                 listPassagers.addAll(covoiturage.getListPassagers());
 
                 // ajout des infos du passager dans l'objet covoiturage
-                for (int i = 0; i < listNamePassengers.size(); i++) {
-                    listPassagers.add(listNamePassengers.get(i).getText().toString().toUpperCase());
+                for (int i = 0; i < listSelectedUsers.size(); i++) {
+                    listPassagers.add(listSelectedUsers.get(i).toUpperCase());
                     // notification d'alarme à chacun des passagers : mais il faut que le nom rentré correspondent à quelque chose!
                     //TODO faire une requete pour boucler sur les users et recuperer les passagers par leurs noms et prenom pour notifier le depart du covoit souscris. Sur ces personnes :  declencher l'alarm
                     this.alarmDepart();
@@ -409,11 +498,11 @@ public class CovoituragePassagersActivity extends BaseActivity {
     private int calculNbPlacesRestantes() {
         String passagers = mNbPassagerInput.getText().toString();
         int nbPassagers = 0;
-        if(!passagers.equals("")) {
+        if (!passagers.equals("")) {
             nbPassagers = Integer.parseInt(passagers);
         }
-            int nbPlacesDispo = Integer.parseInt(covoiturage.getNbPlacesDispo());
-            int nbPlacesRestantes = nbPlacesDispo - nbPassagers;
+        int nbPlacesDispo = Integer.parseInt(covoiturage.getNbPlacesDispo());
+        int nbPlacesRestantes = nbPlacesDispo - nbPassagers;
 
         return nbPlacesRestantes;
     }

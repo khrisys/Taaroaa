@@ -27,6 +27,10 @@ public class NotificationsService extends FirebaseMessagingService {
     int NOTIFICATION_ID = 7;
     String NOTIFICATION_TAG = "TAAROAA";
 
+    /**
+     * Le remoteMessage affiche ce que j'ecris en titre de message dans la bdd
+     * @param remoteMessage
+     */
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         if (remoteMessage.getNotification() != null) {
@@ -47,10 +51,6 @@ public class NotificationsService extends FirebaseMessagingService {
         super.onSendError(s, e);
         Log.e("TAG", "onSendError : " + s);
         Log.e("EXCEPTION", "Exception : " + e);
-    }
-
-    public NotificationsService() {
-        super();
     }
 
     /**

@@ -69,6 +69,7 @@ public class MainActivity extends BaseActivity {
         mCreation = findViewById(R.id.creation_compte_btn);
         mConnexion = findViewById(id.connection_valid_btn);
         mDeconnexion = findViewById(id.deconnexion_btn);
+        isAppRunning = true;
 
         // --------------------
         // LISTENERS

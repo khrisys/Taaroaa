@@ -21,7 +21,7 @@ public class SendNotification extends FirebaseMessagingService {
      */
     @Override
     public void onCreate() {
-        RemoteMessage remoteMessage = new RemoteMessage.Builder(SENDER_ID)
+        RemoteMessage remoteMessage = new RemoteMessage.Builder(SENDER_ID + "@gcm.googleapis.com")
                 .setMessageId(notificationId)
                 .addData("my_message", "Hello World")
                 .addData("my_action", "SAY_HELLO")
@@ -36,7 +36,11 @@ public class SendNotification extends FirebaseMessagingService {
         }
 
 
-        fm.send(remoteMessage);
+        fm.send(new RemoteMessage.Builder(SENDER_ID + "@gcm.googleapis.com")
+                .setMessageId(notificationId)
+                .addData("my_message", "Hello World")
+                .addData("my_action", "SAY_HELLO")
+                .build());
     }
 
 

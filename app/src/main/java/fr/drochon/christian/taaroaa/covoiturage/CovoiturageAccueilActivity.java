@@ -1,6 +1,7 @@
 package fr.drochon.christian.taaroaa.covoiturage;
 
 import android.annotation.SuppressLint;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -17,6 +18,9 @@ import java.util.Objects;
 
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
+import fr.drochon.christian.taaroaa.controller.MainActivity;
+import fr.drochon.christian.taaroaa.notifications.SendNotification;
+import fr.drochon.christian.taaroaa.notifications.TimeAlarmCovoiturageRetour;
 
 public class CovoiturageAccueilActivity extends BaseActivity {
 
@@ -38,6 +42,8 @@ public class CovoiturageAccueilActivity extends BaseActivity {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                /*SendNotification sendNotification = new SendNotification();
+                sendNotification.onCreate();*/
 
                 Intent intent = new Intent(CovoiturageAccueilActivity.this, CovoiturageVehiclesActivity.class);
                 startActivity(intent);

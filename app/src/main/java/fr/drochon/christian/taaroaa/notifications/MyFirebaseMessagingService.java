@@ -20,16 +20,29 @@ import com.google.firebase.messaging.RemoteMessage;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Random;
+import java.util.Objects;
 
 import fr.drochon.christian.taaroaa.R;
+import fr.drochon.christian.taaroaa.auth.SearchUserActivity;
 import fr.drochon.christian.taaroaa.controller.MainActivity;
+import fr.drochon.christian.taaroaa.course.CoursesPupilsActivity;
+import fr.drochon.christian.taaroaa.covoiturage.CovoiturageVehiclesActivity;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
-    private static final String NOTIFICATION_ID_EXTRA = "notificationId";
+    private static final String NOTIFICATION_ID_EXTRA = "NOTIFICATION_ID";
     private static final String IMAGE_URL_EXTRA = "imageUrl";
     private static final String ADMIN_CHANNEL_ID = "admin_channel";
+    /**
+     * NOTIFICATION ID
+     * Ici, pour obtenir des notifications uniques chaque fois que vous recevez un nouveau message,
+     * dans l'intérêt de cet exemple, nous générons un nombre aléatoire et l'utilisons comme identifiant
+     * de notification. Avec cet ID, vous pouvez faire plusieurs choses à vos notifications. En tant que
+     * tel, vous devriez probablement les regrouper s'ils sont du même type ou les mettre à jour. Si
+     * vous voulez voir chaque notification individuellement des autres, leurs ID doivent être différents.
+     */
+    int NOTIFICATION_ID = 7;
+    String NOTIFICATION_TAG = "TAAROAA";
     private NotificationManager notificationManager;
 
     // RECEPTION D'UNE NOTIFICATION
@@ -55,43 +68,33 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     public void onMessageReceived(RemoteMessage remoteMessage) {
 
         /**
-         * NOTIFICATION ID
-         * Ici, pour obtenir des notifications uniques chaque fois que vous recevez un nouveau message,
-         * dans l'intérêt de cet exemple, nous générons un nombre aléatoire et l'utilisons comme identifiant
-         * de notification. Avec cet ID, vous pouvez faire plusieurs choses à vos notifications. En tant que
-         * tel, vous devriez probablement les regrouper s'ils sont du même type ou les mettre à jour. Si
-         * vous voulez voir chaque notification individuellement des autres, leurs ID doivent être différents.
-         */
-        //You should use an actual ID instead
-        int notificationId = 1;
-
-        /**
          * NOTIFICATIONS TESTS
          * Apres validation du test postman, nous pouvons envoyer et tester des notifications, nous pouvons les rendre plus fantaisistes.
          * Tout d'abord, ajoutons une fonctionnalité de clic pour la notification:
          */
-        Intent notificationIntent = new Intent(this, MainActivity.class);
+        Intent notificationIntent;
         if (MainActivity.isAppRunning) {
-            //Some action
-            notificationIntent = new Intent(this, MainActivity.class);
+            //Action si l'appli est ouverte lorsque la notif arrive
+            notificationIntent = new Intent(this, CovoiturageVehiclesActivity.class);
         } else {
             //Show notification as usual
-            notificationIntent = new Intent(this, MainActivity.class);
+            notificationIntent = new Intent(this, SearchUserActivity.class);
         }
 
         notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         final PendingIntent pendingIntent = PendingIntent.getActivity(this,
-                0 /* Request code */, notificationIntent,
+                0 , notificationIntent,
                 PendingIntent.FLAG_ONE_SHOT);
 
-        Bitmap bitmap = getBitmapfromUrl(remoteMessage.getData().get("image-url"));
+        Bitmap bitmap = getBitmapfromUrl(remoteMessage.getData().get("C:\\Users\\khris\\Pictures\\craig_joubert.JPG"));
 
-        Intent likeIntent = new Intent(this, MainActivity.class);
-        likeIntent.putExtra(NOTIFICATION_ID_EXTRA, notificationId);
-        likeIntent.putExtra(IMAGE_URL_EXTRA, remoteMessage.getData().get("image-url"));
+        // action du bouton sur la notif
+        Intent likeIntent = new Intent(this, CoursesPupilsActivity.class);
+        likeIntent.putExtra(NOTIFICATION_ID_EXTRA, NOTIFICATION_ID);
+        likeIntent.putExtra(IMAGE_URL_EXTRA, remoteMessage.getData().get("C:\\Users\\khris\\Pictures\\craig_joubert.JPG"));
         PendingIntent likePendingIntent = PendingIntent.getService(this,
-                notificationId, likeIntent, PendingIntent.FLAG_ONE_SHOT);
+                NOTIFICATION_ID, likeIntent, PendingIntent.FLAG_ONE_SHOT);
 
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -118,22 +121,22 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, ADMIN_CHANNEL_ID)// canal de noification
                         .setLargeIcon(bitmap) // on met l'image dans lma notif
-                        .setSmallIcon(R.mipmap.ic_launcher)
-                        .setContentTitle(remoteMessage.getData().get("title"))
+                        .setSmallIcon(android.R.drawable.ic_notification_overlay)
+                        .setContentTitle(Objects.requireNonNull(remoteMessage.getNotification()).getBody())
                         // Le NotificationCompat.Builder prend en charge plusieurs types de styles différents pour
                         // les notifications, y compris un lecteur et ceux avec des dispositions personnalisées:
                         .setStyle(new NotificationCompat.BigPictureStyle()
-                                .setSummaryText(remoteMessage.getData().get("message"))
+                                .setSummaryText(remoteMessage.getData().get("my_action"))
                                 .bigPicture(bitmap))/*Notification with Image*/
-                        .setContentText(remoteMessage.getData().get("message"))
+                        .setContentText(remoteMessage.getData().get("my_message"))
                         .setAutoCancel(true)
                         .setSound(defaultSoundUri)
                         // Ajouter des boutons à la notif
-                        .addAction(R.drawable.logo_vgt,
-                                getString(R.string.account_search_name), likePendingIntent)
+                        .addAction(R.mipmap.logo1,
+                                getString(R.string.app_name), likePendingIntent)
                         .setContentIntent(pendingIntent);
-
-        notificationManager.notify(notificationId, notificationBuilder.build());
+        // affichage de la notif
+        notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build());
 
     }
 
