@@ -47,6 +47,7 @@ public class MainActivity extends BaseActivity {
     Button mConnexion;
     Button mDeconnexion;
     TextView mTextViewHiddenForSnackbar;
+    public static boolean isAppRunning;
 
     // --------------------
     // LIFE CYCLE
@@ -152,9 +153,7 @@ public class MainActivity extends BaseActivity {
                         .createSignInIntentBuilder() // lance une activité de connexion/inscrption autogeneree
                         .setTheme(style.LoginTheme) // definir un style dans le fichier res/values/styles.xml
                         .setAvailableProviders( // ajoute des moyens divers de connexion (email, google, fb..)
-                                Arrays.asList(new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build(), //EMAIL
-                                        new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build(), //GOOGLE
-                                        new AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER).build())) // FACEBOOK
+                                Arrays.asList(new AuthUI.IdpConfig.EmailBuilder().build()))
                         .setIsSmartLockEnabled(false, true)
                         .setLogo(R.mipmap.logo1)
                         .build(),

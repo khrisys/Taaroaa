@@ -11,6 +11,7 @@ import android.widget.Button;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import fr.drochon.christian.taaroaa.R;
+import fr.drochon.christian.taaroaa.auth.AccountCreateActivity;
 import fr.drochon.christian.taaroaa.auth.AccountModificationActivity;
 import fr.drochon.christian.taaroaa.auth.SearchUserActivity;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
@@ -61,6 +63,8 @@ public class SummaryActivity extends BaseActivity {
         mCompte.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+              /*  Intent intent = new Intent(SummaryActivity.this, AccountCreateActivity.class);
+                startActivity(intent);*/
 
                 setupDb().collection("users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
@@ -90,7 +94,7 @@ public class SummaryActivity extends BaseActivity {
                             }
                         }
                                 // nouvel utilisateur
-                               /* else {
+                        /*        else {
                                     Intent intent = new Intent(SummaryActivity.this, AccountCreateActivity.class);
                                     startActivity(intent);
                                 }*/
@@ -117,7 +121,8 @@ public class SummaryActivity extends BaseActivity {
         mCours.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setupDb().collection("users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                db.collection("users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot documentSnapshots) {
                         if (documentSnapshots.size() != 0) {
@@ -133,7 +138,6 @@ public class SummaryActivity extends BaseActivity {
                                     Intent intent = new Intent(SummaryActivity.this, CoursesPupilsActivity.class);
                                     startActivity(intent);
                                 }
-
                             }
                         }
                     }

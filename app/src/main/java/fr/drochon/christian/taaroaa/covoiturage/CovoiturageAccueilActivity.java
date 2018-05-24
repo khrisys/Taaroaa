@@ -1,11 +1,19 @@
 package fr.drochon.christian.taaroaa.covoiturage;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.RemoteMessage;
+
+import java.util.Objects;
 
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
@@ -19,37 +27,24 @@ public class CovoiturageAccueilActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_covoiturage_accueil);
         btn = findViewById(R.id.creation_covoit_btn);
+
         configureToolbar();
         giveToolbarAName(R.string.covoit_accueil_name);
 
-
-
- /*       // Build a Notification object : interieur de lappli et renvoi vers une activité definie via l'intent plus haut
-        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Europe/Paris"));
-        Date currentDate = calendar.getTime();
-        Date date1 = null;
-        DateFormat dateFormat = new SimpleDateFormat("dd MM yyyy HH:mm:ss", Locale.FRANCE);
-        dateFormat.setTimeZone(TimeZone.getTimeZone("Europe/Paris"));
-        String d = "20 05 2018 16:58:00";
-        try {
-            date1 = dateFormat.parse(d);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        if (currentDate.after(date1))
-            notif();
-*/
-
+        // --------------------
+        // LISTENER
+        // --------------------
 
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 Intent intent = new Intent(CovoiturageAccueilActivity.this, CovoiturageVehiclesActivity.class);
                 startActivity(intent);
             }
         });
     }
+
 
     @Override
     public int getFragmentLayout() {
@@ -76,12 +71,43 @@ public class CovoiturageAccueilActivity extends BaseActivity {
      * On utilise un switch ici car il peut y avoir plusieurs options.
      * Surtout ne pas oublier le "true" apres chaque case sinon, ce sera toujours le dernier case qui sera executé!
      *
-     * @param item
-     * @return
+     * @param item menuitem
+     * @return optionsToolBar
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         return optionsToolbar(this, item);
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    private class Notif extends AsyncTask<Void, Void, Void>{
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            String TAG = "TAAROAA";
+            String SENDER_ID = "963968628408";
+            String notificationId = "7"; //new Random().nextInt(60000);
+
+            FirebaseMessaging fm = FirebaseMessaging.getInstance();
+
+            RemoteMessage remoteMessage = new RemoteMessage.Builder(SENDER_ID)
+                    .setMessageId(notificationId)
+                    .addData("my_message", "Hello World")
+                    .addData("my_action", "SAY_HELLO")
+                    .build();
+
+            if (!remoteMessage.getData().isEmpty()) {
+                Log.e(TAG, "UpstreamData: " + remoteMessage.getData());
+            }
+
+            if (!Objects.requireNonNull(remoteMessage.getMessageId()).isEmpty()) {
+                Log.e(TAG, "UpstreamMessageId: " + remoteMessage.getMessageId());
+            }
+
+
+            fm.send(remoteMessage);
+            return null;
+        }
     }
 
 /*    public void notif() {
@@ -123,3 +149,5 @@ public class CovoiturageAccueilActivity extends BaseActivity {
         notificationManager.notify(NOTIFICATION_TAG, NOTIFICATION_ID, notificationBuilder.build());
     }*/
 }
+
+

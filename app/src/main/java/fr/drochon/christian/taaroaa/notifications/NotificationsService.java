@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.media.RingtoneManager;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -33,6 +34,23 @@ public class NotificationsService extends FirebaseMessagingService {
             // Show notification after received message
             this.sendVisualNotification(message);
         }
+    }
+
+    @Override
+    public void onMessageSent(String s) {
+        super.onMessageSent(s);
+        Log.e("TAG", "onSentMessage :" + s);
+    }
+
+    @Override
+    public void onSendError(String s, Exception e) {
+        super.onSendError(s, e);
+        Log.e("TAG", "onSendError : " + s);
+        Log.e("EXCEPTION", "Exception : " + e);
+    }
+
+    public NotificationsService() {
+        super();
     }
 
     /**

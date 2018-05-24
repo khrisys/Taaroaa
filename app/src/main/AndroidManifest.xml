@@ -11,6 +11,8 @@
 
     <!--Permission de lire dans la firebase storage-->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
 
     <application
         android:allowBackup="true"
@@ -65,6 +67,26 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
         </service>
+        <service
+            android:name=".notifications.SendNotification">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"
+                    />
+            </intent-filter>
+        </service>
+        <service
+            android:name=".notifications.MyFirebaseInstanceIDService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+            </intent-filter>
+        </service>
+        <service
+            android:name=".notifications.MyFirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
+
         <receiver android:name=".notifications.TimeAlarmCovoiturageAller" />
         <receiver android:name=".notifications.TimeAlarmCovoiturageRetour" />
         <receiver android:name=".notifications.TimeAlarmCovoiturageSuppression" />
