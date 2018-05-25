@@ -220,23 +220,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
      */
     private boolean verificationChampsVides() {
         //int i = 0;
-        if (!mNbPassagerInput.getText().toString().equals("")) {
-        }
-            /*while(i < listNamePassengers.size()){
-                if (listNamePassengers.get(i).getText().toString().equals("")) {
-                    listNamePassengers.get(i).setError("Merci de renseigner ce champ !");
-                    i++;
-                }
-                return false;
-            }*/
-            /*for (int i = 0; i < listNamePassengers.size(); i++) {
-                if (listNamePassengers.get(i).getText().toString().equals("")) {
-                    listNamePassengers.get(i).setError("Merci de renseigner ce champ !");
-                    listNamePassengers.get(i).requestFocus();
-                    return false;
-                }
-            }*/
-        else {
+        if (mNbPassagerInput.getText().toString().equals("")) {
             mNbPassagerInput.setError("Merci de renseigner ce champ !");
             mNbPassagerInput.requestFocus();
             return false;
@@ -269,39 +253,11 @@ public class CovoituragePassagersActivity extends BaseActivity {
                 });
                 adb.show();
             } else {
-                // condition de creation des champs nom passager dynamique
-                if (!mNbPassagerInput.getText().toString().equals("")) {
+                // condition de creation des spinners de passagers dynamiquement
+                if (verificationChampsVides()) {
                     mTitrePassager.setVisibility(View.VISIBLE);
                     inputs = Integer.parseInt(charSequence.toString());
                     if (inputs > 0) {
-                        /*mFieldNamePassengers = new TextInputEditText(this);
-                        //mFieldNamePassengers.setHint("Saisir le nom du passager");
-                        mFieldNamePassengers.setInputType(InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
-                        // decomposition du nom et du prenom recu dans le param name
-                        String name = getCurrentUser().getDisplayName();
-                        String nom = null, prenom = null;
-                        String[] parts;
-                        assert name != null;
-                        if (name.contains(" ")) {
-                            parts = name.split(" ");
-                            try {
-                                if (parts[1] != null) nom = parts[1];
-                                else nom = "";
-                            } catch (ArrayIndexOutOfBoundsException e1) {
-                                Log.e("TAG", "ArrayOutOfBoundException " + e1.getMessage());
-                            }
-                            if (parts[0] != null) prenom = parts[0];
-                            else prenom = "";
-                        } else {
-                            nom = name;
-                            prenom = "";
-                        }
-                        mFieldNamePassengers.setText(prenom.toUpperCase() + " " + nom.toUpperCase());*/
-                        //mLinearChampsDynamiques.addView(mFieldNamePassengers);
-                        //listNamePassengers.add(mFieldNamePassengers);
-                        //listSelectedUsers.add(prenom.toUpperCase() + " " + nom.toUpperCase());
-
-
                         // creation des champs spinner de passagers dynamiquement
                         for (int i = 0; i < inputs; i++) {
                             // creation d'autant de spinner que desirés
@@ -314,20 +270,27 @@ public class CovoituragePassagersActivity extends BaseActivity {
                             mSpinnerPassagers.setAdapter(adapterUser);
                             // ajout dynamique du spinner au linearlayout
                             mLinearChampsDynamiques.addView(mSpinnerPassagers);
-                            final String username = mSpinnerPassagers.getSelectedItem().toString();
-                            final int pos = mSpinnerPassagers.getSelectedItemPosition();
-                            // ajout à la liste des passagers les passagers choisis dans les spinners
+
                             mSpinnerPassagers.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                                 @Override
                                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                                    //listSelectedUsers.add(mSpinnerPassagers.getSelectedItem().toString());
-
-                                    if(listSelectedUsers.contains(parent.getItemAtPosition(position).toString())){
-                                        listSelectedUsers.remove(parent.getItemAtPosition(position).toString());
-                                        mSpinnerPassagers.setSelection(parent.getFirstVisiblePosition());
+                                    // boucle sur tous les spinners
+                                    for (int j = 0; j < inputs; j++) {
+                                        // garder une trace du premier objet affiché avant changement par l'user
+                                        final Spinner spinner = (Spinner) mLinearChampsDynamiques.getChildAt(j);
+                                        final String precedentUsername = spinner.getSelectedItem().toString();
+                                        // si l'user n'existe pas en bdd, supprimer le precedent user et insertion du nouvel user à la place du precedent dans la liste
+                                        if (!listSelectedUsers.contains(spinner.getSelectedItem().toString())) {
+                                            // capture de l'exception lors de la creation de la liste, car les index n'exitent pas encore
+                                            try {
+                                                if (!listSelectedUsers.get(j).equals(""))
+                                                    listSelectedUsers.remove(listSelectedUsers.get(j));
+                                            } catch (IndexOutOfBoundsException e) {
+                                                e.getMessage();
+                                            }
+                                            listSelectedUsers.add(spinner.getSelectedItem().toString());
+                                        }
                                     }
-
-                                    listSelectedUsers.add(parent.getItemAtPosition(position).toString());
                                 }
 
                                 @Override
