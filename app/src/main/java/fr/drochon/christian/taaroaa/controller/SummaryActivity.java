@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -65,39 +66,43 @@ public class SummaryActivity extends BaseActivity {
             public void onClick(View v) {
               /*  Intent intent = new Intent(SummaryActivity.this, AccountCreateActivity.class);
                 startActivity(intent);*/
+                FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
 
                 setupDb().collection("users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot documentSnapshots) {
+                        //int compteur = 0;
                         if (documentSnapshots.size() != 0) {
                             List<DocumentSnapshot> ds = documentSnapshots.getDocuments();
                             for (DocumentSnapshot doc : ds) {
                                 Map<String, Object> user = doc.getData();
                                 //TODO  passe dans les 2 conditions en fonction de l'id. comme ca boucle, on passe dans les2 et ca arrive sur la creation de compte
-                                if (user.get("uid").equals(getCurrentUser().getUid())) {
-                                    // Si l'user connecté existe en bdd, on recupere l'ensemble de l'objet user et on le passe en param de l'activité
-                                    if(user.get("fonction") != null) {
-                                        User u = new User(user.get("uid").toString(), user.get("nom").toString(), user.get("prenom").toString(), user.get("licence").toString(),
-                                                user.get("email").toString(), user.get("niveau").toString(), user.get("fonction").toString());
-                                        Intent intent = new Intent(SummaryActivity.this, AccountModificationActivity.class).putExtra("user", u);
-                                        startActivity(intent);
-                                        break;
-                                    }
-                                    // Si l'user connecté vient juste de creer son compte, on recupere ses seules infos disponibles et on les passe en param de l'activité de modif d'un compte
-                                    else {
-                                        User u = new User(user.get("uid").toString(), user.get("nom").toString(), user.get("prenom").toString(), user.get("email").toString());
-                                        Intent intent = new Intent(SummaryActivity.this, AccountModificationActivity.class).putExtra("user", u);
-                                        startActivity(intent);
-                                        break;
 
+                                // Si l'user connecté existe en bdd, on recupere l'ensemble de l'objet user et on le passe en param de l'activité
+                                if (user.get("fonction") != null && user.get("uid").equals(getCurrentUser().getUid())) {
+                                    User u = new User(user.get("uid").toString(), user.get("nom").toString(), user.get("prenom").toString(), user.get("licence").toString(),
+                                            user.get("email").toString(), user.get("niveau").toString(), user.get("fonction").toString());
+                                    Intent intent = new Intent(SummaryActivity.this, AccountModificationActivity.class).putExtra("user", u);
+                                    startActivity(intent);
 
-                            }
-                        }
+                                    break;
+                                }
+                                // Si l'user connecté vient juste de creer son compte, on recupere ses seules infos disponibles et on les passe en param de l'activité de modif d'un compte
+                                else if (user.get("fonction") == null) {
+                                    User u = new User(user.get("uid").toString(), user.get("nom").toString(), user.get("prenom").toString(), user.get("email").toString());
+                                    Intent intent = new Intent(SummaryActivity.this, AccountModificationActivity.class).putExtra("user", u);
+                                    startActivity(intent);
+                                    break;
+                                }
+                         /*       compteur++;
+
                                 // nouvel utilisateur
-                        /*        else {
+                                if (compteur > documentSnapshots.size()) {
+                                    User u = new User(user.get("uid").toString(), user.get("nom").toString(), user.get("prenom").toString(), user.get("email").toString());
                                     Intent intent = new Intent(SummaryActivity.this, AccountCreateActivity.class);
                                     startActivity(intent);
-                                }*/
+                                }
+*/
                             }
                         }
                     }

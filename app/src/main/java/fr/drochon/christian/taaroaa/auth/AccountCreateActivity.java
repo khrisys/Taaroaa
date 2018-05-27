@@ -25,6 +25,7 @@ import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -214,13 +215,17 @@ public class AccountCreateActivity extends BaseActivity {
     private void createUserInFirebase() {
 
         // pas d'id pour un objet non créé
-        String uid = FirebaseAuth.getInstance().getUid();
+        FirebaseAuth auth = FirebaseAuth.getInstance(FirebaseFirestore.getInstance().getApp());
+        auth.createUserWithEmailAndPassword(this.mEmail.getText().toString(), mPassword.getText().toString());
+
+        String uid = auth.getUid();
         String nom = this.mNom.getText().toString();
         String prenom = this.mPrenom.getText().toString();
         String licence = this.mLicence.getText().toString();
         String niveau = this.mNiveauPlongeespinner.getSelectedItem().toString();
         String email = this.mEmail.getText().toString();
         String password = mPassword.getText().toString();
+        long hash = hashCode();
 
         if (!nom.isEmpty() && !prenom.isEmpty() && !email.isEmpty() && isValidEmail(email) && !password.isEmpty()) {
             this.mProgressBar.setVisibility(View.VISIBLE);
@@ -232,7 +237,9 @@ public class AccountCreateActivity extends BaseActivity {
             user.put("niveau", niveau);
             user.put("fonction", fonction);
             user.put("email", email);
+            user.put("hash", hash);
 
+            assert uid != null;
             setupDb().collection("users").document(uid).set(user)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override

@@ -40,7 +40,7 @@ import butterknife.ButterKnife;
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.api.CovoiturageHelper;
 import fr.drochon.christian.taaroaa.model.Covoiturage;
-import fr.drochon.christian.taaroaa.notifications.TimeAlarmCovoiturageSuppression;
+import fr.drochon.christian.taaroaa.alarm.TimeAlarmCovoiturageSuppression;
 
 public class VehiculeViewHolder extends RecyclerView.ViewHolder {
 

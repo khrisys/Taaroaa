@@ -48,8 +48,8 @@ import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.api.CovoiturageHelper;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
 import fr.drochon.christian.taaroaa.model.User;
-import fr.drochon.christian.taaroaa.notifications.TimeAlarmCovoiturageAller;
-import fr.drochon.christian.taaroaa.notifications.TimeAlarmCovoiturageRetour;
+import fr.drochon.christian.taaroaa.alarm.TimeAlarmCovoiturageAller;
+import fr.drochon.christian.taaroaa.alarm.TimeAlarmCovoiturageRetour;
 
 import static java.util.Calendar.MINUTE;
 

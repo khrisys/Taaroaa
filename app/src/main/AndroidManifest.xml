@@ -10,9 +10,9 @@
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <!--Permission de lire dans la firebase storage-->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE"/>
 
     <application
         android:allowBackup="true"
@@ -61,12 +61,12 @@
             </meta-data>
         </activity>
         <!-- NOTIFICATION SERVICE -->
-       <!-- <service
-            android:name=".notifications.NotificationsService">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
-            </intent-filter>
-        </service>-->
+        <!-- <service
+             android:name=".notifications.NotificationsService">
+             <intent-filter>
+                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+             </intent-filter>
+         </service>-->
         <service
             android:name=".notifications.MyFirebaseMessagingService">
             <intent-filter>
@@ -88,10 +88,39 @@
         </service>
 
 
-        <receiver android:name=".notifications.TimeAlarmCovoiturageAller" />
-        <receiver android:name=".notifications.TimeAlarmCovoiturageRetour" />
-        <receiver android:name=".notifications.TimeAlarmCovoiturageSuppression" />
-        <receiver android:name=".notifications.TimeAlarmCourses" />
+        <receiver
+            android:name=".alarm.TimeAlarmCovoiturageAller"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.NOTIFY" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".alarm.TimeAlarmCovoiturageRetour"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.NOTIFY" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".alarm.TimeAlarmCovoiturageSuppression"/>
+        <receiver
+            android:name=".alarm.TimeAlarmCourses"/>
+        <receiver
+            android:name=".alarm.NotificationButtonReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.NOTIFY" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".alarm.NotificationReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.NOTIFY" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

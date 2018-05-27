@@ -1,4 +1,4 @@
-package fr.drochon.christian.taaroaa.notifications;
+package fr.drochon.christian.taaroaa.alarm;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -8,63 +8,57 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.RingtoneManager;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Objects;
 
-import fr.drochon.christian.taaroaa.course.CoursesPupilsActivity;
-import fr.drochon.christian.taaroaa.model.Course;
+import fr.drochon.christian.taaroaa.covoiturage.CovoiturageVehiclesActivity;
 
-public class TimeAlarmCourses extends BroadcastReceiver {
+public class TimeAlarmCovoiturageRetour extends BroadcastReceiver {
 
     NotificationManager notificationManager;
 
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        Course cours = new Course();
-        String dateCoursStr = null;
-        String heureCoursStr = null;
+        String hRetour;
+        String dateRetourStr = null;
+        String heureRetourStr = null;
 
         // --------------------
         // RECUPERATION BUNDLE
         // --------------------
 
         // recuperation de l'extra envoyé dans l'intent
-        cours = (Course) Objects.requireNonNull(intent.getExtras()).getSerializable("cours");
+        Bundle bundle = intent.getExtras();
+        assert bundle != null;hRetour = bundle.getString("hRetour");
 
         // --------------------
-        // CONVERSION COVOITURAGE ALLER
+        // CONVERSION COVOITURAGE RETOUR
         // --------------------
-        if (cours != null) {
-
+        if (hRetour != null) {
             // conversion de date pour affichage
-            Date dateCours = null;
-            SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy", Locale.US);
+            Date dateRetour = null;
+            SimpleDateFormat dateFormat3 = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy", Locale.US);
             try {
-                dateCours = dateFormat.parse(cours.getHoraireDuCours().toString());
+                dateRetour = dateFormat3.parse(hRetour);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            SimpleDateFormat dateFormat1 = new SimpleDateFormat("EEE dd MMM yyyy", Locale.FRANCE);
-            dateCoursStr = dateFormat1.format(dateCours);
-            SimpleDateFormat dateFormat2 = new SimpleDateFormat("HH:mm", Locale.FRANCE);
-            heureCoursStr = dateFormat2.format(dateCours);
+            SimpleDateFormat dateFormat4 = new SimpleDateFormat("EEE dd MMM yyyy", Locale.FRANCE);
+            dateRetourStr = dateFormat4.format(dateRetour);
+            SimpleDateFormat dateFormat5 = new SimpleDateFormat("HH:mm", Locale.FRANCE);
+            heureRetourStr = dateFormat5.format(dateRetour);
         }
 
-        // Créé un nouvel intent. Par contre, on ne renvoie pas l'user vers une nouvelle activité car on s'y trouve dejà.
-        // On ne l'y renvoie uniquement que si l'user n'est pas sur la page activityPupilsActivity au moment du declenchement de la notif.
-        // Sinon, ca fera une boucle infinie puisque la meme acticité sera rappellée sans cesse.
-        Object activity  = Objects.requireNonNull(intent.getExtras().get("activity"));
-        assert activity != null;
-        if(!activity.equals(CoursesPupilsActivity.class)) intent = new Intent(context, CoursesPupilsActivity.class);
-
+        // Créé un nouvel intent qui renvoie l'user vers l'activité adequate
+        intent = new Intent(context, CovoiturageVehiclesActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 2, intent, PendingIntent.FLAG_ONE_SHOT);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 1, intent, PendingIntent.FLAG_ONE_SHOT);
 
         // --------------------
         // NOTIFICATION
@@ -72,12 +66,11 @@ public class TimeAlarmCourses extends BroadcastReceiver {
 
         // Affichage de la 2e notification. Cliquée, elle renvoie vers l'activité voulue
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
+
         inboxStyle.setBigContentTitle("TAAROAA"); // titre de la notif lorsq'uelle est ouverte
-        assert cours != null;
-        inboxStyle.addLine("Cours de niveau " +cours.getNiveauDuCours()); // sous titre affuché lorsque la notif est affichée
-        inboxStyle.addLine(" ");
-        inboxStyle.addLine("Le cours de " + cours.getSujetDuCours() + " dispensé par " + cours.getNomDuMoniteur());
-        inboxStyle.addLine(" démarrera le " + dateCoursStr + " à " + heureCoursStr + " !"); // decription de la notif lorsqu'elle est ouverte
+        inboxStyle.addLine("Covoiturage"); // sous titre affuché lorsque la notif est affichée
+        inboxStyle.setSummaryText("Votre covoiturage Retour partira " + dateRetourStr + " à " + heureRetourStr + " !"); // decription de la notif lorsqu'elle est ouverte
+
 
         // Create a Channel (Android 8) and set the importance
         String channelId = "fcm_default_channel";
@@ -88,8 +81,8 @@ public class TimeAlarmCourses extends BroadcastReceiver {
                         // Set the notification content
                         .setSmallIcon(android.R.drawable.ic_notification_overlay)
                         .setContentTitle("TAAROAA")
-                        .setContentText("Cours de niveau " + cours.getNiveauDuCours())
-                        .setSubText("Votre prochain cours de " + cours.getTypeCours() + " démarrera à " + heureCoursStr + " !")
+                        .setContentText("Covoiturage")
+                        .setSubText("Votre covoit Retour sera pret dans 2 heures !")
                         .setPriority(NotificationCompat.PRIORITY_HIGH) //affiche la notif clairement en haut de l'app
                         .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                         // Set the intent that will fire when the user taps the notification : renvoi vers l'activité definie
@@ -98,7 +91,7 @@ public class TimeAlarmCourses extends BroadcastReceiver {
                         // style permettant une seconde notif personnalisée comprenant plusieurs lignes
                         .setStyle(inboxStyle);
 
-        int NOTIFICATION_ID = 2;
+        int NOTIFICATION_ID = 1;
         String NOTIFICATION_TAG = "TAAROAA";
         // Create a Channel (Android 8) and set the importance
         notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);

@@ -340,6 +340,7 @@ public class AccountModificationActivity extends BaseActivity {
         String nom = this.mNom.getText().toString();
         String prenom = this.mPrenom.getText().toString();
         String email = this.mEmail.getText().toString();
+        Long hash = Long.valueOf(hashCode());
 
         if (user.getUid() != null) {
             if (!nom.isEmpty() && !nom.equals(getString(R.string.info_no_username_found)) && !prenom.isEmpty() && !email.isEmpty()) { // verification que tous les champs vides soient remplis
@@ -351,7 +352,7 @@ public class AccountModificationActivity extends BaseActivity {
                 // Update de la bdd user
                 this.mProgressBar.setVisibility(View.VISIBLE);
                 UserHelper.updateUser(user.getUid(), this.mNom.getText().toString().toUpperCase(), this.mPrenom.getText().toString().toUpperCase(), this.mLicence.getText().toString(),
-                        this.mEmail.getText().toString(), this.mNiveauPlongeespinner.getSelectedItem().toString(), this.mFonctionAuClubspinner.getSelectedItem().toString()).
+                        this.mEmail.getText().toString(), this.mNiveauPlongeespinner.getSelectedItem().toString(), this.mFonctionAuClubspinner.getSelectedItem().toString(), hash).
                         addOnFailureListener(this.onFailureListener()).
                         addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override

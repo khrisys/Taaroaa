@@ -74,8 +74,8 @@ public class UserHelper {
      * Mehode permettant de mettre à jour un utilisateur.
      * Auncun utilisateur ne peut updater son adresse email pour eviter de perdre don addresse en la cgngeant trop souvent.
       */
-    public static Task<Void> updateUser(String uid, String nom, String prenom, String licence, String email, String niveauPlongeur, String fonction) {
-        return UserHelper.getUsersCollection().document(uid).update("uid", uid, "nom", nom, "prenom", prenom, "licence", licence, "email", email, "niveau", niveauPlongeur, "fonction", fonction);
+    public static Task<Void> updateUser(String uid, String nom, String prenom, String licence, String email, String niveauPlongeur, String fonction, Long hash) {
+        return UserHelper.getUsersCollection().document(uid).update("uid", uid, "nom", nom, "prenom", prenom, "licence", licence, "email", email, "niveau", niveauPlongeur, "fonction", fonction, "hash", hash);
     }
 
 

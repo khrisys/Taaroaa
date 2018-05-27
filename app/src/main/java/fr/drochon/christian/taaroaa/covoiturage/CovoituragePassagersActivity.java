@@ -3,19 +3,24 @@ package fr.drochon.christian.taaroaa.covoiturage;
 import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.LightingColorFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
+import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -34,16 +39,20 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 import fr.drochon.christian.taaroaa.R;
+import fr.drochon.christian.taaroaa.alarm.NotificationReceiver;
+import fr.drochon.christian.taaroaa.alarm.RandomNotification;
+import fr.drochon.christian.taaroaa.alarm.TimeAlarmCovoiturageAller;
+import fr.drochon.christian.taaroaa.alarm.TimeAlarmCovoiturageRetour;
 import fr.drochon.christian.taaroaa.api.CovoiturageHelper;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
 import fr.drochon.christian.taaroaa.model.Covoiturage;
-import fr.drochon.christian.taaroaa.notifications.TimeAlarmCovoiturageAller;
-import fr.drochon.christian.taaroaa.notifications.TimeAlarmCovoiturageRetour;
+import fr.drochon.christian.taaroaa.model.User;
 
 public class CovoituragePassagersActivity extends BaseActivity {
 
@@ -65,7 +74,9 @@ public class CovoituragePassagersActivity extends BaseActivity {
     Spinner mSpinnerPassagers;
     // DATAS
     int inputs;
-    List<String> listUsers;
+    List<User> listUsers;
+    List<User> listFilteredUsers;
+    List<String> listUsersStr;
     List<String> listSelectedUsers;
     AlarmManager mAlarmManagerAller;
     AlarmManager mAlarmManagerRetour;
@@ -93,6 +104,8 @@ public class CovoituragePassagersActivity extends BaseActivity {
         mNbPassagerInput.requestFocus();
 
         listSelectedUsers = new ArrayList<>();
+        listFilteredUsers = new ArrayList<>();
+        listUsersStr = new ArrayList<>();
         listUsers = new ArrayList<>();
         //  les AlarmManager permettront de réveiller le téléphone et d'executer du code à une date précise
         mAlarmManagerAller = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
@@ -257,13 +270,17 @@ public class CovoituragePassagersActivity extends BaseActivity {
                 if (verificationChampsVides()) {
                     mTitrePassager.setVisibility(View.VISIBLE);
                     inputs = Integer.parseInt(charSequence.toString());
+                    for (int i = 0; i < listUsers.size(); i++) {
+                        listUsersStr.add(listUsers.get(i).getPrenom() + " " + listUsers.get(i).getNom());
+                    }
+
                     if (inputs > 0) {
                         // creation des champs spinner de passagers dynamiquement
                         for (int i = 0; i < inputs; i++) {
                             // creation d'autant de spinner que desirés
                             mSpinnerPassagers = new Spinner(this);
                             // Create an ArrayAdapter using the string array and a default spinner layout
-                            ArrayAdapter<String> adapterUser = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, listUsers);
+                            ArrayAdapter<String> adapterUser = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, listUsersStr);
                             // Specify the layout to use when the list of choices appears
                             adapterUser.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                             // Apply the adapter to the spinner
@@ -310,7 +327,59 @@ public class CovoituragePassagersActivity extends BaseActivity {
     }
 
 
-// --------------------
+    // --------------------
+    // NOTIFICATION
+    // --------------------
+
+    private void scheduleNotificationAller(Notification notification, Date alarmTime) {
+
+        Intent notificationIntent = new Intent(this, NotificationReceiver.class);
+        notificationIntent.putExtra(NotificationReceiver.NOTIFICATION_ID, 7);
+        notificationIntent.putExtra(NotificationReceiver.NOTIFICATION, notification);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        assert alarmManager != null;
+        alarmManager.set(AlarmManager.RTC_WAKEUP, alarmTime.getTime(), pendingIntent);
+    }
+
+    private void scheduleNotificationRetour(Notification notification, Date alarmTime) {
+
+        Intent notificationIntent = new Intent(this, NotificationReceiver.class);
+        notificationIntent.putExtra(NotificationReceiver.NOTIFICATION_ID, 7);
+        notificationIntent.putExtra(NotificationReceiver.NOTIFICATION, notification);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        assert alarmManager != null;
+        alarmManager.set(AlarmManager.RTC_WAKEUP, alarmTime.getTime(), pendingIntent);
+    }
+
+    private Notification getNotification() {
+        int colour = getNotificationColour();
+        Bitmap largeNotificationImage = getLargeNotificationImage();
+        return new RandomNotification(this).getNotification(
+                "TAAROAA",
+                "More text",
+                getNotificationImage(),
+                largeNotificationImage,
+                colour);
+    }
+
+    private int getNotificationImage() {
+        return R.mipmap.logo;
+    }
+
+    private int getNotificationColour() {
+        return ContextCompat.getColor(this, R.color.colorAccent);
+    }
+
+    private Bitmap getLargeNotificationImage() {
+        return BitmapFactory.decodeResource(this.getResources(),
+                R.mipmap.logo1);
+    }
+
+    // --------------------
     // ALARM NOTIFICATION
     // --------------------
 
@@ -318,20 +387,27 @@ public class CovoituragePassagersActivity extends BaseActivity {
      * Methode permettant de generer une alarm dans le systeme du telephone de maniere à envoyer une notification à l'utilisateur
      * 2 heures avant que le covoiturage aller parte.
      */
-    private void alarmDepart() {
+    private void alarmDepart(User passager) {
 
         Calendar calendar = Calendar.getInstance();
-
         calendar.setTime(covoiturage.getHoraireAller());
         calendar.add(Calendar.HOUR, -2);
         // condition de declenchement de l'alarm de 2h avant le depart jusqu'au demarrage effectif du covoit
         if (Calendar.getInstance().getTime().after(calendar.getTime()) && Calendar.getInstance().getTime().before(covoiturage.getHoraireAller())) {
-            Intent intent = new Intent(this, TimeAlarmCovoiturageAller.class).putExtra("hAller", String.valueOf(covoiturage.getHoraireAller()));
+            //for(int i = 0 ; i < passager.size(); i++){
+            Covoiturage covoit = new Covoiturage();
+            covoit.setHoraireAller(covoiturage.getHoraireAller());
+
+            //Intent intent = new Intent(this, TimeAlarmCovoiturageAller.class).putExtra("hAller", String.valueOf(covoiturage.getHoraireAller()));
+            Intent intent = new Intent(this, TimeAlarmCovoiturageAller.class).putExtra("covoiturageAlarm", covoit).putExtra("user", passager);
             PendingIntent operation = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
             // reveil de l'alarm
             mAlarmManagerAller.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), operation);
+            //}
+
         }
     }
+
 
     /**
      * Methode permettant de generer une alarm dans le systeme du telephone de maniere à envoyer une notification à l'utilisateur
@@ -362,7 +438,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
      *
      * @return liste de tous les users de la bdd
      */
-    private List<String> getAllUsers() {
+    private List<User> getAllUsers() {
 
         setupDb().collection("users").orderBy("nom").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
@@ -371,12 +447,40 @@ public class CovoituragePassagersActivity extends BaseActivity {
                     List<DocumentSnapshot> ds = queryDocumentSnapshots.getDocuments();
                     for (DocumentSnapshot doc : ds) {
                         Map<String, Object> user = doc.getData();
-                        listUsers.add(user.get("prenom") + " " + user.get("nom"));
+                        User u = new User(user.get("uid").toString(), user.get("nom").toString(), user.get("prenom").toString(), user.get("licence").toString(),
+                                user.get("email").toString(), user.get("niveau").toString(), user.get("fonction").toString(), Long.parseLong(user.get("hash").toString()));
+                        //User u = new User(user.get("uid").toString());
+                        //listUsers.add(user.get("prenom") + " " + user.get("nom"));
+                        listUsers.add(u);
                     }
                 }
             }
         });
         return listUsers;
+    }
+
+    private void getFilteredUsers(String nom, String prenom) {
+        setupDb().collection("users").whereEqualTo("nom", nom).whereEqualTo("prenom", prenom).get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        if (queryDocumentSnapshots.size() != 0) {
+                            List<DocumentSnapshot> ds = queryDocumentSnapshots.getDocuments();
+                            for (DocumentSnapshot doc : ds) {
+                                Map<String, Object> user = doc.getData();
+                                User u = new User(user.get("uid").toString(), user.get("nom").toString(), user.get("prenom").toString(), user.get("licence").toString(),
+                                        user.get("email").toString(), user.get("niveau").toString(), user.get("fonction").toString(), Long.parseLong(user.get("hash").toString()));
+                                //User u = new User(user.get("uid").toString());
+                                //listUsers.add(user.get("prenom") + " " + user.get("nom"));
+
+                                // notification d'alarme à chacun des passagers : mais il faut que le nom rentré correspondent à quelque chose!
+                                //TODO faire une requete pour boucler sur les users et recuperer les passagers par leurs noms et prenom pour notifier le depart du covoit souscris. Sur ces personnes :  declencher l'alarm
+                                alarmDepart(u);
+                                alarmRetour();
+                            }
+                        }
+                    }
+                });
     }
 
     /**
@@ -426,16 +530,52 @@ public class CovoituragePassagersActivity extends BaseActivity {
                 String placesRestantes = String.valueOf(nbPlacesRestantes);
                 mNbPlaceDispo.setText(placesRestantes);
                 List<String> listPassagers = new ArrayList<>();
+                // recuperation passagers existants dejà pour ce covoit
                 listPassagers.addAll(covoiturage.getListPassagers());
 
                 // ajout des infos du passager dans l'objet covoiturage
                 for (int i = 0; i < listSelectedUsers.size(); i++) {
                     listPassagers.add(listSelectedUsers.get(i).toUpperCase());
-                    // notification d'alarme à chacun des passagers : mais il faut que le nom rentré correspondent à quelque chose!
-                    //TODO faire une requete pour boucler sur les users et recuperer les passagers par leurs noms et prenom pour notifier le depart du covoit souscris. Sur ces personnes :  declencher l'alarm
-                    this.alarmDepart();
-                    this.alarmRetour();
+
+                    // decomposition du nom et du prenom recu dans le param name
+                    String nom = null, prenom = null;
+                    String[] parts;
+                    if (listSelectedUsers.get(i).contains(" ")) {
+                        parts = listSelectedUsers.get(i).split(" ");
+                        try {
+                            if (parts[1] != null) nom = parts[1];
+                            else nom = "";
+                        } catch (ArrayIndexOutOfBoundsException e1) {
+                            Log.e("TAG", "ArrayOutOfBoundException " + e1.getMessage());
+                        }
+                        if (parts[0] != null) prenom = parts[0];
+                        else prenom = "";
+                    } else {
+                        nom = listSelectedUsers.get(i);
+                        prenom = "";
+                    }
+                    // declenchement des alarmes sur les passagers choisis dans les spinners
+                    this.getFilteredUsers(nom, prenom);
                 }
+
+
+/*                // alarm depart aller
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(covoiturage.getHoraireAller());
+                calendar.add(Calendar.HOUR, -2);
+                // condition de declenchement de l'alarm de 2h avant le depart jusqu'au demarrage effectif du covoit
+                if (Calendar.getInstance().getTime().after(calendar.getTime()) && Calendar.getInstance().getTime().before(covoiturage.getHoraireAller())) {
+                    scheduleNotificationAller(getNotification(), calendar.getTime());
+                }
+
+                // alarm depart retour
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(covoiturage.getHoraireRetour());
+                cal.add(Calendar.HOUR, -2);
+                // condition de declenchement de l'alarm de 2h avant le depart jusqu'au demarrage effectif du covoit
+                if (Calendar.getInstance().getTime().after(cal.getTime()) && Calendar.getInstance().getTime().before(covoiturage.getHoraireRetour())) {
+                    scheduleNotificationRetour(getNotification(), cal.getTime());
+                }*/
 
                 this.mProgressBar.setVisibility(View.VISIBLE);
                 //CRUD

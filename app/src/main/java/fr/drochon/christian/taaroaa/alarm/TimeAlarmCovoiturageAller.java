@@ -1,4 +1,4 @@
-package fr.drochon.christian.taaroaa.notifications;
+package fr.drochon.christian.taaroaa.alarm;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -15,8 +15,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 
 import fr.drochon.christian.taaroaa.covoiturage.CovoiturageVehiclesActivity;
+import fr.drochon.christian.taaroaa.model.Covoiturage;
+import fr.drochon.christian.taaroaa.model.User;
 
 public class TimeAlarmCovoiturageAller extends BroadcastReceiver {
 
@@ -37,18 +40,20 @@ public class TimeAlarmCovoiturageAller extends BroadcastReceiver {
         // recuperation de l'extra envoyé dans l'intent
         Bundle bundle = intent.getExtras();
         assert bundle != null;
-        hAller = bundle.getString("hAller");
+        //hAller = bundle.getString("hAller");
+        Covoiturage c = (Covoiturage) bundle.getSerializable("covoiturageAlarm");
+        User u = (User) bundle.getSerializable("user");
+
 
         // --------------------
         // CONVERSION COVOITURAGE ALLER
         // --------------------
-        if (hAller != null) {
-
+        if (c != null) {
             // conversion de date pour affichage
             Date dateAller = null;
             SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy", Locale.US);
             try {
-                dateAller = dateFormat.parse(hAller);
+                dateAller = dateFormat.parse(c.getHoraireAller().toString());
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -67,15 +72,20 @@ public class TimeAlarmCovoiturageAller extends BroadcastReceiver {
         // NOTIFICATION
         // --------------------
 
+        int NOTIFICATION_ID = 0;
+        String NOTIFICATION_TAG = "TAAROAA";
+        // Create a Channel (Android 8) and set the importance
+        String channelId = "fcm_default_channel";
+
+        notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
         // Affichage de la 2e notification. Cliquée, elle renvoie vers l'activité voulue
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
 
-            inboxStyle.setBigContentTitle("TAAROAA"); // titre de la notif lorsq'uelle est ouverte
-            inboxStyle.addLine("Covoiturage"); // sous titre affuché lorsque la notif est affichée
-            inboxStyle.setSummaryText("Votre covoiturage Aller partira " + dateAllerStr + " à " + heureAllerStr + " !"); // decription de la notif lorsqu'elle est ouverte
+        inboxStyle.setBigContentTitle("TAAROAA"); // titre de la notif lorsq'uelle est ouverte
+        inboxStyle.addLine("Covoiturage"); // sous titre affuché lorsque la notif est affichée
+        inboxStyle.setSummaryText("Votre covoiturage Aller partira " + dateAllerStr + " à " + heureAllerStr + " !"); // decription de la notif lorsqu'elle est ouverte
 
-        // Create a Channel (Android 8) and set the importance
-        String channelId = "fcm_default_channel";
 
         // Affichage de la notif qui apparait en premier à l'ecran. Affichage defini par la priorité
         NotificationCompat.Builder notificationBuilder =
@@ -92,11 +102,6 @@ public class TimeAlarmCovoiturageAller extends BroadcastReceiver {
                         .setAutoCancel(true)
                         // style permettant une seconde notif personnalisée comprenant plusieurs lignes
                         .setStyle(inboxStyle);
-
-        int NOTIFICATION_ID = 0;
-        String NOTIFICATION_TAG = "TAAROAA";
-        // Create a Channel (Android 8) and set the importance
-        notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         /*
         Methode permettant de creer une channel et de determiner osn importance. Avant de pouvoir delivrer une
@@ -120,7 +125,7 @@ public class TimeAlarmCovoiturageAller extends BroadcastReceiver {
         }
 
         // Show notification
-        assert notificationManager != null;
-        notificationManager.notify(NOTIFICATION_TAG, NOTIFICATION_ID, notificationBuilder.build());
+        if(u != null)
+        notificationManager.notify(NOTIFICATION_TAG, (int)u.getHash().longValue(), notificationBuilder.build());
     }
 }

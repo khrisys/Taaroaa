@@ -45,7 +45,7 @@ import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
 import fr.drochon.christian.taaroaa.model.Course;
 import fr.drochon.christian.taaroaa.model.User;
-import fr.drochon.christian.taaroaa.notifications.TimeAlarmCourses;
+import fr.drochon.christian.taaroaa.alarm.TimeAlarmCourses;
 
 /**
  * creer l'ihm

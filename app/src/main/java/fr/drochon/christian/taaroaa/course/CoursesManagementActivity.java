@@ -50,7 +50,7 @@ import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.api.CourseHelper;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
 import fr.drochon.christian.taaroaa.model.Course;
-import fr.drochon.christian.taaroaa.notifications.TimeAlarmCourses;
+import fr.drochon.christian.taaroaa.alarm.TimeAlarmCourses;
 
 import static fr.drochon.christian.taaroaa.api.CourseHelper.getCoursesCollection;
 import static java.util.Calendar.MINUTE;

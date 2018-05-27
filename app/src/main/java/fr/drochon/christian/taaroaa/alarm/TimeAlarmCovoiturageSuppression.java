@@ -1,4 +1,4 @@
-package fr.drochon.christian.taaroaa.notifications;
+package fr.drochon.christian.taaroaa.alarm;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -8,57 +8,70 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.RingtoneManager;
 import android.os.Build;
-import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 
 import fr.drochon.christian.taaroaa.covoiturage.CovoiturageVehiclesActivity;
+import fr.drochon.christian.taaroaa.model.Covoiturage;
 
-public class TimeAlarmCovoiturageRetour extends BroadcastReceiver {
+public class TimeAlarmCovoiturageSuppression extends BroadcastReceiver {
 
     NotificationManager notificationManager;
 
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        String hRetour;
-        String dateRetourStr = null;
-        String heureRetourStr = null;
+        Covoiturage covoiturage;
+        String dateCovoitAllerStr = null;
+        String heureCovoitAllerStr = null;
+        String dateCovoitRetourStr = null;
+        String heureCovoitRetourStr = null;
+
 
         // --------------------
         // RECUPERATION BUNDLE
         // --------------------
 
         // recuperation de l'extra envoyé dans l'intent
-        Bundle bundle = intent.getExtras();
-        assert bundle != null;hRetour = bundle.getString("hRetour");
-
-        // --------------------
-        // CONVERSION COVOITURAGE RETOUR
-        // --------------------
-        if (hRetour != null) {
-            // conversion de date pour affichage
-            Date dateRetour = null;
-            SimpleDateFormat dateFormat3 = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy", Locale.US);
-            try {
-                dateRetour = dateFormat3.parse(hRetour);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            SimpleDateFormat dateFormat4 = new SimpleDateFormat("EEE dd MMM yyyy", Locale.FRANCE);
-            dateRetourStr = dateFormat4.format(dateRetour);
-            SimpleDateFormat dateFormat5 = new SimpleDateFormat("HH:mm", Locale.FRANCE);
-            heureRetourStr = dateFormat5.format(dateRetour);
-        }
+        covoiturage = (Covoiturage) Objects.requireNonNull(intent.getExtras()).getSerializable("covoit");
 
         // Créé un nouvel intent qui renvoie l'user vers l'activité adequate
         intent = new Intent(context, CovoiturageVehiclesActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 1, intent, PendingIntent.FLAG_ONE_SHOT);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 3, intent, PendingIntent.FLAG_ONE_SHOT);
+
+        // --------------------
+        // CONVERSION COVOITURAGE ALLER
+        // --------------------
+        if (covoiturage != null) {
+
+            // conversion de date pour affichage
+            Date dateCovoitAller = null;
+            Date dateCovoitRetour = null;
+            SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy", Locale.US);
+            try {
+                dateCovoitAller = dateFormat.parse(covoiturage.getHoraireAller().toString());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            SimpleDateFormat dateFormat1 = new SimpleDateFormat("EEE dd MMM yyyy", Locale.FRANCE);
+            dateCovoitAllerStr = dateFormat1.format(dateCovoitAller);
+            SimpleDateFormat dateFormat2 = new SimpleDateFormat("HH:mm", Locale.FRANCE);
+            heureCovoitAllerStr = dateFormat2.format(dateCovoitAller);
+
+            try {
+                dateCovoitRetour = dateFormat.parse(covoiturage.getHoraireRetour().toString());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            dateCovoitRetourStr = dateFormat1.format(dateCovoitRetour);
+            heureCovoitRetourStr = dateFormat2.format(dateCovoitRetour);
+        }
 
         // --------------------
         // NOTIFICATION
@@ -68,9 +81,12 @@ public class TimeAlarmCovoiturageRetour extends BroadcastReceiver {
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
 
         inboxStyle.setBigContentTitle("TAAROAA"); // titre de la notif lorsq'uelle est ouverte
-        inboxStyle.addLine("Covoiturage"); // sous titre affuché lorsque la notif est affichée
-        inboxStyle.setSummaryText("Votre covoiturage Retour partira " + dateRetourStr + " à " + heureRetourStr + " !"); // decription de la notif lorsqu'elle est ouverte
-
+        inboxStyle.addLine("Annulation d'un covoiturage"); // sous titre affuché lorsque la notif est affichée
+        inboxStyle.addLine(" ");
+        assert covoiturage != null;
+        inboxStyle.addLine(covoiturage.getPrenomConducteur() + " " + covoiturage.getNomConducteur() + " a annulé le covoiturage partant ");
+        inboxStyle.addLine("le " + dateCovoitAllerStr + " à " + heureCovoitAllerStr + " depuis " + covoiturage.getLieuDepartAller());
+        inboxStyle.addLine("et revenant le " + dateCovoitRetourStr + " à " + heureCovoitRetourStr + " à " + covoiturage.getLieuDepartRetour() + " !"); // decription de la notif lorsqu'elle est ouverte
 
         // Create a Channel (Android 8) and set the importance
         String channelId = "fcm_default_channel";
@@ -81,8 +97,8 @@ public class TimeAlarmCovoiturageRetour extends BroadcastReceiver {
                         // Set the notification content
                         .setSmallIcon(android.R.drawable.ic_notification_overlay)
                         .setContentTitle("TAAROAA")
-                        .setContentText("Covoiturage")
-                        .setSubText("Votre covoit Retour sera pret dans 2 heures !")
+                        .setContentText("Suppression de covoiturage")
+                        .setSubText("Votre covoiturage a été annulé !")
                         .setPriority(NotificationCompat.PRIORITY_HIGH) //affiche la notif clairement en haut de l'app
                         .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                         // Set the intent that will fire when the user taps the notification : renvoi vers l'activité definie
@@ -91,7 +107,7 @@ public class TimeAlarmCovoiturageRetour extends BroadcastReceiver {
                         // style permettant une seconde notif personnalisée comprenant plusieurs lignes
                         .setStyle(inboxStyle);
 
-        int NOTIFICATION_ID = 1;
+        int NOTIFICATION_ID = 3;
         String NOTIFICATION_TAG = "TAAROAA";
         // Create a Channel (Android 8) and set the importance
         notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
