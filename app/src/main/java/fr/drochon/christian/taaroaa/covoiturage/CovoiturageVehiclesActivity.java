@@ -14,6 +14,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.common.util.ListUtils;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
@@ -56,7 +57,7 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
         mCoordinatorLayoutRoot = findViewById(R.id.coordinatorLayoutRoot);
         mLinearLayoutVehicule = findViewById(R.id.linearLayoutVehicules);
         mLinearLayoutRecycleView = findViewById(R.id.linearLayoutRecyclerView);
-        mScrollViewRecyclerView = findViewById(R.id.scrollviewRecyclerView);
+        //mScrollViewRecyclerView = findViewById(R.id.scrollviewRecyclerView);
         mRecyclerViewVehicules = findViewById(R.id.recyclerViewCovoitVehicules);
 
         listCovoiturages = new ArrayList<>();
@@ -173,8 +174,8 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
      *
      * @return query
      */
+    @SuppressWarnings("unchecked")
     private Query getAllCovoiturages() {
-
         Query mQuery = setupDb().collection("covoiturages").orderBy("horaireRetour",Query.Direction.ASCENDING).whereGreaterThan("horaireRetour", Calendar.getInstance().getTime());
         mQuery.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
@@ -183,8 +184,8 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
                     List<DocumentSnapshot> ds = documentSnapshots.getDocuments();
                     for (int i = 0; i < ds.size(); i++) {
                         Map<String, Object> covoit = ds.get(i).getData();
-
                         listPassagers = new ArrayList<>();
+                        assert covoit != null;
                         listPassagers = (List<String>) covoit.get("passagers");
 
                         // recuperation de l'objet covoiturage

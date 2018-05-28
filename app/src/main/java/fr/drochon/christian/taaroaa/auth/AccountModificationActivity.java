@@ -299,30 +299,34 @@ public class AccountModificationActivity extends BaseActivity {
                             mSuppressionCompte.setVisibility(View.INVISIBLE);
 
                             // moniteur etant sur son propre compte
-                        } else if (fonction.equals("Moniteur") && nom.equals(user.getNom()) && prenom.equals(user.getPrenom())) {
-                            mTitrePage.setText(R.string.bienvenue_sur_votre_compte);
-                            //mItemView.setVisible(true);
-                            mPrenom.setEnabled(true);
-                            mNom.setEnabled(true);
-                            mLicence.setEnabled(true);
-                            mNiveauPlongeespinner.setEnabled(true);
-                            mLinearLayoutFonctionAdherent.setVisibility(View.VISIBLE);
-                            mModificationCompte.setText(R.string.modifiez_votre_compte);
-                            //Affichage du bouton de suppression uniquement aux proprietaires d'un compte
-                            mSuppressionCompte.setVisibility(View.VISIBLE);
+                        } else {
+                            assert nom != null;
+                            assert prenom != null;
+                            if (fonction.equals("Moniteur") && nom.equals(user.getNom()) && prenom.equals(user.getPrenom())) {
+                                mTitrePage.setText(R.string.bienvenue_sur_votre_compte);
+                                //mItemView.setVisible(true);
+                                mPrenom.setEnabled(true);
+                                mNom.setEnabled(true);
+                                mLicence.setEnabled(true);
+                                mNiveauPlongeespinner.setEnabled(true);
+                                mLinearLayoutFonctionAdherent.setVisibility(View.VISIBLE);
+                                mModificationCompte.setText(R.string.modifiez_votre_compte);
+                                //Affichage du bouton de suppression uniquement aux proprietaires d'un compte
+                                mSuppressionCompte.setVisibility(View.VISIBLE);
 
-                            // adherent non moniteur sur son propre compte
-                        } else if (!fonction.equals("Moniteur")) {
-                            mTitrePage.setText(R.string.bienvenue_sur_votre_compte);
-                            //mItemView.setVisible(true);
-                            mPrenom.setEnabled(true);
-                            mNom.setEnabled(true);
-                            mLicence.setEnabled(true);
-                            mNiveauPlongeespinner.setEnabled(false);
-                            mLinearLayoutFonctionAdherent.setVisibility(View.GONE);
-                            mModificationCompte.setText(R.string.modifiez_votre_compte);
-                            //Affichage du bouton de suppression uniquement aux proprietaires d'un compte
-                            mSuppressionCompte.setVisibility(View.VISIBLE);
+                                // adherent non moniteur sur son propre compte
+                            } else if (!fonction.equals("Moniteur")) {
+                                mTitrePage.setText(R.string.bienvenue_sur_votre_compte);
+                                //mItemView.setVisible(true);
+                                mPrenom.setEnabled(true);
+                                mNom.setEnabled(true);
+                                mLicence.setEnabled(true);
+                                mNiveauPlongeespinner.setEnabled(false);
+                                mLinearLayoutFonctionAdherent.setVisibility(View.GONE);
+                                mModificationCompte.setText(R.string.modifiez_votre_compte);
+                                //Affichage du bouton de suppression uniquement aux proprietaires d'un compte
+                                mSuppressionCompte.setVisibility(View.VISIBLE);
+                            }
                         }
                     }
                 }
@@ -340,7 +344,7 @@ public class AccountModificationActivity extends BaseActivity {
         String nom = this.mNom.getText().toString();
         String prenom = this.mPrenom.getText().toString();
         String email = this.mEmail.getText().toString();
-        Long hash = Long.valueOf(hashCode());
+
 
         if (user.getUid() != null) {
             if (!nom.isEmpty() && !nom.equals(getString(R.string.info_no_username_found)) && !prenom.isEmpty() && !email.isEmpty()) { // verification que tous les champs vides soient remplis
@@ -352,7 +356,7 @@ public class AccountModificationActivity extends BaseActivity {
                 // Update de la bdd user
                 this.mProgressBar.setVisibility(View.VISIBLE);
                 UserHelper.updateUser(user.getUid(), this.mNom.getText().toString().toUpperCase(), this.mPrenom.getText().toString().toUpperCase(), this.mLicence.getText().toString(),
-                        this.mEmail.getText().toString(), this.mNiveauPlongeespinner.getSelectedItem().toString(), this.mFonctionAuClubspinner.getSelectedItem().toString(), hash).
+                        this.mEmail.getText().toString(), this.mNiveauPlongeespinner.getSelectedItem().toString(), this.mFonctionAuClubspinner.getSelectedItem().toString()).
                         addOnFailureListener(this.onFailureListener()).
                         addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override

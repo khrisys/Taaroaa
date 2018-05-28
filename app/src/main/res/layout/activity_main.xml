@@ -111,6 +111,7 @@
         android:ems="10"
         android:freezesText="false"
         android:text="@string/mot_de_passe_oubli"
+        android:inputType="text"
         android:textColor="@color/colorPrimary"
         android:textColorHighlight="@color/colorAccent"
         android:textIsSelectable="true"

@@ -5,14 +5,18 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ComponentCallbacks2;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -25,22 +29,25 @@ import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.alarm.NotificationReceiver;
+import fr.drochon.christian.taaroaa.alarm.RandomNotification;
 import fr.drochon.christian.taaroaa.auth.AccountCreateActivity;
 import fr.drochon.christian.taaroaa.auth.SearchUserActivity;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
+import fr.drochon.christian.taaroaa.model.User;
 
 import static fr.drochon.christian.taaroaa.R.id;
 import static fr.drochon.christian.taaroaa.R.layout;
@@ -50,15 +57,12 @@ import static fr.drochon.christian.taaroaa.R.style;
 
 //import fr.drochon.christian.taaroaa.R;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements ComponentCallbacks2{
 
     //Id de connexion dans l'activité courante
     private static final int RC_SIGN_IN = 123;
-    // FOR COMMUNICATION
-    Button mCreation;
-    Button mConnexion;
-    Button mDeconnexion;
-    TextView mTextViewHiddenForSnackbar;
+    private Button mConnexion;
+    private TextView mTextViewHiddenForSnackbar;
     public static boolean isAppRunning;
 
     // --------------------
@@ -76,13 +80,15 @@ public class MainActivity extends BaseActivity {
         setContentView(layout.activity_main);
         configureToolbar();
         giveToolbarAName(app_name);
-        getConnectedUser();
+        onTrimMemory(TRIM_MEMORY_BACKGROUND);
+
 
         mTextViewHiddenForSnackbar = findViewById(R.id.test_coordinator);
-        mCreation = findViewById(R.id.creation_compte_btn);
+        Button creation = findViewById(id.creation_compte_btn);
         mConnexion = findViewById(id.connection_valid_btn);
-        //if(isCurrentUserLogged()) mCreation.setVisibility(View.GONE);
-        mDeconnexion = findViewById(id.deconnexion_btn);
+        // lorsque je suis connecté, c'est que j'ai un compte et je n'ai pas besoin de voir le bouton "creer un compte"
+        //if(isCurrentUserLogged()) creation.setVisibility(View.GONE);
+        Button deconnexion = findViewById(id.deconnexion_btn);
         isAppRunning = true;
 
         // --------------------
@@ -90,7 +96,7 @@ public class MainActivity extends BaseActivity {
         // --------------------
 
         // lancement de l'activité de creation de compte
-        mCreation.setOnClickListener(new View.OnClickListener() {
+        creation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (!isCurrentUserLogged()) {
@@ -118,7 +124,7 @@ public class MainActivity extends BaseActivity {
         });
 
         // Deconnexion de l'utilisateur
-        mDeconnexion.setOnClickListener(new View.OnClickListener() {
+        deconnexion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showSnackBar(getString(string.connection_end));
@@ -150,9 +156,152 @@ public class MainActivity extends BaseActivity {
         super.onResume();
         this.updateUIWhenResuming(); // affiche la vue lorsque le tel est dans le cycle de vie onResume()
 
+
+/*        // recuperation de l'extra envoyé dans l'intent
+        String NOTIFICATION_ID = "7";
+        String NOTIFICATION = "notification";
+        String NOTIFICATION_TAG = "TAAROAA";
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        // recuperation de l'extra envoyé dans l'intent
+        Intent bundle = getIntent();
+        assert bundle != null;
+        String hAller = bundle.getStringExtra("hAller");
+        User u = (User) bundle.getSerializableExtra("user");
+
+
+if(bundle != null) {
+
+    Notification notification = getIntent().getParcelableExtra(NOTIFICATION);
+    notification.defaults = 0;
+    //notification.sound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+    int id = getIntent().getIntExtra(NOTIFICATION_ID, 0);
+    assert notificationManager != null;
+    notificationManager.notify(id, notification);
+}*/
+
+
         //CRASHLYTICS : force application to crash
         //Crashlytics.getInstance().crash();
     }
+
+    // --------------------
+    // OBSERVATION DE LA MEMOIRE DU TEL  DANS LE LOGCAT
+    // --------------------
+    /**
+     * Release memory when the UI becomes hidden or when system resources become low.
+     * @param level the memory-related event that was raised.
+     */
+    public void onTrimMemory(int level) {
+
+        // Determine which lifecycle or system event was raised.
+        switch (level) {
+
+            case ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN:
+
+                /*
+                   Release any UI objects that currently hold memory.
+
+                   The user interface has moved to the background.
+                */
+
+                break;
+
+            case ComponentCallbacks2.TRIM_MEMORY_RUNNING_MODERATE:
+            case ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW:
+            case ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL:
+
+                /*
+                   Release any memory that your app doesn't need to run.
+
+                   The device is running low on memory while the app is running.
+                   The event raised indicates the severity of the memory-related event.
+                   If the event is TRIM_MEMORY_RUNNING_CRITICAL, then the system will
+                   begin killing background processes.
+                */
+
+                break;
+
+            case ComponentCallbacks2.TRIM_MEMORY_BACKGROUND:
+            case ComponentCallbacks2.TRIM_MEMORY_MODERATE:
+            case ComponentCallbacks2.TRIM_MEMORY_COMPLETE:
+
+                /*
+                   Release as much memory as the process can.
+
+                   The app is on the LRU list and the system is running low on memory.
+                   The event raised indicates where the app sits within the LRU list.
+                   If the event is TRIM_MEMORY_COMPLETE, the process will be one of
+                   the first to be terminated.
+                */
+
+                break;
+
+            default:
+                /*
+                  Release any non-critical data structures.
+
+                  The app received an unrecognized memory level value
+                  from the system. Treat this as a generic low-memory message.
+                */
+                break;
+        }
+    }
+
+
+    // --------------------
+    // NOTIFICATION
+    // --------------------
+
+    private void scheduleNotificationAller(Notification notification, Date alarmTime) {
+
+        Intent notificationIntent = new Intent(this, NotificationReceiver.class);
+        notificationIntent.putExtra(NotificationReceiver.NOTIFICATION_ID, 7);
+        notificationIntent.putExtra(NotificationReceiver.NOTIFICATION, notification);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        assert alarmManager != null;
+        alarmManager.set(AlarmManager.RTC_WAKEUP, alarmTime.getTime(), pendingIntent);
+    }
+
+    private void scheduleNotificationRetour(Notification notification, Date alarmTime) {
+
+        Intent notificationIntent = new Intent(this, NotificationReceiver.class);
+        notificationIntent.putExtra(NotificationReceiver.NOTIFICATION_ID, 7);
+        notificationIntent.putExtra(NotificationReceiver.NOTIFICATION, notification);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        assert alarmManager != null;
+        alarmManager.set(AlarmManager.RTC_WAKEUP, alarmTime.getTime(), pendingIntent);
+    }
+
+    private Notification getNotification() {
+        int colour = getNotificationColour();
+        Bitmap largeNotificationImage = getLargeNotificationImage();
+        return new RandomNotification(this).getNotification(
+                "TAAROAA",
+                "More text",
+                getNotificationImage(),
+                largeNotificationImage,
+                colour);
+    }
+
+    private int getNotificationImage() {
+        return R.mipmap.logo;
+    }
+
+    private int getNotificationColour() {
+        return ContextCompat.getColor(this, R.color.colorAccent);
+    }
+
+    private Bitmap getLargeNotificationImage() {
+        return BitmapFactory.decodeResource(this.getResources(),
+                R.mipmap.logo1);
+    }
+
 
 
     // --------------------
@@ -168,7 +317,7 @@ public class MainActivity extends BaseActivity {
                         .createSignInIntentBuilder() // lance une activité de connexion/inscrption autogeneree
                         .setTheme(style.LoginTheme) // definir un style dans le fichier res/values/styles.xml
                         .setAvailableProviders( // ajoute des moyens divers de connexion (email, google, fb..)
-                                Arrays.asList(new AuthUI.IdpConfig.EmailBuilder().build()))
+                                Collections.singletonList(new AuthUI.IdpConfig.EmailBuilder().build()))
                         .setIsSmartLockEnabled(false, true)
                         .setLogo(R.mipmap.logo1)
                         .build(),
@@ -232,9 +381,11 @@ public class MainActivity extends BaseActivity {
         } else { // ERRORS
             if (response == null) {
                 showSnackBar(getString(string.error_authentication_canceled));
-            } else if (response.getErrorCode() == ErrorCodes.NO_NETWORK) {
+            }
+            if (Objects.requireNonNull(response.getError()).getErrorCode() == ErrorCodes.NO_NETWORK) {
                 showSnackBar(getString(string.error_no_internet));
-            } else if (response.getErrorCode() == ErrorCodes.UNKNOWN_ERROR) {
+            }
+            if (Objects.requireNonNull(response.getError()).getErrorCode() == ErrorCodes.UNKNOWN_ERROR) {
                 showSnackBar(getString(string.error_unknown_error));
             }
         }
@@ -373,19 +524,19 @@ public class MainActivity extends BaseActivity {
                 });
     }
 
-    private void getConnectedUser(){
+/*    private void getConnectedUser(){
         setupDb().collection("users").document(getCurrentUser().getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 if(documentSnapshot.exists()){
                     Map<String, Object> user = documentSnapshot.getData();
                     int hash = (int) Long.parseLong(user.get("hash").toString());
-                    sendVisualNotification(hash);
+                    //sendVisualNotification(hash);
                 }
             }
         });
-    }
-    private void sendVisualNotification(int hash) {
+    }*/
+    private void sendVisualNotification(String message) {
         int NOTIFICATION_ID = 7;
         String NOTIFICATION_TAG = "TAAROAA";
         // Créé un intent qui ouvre l'activité voulue
@@ -407,8 +558,9 @@ public class MainActivity extends BaseActivity {
                 new NotificationCompat.Builder(this, channelId)
                         // Set the notification content
                         .setSmallIcon(android.R.drawable.ic_notification_overlay)
-                        .setContentTitle(getString(R.string.app_name))
+                        .setContentTitle("TAAROAA")
                         .setContentText(getString(R.string.notification_title))
+                        .setSubText(message)
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                         .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                         // Set the intent that will fire when the user taps the notification : renvoi vers l'activité definie
@@ -423,7 +575,7 @@ public class MainActivity extends BaseActivity {
         this.createNotificationChannel(channelId);
         // Show notification
         assert notificationManager != null;
-        notificationManager.notify(hash, notificationBuilder.build());
+        notificationManager.notify(NOTIFICATION_TAG, NOTIFICATION_ID, notificationBuilder.build());
     }
 
     /**

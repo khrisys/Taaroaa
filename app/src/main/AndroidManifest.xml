@@ -17,16 +17,16 @@
     <application
         android:allowBackup="true"
         android:fullBackupContent="@xml/backup_descriptor"
-        android:icon="@mipmap/logo1"
-        android:label=""
+        android:icon="@mipmap/logo"
+        android:label="@string/app_name"
         android:roundIcon="@mipmap/logo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+
         <activity android:name=".controller.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
@@ -89,20 +89,9 @@
 
 
         <receiver
-            android:name=".alarm.TimeAlarmCovoiturageAller"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.NOTIFY" />
-            </intent-filter>
-        </receiver>
+            android:name=".alarm.TimeAlarmCovoiturageAller"/>
         <receiver
-            android:name=".alarm.TimeAlarmCovoiturageRetour"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.NOTIFY" />
-            </intent-filter>
-        </receiver>
-
+            android:name=".alarm.TimeAlarmCovoiturageRetour"/>
         <receiver
             android:name=".alarm.TimeAlarmCovoiturageSuppression"/>
         <receiver
@@ -111,16 +100,17 @@
             android:name=".alarm.NotificationButtonReceiver"
             android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.NOTIFY" />
+                <action android:name="android.intent.action.NOTIFY"/>
             </intent-filter>
         </receiver>
         <receiver
             android:name=".alarm.NotificationReceiver"
             android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.NOTIFY" />
+                <action android:name="android.intent.action.NOTIFY"/>
             </intent-filter>
         </receiver>
+
     </application>
 
 </manifest>

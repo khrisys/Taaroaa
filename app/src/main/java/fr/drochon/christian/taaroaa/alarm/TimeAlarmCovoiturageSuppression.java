@@ -97,7 +97,7 @@ public class TimeAlarmCovoiturageSuppression extends BroadcastReceiver {
                         // Set the notification content
                         .setSmallIcon(android.R.drawable.ic_notification_overlay)
                         .setContentTitle("TAAROAA")
-                        .setContentText("Suppression de covoiturage")
+                        .setContentText("ANNULATION DE COVOITURAGE")
                         .setSubText("Votre covoiturage a été annulé !")
                         .setPriority(NotificationCompat.PRIORITY_HIGH) //affiche la notif clairement en haut de l'app
                         .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))

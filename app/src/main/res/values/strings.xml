@@ -10,7 +10,6 @@
     <string name="summary_name">Sommaire</string>
     <string name="password_name">Récupération de mot de passe</string>
     <string name="course_management_name">Nouveau cours</string>
-    <string name="course_pupils_name">Cours de niveau </string>
     <string name="course_supervisors_name">Cours tous niveaux</string>
     <string name="covoit_accueil_name">Sorties club</string>
     <string name="covoit_conducteur_name">Espace conducteur</string>
@@ -21,32 +20,17 @@
     <string name="account_search_name">Recherche adhérent</string>
 
     <!-- MAIN ACTIVITY -->
-    <string name="error_not_connected">Vous devez d\'abord vous connecter !</string>
     <string name="error_authentication_canceled">Authentification annulée&#8230;</string>
     <string name="connection_end">Vous venez de vous déconnecter de l\'application !\nA bientôt!</string>
     <string name="error_no_internet">Aucune connexion internet !</string>
     <string name="error_unknown_error">Une erreur inconnue s\'est produite&#8230;</string>
-    <string name="connection_succeed">Authentification réussie !</string>
-    <string name="login">Connexion</string>
-    <string name="button_login_text_logged">Afficher le profil</string>
-    <string name="button_login_text_not_logged">Connexion</string>
     <string name="titre_app">Bonjour.  Bienvenue sur l\'application de gestion d\'un club de plongée sous-marine.</string>
     <string name="connectez_vous">Connectez vous</string>
     <string name="deconnectez_vous">Deconnectez vous</string>
     <string name="mot_de_passe_oubli">mot de passe oublié ?</string>
 
     <!-- LOGIN ACTIVITY -->
-    <string name="toolbar_title_login_activity">Votre Profil</string>
-    <string name="text_input_username">Nom d\'utilisateur</string>
-    <string name="text_view_email">Adresse email :</string>
-    <string name="button_update_account">Mettre à jour le nom d\'utilisateur</string>
-    <string name="button_delete_account">Supprimer mon compte</string>
-    <string name="button_go_summary">Allez au sommaire</string>
-    <string name="info_no_email_found">Auncune adresse email</string>
     <string name="info_no_username_found">Aucun nom d\'utilisateur</string>
-    <string name="popup_message_confirmation_delete_account">Etes vous sûr(e) de vouloir supprimer votre compte ?</string>
-    <string name="popup_message_choice_yes">Oui !</string>
-    <string name="popup_message_choice_no">Non</string>
 
     <!--ACCOUNT CREATE AND MODIFICATION USER ACTIVITIES-->
     <string name="alertDialog_account">Voulez vous réellement supprimer votre compte ?</string>
@@ -54,7 +38,6 @@
     <string name="alertDialog_cancel">Vous n\'avez pas supprimé votre compte. \nVous diposez encore de vos informations personnelles. </string>
     <string name="update_account">Le compte a été mis à jour !</string>
     <string name="create_account">Vous avez créé votre compte. \n\tMerci !</string>
-    <string name="complete_account">Complétez votre compte</string>
     <string name="modifiez_votre_compte">Modifiez votre compte</string>
     <string name="modifiez_le_compte">Modifiez le compte adhérent</string>
     <string name="email">Email :</string>
@@ -69,15 +52,11 @@
     <string name="creez_votre_compte">Créez votre compte</string>
     <string name="bienvenue_sur_votre_compte">Bienvenue sur votre compte</string>
     <string name="modifiez_le_compte_d_un_adherent">Modifiez le compte d\'un adhérent</string>
-    <string name="verif_every_fields_complete">Merci de saisir tous les champs du formulaire !</string>
-    <string name="modif_ecran_titre">Veuillez saisir le nom et prenom de la personne recherchée</string>
-    <string name="empty_list_users_txt">Il n\'y actuellement aucune personne inscrite au club avec le nom recherché</string>
     <string name="recherche_adherent_btn">Tapez le nom d\'un adhérent</string>
 
     <!--COURSES ACTIVITIES-->
     <string name="button_create_course">Créez un cours</string>
     <string name="button_update_course">Modifiez un cours</string>
-    <string name="error_empty_fields">Merci de saisir ce champ !</string>
     <string name="empty_list_txt">Il n\'y actuellement pas de cours à cette date</string>
     <string name="create_course">Vous avez créé un nouveau cours. \n\tMerci !</string>
     <string name="course_deconnexion">Déconnexion</string>
@@ -101,14 +80,12 @@
     <string name="nombre_de_passagers">Nombre de place(s) voulues :</string>
     <string name="reservez_btn">Réservez</string>
     <string name="nom_du_passager_responsable">Nom des passagers :</string>
-    <string name="passager">Passager</string>
     <string name="inscription">Inscription</string>
     <string name="type_du_vehicule">Type du véhicule :</string>
     <string name="places_disponibles">Places disponibles :</string>
     <string name="alertDialog_delete_covoit">Voulez vous réellement supprimer ce covoiturage ?</string>
     <string name="alertDialog_places_restantes">Il n\'y a pas suffisamment de places disponibles pour ce covoiturage.\nMerci de rectifier votre demande !</string>
     <string name="rectif_demande">Nombre de places demandées trop grand.</string>
-    <string name="rectif_demande2">Désolé, il n\'y a plus de place disponible pour ce covoiturage !</string>
     <string name="create_covoit">Vous avez créé un covoiturage. \n\tMerci !</string>
     <string name="create_passager">Vous avez réservé un covoiturage ! </string>
     <string name="delete_covoit">Vous avez supprimé votre covoiturage !</string>
@@ -125,27 +102,17 @@
     <string name="lieu_de_depart">Lieu de départ à l\'aller :</string>
     <string name="lieu_d_arrivee">Lieu d\'arrivée au retour :</string>
     <string name="passagers">Passagers :</string>
+    <string name="supprimez_un_covoiturage">Supprimez un covoiturage</string>
 
     <!--ID d'application Facebook-->
 <!--    <string name="facebook_app_id" translatable="false">2177677015844999</string>
     <string name="fb_login_protocol_scheme" translatable="false" tools:ignore="UnusedResources">fb2177677015844999</string>-->
     <!-- FACEBOOK PURPOSE -->
-    <string name="taaroaa">Taaroaa</string>
-    <string name="title_activity_password">Mot de passe oublié ?</string>
     <string name="prompt_email">Email</string>
-    <string name="prompt_password">Mot de passe</string>
-    <string name="action_sign_in">Connexion ou inscription</string>
-    <string name="action_sign_in_short">Connexion</string>
     <string name="error_invalid_email">Cette adresse email est invalide</string>
-    <string name="error_invalid_password">Ce mot de passe est trop court</string>
-    <string name="error_incorrect_password">Ce mot de passe est incorrect</string>
     <string name="error_field_required">Ce champ est requis</string>
     <string name="permission_rationale">Accordez le droit d\'acceder à vos contacts pour fournir[…]</string>
-    <string name="title_activity_courses_supervisors">Tous les cours</string>
-    <string name="title_activity_courses_pupils">Cours prépa balbla</string>
-    <string name="title_activity_test">TestActivity</string>
-    <string name="title_activity_covoiturage_vehicules">CovoiturageVehiculesActivity</string>
-    <string name="supprimez_un_covoiturage">Supprimez un covoiturage</string>
+
 
 
 

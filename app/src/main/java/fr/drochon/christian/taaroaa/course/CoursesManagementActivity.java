@@ -75,7 +75,6 @@ public class CoursesManagementActivity extends BaseActivity {
 
     // DATAS
     AlarmManager mAlarmManager;
-    private  static Course sCourse;
 
     // --------------------
     // CYCLE DE VIE
@@ -374,7 +373,7 @@ public class CoursesManagementActivity extends BaseActivity {
                 newCourse.put("horaireDuCours", horaireDuCours);
 
                 // creation d'un objet cours passé en param de l'alarme de notification
-                sCourse = new Course(id, typeCours, sujet, niveauCours, moniteur, horaireDuCours);
+                Course sCourse = new Course(id, typeCours, sujet, niveauCours, moniteur, horaireDuCours);
                 this.alarmCours(sCourse);
 
                 // creation du cours et insertion en bdd
@@ -523,10 +522,10 @@ public class CoursesManagementActivity extends BaseActivity {
          * @param month      (0 à 11)
          * @param dayOfMonth jour du mois
          */
+        @SuppressLint("SetTextI18n")
         @Override
         public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
 
-            //mDateCours.setText(mDateCours.getText() + "" + dayOfMonth + "-" + (month + 1) + "-" + year);
             mDateCours.setText(mDateCours.getText() + "" + dayOfMonth + "-" + (month + 1) + "-" + year);
         }
     }
@@ -549,7 +548,6 @@ public class CoursesManagementActivity extends BaseActivity {
 
             final Calendar c = Calendar.getInstance();
             int hour = c.get(Calendar.HOUR_OF_DAY);
-            //dateFormatGmt.format(hour);
             int minute = c.get(MINUTE);
 
             return new TimePickerDialog(getActivity(), this, hour, minute, DateFormat.is24HourFormat(getActivity()));
@@ -562,8 +560,8 @@ public class CoursesManagementActivity extends BaseActivity {
          * @param hourOfDay
          * @param minute
          */
+        @SuppressLint("SetTextI18n")
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-            //mHeureCours.setText(mHeureCours.getText() + "" + hourOfDay + ":" + minute + ":00");
             mHeureCours.setText(mHeureCours.getText() + "" + hourOfDay + ":" + minute + ":00");
         }
     }

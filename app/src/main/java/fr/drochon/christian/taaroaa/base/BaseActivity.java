@@ -74,8 +74,10 @@ public abstract class BaseActivity extends AppCompatActivity {
         ActionBar ab = getSupportActionBar();
         // ajout d'un icone de l'appli à l'actionbar en haut à gauche
         assert ab != null;
+        ab.setDisplayShowTitleEnabled(false); // empeche l'affichage du titre de l'app dans les toolbars de l'app
         ab.setDisplayShowHomeEnabled(true);
-        ab.setIcon(R.mipmap.logo);
+        //ab.setIcon(R.mipmap.logo);
+
         //ab.setTitle(R.string.app_name);
     }
 
@@ -155,30 +157,6 @@ public abstract class BaseActivity extends AppCompatActivity {
      */
     protected Boolean isCurrentUserLogged() {
         return (this.getCurrentUser() != null);
-    }
-
-    /**
-     * Methode permettant d'afficher le floating button à l'ecran si l'utilisateur est un encadrant ou un initiateur.
-     */
-    private Boolean rightsSupervisors() {
-
-        if (this.getCurrentUser() != null) {
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
-            DocumentReference mQuery = db.collection("users").document(getCurrentUser().getUid());
-
-            mQuery.addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                @Override
-                public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                    if(documentSnapshot.exists()){
-                        Object ds = documentSnapshot.get("niveau");
-                        if(ds.equals("4") || ds.equals("MEF1") || ds.equals("MEF2"))
-                            return;
-                            //mFloatingActionButton.setVisibility(View.VISIBLE);
-                    }
-                }
-            });
-        }
-        return false;
     }
 
 
@@ -269,21 +247,19 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected String  stDateToString(Date horaireDuCours){
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEE dd MMM yyyy ' à ' HH'h'mm", Locale.FRANCE);
-        String dateDuCours = dateFormat.format(horaireDuCours);
-        return dateDuCours;
+        return dateFormat.format(horaireDuCours);
 
     }
 
     /**
      * Methode permettant de formatter une date en format heure
-     * @param horaireDuCours
-     * @return
+     * @param horaireDuCours horaire du cours sous forme de date
+     * @return date sous forme de string
      */
     public String stTimeToString(Date horaireDuCours){
 
         SimpleDateFormat dateFormat1 = new SimpleDateFormat("HH:mm:ss");
-        String heureDuCours = dateFormat1.format(horaireDuCours);
-        return heureDuCours;
+        return dateFormat1.format(horaireDuCours);
     }
 
     protected java.util.Date stStringToDate(String horaire){
@@ -304,9 +280,9 @@ public abstract class BaseActivity extends AppCompatActivity {
     /**
      * Methode permettant de retrouver la position d'un item de la liste des niveaux de plongée d'un user
      *
-     * @param spinner
-     * @param myString
-     * @return int
+     * @param spinner menu deroulant
+     * @param myString item choisi dans la liste
+     * @return int retour la position de l'item choisi
      */
     protected int getIndexSpinner(Spinner spinner, String myString) {
         for (int i = 0; i < spinner.getCount(); i++) {

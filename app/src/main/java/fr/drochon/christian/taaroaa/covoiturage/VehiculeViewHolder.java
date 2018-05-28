@@ -214,7 +214,7 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
             // --------------------
             if (covoiturage.getListPassagers() != null) {
                 // Create an ArrayAdapter using the string array and a default spinner layout
-                ArrayAdapter<String> adapterNiveau = new ArrayAdapter<String>(itemView.getContext(), android.R.layout.simple_spinner_item, mListPassagers);
+                ArrayAdapter<String> adapterNiveau = new ArrayAdapter<>(itemView.getContext(), android.R.layout.simple_spinner_item, mListPassagers);
                 // Specify the layout to use when the list of choices appears
                 adapterNiveau.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 // Apply the adapter to the spinner
@@ -319,8 +319,7 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
     private String stDateToString(Date horaireDuCours) {
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEE dd MMM yyyy ' à ' HH'h'mm", Locale.FRANCE);
-        String dateDuCours = dateFormat.format(horaireDuCours);
-        return dateDuCours;
+        return dateFormat.format(horaireDuCours);
     }
 
 }

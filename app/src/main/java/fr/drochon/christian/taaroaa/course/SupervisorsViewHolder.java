@@ -107,8 +107,7 @@ public class SupervisorsViewHolder extends RecyclerView.ViewHolder {
     public String stDateToString(Date horaireDuCours) {
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("EE dd MMM yyyy", Locale.FRANCE);
-        String dateDuCours = dateFormat.format(horaireDuCours);
-        return dateDuCours;
+        return dateFormat.format(horaireDuCours);
 
     }
 
@@ -121,7 +120,6 @@ public class SupervisorsViewHolder extends RecyclerView.ViewHolder {
     public String stTimeToString(Date horaireDuCours) {
 
         SimpleDateFormat dateFormat1 = new SimpleDateFormat("HH:mm:ss");
-        String heureDuCours = dateFormat1.format(horaireDuCours);
-        return heureDuCours;
+        return dateFormat1.format(horaireDuCours);
     }
 }

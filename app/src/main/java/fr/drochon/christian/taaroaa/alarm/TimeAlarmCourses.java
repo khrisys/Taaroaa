@@ -21,8 +21,6 @@ import fr.drochon.christian.taaroaa.model.Course;
 
 public class TimeAlarmCourses extends BroadcastReceiver {
 
-    NotificationManager notificationManager;
-
     @Override
     public void onReceive(Context context, Intent intent) {
 
@@ -62,7 +60,6 @@ public class TimeAlarmCourses extends BroadcastReceiver {
         Object activity  = Objects.requireNonNull(intent.getExtras().get("activity"));
         assert activity != null;
         if(!activity.equals(CoursesPupilsActivity.class)) intent = new Intent(context, CoursesPupilsActivity.class);
-
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 2, intent, PendingIntent.FLAG_ONE_SHOT);
 
@@ -88,7 +85,7 @@ public class TimeAlarmCourses extends BroadcastReceiver {
                         // Set the notification content
                         .setSmallIcon(android.R.drawable.ic_notification_overlay)
                         .setContentTitle("TAAROAA")
-                        .setContentText("Cours de niveau " + cours.getNiveauDuCours())
+                        .setContentText("COURS DE NIVEAU " + cours.getNiveauDuCours())
                         .setSubText("Votre prochain cours de " + cours.getTypeCours() + " démarrera à " + heureCoursStr + " !")
                         .setPriority(NotificationCompat.PRIORITY_HIGH) //affiche la notif clairement en haut de l'app
                         .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
@@ -101,7 +98,7 @@ public class TimeAlarmCourses extends BroadcastReceiver {
         int NOTIFICATION_ID = 2;
         String NOTIFICATION_TAG = "TAAROAA";
         // Create a Channel (Android 8) and set the importance
-        notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager notificationManager1 = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         /*
         Methode permettant de creer une channel et de determiner osn importance. Avant de pouvoir delivrer une
@@ -125,7 +122,7 @@ public class TimeAlarmCourses extends BroadcastReceiver {
         }
 
         // Show notification
-        assert notificationManager != null;
-        notificationManager.notify(NOTIFICATION_TAG, NOTIFICATION_ID, notificationBuilder.build());
+        assert notificationManager1 != null;
+        notificationManager1.notify(NOTIFICATION_TAG, NOTIFICATION_ID, notificationBuilder.build());
     }
 }

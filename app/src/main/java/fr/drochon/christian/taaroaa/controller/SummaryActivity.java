@@ -12,7 +12,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.List;
@@ -20,7 +19,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import fr.drochon.christian.taaroaa.R;
-import fr.drochon.christian.taaroaa.auth.AccountCreateActivity;
 import fr.drochon.christian.taaroaa.auth.AccountModificationActivity;
 import fr.drochon.christian.taaroaa.auth.SearchUserActivity;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
@@ -126,23 +124,21 @@ public class SummaryActivity extends BaseActivity {
         mCours.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FirebaseFirestore db = FirebaseFirestore.getInstance();
-                db.collection("users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                setupDb().collection("users").document(Objects.requireNonNull(getCurrentUser()).getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
-                    public void onSuccess(QuerySnapshot documentSnapshots) {
-                        if (documentSnapshots.size() != 0) {
-                            List<DocumentSnapshot> ds = documentSnapshots.getDocuments();
-                            for (int i = 0; i < ds.size(); i++) {
-                                Map<String, Object> user = ds.get(i).getData();
-                                if (user.get("uid").equals(getCurrentUser().getUid()) &&
-                                        user.get("fonction").equals("Moniteur")) {
-                                    Intent intent = new Intent(SummaryActivity.this, CoursesSupervisorsActivity.class);
-                                    startActivity(intent);
-                                    break;
-                                } else {
-                                    Intent intent = new Intent(SummaryActivity.this, CoursesPupilsActivity.class);
-                                    startActivity(intent);
-                                }
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if (documentSnapshot.exists()) {
+                            Map<String, Object> user = documentSnapshot.getData();
+                            assert user != null;
+                            User user1 = new User(user.get("uid").toString(), user.get("nom").toString(), user.get("prenom").toString(), user.get("licence").toString(),
+                                    user.get("email").toString(), user.get("niveau").toString(), user.get("fonction").toString());
+                            if (user.get("uid").equals(Objects.requireNonNull(getCurrentUser()).getUid()) &&
+                                    user.get("fonction").equals("Moniteur")) {
+                                Intent intent = new Intent(SummaryActivity.this, CoursesSupervisorsActivity.class);
+                                startActivity(intent);
+                            } else {
+                                Intent intent = new Intent(SummaryActivity.this, CoursesPupilsActivity.class).putExtra("user", user1);
+                                startActivity(intent);
                             }
                         }
                     }

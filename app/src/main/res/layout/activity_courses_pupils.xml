@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/pupils_layout_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".course.CoursesPupilsActivity">
+    android:descendantFocusability="blocksDescendants"
+    tools:context=".course.CoursesPupilsActivity"
+    android:orientation="vertical">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/toolbar_pulis"
@@ -17,22 +19,25 @@
     </android.support.design.widget.AppBarLayout>
 
     <!--CALENDAR AND RECYCLERVIEW LAYOUT-->
-    <LinearLayout
-        android:id="@+id/linearLayoutRoot"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:context=".course.CoursesPupilsActivity"
-        tools:showIn="@layout/activity_courses_pupils">
+        android:layout_height="wrap_content">
 
         <CalendarView
             android:id="@+id/calendrier_eleves"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:firstDayOfWeek="0x00000002"
+            android:theme="@style/AppTheme"
             /> <!--le nb 0x00000002 signifie MONDAY
 -->
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
         <View
             android:id="@+id/divider"
             android:layout_width="match_parent"
@@ -50,22 +55,25 @@
             android:visibility="gone"
             />
 
-        <ScrollView
-            android:id="@+id/scrollviewRecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            >
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/recyclerViewCoursesPupils"
-                android:layout_marginTop="20dp"
+        <!--
+            <ScrollView
+                android:id="@+id/scrollviewRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical|center_horizontal"
-                />
+                >
+    -->
 
-        </ScrollView>
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerViewCoursesPupils"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:layout_marginTop="20dp"
+            />
+
+        <!-- </ScrollView>-->
     </LinearLayout>
+
 
 
     <!--FLOATING BUTTON-->
@@ -78,4 +86,4 @@
         android:visibility="invisible"
         app:srcCompat="@android:drawable/ic_menu_add"/>
 
-</android.support.design.widget.CoordinatorLayout>
+</LinearLayout>

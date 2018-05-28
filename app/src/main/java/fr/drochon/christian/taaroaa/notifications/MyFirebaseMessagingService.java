@@ -82,7 +82,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }
 
         notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
         final PendingIntent pendingIntent = PendingIntent.getActivity(this,
                 0 , notificationIntent,
                 PendingIntent.FLAG_ONE_SHOT);

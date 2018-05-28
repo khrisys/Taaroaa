@@ -58,7 +58,7 @@ public class User implements Serializable{
         mFonction = fonction;
     }
 
-    public User(String uid, String nom, String prenom, String licence, String email, String niveauPlongeur, String fonction, Long hash) {
+/*    public User(String uid, String nom, String prenom, String licence, String email, String niveauPlongeur, String fonction, Long hash) {
         this.uid = uid;
         mNom = nom;
         mPrenom = prenom;
@@ -67,7 +67,7 @@ public class User implements Serializable{
         mNiveauPlongeur = niveauPlongeur;
         mFonction = fonction;
         mHash = hash;
-    }
+    }*/
 
     // GETTERS & SETTERS
 

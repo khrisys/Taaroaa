@@ -63,16 +63,15 @@ public class CovoiturageConducteursActivity extends BaseActivity {
     private static TextInputEditText mDateRetour;
     @SuppressLint("StaticFieldLeak")
     private static TextInputEditText mHeureretour;
-    TextInputEditText mPrenom;
-    TextInputEditText mNom;
-    TextInputEditText mNbPlaceTotal;
-    Spinner mTypeVehicule;
-    TextView mLieuDepart;
-    TextView mLieuArrivee;
-    ProgressBar mProgressBar;
-    Button mValid;
-    EditText mNotifCreationCovoit;
+    private TextInputEditText mPrenom;
+    private TextInputEditText mNom;
+    private TextInputEditText mNbPlaceTotal;
+    private Spinner mTypeVehicule;
+    private TextView mLieuDepart;
+    private TextView mLieuArrivee;
+    private ProgressBar mProgressBar;
     // DATAS
+    List<User> users;
     AlarmManager mAlarmManagerAller;
     AlarmManager mAlarmManagerRetour;
 
@@ -92,13 +91,14 @@ public class CovoiturageConducteursActivity extends BaseActivity {
         mLieuArrivee = findViewById(R.id.lieu_arrivee);
         mLieuDepart = findViewById(R.id.lieu_depart);
         mProgressBar = findViewById(R.id.progress_bar);
-        mValid = findViewById(R.id.proposition_covoit_btn);
-        mNotifCreationCovoit = findViewById(R.id.alertdialog_ok_covoit);
+        Button valid = findViewById(R.id.proposition_covoit_btn);
+        EditText notifCreationCovoit = findViewById(R.id.alertdialog_ok_covoit);
 
         //  les AlarmManager permettront de réveiller le téléphone et d'executer du code à une date précise
         mAlarmManagerAller = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         mAlarmManagerRetour = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
+        mNbPlaceTotal.requestFocus();
 
         this.configureToolbar();
         this.giveToolbarAName(R.string.covoit_conducteur_name);
@@ -126,7 +126,35 @@ public class CovoiturageConducteursActivity extends BaseActivity {
         // LISTENERS
         // --------------------
 
-        mValid.setOnClickListener(new View.OnClickListener() {
+        mDateDepart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDatePickerDialog(v);
+            }
+        });
+
+        mHeureDepart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showTimePickerDialog(v);
+            }
+        });
+
+        mDateRetour.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDatePickerDialog2(v);
+            }
+        });
+
+        mHeureretour.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showTimePickerDialog2(v);
+            }
+        });
+
+        valid.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 createCovoiturageInFirebase();
@@ -292,7 +320,7 @@ public class CovoiturageConducteursActivity extends BaseActivity {
         String lieuRetour = mLieuArrivee.getText().toString();
         String heureDepart = mHeureDepart.getText().toString();
         String heureRetour = mHeureretour.getText().toString();
-        List<User> users = new ArrayList<>();
+        users = new ArrayList<>();
         //TODO rajouter le champs reservation lorsque les sorties seront gerees
         //Reservation reservation = new Reservation();
 
@@ -374,8 +402,8 @@ public class CovoiturageConducteursActivity extends BaseActivity {
 
                     //TODO faire une requete pour boucler sur les users et recuperer les passagers par leurs noms et prenom. Sur ces personnes :  declencher l'alarm
                     // envoi de l'alarm à la classe TimeAlarmCovoiturageAller pour que les notifications soient prises en compte et envoyées au moment voulu
-                    this.alarmDepart(horaireDelAller);
-                    this.alarmRetour(horaireDuRetour);
+                    /*this.alarmDepart(horaireDelAller);
+                    this.alarmRetour(horaireDuRetour);*/
 
                     this.mProgressBar.setVisibility(View.VISIBLE);
                     setupDb().collection("covoiturages").document(id).set(covoit)
@@ -415,6 +443,7 @@ public class CovoiturageConducteursActivity extends BaseActivity {
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 if (documentSnapshot.exists()) {
                     Map<String, Object> user = documentSnapshot.getData();
+                    assert user != null;
                     mNom.setText(user.get("nom").toString());
                     mPrenom.setText(user.get("prenom").toString());
                 }
@@ -429,23 +458,23 @@ public class CovoiturageConducteursActivity extends BaseActivity {
 
     // Les pickers etant static, je créé une instance pour chaque champs : une instance ne peut pas servir à 2 champs
     public void showDatePickerDialog(View v) {
-        DialogFragment newFragment = new CovoiturageConducteursActivity.DatePickerFragment();
+        DialogFragment newFragment = new DatePickerFragment();
         newFragment.show(getSupportFragmentManager(), "dateDepart");
     }
 
     public void showDatePickerDialog2(View v) {
-        DialogFragment newFragment = new CovoiturageConducteursActivity.DatePickerFragment();
+        DialogFragment newFragment = new DatePickerFragment();
         newFragment.show(getSupportFragmentManager(), "dateRetour");
     }
 
     public void showTimePickerDialog(View v) {
-        DialogFragment newFragment = new CovoiturageConducteursActivity.TimePickerFragment();
+        DialogFragment newFragment = new TimePickerFragment();
         newFragment.show(getSupportFragmentManager(), "timeDepart");
     }
 
     public void showTimePickerDialog2(View v) {
-        v.setTag("timePicker2");
-        DialogFragment newFragment = new CovoiturageConducteursActivity.TimePickerFragment();
+        //v.setTag("timePicker2");
+        DialogFragment newFragment = new TimePickerFragment();
         newFragment.show(getSupportFragmentManager(), "timeRetour");
     }
 
@@ -483,11 +512,13 @@ public class CovoiturageConducteursActivity extends BaseActivity {
          * @param month      (0 à 11)
          * @param dayOfMonth jour du mois
          */
+        @SuppressLint("SetTextI18n")
         @Override
         public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-            if (getTag() == "dateDepart")
+            assert getTag() != null;
+            if (getTag().equals("dateDepart"))
                 mDateDepart.setText(mDateDepart.getText() + "" + dayOfMonth + "-" + (month + 1) + "-" + year);
-            else if (getTag() == "dateRetour")
+            if (getTag().equals("dateRetour"))
                 mDateRetour.setText(mDateRetour.getText() + "" + dayOfMonth + "-" + (month + 1) + "-" + year);
         }
     }
@@ -522,10 +553,12 @@ public class CovoiturageConducteursActivity extends BaseActivity {
          * @param hourOfDay heure du jour
          * @param minute    minute de l'heure
          */
+        @SuppressLint("SetTextI18n")
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-            if (getTag() == "timeDepart")
+            assert getTag() != null;
+            if (getTag().equals("timeDepart"))
                 mHeureDepart.setText(mHeureDepart.getText() + "" + hourOfDay + ":" + minute + ":00");
-            else if (getTag() == "timeRetour")
+            if (getTag().equals("timeRetour"))
                 mHeureretour.setText(mHeureretour.getText() + "" + hourOfDay + ":" + minute + ":00");
         }
     }

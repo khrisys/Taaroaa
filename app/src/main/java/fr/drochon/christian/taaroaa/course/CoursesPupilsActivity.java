@@ -23,7 +23,6 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -39,13 +38,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 
 import fr.drochon.christian.taaroaa.R;
+import fr.drochon.christian.taaroaa.alarm.TimeAlarmCourses;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
 import fr.drochon.christian.taaroaa.model.Course;
 import fr.drochon.christian.taaroaa.model.User;
-import fr.drochon.christian.taaroaa.alarm.TimeAlarmCourses;
 
 /**
  * creer l'ihm
@@ -81,22 +79,32 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_courses_pupils);
         // DESIGN
-        mCoordinatorLayout = findViewById(R.id.pupils_layout_root);
-        mLinearLayout = findViewById(R.id.linearLayoutRoot);
         mCalendarView = findViewById(R.id.calendrier_eleves);
         recyclerView = findViewById(R.id.recyclerViewCoursesPupils); // liste des cours
         mTextView = findViewById(R.id.empty_list_textview);
-        mScrollView = findViewById(R.id.scrollviewRecyclerView);
+        //mScrollView = findViewById(R.id.scrollviewRecyclerView);
         mFloatingActionButton = findViewById(R.id.fab);
         // DATAS
         calendrierClique = new Date();
         calendrierFinJournee = new Date();
         listSnapshot = new ArrayList<>();
-        user = new User();
         mAlarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
-
-        getLevelConnectedUser();
+        Intent intent = getIntent();
+        user = (User) intent.getSerializableExtra("user");
+        /*
+         * Ceci permet d'afficher en titre de page le niveau des cours données, de lancer une requete prenant
+         * en parametre le niveau d'un utilisateur dans l'adapter, et d'afficher ou non le floatingbutton
+         * en fonction du niveau de l'utilisateur connecté.
+         * Cette methode permet egalement de gerer le lancement des notifications en fonction d'un user connecté,
+         * et fait en sorte qu'il ne recoive que les notifications des cours concernant son niveau de plongée.
+         */
+        // lance une alarme de notification si le cours correspond au niveau du plongeur connecté
+        alarmConnectedUser(user.getNiveauPlongeur());
+        String name = "Cours de niveau " + user.getNiveauPlongeur();
+        giveToolbarAName(name);
+        configureRecyclerView();
+        showFloatingButton();
         configureToolbar();
 
         // --------------------
@@ -275,22 +283,6 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
         }
     }
 
-/*    public void notifCompleteAccount() {
-        AlertDialog.Builder adb = new AlertDialog.Builder(this);
-        // ajouter une couleur à l'icon de warning
-        Drawable warning = getResources().getDrawable(android.R.drawable.ic_dialog_alert);
-        ColorFilter filter = new LightingColorFilter(Color.RED, Color.BLUE);
-        warning.setColorFilter(filter);
-        adb.setIcon(warning);
-        adb.setTitle("Merci de completer votre compte pour acceder à la liste des cours !");
-        adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                // rien à appeler. pas la peine de faire de toast
-            }
-        });
-        adb.show();
-    }*/
-
     // --------------------
     // ALARM NOTIFICATION
     // --------------------
@@ -312,6 +304,7 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
                         List<DocumentSnapshot> ds = documentSnapshots.getDocuments();
                         for (DocumentSnapshot documentSnapshot : ds) {
                             Map<String, Object> cours = documentSnapshot.getData();
+                            assert cours != null;
                             Course course = new Course(cours.get("id").toString(), cours.get("typeCours").toString(), cours.get("sujetDuCours").toString(),
                                     cours.get("niveauDuCours").toString(), cours.get("nomDuMoniteur").toString(), (Date) cours.get("horaireDuCours"));
                             String niveau = cours.get("niveauDuCours").toString();
@@ -422,37 +415,5 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
             course.setTypeCours(typeCours);
             course.setHoraireDuCours(horaireDucours);
         }
-    }
-
-    /**
-     * Methode permettant de recuperer le niveau de l'utilisateur actuellement connecté.
-     * Ceci permet d'afficher en titre de page le niveau des cours données, de lancer une requete prenant
-     * en parametre le niveau d'un utilisateur dans l'adapter, et d'afficher ou non le floatingbutton
-     * en fonction du niveau de l'utilisateur connecté.
-     * Cette methode permet egalement de gerer le lancement des notifications en fonction d'un user connecté,
-     * et fait en sorte qu'il ne recoive que les notifications des cours concernant son niveau de plongée.
-     */
-    private void getLevelConnectedUser() {
-        setupDb().collection("users").whereEqualTo("uid", Objects.requireNonNull(getCurrentUser()).getUid()).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot documentSnapshots) {
-                if (documentSnapshots.size() != 0) {
-                    List<DocumentSnapshot> ds = documentSnapshots.getDocuments();
-                    for (int i = 0; i < ds.size(); i++) {
-                        Map<String, Object> map = ds.get(i).getData();
-                        user.setFonction(map.get("fonction").toString()); // utile pour l'affichage du floatingbutton
-
-                        // affichage de la toolbar avec le niveau de la personne connectée
-                        user.setNiveauPlongeur(map.get("niveau").toString());
-                        // lance une alarme de notification si le cours correspond au niveau du plongeur connecté
-                        alarmConnectedUser(user.getNiveauPlongeur());
-                        String name = "Cours de niveau " + user.getNiveauPlongeur();
-                        giveToolbarAName(name);
-                        configureRecyclerView();
-                        showFloatingButton();
-                    }
-                }
-            }
-        });
     }
 }

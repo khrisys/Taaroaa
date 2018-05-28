@@ -197,11 +197,9 @@ public class AccountCreateActivity extends BaseActivity {
     }
 
 
-    private final static boolean isValidEmail(CharSequence target) {
-        if (target == null)
-            return false;
+    private static boolean isValidEmail(CharSequence target) {
+        return target != null && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
 
-        return android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
     }
 
     // --------------------
@@ -225,7 +223,7 @@ public class AccountCreateActivity extends BaseActivity {
         String niveau = this.mNiveauPlongeespinner.getSelectedItem().toString();
         String email = this.mEmail.getText().toString();
         String password = mPassword.getText().toString();
-        long hash = hashCode();
+
 
         if (!nom.isEmpty() && !prenom.isEmpty() && !email.isEmpty() && isValidEmail(email) && !password.isEmpty()) {
             this.mProgressBar.setVisibility(View.VISIBLE);
@@ -237,7 +235,7 @@ public class AccountCreateActivity extends BaseActivity {
             user.put("niveau", niveau);
             user.put("fonction", fonction);
             user.put("email", email);
-            user.put("hash", hash);
+
 
             assert uid != null;
             setupDb().collection("users").document(uid).set(user)

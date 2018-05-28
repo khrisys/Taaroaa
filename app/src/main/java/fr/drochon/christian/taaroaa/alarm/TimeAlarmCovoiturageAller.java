@@ -23,8 +23,6 @@ import fr.drochon.christian.taaroaa.model.User;
 
 public class TimeAlarmCovoiturageAller extends BroadcastReceiver {
 
-    NotificationManager notificationManager;
-
     @Override
     public void onReceive(Context context, Intent intent) {
 
@@ -42,8 +40,6 @@ public class TimeAlarmCovoiturageAller extends BroadcastReceiver {
         assert bundle != null;
         //hAller = bundle.getString("hAller");
         Covoiturage c = (Covoiturage) bundle.getSerializable("covoiturageAlarm");
-        User u = (User) bundle.getSerializable("user");
-
 
         // --------------------
         // CONVERSION COVOITURAGE ALLER
@@ -72,19 +68,20 @@ public class TimeAlarmCovoiturageAller extends BroadcastReceiver {
         // NOTIFICATION
         // --------------------
 
-        int NOTIFICATION_ID = 0;
+        int NOTIFICATION_ID = 7;
         String NOTIFICATION_TAG = "TAAROAA";
         // Create a Channel (Android 8) and set the importance
         String channelId = "fcm_default_channel";
 
-        notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager notificationManager1 = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         // Affichage de la 2e notification. Cliquée, elle renvoie vers l'activité voulue
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
 
         inboxStyle.setBigContentTitle("TAAROAA"); // titre de la notif lorsq'uelle est ouverte
-        inboxStyle.addLine("Covoiturage"); // sous titre affuché lorsque la notif est affichée
-        inboxStyle.setSummaryText("Votre covoiturage Aller partira " + dateAllerStr + " à " + heureAllerStr + " !"); // decription de la notif lorsqu'elle est ouverte
+        inboxStyle.addLine("COVOITURAGE"); // sous titre affuché lorsque la notif est affichée
+        inboxStyle.setSummaryText("Votre covoiturage Aller partira ");
+        inboxStyle.setSummaryText("\t" + dateAllerStr + " à " + heureAllerStr + " !");// decription de la notif lorsqu'elle est ouverte
 
 
         // Affichage de la notif qui apparait en premier à l'ecran. Affichage defini par la priorité
@@ -93,8 +90,9 @@ public class TimeAlarmCovoiturageAller extends BroadcastReceiver {
                         // Set the notification content
                         .setSmallIcon(android.R.drawable.ic_notification_overlay)
                         .setContentTitle("TAAROAA")
-                        .setContentText("Covoiturage")
-                        .setSubText("Votre covoit Aller sera pret dans  2 heures !")
+                        .setContentText("COVOITURAGE")
+                        .setSubText("Départ " + dateAllerStr + " à " + heureAllerStr + " !")
+                        .setContentInfo("Trajet Aller")
                         .setPriority(NotificationCompat.PRIORITY_HIGH) //affiche la notif clairement en haut de l'app
                         .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                         // Set the intent that will fire when the user taps the notification : renvoi vers l'activité definie
@@ -125,7 +123,8 @@ public class TimeAlarmCovoiturageAller extends BroadcastReceiver {
         }
 
         // Show notification
-        if(u != null)
-        notificationManager.notify(NOTIFICATION_TAG, (int)u.getHash().longValue(), notificationBuilder.build());
+
+        assert notificationManager1 != null;
+        notificationManager1.notify(NOTIFICATION_TAG, NOTIFICATION_ID, notificationBuilder.build());
     }
 }

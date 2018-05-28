@@ -10,10 +10,6 @@ import java.util.Objects;
 
 public class SendNotification extends FirebaseMessagingService {
 
-    private String TAG = "TAAROAA";
-    private String SENDER_ID = "963968628408";
-    private String notificationId = "7"; //new Random().nextInt(60000);
-
     FirebaseMessaging fm = FirebaseMessaging.getInstance();
 
     /**
@@ -21,12 +17,16 @@ public class SendNotification extends FirebaseMessagingService {
      */
     @Override
     public void onCreate() {
+        String SENDER_ID = "963968628408";
+        String notificationId = "7";
+
         RemoteMessage remoteMessage = new RemoteMessage.Builder(SENDER_ID + "@gcm.googleapis.com")
                 .setMessageId(notificationId)
                 .addData("my_message", "Hello World")
                 .addData("my_action", "SAY_HELLO")
                 .build();
 
+        String TAG = "TAAROAA";
         if (!remoteMessage.getData().isEmpty()) {
             Log.e(TAG, "UpstreamData: " + remoteMessage.getData());
         }

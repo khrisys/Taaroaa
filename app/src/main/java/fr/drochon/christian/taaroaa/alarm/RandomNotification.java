@@ -13,6 +13,7 @@ import android.os.Build;
 import fr.drochon.christian.taaroaa.alarm.NotificationButtonReceiver;
 import fr.drochon.christian.taaroaa.controller.MainActivity;
 import fr.drochon.christian.taaroaa.covoiturage.CovoituragePassagersActivity;
+import fr.drochon.christian.taaroaa.covoiturage.CovoiturageVehiclesActivity;
 
 public class RandomNotification {
 
@@ -53,9 +54,9 @@ public class RandomNotification {
     }
 
     private PendingIntent getPendingNotificationIntent() {
-        Intent notificationIntent = new Intent(context, CovoituragePassagersActivity.class);
+        Intent notificationIntent = new Intent(context, CovoiturageVehiclesActivity.class);
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
-                | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
         return PendingIntent.getActivity(context, 1,
                 notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
     }

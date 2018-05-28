@@ -17,10 +17,10 @@ import java.util.Date;
 import java.util.Locale;
 
 import fr.drochon.christian.taaroaa.covoiturage.CovoiturageVehiclesActivity;
+import fr.drochon.christian.taaroaa.model.Covoiturage;
+import fr.drochon.christian.taaroaa.model.User;
 
 public class TimeAlarmCovoiturageRetour extends BroadcastReceiver {
-
-    NotificationManager notificationManager;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -35,17 +35,19 @@ public class TimeAlarmCovoiturageRetour extends BroadcastReceiver {
 
         // recuperation de l'extra envoyé dans l'intent
         Bundle bundle = intent.getExtras();
-        assert bundle != null;hRetour = bundle.getString("hRetour");
+        assert bundle != null;
+        //hAller = bundle.getString("hAller");
+        Covoiturage c = (Covoiturage) bundle.getSerializable("covoiturageAlarm");
 
         // --------------------
         // CONVERSION COVOITURAGE RETOUR
         // --------------------
-        if (hRetour != null) {
+        if (c != null) {
             // conversion de date pour affichage
             Date dateRetour = null;
             SimpleDateFormat dateFormat3 = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy", Locale.US);
             try {
-                dateRetour = dateFormat3.parse(hRetour);
+                dateRetour = dateFormat3.parse(c.getHoraireRetour().toString());
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -68,8 +70,9 @@ public class TimeAlarmCovoiturageRetour extends BroadcastReceiver {
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
 
         inboxStyle.setBigContentTitle("TAAROAA"); // titre de la notif lorsq'uelle est ouverte
-        inboxStyle.addLine("Covoiturage"); // sous titre affuché lorsque la notif est affichée
-        inboxStyle.setSummaryText("Votre covoiturage Retour partira " + dateRetourStr + " à " + heureRetourStr + " !"); // decription de la notif lorsqu'elle est ouverte
+        inboxStyle.addLine("COVOITURAGE"); // sous titre affuché lorsque la notif est affichée
+        inboxStyle.setSummaryText("Votre covoiturage Retour partira " );
+        inboxStyle.setSummaryText("\t" + dateRetourStr + " à " + heureRetourStr + " !");// decription de la notif lorsqu'elle est ouverte
 
 
         // Create a Channel (Android 8) and set the importance
@@ -81,8 +84,9 @@ public class TimeAlarmCovoiturageRetour extends BroadcastReceiver {
                         // Set the notification content
                         .setSmallIcon(android.R.drawable.ic_notification_overlay)
                         .setContentTitle("TAAROAA")
-                        .setContentText("Covoiturage")
-                        .setSubText("Votre covoit Retour sera pret dans 2 heures !")
+                        .setContentText("COVOITURAGE")
+                        .setSubText("Départ "  + dateRetourStr + " à " + heureRetourStr + " !")
+                        .setContentInfo("Trajet Retour")
                         .setPriority(NotificationCompat.PRIORITY_HIGH) //affiche la notif clairement en haut de l'app
                         .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                         // Set the intent that will fire when the user taps the notification : renvoi vers l'activité definie
@@ -91,10 +95,10 @@ public class TimeAlarmCovoiturageRetour extends BroadcastReceiver {
                         // style permettant une seconde notif personnalisée comprenant plusieurs lignes
                         .setStyle(inboxStyle);
 
-        int NOTIFICATION_ID = 1;
+        int NOTIFICATION_ID = 7;
         String NOTIFICATION_TAG = "TAAROAA";
         // Create a Channel (Android 8) and set the importance
-        notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager notificationManager1 = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         /*
         Methode permettant de creer une channel et de determiner osn importance. Avant de pouvoir delivrer une
@@ -118,7 +122,8 @@ public class TimeAlarmCovoiturageRetour extends BroadcastReceiver {
         }
 
         // Show notification
-        assert notificationManager != null;
-        notificationManager.notify(NOTIFICATION_TAG, NOTIFICATION_ID, notificationBuilder.build());
+
+        assert notificationManager1 != null;
+        notificationManager1.notify(NOTIFICATION_TAG, NOTIFICATION_ID, notificationBuilder.build());
     }
 }

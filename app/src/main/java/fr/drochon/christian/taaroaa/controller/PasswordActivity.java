@@ -2,6 +2,7 @@ package fr.drochon.christian.taaroaa.controller;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.CursorLoader;
@@ -263,6 +264,7 @@ public class PasswordActivity extends BaseActivity implements LoaderCallbacks<Cu
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
      */
+    @SuppressLint("StaticFieldLeak")
     class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
         private final String mEmail;

@@ -61,11 +61,11 @@
                 />-->
 
             <!--RECYCLER VIEW-->
-            <ScrollView
+<!--            <ScrollView
                 android:id="@+id/scrollviewRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                >
+                >-->
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/recyclerViewSearchedUser"
@@ -74,7 +74,7 @@
                     android:layout_gravity="center_vertical|center_horizontal"
                     />
 
-            </ScrollView>
+          <!--  </ScrollView>-->
         </LinearLayout>
 
 

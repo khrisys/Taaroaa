@@ -34,7 +34,6 @@ import java.util.Locale;
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
 import fr.drochon.christian.taaroaa.model.Course;
-import fr.drochon.christian.taaroaa.model.User;
 
 /**
  * creer l'ihm
@@ -49,7 +48,6 @@ public class CoursesSupervisorsActivity extends BaseActivity implements AdapterC
     // CONTIENT LA RECYCLERVIEW
 
 
-    static User user;
     // FOR DESIGN
     CoordinatorLayout mCoordinatorLayout;
     LinearLayout mLinearLayout;
@@ -82,7 +80,6 @@ public class CoursesSupervisorsActivity extends BaseActivity implements AdapterC
 
         calendrierClique = new Date();
         calendrierFinJournee = new Date();
-        user = new User();
 
         configureRecyclerView();
         configureToolbar();
@@ -158,7 +155,6 @@ public class CoursesSupervisorsActivity extends BaseActivity implements AdapterC
      * On utilise un switch ici car il peut y avoir plusieurs options.
      * Surtout ne pas oublier le "true" apres chaque case sinon, ce sera toujours le dernier case qui sera executé!
      *
-     * @param item
      * @return item
      */
     @Override
@@ -261,6 +257,7 @@ public class CoursesSupervisorsActivity extends BaseActivity implements AdapterC
     /**
      * Methode permettant de requeter avec les conditions suivantes :
      * n'affiche que les cours de la personne connectée + n'affiche que les cours du jour de la date cliquée
+     *
      * @return query
      */
     private Query queryCoursesFiltered() {
@@ -281,7 +278,7 @@ public class CoursesSupervisorsActivity extends BaseActivity implements AdapterC
     /**
      * Methode permettant de recuperer l'integralité de la liste des snapshots et d'en faire des objets "Course"
      *
-     * @param documentSnapshot
+     * @param documentSnapshot donnees recuperees de la requete de recherche de l'utilisateur connecté
      */
     private void readDataInList(final List<DocumentSnapshot> documentSnapshot) {
 
