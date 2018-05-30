@@ -74,10 +74,11 @@ public class SummaryActivity extends BaseActivity {
                             List<DocumentSnapshot> ds = documentSnapshots.getDocuments();
                             for (DocumentSnapshot doc : ds) {
                                 Map<String, Object> user = doc.getData();
-                                //TODO  passe dans les 2 conditions en fonction de l'id. comme ca boucle, on passe dans les2 et ca arrive sur la creation de compte
+                                //TODO mauvaise condition : ne passe dans aucune des 2 et la creation d'un user ici n'a plus lieu d'etre
 
                                 // Si l'user connecté existe en bdd, on recupere l'ensemble de l'objet user et on le passe en param de l'activité
-                                if (user.get("fonction") != null && user.get("uid").equals(getCurrentUser().getUid())) {
+                                assert user != null;
+                                if (user.get("fonction") != null && user.get("uid").equals(Objects.requireNonNull(getCurrentUser()).getUid())) {
                                     User u = new User(user.get("uid").toString(), user.get("nom").toString(), user.get("prenom").toString(), user.get("licence").toString(),
                                             user.get("email").toString(), user.get("niveau").toString(), user.get("fonction").toString());
                                     Intent intent = new Intent(SummaryActivity.this, AccountModificationActivity.class).putExtra("user", u);

@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -20,7 +21,7 @@ import com.google.firebase.messaging.RemoteMessage;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Objects;
+import java.util.Map;
 
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.auth.SearchUserActivity;
@@ -45,6 +46,18 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     String NOTIFICATION_TAG = "TAAROAA";
     private NotificationManager notificationManager;
 
+    public MyFirebaseMessagingService() {
+    }
+
+    /**
+     * Called by the system when the service is first created.  Do not call this method directly.
+     */
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        this.sendNotification("titre", "message");
+    }
+
     // RECEPTION D'UNE NOTIFICATION
     /*
     BACKGROUND COMPATIBILY
@@ -67,76 +80,37 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
 
-        /**
-         * NOTIFICATIONS TESTS
-         * Apres validation du test postman, nous pouvons envoyer et tester des notifications, nous pouvons les rendre plus fantaisistes.
-         * Tout d'abord, ajoutons une fonctionnalité de clic pour la notification:
-         */
-        Intent notificationIntent;
-        if (MainActivity.isAppRunning) {
-            //Action si l'appli est ouverte lorsque la notif arrive
-            notificationIntent = new Intent(this, CovoiturageVehiclesActivity.class);
-        } else {
-            //Show notification as usual
-            notificationIntent = new Intent(this, SearchUserActivity.class);
+        // Check if message contains a notification payload. = extra data
+        if (remoteMessage.getNotification() != null) {
+            Log.d("TAG", "Message Notification Body: " + remoteMessage.getNotification().getBody()); //text notif
+            Log.d("TAG", "Message data payload " + remoteMessage.getData()); // toutes les données du message
         }
 
-        notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        final PendingIntent pendingIntent = PendingIntent.getActivity(this,
-                0 , notificationIntent,
-                PendingIntent.FLAG_ONE_SHOT);
-
-        Bitmap bitmap = getBitmapfromUrl(remoteMessage.getData().get("C:\\Users\\khris\\Pictures\\craig_joubert.JPG"));
-
-        // action du bouton sur la notif
-        Intent likeIntent = new Intent(this, CoursesPupilsActivity.class);
-        likeIntent.putExtra(NOTIFICATION_ID_EXTRA, NOTIFICATION_ID);
-        likeIntent.putExtra(IMAGE_URL_EXTRA, remoteMessage.getData().get("C:\\Users\\khris\\Pictures\\craig_joubert.JPG"));
-        PendingIntent likePendingIntent = PendingIntent.getService(this,
-                NOTIFICATION_ID, likeIntent, PendingIntent.FLAG_ONE_SHOT);
-
-
-        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-
-        notificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-        /**
-         * NOTIFICATIONS CHANNEL
-         * Chaque application qui cible le SDK 26 ou supérieur (Android O) doit implémenter des canaux de
-         * notification et ajouter ses notifications à au moins l'un d'entre eux. Autrement dit, vous séparez
-         * vos notifications en canaux en fonction de leur fonction et de leur niveau d'importance. Avoir plus
-         * de canaux donne aux utilisateurs plus de contrôle sur les notifications qu'ils reçoivent. Si vous
-         * souhaitez recevoir les notifications de vos nouveaux téléphones, collez cette méthode dans votre service.
-         */
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            setupChannels();
+        // verifie que le message contient une ntoficiation paylaod
+        if (remoteMessage.getData().size() > 0) {
+            String id = remoteMessage.getMessageId(); // id du message ok. Pas le meme que dans postman
+            String from = remoteMessage.getFrom(); // ici : /topics/covoiturages
+            String to = remoteMessage.getTo(); // null
+            String title = remoteMessage.getData().get("title"); //titre data
+            String message = remoteMessage.getData().get("text"); // text data
+            String img = remoteMessage.getData().get("image-url"); // img data
+            String extra = remoteMessage.getData().get("extra_information"); // data extra infos
+            Map<String, String> map = remoteMessage.getData(); // toutes les données du message
+            sendNotification(title, message);
         }
-        /**
-         *Initialisation d'une constante ADMIN_CHANNEL_ID qui est de type String. J'utilise cette variable
-         * id pour faire référence à ma nouvelle chaîne. Donc, chaque fois que j'utilise NotificationCompat.Builder
-         * pour créer une nouvelle notification, j'initialise l'objet builder et passe l'identifiant dans le constructeur, comme ceci:
-         */
-        NotificationCompat.Builder notificationBuilder =
-                new NotificationCompat.Builder(this, ADMIN_CHANNEL_ID)// canal de noification
-                        .setLargeIcon(bitmap) // on met l'image dans lma notif
-                        .setSmallIcon(android.R.drawable.ic_notification_overlay)
-                        .setContentTitle(Objects.requireNonNull(remoteMessage.getNotification()).getBody())
-                        // Le NotificationCompat.Builder prend en charge plusieurs types de styles différents pour
-                        // les notifications, y compris un lecteur et ceux avec des dispositions personnalisées:
-                        .setStyle(new NotificationCompat.BigPictureStyle()
-                                .setSummaryText(remoteMessage.getData().get("my_action"))
-                                .bigPicture(bitmap))/*Notification with Image*/
-                        .setContentText(remoteMessage.getData().get("my_message"))
-                        .setAutoCancel(true)
-                        .setSound(defaultSoundUri)
-                        // Ajouter des boutons à la notif
-                        .addAction(R.mipmap.logo1,
-                                getString(R.string.app_name), likePendingIntent)
-                        .setContentIntent(pendingIntent);
-        // affichage de la notif
-        notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build());
 
+        // verifie que le message contient une ntoficiation paylaod
+        if (remoteMessage.getNotification() != null) {
+            String title = remoteMessage.getNotification().getTitle(); // titre notif
+            String text = remoteMessage.getNotification().getBody(); // text notif
+            String t = remoteMessage.getNotification().getTag();
+            String tt = remoteMessage.getNotification().getClickAction();
+            String message = remoteMessage.getData().get("text"); // text data
+            String img = remoteMessage.getData().get("image-url"); //url img
+            String imageUrl = remoteMessage.getNotification().getIcon();
+            Map<String, String> map = remoteMessage.getData();
+            sendNotification(title, message);
+        }
     }
 
     /**
@@ -182,5 +156,80 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         if (notificationManager != null) {
             notificationManager.createNotificationChannel(adminChannel);
         }
+    }
+
+
+
+    private void sendNotification(String title, String message) {
+
+        /**
+         * NOTIFICATIONS TESTS
+         * Apres validation du test postman, nous pouvons envoyer et tester des notifications, nous pouvons les rendre plus fantaisistes.
+         * Tout d'abord, ajoutons une fonctionnalité de clic pour la notification:
+         */
+        Intent notificationIntent;
+        if (MainActivity.isAppRunning) {
+            //Action si l'appli est ouverte lorsque la notif arrive
+            notificationIntent = new Intent(this, CovoiturageVehiclesActivity.class);
+        } else {
+            //Show notification as usual
+            notificationIntent = new Intent(this, SearchUserActivity.class);
+        }
+
+        notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        final PendingIntent pendingIntent = PendingIntent.getActivity(this,
+                0, notificationIntent,
+                PendingIntent.FLAG_ONE_SHOT);
+
+        Bitmap bitmap = getBitmapfromUrl("C:\\Users\\khris\\Pictures\\craig_joubert.JPG");
+
+        // action du bouton sur la notif
+        Intent pupilsIntent = new Intent(this, CoursesPupilsActivity.class);
+        pupilsIntent.putExtra(NOTIFICATION_ID_EXTRA, NOTIFICATION_ID);
+        pupilsIntent.putExtra(IMAGE_URL_EXTRA, "C:\\Users\\khris\\Pictures\\craig_joubert.JPG");
+        PendingIntent likePendingIntent = PendingIntent.getService(this,
+                NOTIFICATION_ID, pupilsIntent, PendingIntent.FLAG_ONE_SHOT);
+
+
+        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+        /**
+         *Initialisation d'une constante ADMIN_CHANNEL_ID qui est de type String. J'utilise cette variable
+         * id pour faire référence à ma nouvelle chaîne. Donc, chaque fois que j'utilise NotificationCompat.Builder
+         * pour créer une nouvelle notification, j'initialise l'objet builder et passe l'identifiant dans le constructeur, comme ceci:
+         */
+        NotificationCompat.Builder notificationBuilder =
+                new NotificationCompat.Builder(this, ADMIN_CHANNEL_ID)// canal de noification
+                        .setLargeIcon(bitmap) // on met l'image dans lma notif
+                        .setSmallIcon(android.R.drawable.ic_notification_overlay)
+                        .setContentTitle(title)
+                        .setStyle(new NotificationCompat.BigPictureStyle()// Le NotificationCompat.Builder prend en charge plusieurs types de styles différents pour les notifications, y compris un lecteur et ceux avec des dispositions personnalisées:
+                                .setSummaryText(message)
+                                .bigPicture(bitmap))/*Notification with Image*/
+                        .setContentText(message)
+                        .setAutoCancel(true)
+                        .setSound(defaultSoundUri)
+                        // Ajouter des boutons à la notif
+                        .addAction(R.mipmap.logo1,
+                                getString(R.string.app_name), likePendingIntent)
+                        .setContentIntent(pendingIntent);
+
+        notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        /**
+         * NOTIFICATIONS CHANNEL
+         * Chaque application qui cible le SDK 26 ou supérieur (Android O) doit implémenter des canaux de
+         * notification et ajouter ses notifications à au moins l'un d'entre eux. Autrement dit, vous séparez
+         * vos notifications en canaux en fonction de leur fonction et de leur niveau d'importance. Avoir plus
+         * de canaux donne aux utilisateurs plus de contrôle sur les notifications qu'ils reçoivent. Si vous
+         * souhaitez recevoir les notifications de vos nouveaux téléphones, collez cette méthode dans votre service.
+         */
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            setupChannels();
+        }
+
+        // affichage de la notif
+        notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build());
     }
 }

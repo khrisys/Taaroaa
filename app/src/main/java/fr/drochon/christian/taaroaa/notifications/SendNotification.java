@@ -22,8 +22,8 @@ public class SendNotification extends FirebaseMessagingService {
 
         RemoteMessage remoteMessage = new RemoteMessage.Builder(SENDER_ID + "@gcm.googleapis.com")
                 .setMessageId(notificationId)
-                .addData("my_message", "Hello World")
-                .addData("my_action", "SAY_HELLO")
+                .addData("title", "Hello World")
+                .addData("text", "SAY_HELLO")
                 .build();
 
         String TAG = "TAAROAA";
@@ -36,11 +36,7 @@ public class SendNotification extends FirebaseMessagingService {
         }
 
 
-        fm.send(new RemoteMessage.Builder(SENDER_ID + "@gcm.googleapis.com")
-                .setMessageId(notificationId)
-                .addData("my_message", "Hello World")
-                .addData("my_action", "SAY_HELLO")
-                .build());
+        fm.send(remoteMessage);
     }
 
 

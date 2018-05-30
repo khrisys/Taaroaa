@@ -36,7 +36,7 @@
     <string name="alertDialog_account">Voulez vous réellement supprimer votre compte ?</string>
     <string name="alertDialog_delete">Vous avez supprimé votre compte !</string>
     <string name="alertDialog_cancel">Vous n\'avez pas supprimé votre compte. \nVous diposez encore de vos informations personnelles. </string>
-    <string name="update_account">Le compte a été mis à jour !</string>
+    <string name="update_account">Compte mis à jour ! Merci.</string>
     <string name="create_account">Vous avez créé votre compte. \n\tMerci !</string>
     <string name="modifiez_votre_compte">Modifiez votre compte</string>
     <string name="modifiez_le_compte">Modifiez le compte adhérent</string>
@@ -105,7 +105,7 @@
     <string name="supprimez_un_covoiturage">Supprimez un covoiturage</string>
 
     <!--ID d'application Facebook-->
-<!--    <string name="facebook_app_id" translatable="false">2177677015844999</string>
+    <!--    <string name="facebook_app_id" translatable="false">2177677015844999</string>
     <string name="fb_login_protocol_scheme" translatable="false" tools:ignore="UnusedResources">fb2177677015844999</string>-->
     <!-- FACEBOOK PURPOSE -->
     <string name="prompt_email">Email</string>
@@ -113,7 +113,11 @@
     <string name="error_field_required">Ce champ est requis</string>
     <string name="permission_rationale">Accordez le droit d\'acceder à vos contacts pour fournir[…]</string>
 
-
+   <!-- CREATION DE COMPTE-->
+    <string name="creation_compte">"Validez vos identifiants"</string>
+    <string name="identifiants">Identifiants</string>
+    <string name="adresse_email">Adresse email :</string>
+    <string name="mot_de_passe">Mot de passe :</string>
 
 
 </resources>

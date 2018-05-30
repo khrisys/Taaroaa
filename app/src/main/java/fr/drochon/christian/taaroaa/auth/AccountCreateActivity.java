@@ -22,13 +22,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.ActionCodeSettings;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.api.UserHelper;
@@ -82,6 +89,39 @@ public class AccountCreateActivity extends BaseActivity {
         configureToolbar();
         giveToolbarAName(R.string.account_create_name);
 
+
+        // recuperation des identifiants de connexion
+        Intent intent = getIntent();
+        final String email = intent.getStringExtra("email");
+        final String password = intent.getStringExtra("password");
+        mEmail.setText(email);
+        mPassword.setText(password);
+
+        alertDialogValidationEmail();
+   /*    *//* Toast.makeText(AccountCreateActivity.this, "Avant de pouvoir créer votre compte, vous devez valider votre adresse mail " +
+                "via le lien qui vous a été envoyé à " + getCurrentUser().getEmail(), Toast.LENGTH_LONG).show();*//*
+        AlertDialog.Builder adb = new AlertDialog.Builder(this);
+        adb.setTitle("Validation d'email !");
+        // ajouter une couleur à l'icon de warning
+        Drawable warning = getResources().getDrawable(android.R.drawable.ic_dialog_alert);
+        ColorFilter filter = new LightingColorFilter(Color.RED, Color.BLUE);
+        warning.setColorFilter(filter);
+        adb.setIcon(warning);
+        adb.setMessage("Avant de pouvoir créer votre compte, vous devez valider votre adresse mail via le lien qui vous a été envoyé à " + getCurrentUser().getEmail());
+        adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                // recuperation des identifiants de connexion
+                Intent intent = getIntent();
+                final String email = intent.getStringExtra("email");
+                final String password = intent.getStringExtra("password");
+                mEmail.setText(email);
+                mPassword.setText(password);
+            }
+        });
+        adb.show();*/
+
+
+
         // --------------------
         // LISTENERS
         // --------------------
@@ -92,9 +132,20 @@ public class AccountCreateActivity extends BaseActivity {
         mCreateAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                createUserInFirebase();
-                //updateData(mNom.getText().toString(), mPrenom.getText().toString());
-               //startSummaryActivity();
+                Objects.requireNonNull(getCurrentUser()).reload();
+
+                FirebaseAuth auth = FirebaseAuth.getInstance(FirebaseFirestore.getInstance().getApp());
+                FirebaseUser firebaseUser = auth.getCurrentUser();
+                assert firebaseUser != null;
+                if (Objects.requireNonNull(firebaseUser.isEmailVerified())) {
+                    createUserInFirebase();
+                    startSummaryActivity();
+                } else {
+                    System.out.println("nok");
+                    alertDialogValidationEmail();
+                    /*Toast.makeText(AccountCreateActivity.this, "Avant de pouvoir créer votre compte, vous devez valider votre adresse mail " +
+                            "via le lien qui vous a été envoyé !", Toast.LENGTH_LONG).show();*/
+                }
             }
         });
 
@@ -107,7 +158,7 @@ public class AccountCreateActivity extends BaseActivity {
                 adb.setTitle(R.string.alertDialog_account);
                 // ajouter une couleur à l'icon de warning
                 Drawable warning = getResources().getDrawable(android.R.drawable.ic_dialog_alert);
-                ColorFilter filter = new LightingColorFilter( Color.RED, Color.BLUE);
+                ColorFilter filter = new LightingColorFilter(Color.RED, Color.BLUE);
                 warning.setColorFilter(filter);
                 adb.setIcon(warning);
                 adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -143,15 +194,45 @@ public class AccountCreateActivity extends BaseActivity {
         mNiveauPlongeespinner.setAdapter(adapterNiveau);
     }
 
+
+    // --------------------
+    // UI
+    // --------------------
+
     @Override
     public int getFragmentLayout() {
         return R.layout.activity_account_create;
     }
 
+    /** Methode permettant de verifier la validité d'une adresse email
+     *
+     * @param target adresse email
+     * @return validité de l'adresse email
+     */
+    private static boolean isValidEmail(CharSequence target) {
+        return target != null && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
+    }
 
-    // --------------------
-    // UI
-    // --------------------
+    public void alertDialogValidationEmail(){
+
+        Objects.requireNonNull(getCurrentUser()).reload();
+
+        AlertDialog.Builder adb = new AlertDialog.Builder(this);
+        adb.setTitle("Sécurité !");
+        // ajouter une couleur à l'icon de warning
+        Drawable warning = getResources().getDrawable(android.R.drawable.ic_dialog_alert);
+        ColorFilter filter = new LightingColorFilter(Color.RED, Color.BLUE);
+        warning.setColorFilter(filter);
+        adb.setIcon(warning);
+        adb.setMessage("Avant de pouvoir créer votre compte, vous devez valider votre adresse mail via le lien qui vous a été envoyé à '" + Objects.requireNonNull(getCurrentUser()).getEmail() + "'");
+        adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+
+                connectToFirebaseWithEmailAndPassword();
+            }
+        });
+        adb.show();
+    }
 
     /**
      * Methode permettant de changer d'ecran lors d'une connexion valide
@@ -178,7 +259,7 @@ public class AccountCreateActivity extends BaseActivity {
             mPassword.setError("Merci de saisir ce champ !");
             mPassword.requestFocus();
         }
-        if(!isValidEmail(mEmail.getText().toString())) {
+        if (!isValidEmail(mEmail.getText().toString())) {
             mEmail.setError("Adresse email non valide !");
             mEmail.requestFocus();
         }
@@ -196,12 +277,6 @@ public class AccountCreateActivity extends BaseActivity {
         }
     }
 
-
-    private static boolean isValidEmail(CharSequence target) {
-        return target != null && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
-
-    }
-
     // --------------------
     // REST REQUETES
     // --------------------
@@ -211,52 +286,138 @@ public class AccountCreateActivity extends BaseActivity {
      * la fonction renverra une notification à l'utilisateur.
      */
     private void createUserInFirebase() {
+        final FirebaseAuth auth = FirebaseAuth.getInstance(FirebaseFirestore.getInstance().getApp());
 
-        // pas d'id pour un objet non créé
-        FirebaseAuth auth = FirebaseAuth.getInstance(FirebaseFirestore.getInstance().getApp());
-        auth.createUserWithEmailAndPassword(this.mEmail.getText().toString(), mPassword.getText().toString());
+        setupDb().collection("users").document(getCurrentUser().getUid()).get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
 
-        String uid = auth.getUid();
-        String nom = this.mNom.getText().toString();
-        String prenom = this.mPrenom.getText().toString();
-        String licence = this.mLicence.getText().toString();
-        String niveau = this.mNiveauPlongeespinner.getSelectedItem().toString();
-        String email = this.mEmail.getText().toString();
-        String password = mPassword.getText().toString();
-
-
-        if (!nom.isEmpty() && !prenom.isEmpty() && !email.isEmpty() && isValidEmail(email) && !password.isEmpty()) {
-            this.mProgressBar.setVisibility(View.VISIBLE);
-            Map<String, Object> user = new HashMap<>();
-            user.put("uid", uid);
-            user.put("nom", nom.toUpperCase());
-            user.put("prenom", prenom.toUpperCase());
-            user.put("licence", licence);
-            user.put("niveau", niveau);
-            user.put("fonction", fonction);
-            user.put("email", email);
+                            // creation de l'(utilisateur en bdd
+                            String uid = auth.getUid();
+                            String nom = mNom.getText().toString();
+                            String prenom = mPrenom.getText().toString();
+                            String licence = mLicence.getText().toString();
+                            String niveau = mNiveauPlongeespinner.getSelectedItem().toString();
+                            String email = mEmail.getText().toString();
+                            String password = mPassword.getText().toString();
 
 
-            assert uid != null;
-            setupDb().collection("users").document(uid).set(user)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Toast.makeText(AccountCreateActivity.this, R.string.create_account,
+                            if (!nom.isEmpty() && !prenom.isEmpty() && !email.isEmpty() && isValidEmail(email) && !password.isEmpty()) {
+                                mProgressBar.setVisibility(View.VISIBLE);
+                                Map<String, Object> user = new HashMap<>();
+                                user.put("uid", uid);
+                                user.put("nom", nom.toUpperCase());
+                                user.put("prenom", prenom.toUpperCase());
+                                user.put("licence", licence);
+                                user.put("niveau", niveau);
+                                user.put("fonction", fonction);
+                                user.put("email", email);
+
+
+                                assert uid != null;
+                                setupDb().collection("users").document(uid).set(user)
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                Toast.makeText(AccountCreateActivity.this, R.string.create_account,
+                                                        Toast.LENGTH_LONG).show();
+                                                startSummaryActivity(); // renvoi l'user sur la page sommaire   pres validation de la creation de l'user
+                                            }
+                                        })
+                                        .addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                Toast.makeText(AccountCreateActivity.this, "ERROR" + e.toString(),
+                                                        Toast.LENGTH_LONG).show();
+                                                Log.d("TAG", e.toString());
+                                            }
+                                        });
+                            } else verificationChampsVides();
+
+                           /* Log.d("TAG", "Successfully created an account !");
+                            Toast.makeText(AccountCreateActivity.this, "Successfully created an account !",
+                                    Toast.LENGTH_SHORT).show();*/
+                            //startSummaryActivity();
+                            // You can access the new user via result.getUser()
+                            // Additional user info profile *not* available via:
+                            // result.getAdditionalUserInfo().getProfile() == null
+                            // You can check if the user is new or existing:
+                            // result.getAdditionalUserInfo().isNewUser()
+                        } else {
+                            Toast.makeText(AccountCreateActivity.this, "Error creating an account : "
+                                            + Objects.requireNonNull(task.getException()).getMessage(),
                                     Toast.LENGTH_SHORT).show();
-                            startSummaryActivity(); // renvoi l'user sur la page sommaire   pres validation de la creation de l'user
                         }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(AccountCreateActivity.this, "ERROR" + e.toString(),
+                    }
+                });
+    }
+
+    private void connectToFirebaseWithEmailAndPassword() {
+        // recuperation de la bdd FirebaseAuth avec en param l'app taaroaa
+        final FirebaseAuth auth = FirebaseAuth.getInstance(FirebaseFirestore.getInstance().getApp());
+        FirebaseUser firebaseUser = auth.getCurrentUser();
+
+        // 1 : creation d'un user avec email et password en bdd FirebaseAuth
+        auth.createUserWithEmailAndPassword(this.mEmail.getText().toString(), mPassword.getText().toString())
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // appel de la methode de verification d'email depuis firebase
+                            verifEmailUser();
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d("TAG", "createUserWithEmailIndba:success");
+                        /*    Toast.makeText(AccountCreateActivity.this, "Registration email succeed.",
+                                    Toast.LENGTH_SHORT).show();*/
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Toast.makeText(AccountCreateActivity.this, "Registration email failed or already in use by another account.",
                                     Toast.LENGTH_SHORT).show();
-                            Log.d("TAG", e.toString());
+                        }
+                    }
+                });
+    }
+
+    /**
+     * Methode permettant d'envoyer un email via un token pour la confirmation d'adresse mail d'un nouvek utilisateur
+     */
+    private void verifEmailUser() {
+        final FirebaseAuth auth = FirebaseAuth.getInstance(FirebaseFirestore.getInstance().getApp());
+        // An ActionCodeSettings instance needs to be provided when sending a password reset email or a verification email.
+
+        // In order to securely pass a continue URL, the domain for the URL will need to be whitelisted in the Firebase console.
+        // This is done in the Authentication section by adding this domain to the list of OAuth redirect domains if it is not already there.
+        String url = "https://taaroaa-fe93c.firebaseapp.com/verify?uid=" + auth.getCurrentUser();
+        ActionCodeSettings actionCodeSettings = ActionCodeSettings.newBuilder()
+                //.setUrl("https://taaroaa-fe93c.firebaseapp.com/__/auth/action?mode=%3Caction%3E&oobCode=%3Ccode%3E")
+                //.setUrl(url)
+                .setUrl("https://dhu3y.app.goo.gl/taaroaa")
+                .setHandleCodeInApp(true)
+                //.setIOSBundleId("com.example.ios")
+                // The default for this is populated with the current android package name.
+                .setAndroidPackageName(
+                        "fr.drochon.christian.taaroaa",
+                        true,
+                        "19")
+                .build();
+
+        if (!Objects.requireNonNull(auth.getCurrentUser()).isEmailVerified()) {
+            Objects.requireNonNull(auth.getCurrentUser()).sendEmailVerification()
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                Toast.makeText(AccountCreateActivity.this, "Verification email sent to " + Objects.requireNonNull(getCurrentUser()).getEmail(), Toast.LENGTH_LONG).show();
+                                Log.d("TAG", "Verification Email sent.");
+
+                                //createUserInFirebase();
+                            } else
+                                System.out.println("nok");
                         }
                     });
         }
-        else verificationChampsVides();
     }
 
     /**

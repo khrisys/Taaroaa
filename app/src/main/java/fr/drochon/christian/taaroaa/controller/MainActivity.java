@@ -33,8 +33,8 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.messaging.FirebaseMessaging;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -45,9 +45,10 @@ import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.alarm.NotificationReceiver;
 import fr.drochon.christian.taaroaa.alarm.RandomNotification;
 import fr.drochon.christian.taaroaa.auth.AccountCreateActivity;
+import fr.drochon.christian.taaroaa.auth.ConnectionActivity;
 import fr.drochon.christian.taaroaa.auth.SearchUserActivity;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
-import fr.drochon.christian.taaroaa.model.User;
+import fr.drochon.christian.taaroaa.notifications.MyFirebaseMessagingService;
 
 import static fr.drochon.christian.taaroaa.R.id;
 import static fr.drochon.christian.taaroaa.R.layout;
@@ -57,13 +58,14 @@ import static fr.drochon.christian.taaroaa.R.style;
 
 //import fr.drochon.christian.taaroaa.R;
 
-public class MainActivity extends BaseActivity implements ComponentCallbacks2{
+public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
 
     //Id de connexion dans l'activité courante
     private static final int RC_SIGN_IN = 123;
-    private Button mConnexion;
-    private TextView mTextViewHiddenForSnackbar;
     public static boolean isAppRunning;
+    private Button mConnexion;
+    private Button mCreationCompte;
+    private TextView mTextViewHiddenForSnackbar;
 
     // --------------------
     // LIFE CYCLE
@@ -84,27 +86,35 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2{
 
 
         mTextViewHiddenForSnackbar = findViewById(R.id.test_coordinator);
-        Button creation = findViewById(id.creation_compte_btn);
+        mCreationCompte = findViewById(id.creation_compte_btn);
         mConnexion = findViewById(id.connection_valid_btn);
         // lorsque je suis connecté, c'est que j'ai un compte et je n'ai pas besoin de voir le bouton "creer un compte"
         //if(isCurrentUserLogged()) creation.setVisibility(View.GONE);
         Button deconnexion = findViewById(id.deconnexion_btn);
         isAppRunning = true;
 
+        // Souscription aux notifications
+        FirebaseMessaging.getInstance().subscribeToTopic("courses");
+        FirebaseMessaging.getInstance().subscribeToTopic("covoiturages");
+
         // --------------------
         // LISTENERS
         // --------------------
 
         // lancement de l'activité de creation de compte
-        creation.setOnClickListener(new View.OnClickListener() {
+        mCreationCompte.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //TODO remttre cette condition en route apres creation de user validée
                 if (!isCurrentUserLogged()) {
-
-                    startAccountCreationActivity(); // creation de compte
+                startConnectionActivity();
+                //startAccountCreationActivity(); // creation de compte
                     /*//CREATION DU USER
                     createUserInFirestore();
                     startSummaryActivity(); // connecté : renvoyé vers le sommaire*/
+                }
+                else{
+                    Toast.makeText(MainActivity.this, "Vous etes déjà connecté, vous ne pouvez pas créer un compte !", Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -157,6 +167,19 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2{
         this.updateUIWhenResuming(); // affiche la vue lorsque le tel est dans le cycle de vie onResume()
 
 
+        MyFirebaseMessagingService myFirebaseMessagingService = new MyFirebaseMessagingService();
+        //myFirebaseMessagingService.onCreate();
+        Bundle bundle = new Bundle();
+        bundle.putString("title", "titre du message");
+        bundle.putString("text", "message");
+        /* RemoteMessage remoteMessage = new RemoteMessage(bundle);
+      myFirebaseMessagingService.onMessageReceived(remoteMessage);*/
+
+        Intent intent = new Intent(this, MyFirebaseMessagingService.class).putExtra("titre", "titre du message").putExtra("text", "message");
+        PendingIntent operation = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+
+        //sendVisualNotification("message");
+
 /*        // recuperation de l'extra envoyé dans l'intent
         String NOTIFICATION_ID = "7";
         String NOTIFICATION = "notification";
@@ -189,8 +212,10 @@ if(bundle != null) {
     // --------------------
     // OBSERVATION DE LA MEMOIRE DU TEL  DANS LE LOGCAT
     // --------------------
+
     /**
      * Release memory when the UI becomes hidden or when system resources become low.
+     *
      * @param level the memory-related event that was raised.
      */
     public void onTrimMemory(int level) {
@@ -303,7 +328,6 @@ if(bundle != null) {
     }
 
 
-
     // --------------------
     // PROVIDERS & AUTHENTIFICATION
     // --------------------
@@ -332,8 +356,11 @@ if(bundle != null) {
         startActivity(intent);
     }
 
-    private void startAccountCreationActivity() {
-        Intent intent = new Intent(MainActivity.this, AccountCreateActivity.class);
+    /**
+     * Methode permettant d'aller sur la page de rensignement des identifiants de l'utilisateur (email, password)
+     */
+    private void startConnectionActivity() {
+        Intent intent = new Intent(MainActivity.this, ConnectionActivity.class);
         startActivity(intent);
     }
 
@@ -382,6 +409,7 @@ if(bundle != null) {
             if (response == null) {
                 showSnackBar(getString(string.error_authentication_canceled));
             }
+            assert response != null;
             if (Objects.requireNonNull(response.getError()).getErrorCode() == ErrorCodes.NO_NETWORK) {
                 showSnackBar(getString(string.error_no_internet));
             }
@@ -424,13 +452,6 @@ if(bundle != null) {
         });
     }
 
-    // --------------------
-    // ALARM
-    // --------------------
-
-    private void clenchAlarm(){
-
-    }
 
     // --------------------
     // REST REQUESTS - DECONNEXION, CREATION D'USER
@@ -524,18 +545,7 @@ if(bundle != null) {
                 });
     }
 
-/*    private void getConnectedUser(){
-        setupDb().collection("users").document(getCurrentUser().getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                if(documentSnapshot.exists()){
-                    Map<String, Object> user = documentSnapshot.getData();
-                    int hash = (int) Long.parseLong(user.get("hash").toString());
-                    //sendVisualNotification(hash);
-                }
-            }
-        });
-    }*/
+
     private void sendVisualNotification(String message) {
         int NOTIFICATION_ID = 7;
         String NOTIFICATION_TAG = "TAAROAA";

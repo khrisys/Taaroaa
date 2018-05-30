@@ -51,7 +51,6 @@ import fr.drochon.christian.taaroaa.alarm.TimeAlarmCovoiturageAller;
 import fr.drochon.christian.taaroaa.alarm.TimeAlarmCovoiturageRetour;
 import fr.drochon.christian.taaroaa.api.CovoiturageHelper;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
-import fr.drochon.christian.taaroaa.controller.MainActivity;
 import fr.drochon.christian.taaroaa.model.Covoiturage;
 import fr.drochon.christian.taaroaa.model.User;
 
@@ -428,17 +427,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
             PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1, intent, PendingIntent.FLAG_ONE_SHOT);
             // reveil de l'alarm
             mAlarmManagerRetour.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
-
-
         }
-        // creation d'intent pour une personne qui a été inscrite à un covoiturage par une autre personne que soi meme
-/*        else{
-            Covoiturage covoit = new Covoiturage();
-            covoit.setHoraireRetour(covoiturage.getHoraireRetour());
-            Intent intent1 = new Intent(this, MainActivity.class).putExtra("covoiturageAlarm", covoit).putExtra("user", user);
-            PendingIntent pendingIntent1 = PendingIntent.getBroadcast(this, 1, intent1, PendingIntent.FLAG_ONE_SHOT);
-            mAlarmManagerRetour.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent1);
-        }*/
     }
 
 
@@ -469,6 +458,14 @@ public class CovoituragePassagersActivity extends BaseActivity {
         });
     }
 
+    /**
+     * Methode permettant de recuperer les passagers d'un covoiturage et de leur envoyer une notification à chacun
+     * pour le depart aller et le depart retour 2 heures avant chaque depart.
+     * Les autre utilisateurs de la bdd ne recevront pas de notification.
+     *
+     * @param nom    nom du passager
+     * @param prenom prenom du passager
+     */
     private void filteredUserWhoCallAlarm(String nom, String prenom) {
         User u = null;
         setupDb().collection("users").whereEqualTo("nom", nom).whereEqualTo("prenom", prenom).get()
@@ -483,8 +480,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
                                 User u = new User(user.get("uid").toString(), user.get("nom").toString(), user.get("prenom").toString(), user.get("licence").toString(),
                                         user.get("email").toString(), user.get("niveau").toString(), user.get("fonction").toString());
 
-                                // notification d'alarme à chacun des passagers : mais il faut que le nom rentré correspondent à quelque chose!
-                                //TODO faire une requete pour boucler sur les users et recuperer les passagers par leurs noms et prenom pour notifier le depart du covoit souscris. Sur ces personnes :  declencher l'alarm
+                                // notification d'alarme pour chacun des passagers d'un covoiturage
                                 alarmDepart(u);
                                 alarmRetour(u);
                             }

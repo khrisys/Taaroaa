@@ -23,11 +23,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -129,6 +133,7 @@ public class AccountModificationActivity extends BaseActivity {
                         Toast.makeText(AccountModificationActivity.this, editText.getText(), Toast.LENGTH_LONG).show();
                         //deleteUserFromFirebase();
                         deleteUser();
+                        deleteUserAuth();
                         signOutUserFromFirebase();
                         startMainActivity();
                     }
@@ -425,7 +430,7 @@ public class AccountModificationActivity extends BaseActivity {
      * Methode permettant de supprimer un utilisateur
      */
     private void deleteUser() {
-        setupDb().collection("users").document(getCurrentUser().getUid())
+        setupDb().collection("users").document(Objects.requireNonNull(getCurrentUser()).getUid())
                 .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
@@ -448,5 +453,18 @@ public class AccountModificationActivity extends BaseActivity {
                     .delete(this) // methode utilisée par le singleton authUI.getInstance()
                     .addOnSuccessListener(this, this.updateUIAfterRESTRequestsCompleted(DELETE_USER_TASK));
         }
+    }
+
+    private void deleteUserAuth(){
+        final FirebaseAuth auth = FirebaseAuth.getInstance(FirebaseFirestore.getInstance().getApp());
+        Objects.requireNonNull(auth.getCurrentUser()).delete()
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if(task.isSuccessful()){
+                    //RAS
+                }
+            }
+    });
     }
 }
