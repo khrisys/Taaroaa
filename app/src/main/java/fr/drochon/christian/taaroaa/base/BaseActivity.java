@@ -183,7 +183,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                         finish();
                         break;
                     case SIGN_OUT_TASK:
-                        finish();
+                        //finish();
                         break;
                     case DELETE_USER_TASK:
                         finish();

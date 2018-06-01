@@ -12,6 +12,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.List;
@@ -64,7 +65,7 @@ public class SummaryActivity extends BaseActivity {
             public void onClick(View v) {
               /*  Intent intent = new Intent(SummaryActivity.this, AccountCreateActivity.class);
                 startActivity(intent);*/
-                FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+                final FirebaseAuth auth = FirebaseAuth.getInstance(FirebaseFirestore.getInstance().getApp());
 
                 setupDb().collection("users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
@@ -78,30 +79,12 @@ public class SummaryActivity extends BaseActivity {
 
                                 // Si l'user connecté existe en bdd, on recupere l'ensemble de l'objet user et on le passe en param de l'activité
                                 assert user != null;
-                                if (user.get("fonction") != null && user.get("uid").equals(Objects.requireNonNull(getCurrentUser()).getUid())) {
+                                if (user.get("uid").equals(Objects.requireNonNull(Objects.requireNonNull(auth.getCurrentUser()).getUid()))) {
                                     User u = new User(user.get("uid").toString(), user.get("nom").toString(), user.get("prenom").toString(), user.get("licence").toString(),
                                             user.get("email").toString(), user.get("niveau").toString(), user.get("fonction").toString());
                                     Intent intent = new Intent(SummaryActivity.this, AccountModificationActivity.class).putExtra("user", u);
                                     startActivity(intent);
-
-                                    break;
                                 }
-                                // Si l'user connecté vient juste de creer son compte, on recupere ses seules infos disponibles et on les passe en param de l'activité de modif d'un compte
-                                else if (user.get("fonction") == null) {
-                                    User u = new User(user.get("uid").toString(), user.get("nom").toString(), user.get("prenom").toString(), user.get("email").toString());
-                                    Intent intent = new Intent(SummaryActivity.this, AccountModificationActivity.class).putExtra("user", u);
-                                    startActivity(intent);
-                                    break;
-                                }
-                         /*       compteur++;
-
-                                // nouvel utilisateur
-                                if (compteur > documentSnapshots.size()) {
-                                    User u = new User(user.get("uid").toString(), user.get("nom").toString(), user.get("prenom").toString(), user.get("email").toString());
-                                    Intent intent = new Intent(SummaryActivity.this, AccountCreateActivity.class);
-                                    startActivity(intent);
-                                }
-*/
                             }
                         }
                     }

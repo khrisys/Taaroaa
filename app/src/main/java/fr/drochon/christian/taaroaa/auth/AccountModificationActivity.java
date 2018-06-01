@@ -28,6 +28,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -441,29 +442,21 @@ public class AccountModificationActivity extends BaseActivity {
     }
 
     /**
-     * Methode permettant à un encadrant de supprimer un compte. Retourne un objet de type Task permettant de realiser ces appels de maniere asynchrone
+     * Methode permettant de supprimer les identifiants de l'user qui supprime son compte
      */
-    private void deleteUserFromFirebase() {
-        if (this.getCurrentUser() != null) {
-
-            //On supprime un utilisateur de la bdd firestore
-            UserHelper.deleteUser(this.getCurrentUser().getUid()).addOnFailureListener(this.onFailureListener());
-            //TODO mettre une notification si elle n'arrive pas avoir ajouté le deleteuser ci dessus
-            AuthUI.getInstance()
-                    .delete(this) // methode utilisée par le singleton authUI.getInstance()
-                    .addOnSuccessListener(this, this.updateUIAfterRESTRequestsCompleted(DELETE_USER_TASK));
-        }
-    }
-
     private void deleteUserAuth(){
-        final FirebaseAuth auth = FirebaseAuth.getInstance(FirebaseFirestore.getInstance().getApp());
-        Objects.requireNonNull(auth.getCurrentUser()).delete()
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        assert user != null;
+        user.delete()
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if(task.isSuccessful()){
                     //RAS
                 }
+                else
+                    System.out.println("nok");
             }
     });
     }

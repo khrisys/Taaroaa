@@ -26,8 +26,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.ActionCodeSettings;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -65,6 +63,20 @@ public class AccountCreateActivity extends BaseActivity {
     TextView mTitrePage;
     String fonction;
 
+    /**
+     * Methode permettant de verifier la validité d'une adresse email
+     *
+     * @param target adresse email
+     * @return validité de l'adresse email
+     */
+    private static boolean isValidEmail(CharSequence target) {
+        return target != null && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
+    }
+
+
+    // --------------------
+    // UI
+    // --------------------
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,29 +110,6 @@ public class AccountCreateActivity extends BaseActivity {
         mPassword.setText(password);
 
         alertDialogValidationEmail();
-   /*    *//* Toast.makeText(AccountCreateActivity.this, "Avant de pouvoir créer votre compte, vous devez valider votre adresse mail " +
-                "via le lien qui vous a été envoyé à " + getCurrentUser().getEmail(), Toast.LENGTH_LONG).show();*//*
-        AlertDialog.Builder adb = new AlertDialog.Builder(this);
-        adb.setTitle("Validation d'email !");
-        // ajouter une couleur à l'icon de warning
-        Drawable warning = getResources().getDrawable(android.R.drawable.ic_dialog_alert);
-        ColorFilter filter = new LightingColorFilter(Color.RED, Color.BLUE);
-        warning.setColorFilter(filter);
-        adb.setIcon(warning);
-        adb.setMessage("Avant de pouvoir créer votre compte, vous devez valider votre adresse mail via le lien qui vous a été envoyé à " + getCurrentUser().getEmail());
-        adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                // recuperation des identifiants de connexion
-                Intent intent = getIntent();
-                final String email = intent.getStringExtra("email");
-                final String password = intent.getStringExtra("password");
-                mEmail.setText(email);
-                mPassword.setText(password);
-            }
-        });
-        adb.show();*/
-
-
 
         // --------------------
         // LISTENERS
@@ -139,12 +128,13 @@ public class AccountCreateActivity extends BaseActivity {
                 assert firebaseUser != null;
                 if (Objects.requireNonNull(firebaseUser.isEmailVerified())) {
                     createUserInFirebase();
-                    startSummaryActivity();
+                    //startSummaryActivity();
                 } else {
-                    System.out.println("nok");
-                    alertDialogValidationEmail();
-                    /*Toast.makeText(AccountCreateActivity.this, "Avant de pouvoir créer votre compte, vous devez valider votre adresse mail " +
-                            "via le lien qui vous a été envoyé !", Toast.LENGTH_LONG).show();*/
+                    if (!mNom.getText().toString().isEmpty() && !mPrenom.getText().toString().isEmpty() && !email.isEmpty() && isValidEmail(email) && !password.isEmpty()) {
+                        System.out.println("nok");
+                        alertDialogValidationEmail();
+                    } else
+                        verificationChampsVides();
                 }
             }
         });
@@ -166,6 +156,8 @@ public class AccountCreateActivity extends BaseActivity {
                         EditText editText = findViewById(R.id.alertdialog_ok_account);
                         Toast.makeText(AccountCreateActivity.this, editText.getText(), Toast.LENGTH_LONG).show();
                         deleteUserFromFirebase();
+                        deleteUserAuth();
+                        signOutUserFromFirebase();
                         //deleteUser();
                         startMainActivity();
                     }
@@ -194,26 +186,12 @@ public class AccountCreateActivity extends BaseActivity {
         mNiveauPlongeespinner.setAdapter(adapterNiveau);
     }
 
-
-    // --------------------
-    // UI
-    // --------------------
-
     @Override
     public int getFragmentLayout() {
         return R.layout.activity_account_create;
     }
 
-    /** Methode permettant de verifier la validité d'une adresse email
-     *
-     * @param target adresse email
-     * @return validité de l'adresse email
-     */
-    private static boolean isValidEmail(CharSequence target) {
-        return target != null && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
-    }
-
-    public void alertDialogValidationEmail(){
+    public void alertDialogValidationEmail() {
 
         Objects.requireNonNull(getCurrentUser()).reload();
 
@@ -224,11 +202,19 @@ public class AccountCreateActivity extends BaseActivity {
         ColorFilter filter = new LightingColorFilter(Color.RED, Color.BLUE);
         warning.setColorFilter(filter);
         adb.setIcon(warning);
-        adb.setMessage("Avant de pouvoir créer votre compte, vous devez valider votre adresse mail via le lien qui vous a été envoyé à '" + Objects.requireNonNull(getCurrentUser()).getEmail() + "'");
+        adb.setMessage("Avant de pouvoir créer votre compte, vous devez valider votre adresse mail via le lien qui vous a été envoyé à : '" + Objects.requireNonNull(getCurrentUser()).getEmail() + "'");
         adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
 
-                connectToFirebaseWithEmailAndPassword();
+            }
+        });
+        adb.setNegativeButton("CHANGER D'ADRESSE MAIL ?", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                deleteUserAuth();
+                signOutUserFromFirebase();
+                Intent intent = new Intent(AccountCreateActivity.this, ConnectionActivity.class);
+                startActivity(intent);
             }
         });
         adb.show();
@@ -335,16 +321,7 @@ public class AccountCreateActivity extends BaseActivity {
                                             }
                                         });
                             } else verificationChampsVides();
-
-                           /* Log.d("TAG", "Successfully created an account !");
-                            Toast.makeText(AccountCreateActivity.this, "Successfully created an account !",
-                                    Toast.LENGTH_SHORT).show();*/
-                            //startSummaryActivity();
-                            // You can access the new user via result.getUser()
-                            // Additional user info profile *not* available via:
-                            // result.getAdditionalUserInfo().getProfile() == null
-                            // You can check if the user is new or existing:
-                            // result.getAdditionalUserInfo().isNewUser()
+                            // erreur de creation de compte
                         } else {
                             Toast.makeText(AccountCreateActivity.this, "Error creating an account : "
                                             + Objects.requireNonNull(task.getException()).getMessage(),
@@ -352,72 +329,6 @@ public class AccountCreateActivity extends BaseActivity {
                         }
                     }
                 });
-    }
-
-    private void connectToFirebaseWithEmailAndPassword() {
-        // recuperation de la bdd FirebaseAuth avec en param l'app taaroaa
-        final FirebaseAuth auth = FirebaseAuth.getInstance(FirebaseFirestore.getInstance().getApp());
-        FirebaseUser firebaseUser = auth.getCurrentUser();
-
-        // 1 : creation d'un user avec email et password en bdd FirebaseAuth
-        auth.createUserWithEmailAndPassword(this.mEmail.getText().toString(), mPassword.getText().toString())
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // appel de la methode de verification d'email depuis firebase
-                            verifEmailUser();
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d("TAG", "createUserWithEmailIndba:success");
-                        /*    Toast.makeText(AccountCreateActivity.this, "Registration email succeed.",
-                                    Toast.LENGTH_SHORT).show();*/
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Toast.makeText(AccountCreateActivity.this, "Registration email failed or already in use by another account.",
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-    }
-
-    /**
-     * Methode permettant d'envoyer un email via un token pour la confirmation d'adresse mail d'un nouvek utilisateur
-     */
-    private void verifEmailUser() {
-        final FirebaseAuth auth = FirebaseAuth.getInstance(FirebaseFirestore.getInstance().getApp());
-        // An ActionCodeSettings instance needs to be provided when sending a password reset email or a verification email.
-
-        // In order to securely pass a continue URL, the domain for the URL will need to be whitelisted in the Firebase console.
-        // This is done in the Authentication section by adding this domain to the list of OAuth redirect domains if it is not already there.
-        String url = "https://taaroaa-fe93c.firebaseapp.com/verify?uid=" + auth.getCurrentUser();
-        ActionCodeSettings actionCodeSettings = ActionCodeSettings.newBuilder()
-                //.setUrl("https://taaroaa-fe93c.firebaseapp.com/__/auth/action?mode=%3Caction%3E&oobCode=%3Ccode%3E")
-                //.setUrl(url)
-                .setUrl("https://dhu3y.app.goo.gl/taaroaa")
-                .setHandleCodeInApp(true)
-                //.setIOSBundleId("com.example.ios")
-                // The default for this is populated with the current android package name.
-                .setAndroidPackageName(
-                        "fr.drochon.christian.taaroaa",
-                        true,
-                        "19")
-                .build();
-
-        if (!Objects.requireNonNull(auth.getCurrentUser()).isEmailVerified()) {
-            Objects.requireNonNull(auth.getCurrentUser()).sendEmailVerification()
-                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful()) {
-                                Toast.makeText(AccountCreateActivity.this, "Verification email sent to " + Objects.requireNonNull(getCurrentUser()).getEmail(), Toast.LENGTH_LONG).show();
-                                Log.d("TAG", "Verification Email sent.");
-
-                                //createUserInFirebase();
-                            } else
-                                System.out.println("nok");
-                        }
-                    });
-        }
     }
 
     /**
@@ -440,5 +351,21 @@ public class AccountCreateActivity extends BaseActivity {
                         }
                     });
         }
+    }
+
+    /**
+     * Methode permettant de supprimer les identifiants de l'user qui supprime son compte
+     */
+    private void deleteUserAuth() {
+        final FirebaseAuth auth = FirebaseAuth.getInstance(FirebaseFirestore.getInstance().getApp());
+        Objects.requireNonNull(auth.getCurrentUser()).delete()
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            //RAS
+                        }
+                    }
+                });
     }
 }

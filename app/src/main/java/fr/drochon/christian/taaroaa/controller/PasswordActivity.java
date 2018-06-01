@@ -1,92 +1,115 @@
 package fr.drochon.christian.taaroaa.controller;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
-import android.app.LoaderManager.LoaderCallbacks;
-import android.content.CursorLoader;
-import android.content.Loader;
-import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Build;
+import android.content.Intent;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+
+import java.util.Objects;
 
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
 
-import static android.Manifest.permission.READ_CONTACTS;
-
 /**
  * A login screen that offers login via email/password.
  */
-public class PasswordActivity extends BaseActivity implements LoaderCallbacks<Cursor> {
+public class PasswordActivity extends BaseActivity {
 
-    /**
-     * Id to identity READ_CONTACTS permission request.
-     */
-    private static final int REQUEST_READ_CONTACTS = 0;
-
-    /**
-     * A dummy authentication store containing known user names and passwords.
-     * TODO: remove after connecting to a real authentication system.
-     */
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world"
-    };
-    /**
-     * Keep track of the login task to ensure we can cancel it if requested.
-     */
-    private UserLoginTask mAuthTask = null;
-
-    // UI references.
-    private AutoCompleteTextView mEmailView;
     private View mProgressView;
-    private View mLoginFormView;
+    private AutoCompleteTextView mEmailView;
+
+    /**
+     * Verification de la validité de l'adresse email
+     *
+     * @param target adresse email
+     * @return validité ou non de l'adresse email recupérée
+     */
+    private static boolean isValidEmail(CharSequence target) {
+        return target != null && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_password);
+
+        configureToolbar();
         giveToolbarAName(R.string.password_name);
 
-        // Set up the login form.
-        mEmailView = findViewById(R.id.email);
-        populateAutoComplete();
+        mProgressView = findViewById(R.id.login_progress);
+        mEmailView = findViewById(R.id.email_recup);
+        //populateAutoComplete();
 
+
+        // --------------------
+        // LISTENER
+        // --------------------
 
         Button mEmailSignInButton = findViewById(R.id.email_sign_in_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                attemptLogin();
+                final FirebaseAuth auth = FirebaseAuth.getInstance();
+                String emailAddress = mEmailView.getText().toString();
+
+                if (verificationChampsVides()) {
+                    auth.sendPasswordResetEmail(emailAddress)
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        Log.d("TAG", "Email sent.");
+                                        mProgressView.setVisibility(View.VISIBLE);
+                                        Toast.makeText(PasswordActivity.this, "Réinitialisation de mot de passe à envoyé à l'adresse mail : '"
+                                                + mEmailView.getText().toString() + "'.", Toast.LENGTH_LONG).show();
+                                        Intent intent = new Intent(PasswordActivity.this, MainActivity.class);
+                                        startActivity(intent);
+                                    }
+                                }
+                            });
+                }
             }
         });
 
-        mLoginFormView = findViewById(R.id.login_form);
-        mProgressView = findViewById(R.id.login_progress);
     }
+
+    // --------------------
+    // UI
+    // --------------------
 
     @Override
     public int getFragmentLayout() {
         return 0;
     }
 
-    private void populateAutoComplete() {
+    /**
+     * Methode permettant de signaler une erreur lorsqu'un champ est resté vide alors que la soumission du formulaire a été faite.
+     */
+    private boolean verificationChampsVides() {
+
+        if (mEmailView.getText().toString().isEmpty()) {
+            mEmailView.setError("Merci de saisir ce champ !");
+            mEmailView.requestFocus();
+            return false;
+        }
+        if (!isValidEmail(mEmailView.getText().toString())) {
+            mEmailView.setError("Adresse email non valide !");
+            mEmailView.requestFocus();
+            return false;
+        }
+        return true;
+    }
+
+/*    private void populateAutoComplete() {
         if (!mayRequestContacts()) {
             return;
         }
@@ -116,9 +139,9 @@ public class PasswordActivity extends BaseActivity implements LoaderCallbacks<Cu
         return false;
     }
 
-    /**
+    *//**
      * Callback received when a permissions request has been completed.
-     */
+     *//*
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
@@ -130,11 +153,11 @@ public class PasswordActivity extends BaseActivity implements LoaderCallbacks<Cu
     }
 
 
-    /**
+    *//**
      * Attempts to sign in or register the account specified by the login form.
      * If there are form errors (invalid email, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
-     */
+     *//*
     private void attemptLogin() {
         if (mAuthTask != null) {
             return;
@@ -177,9 +200,9 @@ public class PasswordActivity extends BaseActivity implements LoaderCallbacks<Cu
         return password.length() > 4;
     }
 
-    /**
+    *//**
      * Shows the progress UI and hides the login form.
-     */
+     *//*
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     private void showProgress() {
         // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
@@ -260,10 +283,10 @@ public class PasswordActivity extends BaseActivity implements LoaderCallbacks<Cu
         int IS_PRIMARY = 1;
     }
 
-    /**
+    *//**
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
-     */
+     *//*
     @SuppressLint("StaticFieldLeak")
     class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
@@ -313,6 +336,6 @@ public class PasswordActivity extends BaseActivity implements LoaderCallbacks<Cu
             mAuthTask = null;
             showProgress();
         }
-    }
+    }*/
 }
 

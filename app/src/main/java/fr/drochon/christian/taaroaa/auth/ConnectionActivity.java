@@ -1,20 +1,24 @@
 package fr.drochon.christian.taaroaa.auth;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.LightingColorFilter;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.ActionCodeSettings;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Objects;
@@ -28,9 +32,20 @@ public class ConnectionActivity extends BaseActivity {
     TextInputEditText mPassword;
     Button mValid;
 
+    /**
+     * Verification de la validité de l'adresse email
+     *
+     * @param target adresse email
+     * @return validité ou non de l'adresse email recupérée
+     */
     private static boolean isValidEmail(CharSequence target) {
         return target != null && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
     }
+
+
+    // --------------------
+    // UI
+    // --------------------
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,11 +73,6 @@ public class ConnectionActivity extends BaseActivity {
             }
         });
     }
-
-
-    // --------------------
-    // UI
-    // --------------------
 
     @Override
     public int getFragmentLayout() {
@@ -103,14 +113,23 @@ public class ConnectionActivity extends BaseActivity {
                         if (task.isSuccessful()) {
                             // appel de la methode de verification d'email depuis firebase
                             verifEmailUser();
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d("TAG", "createUserWithEmailIndba:success");
-                        /*    Toast.makeText(AccountCreateActivity.this, "Registration email succeed.",
-                                    Toast.LENGTH_SHORT).show();*/
                         } else {
                             // If sign in fails, display a message to the user.
-                            Toast.makeText(ConnectionActivity.this, "Registration email failed or already in use by another account.",
-                                    Toast.LENGTH_SHORT).show();
+                            AlertDialog.Builder adb = new AlertDialog.Builder(ConnectionActivity.this);
+                            adb.setTitle("Adresse email déjà utilisée !");
+                            // ajouter une couleur à l'icon de warning
+                            Drawable warning = getResources().getDrawable(android.R.drawable.ic_dialog_alert);
+                            ColorFilter filter = new LightingColorFilter(Color.RED, Color.BLUE);
+                            warning.setColorFilter(filter);
+                            adb.setIcon(warning);
+                            adb.setMessage("L'adresse mail " + mEmail.getText().toString() + " est déjà utilisée. \nMerci d'en choisir une autre.");
+                            adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    mEmail.setText("");
+                                    mPassword.setText("");
+                                }
+                            });
+                            adb.show();
                         }
                     }
                 });
@@ -125,11 +144,11 @@ public class ConnectionActivity extends BaseActivity {
 
         // In order to securely pass a continue URL, the domain for the URL will need to be whitelisted in the Firebase console.
         // This is done in the Authentication section by adding this domain to the list of OAuth redirect domains if it is not already there.
-        String url = "https://taaroaa-fe93c.firebaseapp.com/verify?uid=" + auth.getCurrentUser();
+        //String url = "https://taaroaa-fe93c.firebaseapp.com/verify?uid=" + auth.getCurrentUser();
         ActionCodeSettings actionCodeSettings = ActionCodeSettings.newBuilder()
-                //.setUrl("https://taaroaa-fe93c.firebaseapp.com/__/auth/action?mode=%3Caction%3E&oobCode=%3Ccode%3E")
+                .setUrl("https://taaroaa-fe93c.firebaseapp.com/__/auth/action?mode=%3Caction%3E&oobCode=%3Ccode%3E")
                 //.setUrl(url)
-                .setUrl("https://dhu3y.app.goo.gl/taaroaa")
+                //.setUrl("https://dhu3y.app.goo.gl/taaroaa")
                 .setHandleCodeInApp(true)
                 //.setIOSBundleId("com.example.ios")
                 // The default for this is populated with the current android package name.
@@ -140,12 +159,12 @@ public class ConnectionActivity extends BaseActivity {
                 .build();
 
         if (!Objects.requireNonNull(auth.getCurrentUser()).isEmailVerified()) {
-            Objects.requireNonNull(auth.getCurrentUser()).sendEmailVerification()
+            Objects.requireNonNull(auth.getCurrentUser()).sendEmailVerification(actionCodeSettings)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
-                                Toast.makeText(ConnectionActivity.this, "Verification email sent to " + Objects.requireNonNull(getCurrentUser()).getEmail(), Toast.LENGTH_LONG).show();
+                                //Toast.makeText(ConnectionActivity.this, "Verification email sent to " + Objects.requireNonNull(getCurrentUser()).getEmail(), Toast.LENGTH_LONG).show();
                                 Log.d("TAG", "Verification Email sent.");
                                 Intent intent = new Intent(ConnectionActivity.this, AccountCreateActivity.class)
                                         .putExtra("email", mEmail.getText().toString())

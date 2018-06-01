@@ -56,7 +56,6 @@ import static fr.drochon.christian.taaroaa.R.string;
 import static fr.drochon.christian.taaroaa.R.string.app_name;
 import static fr.drochon.christian.taaroaa.R.style;
 
-//import fr.drochon.christian.taaroaa.R;
 
 public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
 
