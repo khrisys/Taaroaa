@@ -23,13 +23,13 @@ import fr.drochon.christian.taaroaa.model.Course;
  */
 public class PupilsViewHolder extends RecyclerView.ViewHolder {
 
+    // DATA
+    private final List<Course> mCourseList;
     // CELLULES
     @BindView(R.id.list_cell_course_subject)
     TextView mCourseSubject;
     @BindView(R.id.liste_cell_course_type)
     TextView mCourseType;
-    // DATA
-    private final List<Course> mCourseList;
 
     // --------------------
     // AFFICHAGE DES NOTIFICATIONS DE CELLULE
@@ -55,15 +55,13 @@ public class PupilsViewHolder extends RecyclerView.ViewHolder {
             @Override
             public void onClick(View view) {
                 final String s;
-                for (int i = 0; i < mCourseList.size(); i++) {
-                    new AlertDialog.Builder(itemView.getContext())
-                            .setTitle(mCourseList.get(i).getTypeCours())
-                            .setMessage(Html.fromHtml("<b>Sujet : </b>" + mCourseList.get(i).getSujetDuCours() + "<br/><b>Moniteur : </b>" + mCourseList.get(i).getNomDuMoniteur()
-                                    + "\n<br/><b>Niveau </b>" + mCourseList.get(i).getNiveauDuCours()
-                                    + "<br/>" + stDateToString(mCourseList.get(i).getHoraireDuCours()) + "<br/>" + stTimeToString(mCourseList.get(i).getHoraireDuCours())))
-                            .show();
-                    break;
-                }
+                int i = mCourseList.size() - 1;
+                new AlertDialog.Builder(itemView.getContext())
+                        .setTitle(mCourseList.get(i).getTypeCours())
+                        .setMessage(Html.fromHtml("<b>Sujet : </b>" + mCourseList.get(i).getSujetDuCours() + "<br/><b>Moniteur : </b>" + mCourseList.get(i).getNomDuMoniteur()
+                                + "\n<br/><b>Niveau </b>" + mCourseList.get(i).getNiveauDuCours()
+                                + "<br/>" + stDateToString(mCourseList.get(i).getHoraireDuCours()) + "<br/>" + stTimeToString(mCourseList.get(i).getHoraireDuCours())))
+                        .show();
             }
         });
     }

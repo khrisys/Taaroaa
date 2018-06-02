@@ -1,6 +1,7 @@
 package fr.drochon.christian.taaroaa.controller;
 
 import android.app.PendingIntent;
+import android.app.Service;
 import android.content.ComponentCallbacks2;
 import android.content.Intent;
 import android.os.Bundle;
@@ -79,8 +80,9 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
         isAppRunning = true;
 
         // Souscription aux notifications
-        FirebaseMessaging.getInstance().subscribeToTopic("courses");
-        FirebaseMessaging.getInstance().subscribeToTopic("covoiturages");
+            FirebaseMessaging.getInstance().subscribeToTopic("courses");
+            FirebaseMessaging.getInstance().subscribeToTopic("covoiturages");
+
 
         // --------------------
         // LISTENERS
@@ -141,17 +143,13 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
         return layout.activity_main;
     }
 
-
-
     /**
      * Methode permettant un affichage different en fonction de si l'user a dejà été loggé ou pas
      */
     @Override
     protected void onResume() {
         super.onResume();
-        this.updateUIWhenResuming(); // affiche la vue lorsque le tel est dans le cycle de vie onResume()
-
-        if(isCurrentUserLogged()) creationCompte.setVisibility(View.GONE);
+        this.updateUIWhenResuming();
 
         Bundle bundle = new Bundle();
         bundle.putString("title", "titre du message");
@@ -165,6 +163,7 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
         //CRASHLYTICS : force application to crash
         //Crashlytics.getInstance().crash();
     }
+
     /**
      * Methode permettant de changer d'ecran lors d'une connexion valide
      */

@@ -99,8 +99,12 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
          * et fait en sorte qu'il ne recoive que les notifications des cours concernant son niveau de plongée.
          */
         // lance une alarme de notification si le cours correspond au niveau du plongeur connecté
+        if(user != null)
         alarmConnectedUser(user.getNiveauPlongeur());
-        String name = "Cours de niveau " + user.getNiveauPlongeur();
+        String name = null;
+        if (user != null) {
+            name = "Cours de niveau " + user.getNiveauPlongeur();
+        }
         giveToolbarAName(name);
         configureRecyclerView();
         showFloatingButton();
@@ -315,7 +319,6 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
                     }
                 } catch (Exception e1) {
                     e1.printStackTrace();
-                    e1.getCause().getMessage();
                     System.out.println("documentSnapshots is null");
                 }
             }

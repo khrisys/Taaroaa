@@ -23,6 +23,8 @@ import fr.drochon.christian.taaroaa.model.Course;
  */
 public class SupervisorsViewHolder extends RecyclerView.ViewHolder {
 
+    // DATA
+    private final List<Course> mCourseList;
     // CELLULES
     @BindView(R.id.course_subject_supervisors)
     TextView mCourseSubject;
@@ -36,8 +38,6 @@ public class SupervisorsViewHolder extends RecyclerView.ViewHolder {
     TextView mDate;
     @BindView(R.id.course_heure_supervisors)
     TextView mHeure;
-    // DATA
-    private final List<Course> mCourseList;
 
     // --------------------
     // AFFICHAGE DES NOTIFICATIONS DE CELLULE
@@ -63,15 +63,13 @@ public class SupervisorsViewHolder extends RecyclerView.ViewHolder {
             @Override
             public void onClick(View view) {
                 final String s;
-                for (int i = 0; i < mCourseList.size(); i++) {
-                    new AlertDialog.Builder(itemView.getContext())
-                            .setTitle(mCourseList.get(i).getTypeCours())
-                            .setMessage(Html.fromHtml("<b>Sujet : </b>" + mCourseList.get(i).getSujetDuCours() + "<br/><b>Moniteur : </b>" + mCourseList.get(i).getNomDuMoniteur()
-                                    + "<br/><b>Niveau </b>" + mCourseList.get(i).getNiveauDuCours()
-                                    + "<br/>" + stDateToString(mCourseList.get(i).getHoraireDuCours()) + "<br/>" + stTimeToString(mCourseList.get(i).getHoraireDuCours())))
-                            .show();
-                    break;
-                }
+                int i = mCourseList.size() - 1;
+                new AlertDialog.Builder(itemView.getContext())
+                        .setTitle(mCourseList.get(i).getTypeCours())
+                        .setMessage(Html.fromHtml("<b>Sujet : </b>" + mCourseList.get(i).getSujetDuCours() + "<br/><b>Moniteur : </b>" + mCourseList.get(i).getNomDuMoniteur()
+                                + "<br/><b>Niveau </b>" + mCourseList.get(i).getNiveauDuCours()
+                                + "<br/>" + stDateToString(mCourseList.get(i).getHoraireDuCours()) + "<br/>" + stTimeToString(mCourseList.get(i).getHoraireDuCours())))
+                        .show();
             }
         });
     }
