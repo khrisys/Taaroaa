@@ -10,7 +10,7 @@
     <string name="summary_name">Sommaire</string>
     <string name="password_name">Récupération de mot de passe</string>
     <string name="course_management_name">Nouveau cours</string>
-    <string name="course_supervisors_name">Cours tous niveaux</string>
+    <string name="course_supervisors_name">Planning encadrants</string>
     <string name="covoit_accueil_name">Sorties club</string>
     <string name="covoit_conducteur_name">Espace conducteur</string>
     <string name="covoit_passager_name">Espace passagers</string>
@@ -53,6 +53,7 @@
     <string name="bienvenue_sur_votre_compte">Bienvenue sur votre compte</string>
     <string name="modifiez_le_compte_d_un_adherent">Modifiez le compte d\'un adhérent</string>
     <string name="recherche_adherent_btn">Tapez le nom d\'un adhérent</string>
+    <string name="supprimez_le_compte">Supprimez le compte</string>
 
     <!--COURSES ACTIVITIES-->
     <string name="button_create_course">Créez un cours</string>
@@ -103,15 +104,17 @@
     <string name="lieu_d_arrivee">Lieu d\'arrivée au retour :</string>
     <string name="passagers">Passagers :</string>
     <string name="supprimez_un_covoiturage">Supprimez un covoiturage</string>
+    <string name="icone_pour_suppresssion_de_covoiturage">Icone pour suppresssion de covoiturage</string>
+    <string name="aller">Aller :</string>
+    <string name="lieu_de_rdv_aller">Lieu de rdv aller :</string>
+    <string name="retour">Retour</string>
+    <string name="lieu_de_rdv_retour">Lieu de rdv retour :</string>
 
     <!--ID d'application Facebook-->
     <!--    <string name="facebook_app_id" translatable="false">2177677015844999</string>
     <string name="fb_login_protocol_scheme" translatable="false" tools:ignore="UnusedResources">fb2177677015844999</string>-->
     <!-- FACEBOOK PURPOSE -->
     <string name="prompt_email">Email</string>
-    <string name="error_invalid_email">Cette adresse email est invalide</string>
-    <string name="error_field_required">Ce champ est requis</string>
-    <string name="permission_rationale">Accordez le droit d\'acceder à vos contacts pour fournir[…]</string>
 
    <!-- CREATION DE COMPTE-->
     <string name="creation_compte">"Validez vos identifiants"</string>
@@ -122,6 +125,8 @@
     <string name="sous_titre_recup_password">Pour récupérer votre mot de passe, saisissez l\'adresse email que vous utilisez pour vous connecter à votre compte.</string>
     <string name="r_cuperez_votre_mot_de_passe">Récupérez votre mot de passe</string>
     <string name="oubli_mot_de_passe">Vous avez oublié votre mot de passe ?</string>
+
+
 
 
 </resources>

@@ -70,10 +70,8 @@ public class CovoiturageConducteursActivity extends BaseActivity {
     private TextView mLieuDepart;
     private TextView mLieuArrivee;
     private ProgressBar mProgressBar;
-    // DATAS
-    List<User> users;
-    AlarmManager mAlarmManagerAller;
-    AlarmManager mAlarmManagerRetour;
+    private AlarmManager mAlarmManagerAller;
+    private AlarmManager mAlarmManagerRetour;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -320,8 +318,8 @@ public class CovoiturageConducteursActivity extends BaseActivity {
         String lieuRetour = mLieuArrivee.getText().toString();
         String heureDepart = mHeureDepart.getText().toString();
         String heureRetour = mHeureretour.getText().toString();
-        users = new ArrayList<>();
-        //TODO rajouter le champs reservation lorsque les sorties seront gerees
+
+        //TODO V2 : rajouter le champs reservation lorsque les sorties seront gerees
         //Reservation reservation = new Reservation();
 
         // formattage des dates : insertion de l'heure en format us en bdd
@@ -396,12 +394,21 @@ public class CovoiturageConducteursActivity extends BaseActivity {
                     covoit.put("horaireRetour", horaireDuRetour);
                     covoit.put("lieuDepartAller", lieuAller);
                     covoit.put("lieuDepartRetour", lieuRetour);
+                    List<User> users = new ArrayList<>();
                     covoit.put("listPassagers", users);
-                    //TODO ligne à rajouter lors que l'obet Sortie existera
+                    //TODO V2 : ligne à rajouter lors que l'obet Sortie existera
                     //covoit.put("reservation", null);
 
                     //TODO faire une requete pour boucler sur les users et recuperer les passagers par leurs noms et prenom. Sur ces personnes :  declencher l'alarm
                     // envoi de l'alarm à la classe TimeAlarmCovoiturageAller pour que les notifications soient prises en compte et envoyées au moment voulu
+                    for(int i = 0; i < users.size(); i++){
+
+                        Intent intent = new Intent(CovoiturageConducteursActivity.this, TimeAlarmCovoiturageAller.class).putExtra("user", users.get(i));
+                        startActivity(intent);
+                        Intent intent1 = new Intent(CovoiturageConducteursActivity.this, TimeAlarmCovoiturageRetour.class).putExtra("user", users.get(i));
+                        startActivity(intent1);
+                    }
+
                     /*this.alarmDepart(horaireDelAller);
                     this.alarmRetour(horaireDuRetour);*/
 
@@ -424,7 +431,6 @@ public class CovoiturageConducteursActivity extends BaseActivity {
                                 }
                             });
                 }
-                // Affichage des champs non vides
                 else {
                     verificationChampsVides();
                 }
@@ -478,8 +484,9 @@ public class CovoiturageConducteursActivity extends BaseActivity {
         newFragment.show(getSupportFragmentManager(), "timeRetour");
     }
 
+
     // --------------------
-    // CLASSES POUR PICKERS HEURE & DATE
+    // CLASSES INTERNES POUR PICKERS HEURE & DATE
     // --------------------
 
     /**

@@ -45,7 +45,6 @@ public class PasswordActivity extends BaseActivity {
 
         mProgressView = findViewById(R.id.login_progress);
         mEmailView = findViewById(R.id.email_recup);
-        //populateAutoComplete();
 
 
         // --------------------

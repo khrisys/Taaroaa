@@ -1,5 +1,6 @@
 package fr.drochon.christian.taaroaa.course;
 
+import android.annotation.SuppressLint;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -22,8 +23,6 @@ import fr.drochon.christian.taaroaa.model.Course;
  */
 public class SupervisorsViewHolder extends RecyclerView.ViewHolder {
 
-    // DATA
-    private List<Course> mCourseList;
     // CELLULES
     @BindView(R.id.course_subject_supervisors)
     TextView mCourseSubject;
@@ -37,7 +36,12 @@ public class SupervisorsViewHolder extends RecyclerView.ViewHolder {
     TextView mDate;
     @BindView(R.id.course_heure_supervisors)
     TextView mHeure;
+    // DATA
+    private final List<Course> mCourseList;
 
+    // --------------------
+    // AFFICHAGE DES NOTIFICATIONS DE CELLULE
+    // --------------------
 
     /**
      * Contructeur qui prend en param la vue affichée.
@@ -46,7 +50,7 @@ public class SupervisorsViewHolder extends RecyclerView.ViewHolder {
      *
      * @param itemView : cellule d'une liste comprenant le titre et la description d'un cours
      */
-    public SupervisorsViewHolder(final View itemView) {
+    SupervisorsViewHolder(final View itemView) {
         super(itemView);
         // liaison des elements du layout recyclerview et pupils_cell avec les variables declarées ici
         ButterKnife.bind(this, itemView);
@@ -71,6 +75,10 @@ public class SupervisorsViewHolder extends RecyclerView.ViewHolder {
             }
         });
     }
+
+    // --------------------
+    // ADAPTER
+    // --------------------
 
     /**
      * Methode appellée via l'adapter. Cette methode mettra à jour les differentes view du viewholder en fonction d'un objet course passé en param.
@@ -98,13 +106,17 @@ public class SupervisorsViewHolder extends RecyclerView.ViewHolder {
         mHeure.setText(stTimeToString(horaireDuCours));
     }
 
+    // --------------------
+    // FORMATAGE DES HEURE ET DATE
+    // --------------------
+
     /**
      * Methode permettant de formatter une date en string avec locale en francais
      *
      * @param horaireDuCours
      * @return
      */
-    public String stDateToString(Date horaireDuCours) {
+    private String stDateToString(Date horaireDuCours) {
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("EE dd MMM yyyy", Locale.FRANCE);
         return dateFormat.format(horaireDuCours);
@@ -117,9 +129,9 @@ public class SupervisorsViewHolder extends RecyclerView.ViewHolder {
      * @param horaireDuCours
      * @return
      */
-    public String stTimeToString(Date horaireDuCours) {
+    private String stTimeToString(Date horaireDuCours) {
 
-        SimpleDateFormat dateFormat1 = new SimpleDateFormat("HH:mm:ss");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat1 = new SimpleDateFormat("HH:mm:ss");
         return dateFormat1.format(horaireDuCours);
     }
 }

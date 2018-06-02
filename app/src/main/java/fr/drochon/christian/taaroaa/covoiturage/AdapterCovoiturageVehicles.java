@@ -19,10 +19,10 @@ import fr.drochon.christian.taaroaa.model.Covoiturage;
  * refleter exactement la bdd firestore, de mettre en cache toutes les données afin d'y avoir acces meme sans internet.
  *
  */
-public class AdapterCovoiturageVehicles extends FirestoreRecyclerAdapter<Covoiturage, VehiculeViewHolder> {
+class AdapterCovoiturageVehicles extends FirestoreRecyclerAdapter<Covoiturage, VehiculeViewHolder> {
 
     //FOR COMMUNICATION
-    private Listener callback;
+    private final Listener callback;
 
     /**
      * Create a new RecyclerView adapter that listens to a Firestore Query.  See {@link
@@ -30,7 +30,7 @@ public class AdapterCovoiturageVehicles extends FirestoreRecyclerAdapter<Covoitu
      *
      * @param options
      */
-    public AdapterCovoiturageVehicles(@NonNull FirestoreRecyclerOptions<Covoiturage> options, Listener callback) {
+    AdapterCovoiturageVehicles(@NonNull FirestoreRecyclerOptions<Covoiturage> options, Listener callback) {
         super(options);
         this.callback = callback;
     }
@@ -56,8 +56,9 @@ public class AdapterCovoiturageVehicles extends FirestoreRecyclerAdapter<Covoitu
      * @param viewType : sert au cas ou il y aurait differents types de cellules
      * @return le vue d'une cellule
      */
+    @NonNull
     @Override
-    public VehiculeViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public VehiculeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new VehiculeViewHolder(LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.covoiturage_cell, parent, false));// creation de la viewholder avec en param la vue du layout
     }

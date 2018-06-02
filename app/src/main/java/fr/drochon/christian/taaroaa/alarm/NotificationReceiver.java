@@ -5,19 +5,14 @@ import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.Bundle;
 
-import java.util.Calendar;
 import java.util.Date;
-
-import fr.drochon.christian.taaroaa.model.Covoiturage;
 
 public class NotificationReceiver extends BroadcastReceiver {
 
-    public static String NOTIFICATION_ID = "7";
-    public static String NOTIFICATION = "notification";
+    public final static String NOTIFICATION_ID = "7";
+    public final static String NOTIFICATION = "notification";
     String NOTIFICATION_TAG = "TAAROAA";
 
     @Override

@@ -58,28 +58,24 @@ public class CovoituragePassagersActivity extends BaseActivity {
 
 
     private static Covoiturage covoiturage;
-    TextInputEditText mNomConducteur;
-    TextInputEditText mDateDepart;
-    TextInputEditText mDateretour;
-    TextInputEditText mNbPlaceDispo;
-    TextInputEditText mTypeVehicule;
-    LinearLayout mTitreInscription;
-    LinearLayout mLinearChampsDynamiques;
-    TextView mTitrePassager;
-    TextInputEditText mNbPassagerInput;
-    Button mReservation;
-    Intent mIntent;
-    ProgressBar mProgressBar;
-    TextInputEditText mFieldNamePassengers;
-    Spinner mSpinnerPassagers;
+    private TextInputEditText mNomConducteur;
+    private TextInputEditText mDateDepart;
+    private TextInputEditText mDateretour;
+    private TextInputEditText mNbPlaceDispo;
+    private TextInputEditText mTypeVehicule;
+    private LinearLayout mTitreInscription;
+    private LinearLayout mLinearChampsDynamiques;
+    private TextView mTitrePassager;
+    private TextInputEditText mNbPassagerInput;
+    private ProgressBar mProgressBar;
+    private TextInputEditText mFieldNamePassengers;
     // DATAS
-    int inputs;
-    List<User> listUsers;
-    List<User> listFilteredUsers;
-    List<String> listUsersStr;
-    List<String> listSelectedUsers;
-    AlarmManager mAlarmManagerAller;
-    AlarmManager mAlarmManagerRetour;
+    private int inputs;
+    private List<User> listUsers;
+    private List<String> listUsersStr;
+    private List<String> listSelectedUsers;
+    private AlarmManager mAlarmManagerAller;
+    private AlarmManager mAlarmManagerRetour;
 
     // --------------------
     // LIFECYCLE
@@ -95,7 +91,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
         mDateretour = findViewById(R.id.date_retour_txt);
         mNbPlaceDispo = findViewById(R.id.nb_place_dispo_txt);
         mTypeVehicule = findViewById(R.id.type_vehicule_txt);
-        mReservation = findViewById(R.id.reservation_covoit_btn);
+        Button reservation = findViewById(R.id.reservation_covoit_btn);
         mProgressBar = findViewById(R.id.progress_bar);
         mTitreInscription = findViewById(R.id.titre_inscription);
         mLinearChampsDynamiques = findViewById(R.id.linearLayoutDynamique);
@@ -104,7 +100,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
         mNbPassagerInput.requestFocus();
 
         listSelectedUsers = new ArrayList<>();
-        listFilteredUsers = new ArrayList<>();
+        List<User> listFilteredUsers = new ArrayList<>();
         listUsersStr = new ArrayList<>();
         listUsers = new ArrayList<>();
         //  les AlarmManager permettront de réveiller le téléphone et d'executer du code à une date précise
@@ -136,7 +132,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
             }
         });
 
-        mReservation.setOnClickListener(new View.OnClickListener() {
+        reservation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 createPassagerInCovoiturage();
@@ -278,17 +274,17 @@ public class CovoituragePassagersActivity extends BaseActivity {
                         // creation des champs spinner de passagers dynamiquement
                         for (int i = 0; i < inputs; i++) {
                             // creation d'autant de spinner que desirés
-                            mSpinnerPassagers = new Spinner(this);
+                            Spinner spinnerPassagers = new Spinner(this);
                             // Create an ArrayAdapter using the string array and a default spinner layout
                             ArrayAdapter<String> adapterUser = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, listUsersStr);
                             // Specify the layout to use when the list of choices appears
                             adapterUser.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                             // Apply the adapter to the spinner
-                            mSpinnerPassagers.setAdapter(adapterUser);
+                            spinnerPassagers.setAdapter(adapterUser);
                             // ajout dynamique du spinner au linearlayout
-                            mLinearChampsDynamiques.addView(mSpinnerPassagers);
+                            mLinearChampsDynamiques.addView(spinnerPassagers);
 
-                            mSpinnerPassagers.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                            spinnerPassagers.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                                 @Override
                                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                                     // boucle sur tous les spinners
@@ -331,6 +327,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
     // NOTIFICATION
     // --------------------
 
+    //TODO V2 : utiliser les notifications pour la V2
     private void scheduleNotificationAller(Notification notification, Date alarmTime) {
 
         Intent notificationIntent = new Intent(this, NotificationReceiver.class);
@@ -399,7 +396,6 @@ public class CovoituragePassagersActivity extends BaseActivity {
             Covoiturage covoit = new Covoiturage();
             covoit.setHoraireAller(covoiturage.getHoraireAller());
 
-            //Intent intent = new Intent(this, TimeAlarmCovoiturageAller.class).putExtra("hAller", String.valueOf(covoiturage.getHoraireAller()));
             Intent intent = new Intent(this, TimeAlarmCovoiturageAller.class).putExtra("covoiturageAlarm", covoit);//.putExtra("user", passager);
             PendingIntent operation = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
             // reveil de l'alarm
@@ -422,7 +418,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
         if (user.getUid().equals(Objects.requireNonNull(getCurrentUser()).getUid())) {
             Covoiturage covoit = new Covoiturage();
             covoit.setHoraireRetour(covoiturage.getHoraireRetour());
-            //Intent intent = new Intent(this, TimeAlarmCovoiturageAller.class).putExtra("hAller", String.valueOf(covoiturage.getHoraireAller()));
+
             Intent intent = new Intent(this, TimeAlarmCovoiturageRetour.class).putExtra("covoiturageAlarm", covoit);//.putExtra("user", passager);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1, intent, PendingIntent.FLAG_ONE_SHOT);
             // reveil de l'alarm
@@ -493,8 +489,8 @@ public class CovoituragePassagersActivity extends BaseActivity {
      * Methode permettant de recuperer et d'afficher toutes les informations d'un covoiturage
      */
     private void getAndShowDatas() {
-        mIntent = getIntent();
-        covoiturage = (Covoiturage) Objects.requireNonNull(mIntent.getExtras()).getSerializable("covoit");
+        Intent intent = getIntent();
+        covoiturage = (Covoiturage) Objects.requireNonNull(intent.getExtras()).getSerializable("covoit");
         assert covoiturage != null;
 
         mNomConducteur.setText(Html.fromHtml("<b>Conducteur : </b>" + covoiturage.getPrenomConducteur() + " " + covoiturage.getNomConducteur()));
@@ -517,11 +513,13 @@ public class CovoituragePassagersActivity extends BaseActivity {
 
             final AlertDialog.Builder adb = new AlertDialog.Builder(CovoituragePassagersActivity.this);
             adb.setTitle(R.string.rectif_demande);
+
             // ajouter une couleur à l'icon de warning
             Drawable warning = getResources().getDrawable(android.R.drawable.ic_dialog_alert);
             ColorFilter filter = new LightingColorFilter(Color.RED, Color.BLUE);
             warning.setColorFilter(filter);
             adb.setIcon(warning);
+
             adb.setMessage(R.string.alertDialog_places_restantes);
             adb.setPositiveButton("MODIFIER", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {

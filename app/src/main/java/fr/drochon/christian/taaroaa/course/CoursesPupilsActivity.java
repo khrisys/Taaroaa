@@ -58,45 +58,44 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
     // CONTIENT LA RECYCLERVIEW
 
 
-    static User user;
+
     // FOR DESIGN
-    CoordinatorLayout mCoordinatorLayout;
-    LinearLayout mLinearLayout;
-    CalendarView mCalendarView;
-    RecyclerView recyclerView;
-    TextView mTextView;
-    ScrollView mScrollView;
-    FloatingActionButton mFloatingActionButton;
-    List<DocumentSnapshot> listSnapshot;
-    Date calendrierClique;
-    Date calendrierFinJournee;
-    AlarmManager mAlarmManager;
+    private CoordinatorLayout mCoordinatorLayout;
+    private LinearLayout mLinearLayout;
+    private RecyclerView recyclerView;
+    private TextView mTextView;
+    private ScrollView mScrollView;
+    private FloatingActionButton mFloatingActionButton;
     // FOR DATA
     private AdapterCoursesPupils mAdapterCoursesPupils;
+    private Date calendrierClique;
+    private Date calendrierFinJournee;
+    private AlarmManager mAlarmManager;
+    private static User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_courses_pupils);
         // DESIGN
-        mCalendarView = findViewById(R.id.calendrier_eleves);
+        CalendarView calendarView = findViewById(R.id.calendrier_eleves);
         recyclerView = findViewById(R.id.recyclerViewCoursesPupils); // liste des cours
         mTextView = findViewById(R.id.empty_list_textview);
-        //mScrollView = findViewById(R.id.scrollviewRecyclerView);
         mFloatingActionButton = findViewById(R.id.fab);
         // DATAS
         calendrierClique = new Date();
         calendrierFinJournee = new Date();
-        listSnapshot = new ArrayList<>();
+        List<DocumentSnapshot> listSnapshot = new ArrayList<>();
         mAlarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
         Intent intent = getIntent();
         user = (User) intent.getSerializableExtra("user");
         /*
-         * Ceci permet d'afficher en titre de page le niveau des cours données, de lancer une requete prenant
-         * en parametre le niveau d'un utilisateur dans l'adapter, et d'afficher ou non le floatingbutton
-         * en fonction du niveau de l'utilisateur connecté.
-         * Cette methode permet egalement de gerer le lancement des notifications en fonction d'un user connecté,
+         * <les methodes suivantes permettent
+         * 1 - d'afficher en titre de page le niveau des cours données,
+         * 2 - de lancer une requete prenant en parametre le niveau d'un utilisateur dans l'adapter
+         * et d'afficher ou non le floatingbutton en fonction du niveau de l'utilisateur connecté.
+         * 3 - de gerer le lancement des notifications en fonction d'un user connecté,
          * et fait en sorte qu'il ne recoive que les notifications des cours concernant son niveau de plongée.
          */
         // lance une alarme de notification si le cours correspond au niveau du plongeur connecté
@@ -123,7 +122,7 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
         });
 
         // recuperation de la date cliquée
-        mCalendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
+        calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
                 Calendar calendar = Calendar.getInstance();
@@ -151,9 +150,25 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
         });
     }
 
+
+    // --------------------
+    // UI
+    // --------------------
+
     @Override
     public int getFragmentLayout() {
         return R.layout.activity_courses_pupils;
+    }
+    /**
+     * Methode permettant d'afficher le floating button à l'ecran si l'utilisateur est un encadrant ou un initiateur.
+     */
+    private void showFloatingButton() {
+
+        if (this.getCurrentUser() != null) {
+            if (user.getFonction().equals("Moniteur") || user.getFonction().equals("Initiateur")) {
+                mFloatingActionButton.setVisibility(View.VISIBLE);
+            }
+        }
     }
 
 
@@ -235,7 +250,7 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
         });
         recyclerView.setLayoutManager(new LinearLayoutManager(this)); // layoutmanager indique comment seront positionnés les elements (linearlayout)
         recyclerView.setAdapter(this.mAdapterCoursesPupils);// l'adapter s'occupe du contenu
-        this.onDataChanged(); // appel du callback explicaite en cas d'affichage de cours pour des encadrants (qui reviendrait d'une notification)
+        this.onDataChanged(); // appel du callback explicite en cas d'affichage de cours pour des encadrants (qui reviendrait d'une notification)
     }
 
     /**
@@ -267,21 +282,6 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
                 .build();
     }
 
-    // --------------------
-    // UI
-    // --------------------
-
-    /**
-     * Methode permettant d'afficher le floating button à l'ecran si l'utilisateur est un encadrant ou un initiateur.
-     */
-    private void showFloatingButton() {
-
-        if (this.getCurrentUser() != null) {
-            if (user.getFonction().equals("Moniteur") || user.getFonction().equals("Initiateur")) {
-                mFloatingActionButton.setVisibility(View.VISIBLE);
-            }
-        }
-    }
 
     // --------------------
     // ALARM NOTIFICATION

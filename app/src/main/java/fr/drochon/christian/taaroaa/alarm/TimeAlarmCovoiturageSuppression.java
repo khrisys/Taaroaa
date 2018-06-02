@@ -21,8 +21,6 @@ import fr.drochon.christian.taaroaa.model.Covoiturage;
 
 public class TimeAlarmCovoiturageSuppression extends BroadcastReceiver {
 
-    NotificationManager notificationManager;
-
     @Override
     public void onReceive(Context context, Intent intent) {
 
@@ -110,7 +108,7 @@ public class TimeAlarmCovoiturageSuppression extends BroadcastReceiver {
         int NOTIFICATION_ID = 3;
         String NOTIFICATION_TAG = "TAAROAA";
         // Create a Channel (Android 8) and set the importance
-        notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager notificationManager1 = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         /*
         Methode permettant de creer une channel et de determiner osn importance. Avant de pouvoir delivrer une
@@ -134,7 +132,7 @@ public class TimeAlarmCovoiturageSuppression extends BroadcastReceiver {
         }
 
         // Show notification
-        assert notificationManager != null;
-        notificationManager.notify(NOTIFICATION_TAG, NOTIFICATION_ID, notificationBuilder.build());
+        assert notificationManager1 != null;
+        notificationManager1.notify(NOTIFICATION_TAG, NOTIFICATION_ID, notificationBuilder.build());
     }
 }

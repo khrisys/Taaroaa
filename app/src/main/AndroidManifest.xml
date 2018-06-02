@@ -72,6 +72,10 @@
             </meta-data>
         </activity>
         <!-- NOTIFICATION SERVICE -->
+        <service android:name=".notifications.NotificationsService"/>
+        <service android:name=".notifications.MyFirebaseMessagingService"/>
+        <service android:name=".notifications.SendNotification"/>
+        <service android:name=".notifications.MyFirebaseInstanceIDService"/>
         <!--
          <service
              android:name=".notifications.NotificationsService">
@@ -80,21 +84,21 @@
              </intent-filter>
          </service>
         -->
-        <service android:name=".notifications.MyFirebaseMessagingService">
+       <!-- <service android:name=".notifications.MyFirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
-            <!--
+            &lt;!&ndash;
      Set custom default icon. This is used when no icon is set for incoming notification messages.
      See README(https://goo.gl/l4GJaQ) for more.
-            -->
+            &ndash;&gt;
             <meta-data
                 android:name="com.google.firebase.messaging.default_notification_icon"
                 android:resource="@drawable/common_full_open_on_phone"/>
-            <!--
+            &lt;!&ndash;
                  Set color used with incoming notification messages. This is used when no color is set for the incoming
                  notification message. See README(https://goo.gl/6BKBk7) for more.
-            -->
+            &ndash;&gt;
             <meta-data
                 android:name="com.google.firebase.messaging.default_notification_color"
                 android:resource="@color/colorAccent"/>
@@ -108,7 +112,7 @@
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
             </intent-filter>
-        </service>
+        </service>-->
 
         <receiver android:name=".alarm.TimeAlarmCovoiturageAller"/>
         <receiver android:name=".alarm.TimeAlarmCovoiturageRetour"/>

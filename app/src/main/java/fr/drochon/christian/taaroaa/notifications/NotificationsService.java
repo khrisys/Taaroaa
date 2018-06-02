@@ -24,11 +24,9 @@ import fr.drochon.christian.taaroaa.auth.SearchUserActivity;
 public class NotificationsService extends FirebaseMessagingService {
 
 
-    int NOTIFICATION_ID = 7;
-    String NOTIFICATION_TAG = "TAAROAA";
-
     /**
      * Le remoteMessage affiche ce que j'ecris en titre de message dans la bdd
+     *
      * @param remoteMessage
      */
     @Override
@@ -95,6 +93,8 @@ public class NotificationsService extends FirebaseMessagingService {
         this.createNotificationChannel(channelId);
         // Show notification
         assert notificationManager != null;
+        int NOTIFICATION_ID = 7;
+        String NOTIFICATION_TAG = "TAAROAA";
         notificationManager.notify(NOTIFICATION_TAG, NOTIFICATION_ID, notificationBuilder.build());
     }
 
@@ -109,7 +109,7 @@ public class NotificationsService extends FirebaseMessagingService {
      */
     private void createNotificationChannel(String CHANNEL_ID) {
 
-        NotificationManager notificationManager = null;
+        NotificationManager notificationManager;
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

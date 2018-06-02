@@ -34,16 +34,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private static final String NOTIFICATION_ID_EXTRA = "NOTIFICATION_ID";
     private static final String IMAGE_URL_EXTRA = "imageUrl";
     private static final String ADMIN_CHANNEL_ID = "admin_channel";
-    /**
-     * NOTIFICATION ID
-     * Ici, pour obtenir des notifications uniques chaque fois que vous recevez un nouveau message,
-     * dans l'intérêt de cet exemple, nous générons un nombre aléatoire et l'utilisons comme identifiant
-     * de notification. Avec cet ID, vous pouvez faire plusieurs choses à vos notifications. En tant que
-     * tel, vous devriez probablement les regrouper s'ils sont du même type ou les mettre à jour. Si
-     * vous voulez voir chaque notification individuellement des autres, leurs ID doivent être différents.
-     */
-    int NOTIFICATION_ID = 7;
-    String NOTIFICATION_TAG = "TAAROAA";
+    private String NOTIFICATION_TAG = "TAAROAA";
     private NotificationManager notificationManager;
 
     public MyFirebaseMessagingService() {
@@ -117,19 +108,18 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      * Les photos dans les notifications peuvent être très attrayantes. Voici comment nous pouvons ajouter une image à notre notification push:
      * Simple method for image downloading
      *
-     * @param imageUrl
      * @return
      */
-    public Bitmap getBitmapfromUrl(String imageUrl) {
+    private Bitmap getBitmapfromUrl() {
         try {
-            /**
+            /*
              Dans ce cas, nous envoyons une URL d'image dans la charge utile de notification pour l'application à télécharger. Habituellement,
              de tels processus sont exécutés sur un thread séparé. Cependant, dans ce cas, cette classe est un service, donc une fois le code
              dans onMessageReceived exécuté, le service, qui est un thread différent du thread principal, est détruit et va avec chaque thread
              créé par le service. Par conséquent, nous pouvons nous permettre de télécharger l'image de manière synchrone. Cela ne devrait pas
              constituer une menace pour les performances, car le thread de service n'est pas le thread principal.
-             **/
-            URL url = new URL(imageUrl);
+             */
+            URL url = new URL("C:\\Users\\khris\\Pictures\\craig_joubert.JPG");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setDoInput(true);
             connection.connect();
@@ -159,10 +149,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
 
 
-
     private void sendNotification(String title, String message) {
 
-        /**
+        /*
          * NOTIFICATIONS TESTS
          * Apres validation du test postman, nous pouvons envoyer et tester des notifications, nous pouvons les rendre plus fantaisistes.
          * Tout d'abord, ajoutons une fonctionnalité de clic pour la notification:
@@ -181,10 +170,19 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 0, notificationIntent,
                 PendingIntent.FLAG_ONE_SHOT);
 
-        Bitmap bitmap = getBitmapfromUrl("C:\\Users\\khris\\Pictures\\craig_joubert.JPG");
+        Bitmap bitmap = getBitmapfromUrl();
 
         // action du bouton sur la notif
         Intent pupilsIntent = new Intent(this, CoursesPupilsActivity.class);
+        /*
+      NOTIFICATION ID
+      Ici, pour obtenir des notifications uniques chaque fois que vous recevez un nouveau message,
+      dans l'intérêt de cet exemple, nous générons un nombre aléatoire et l'utilisons comme identifiant
+      de notification. Avec cet ID, vous pouvez faire plusieurs choses à vos notifications. En tant que
+      tel, vous devriez probablement les regrouper s'ils sont du même type ou les mettre à jour. Si
+      vous voulez voir chaque notification individuellement des autres, leurs ID doivent être différents.
+     */
+        int NOTIFICATION_ID = 7;
         pupilsIntent.putExtra(NOTIFICATION_ID_EXTRA, NOTIFICATION_ID);
         pupilsIntent.putExtra(IMAGE_URL_EXTRA, "C:\\Users\\khris\\Pictures\\craig_joubert.JPG");
         PendingIntent likePendingIntent = PendingIntent.getService(this,
@@ -193,7 +191,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
-        /**
+        /*
          *Initialisation d'une constante ADMIN_CHANNEL_ID qui est de type String. J'utilise cette variable
          * id pour faire référence à ma nouvelle chaîne. Donc, chaque fois que j'utilise NotificationCompat.Builder
          * pour créer une nouvelle notification, j'initialise l'objet builder et passe l'identifiant dans le constructeur, comme ceci:
@@ -217,7 +215,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        /**
+        /*
          * NOTIFICATIONS CHANNEL
          * Chaque application qui cible le SDK 26 ou supérieur (Android O) doit implémenter des canaux de
          * notification et ajouter ses notifications à au moins l'un d'entre eux. Autrement dit, vous séparez

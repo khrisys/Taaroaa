@@ -19,19 +19,17 @@ import fr.drochon.christian.taaroaa.model.Course;
  * refleter exactement la bdd firestore, de mettre en cache toutes les données afin d'y avoir acces meme sans internet.
  *
  */
-public class AdapterCoursesSupervisors extends FirestoreRecyclerAdapter<Course, SupervisorsViewHolder> {
+class AdapterCoursesSupervisors extends FirestoreRecyclerAdapter<Course, SupervisorsViewHolder> {
 
     public static final int DROIT_N1 = 1;
     public static final int DROIT_MONITEUR = 2;
 
-    public interface Listener {
-        void onDataChanged();
-    }
+
     //FOR COMMUNICATION
-    private Listener callback;
+    private final Listener callback;
 
 
-    public AdapterCoursesSupervisors(FirestoreRecyclerOptions<Course> options, AdapterCoursesSupervisors.Listener callback) {
+    AdapterCoursesSupervisors(FirestoreRecyclerOptions<Course> options, AdapterCoursesSupervisors.Listener callback) {
         super(options);
         this.callback = callback;
     }
@@ -56,16 +54,25 @@ public class AdapterCoursesSupervisors extends FirestoreRecyclerAdapter<Course, 
      * @param viewType : sert au cas ou il y aurait differents types de cellules
      * @return le vue d'une cellule
      */
+    @NonNull
     @Override
-    public SupervisorsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public SupervisorsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new SupervisorsViewHolder(LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.supervisor_cell, parent, false));// creation de la viewholder avec en param la vue du layout
     }
+
+    // --------------------
+    // INTERFACE LISTENER : CALLBACK
+    // --------------------
 
     @Override
     public void onDataChanged() {
         super.onDataChanged();
         this.callback.onDataChanged();
+    }
+
+    public interface Listener {
+        void onDataChanged();
     }
 
 }

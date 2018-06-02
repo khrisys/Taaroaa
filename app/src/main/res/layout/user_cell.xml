@@ -13,23 +13,20 @@
         android:layout_gravity="center"
         android:layout_marginBottom="-20dp"
         android:layout_marginTop="30dp"
-
-
         android:weightSum="1">
 
-        !-- ellipsize = si le texte est trop grand pour s'afficher sur une seule ligne, la ligne se terminera par '...'-->
         <TextView
             android:id="@+id/list_cell_prenom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="20dp"
             android:layout_marginEnd="5dp"
+            android:layout_marginTop="20dp"
             android:layout_weight="0.5"
-            android:gravity="right"
             android:ellipsize="end"
             android:lines="1"
             android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textDirection="rtl"
             tools:text="prenom"/>
 
         <TextView

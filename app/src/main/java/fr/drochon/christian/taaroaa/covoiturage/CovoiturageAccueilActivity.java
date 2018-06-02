@@ -20,13 +20,11 @@ import fr.drochon.christian.taaroaa.base.BaseActivity;
 
 public class CovoiturageAccueilActivity extends BaseActivity {
 
-    Button btn;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_covoiturage_accueil);
-        btn = findViewById(R.id.creation_covoit_btn);
+        Button btn = findViewById(R.id.creation_covoit_btn);
 
         configureToolbar();
         giveToolbarAName(R.string.covoit_accueil_name);
@@ -38,15 +36,15 @@ public class CovoiturageAccueilActivity extends BaseActivity {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*SendNotification sendNotification = new SendNotification();
-                sendNotification.onCreate();*/
-
                 Intent intent = new Intent(CovoiturageAccueilActivity.this, CovoiturageVehiclesActivity.class);
                 startActivity(intent);
             }
         });
     }
 
+    // --------------------
+    // UI
+    // --------------------
 
     @Override
     public int getFragmentLayout() {
@@ -81,6 +79,10 @@ public class CovoiturageAccueilActivity extends BaseActivity {
         return optionsToolbar(this, item);
     }
 
+
+    // --------------------
+    // CLASSE INTERNE DE NOTIFICATION
+    // --------------------
     @SuppressLint("StaticFieldLeak")
     private class Notif extends AsyncTask<Void, Void, Void>{
 

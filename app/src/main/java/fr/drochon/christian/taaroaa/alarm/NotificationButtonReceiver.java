@@ -11,11 +11,7 @@ import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
 
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.RemoteMessage;
-
 import fr.drochon.christian.taaroaa.R;
-import fr.drochon.christian.taaroaa.notifications.MyFirebaseMessagingService;
 
 public class NotificationButtonReceiver extends BroadcastReceiver {
 
@@ -25,15 +21,15 @@ public class NotificationButtonReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        if(intent != null){
+        if (intent != null) {
             String body = null, title = null;
-            if(intent.hasExtra(Notification.EXTRA_NOTIFICATION_ID)){
+            if (intent.hasExtra(Notification.EXTRA_NOTIFICATION_ID)) {
                 body = intent.getStringExtra(Notification.EXTRA_NOTIFICATION_ID);
             }
-            if(intent.hasExtra(Notification.EXTRA_TITLE)){
+            if (intent.hasExtra(Notification.EXTRA_TITLE)) {
                 title = intent.getStringExtra(Notification.EXTRA_TITLE);
             }
-            if(body != null && title != null) {
+            if (body != null && title != null) {
                 sendNotification(context, body, title);
             }
         }
@@ -51,7 +47,7 @@ public class NotificationButtonReceiver extends BroadcastReceiver {
                 notificationManager.createNotificationChannel(channel);
             }
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, "default")
-                    .setSmallIcon(R.drawable.logo_vgt)
+                    .setSmallIcon(R.mipmap.logo1)
                     .setContentTitle(title)
                     .setContentText(message)
                     .setAutoCancel(true)

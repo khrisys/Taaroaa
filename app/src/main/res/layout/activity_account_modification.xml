@@ -19,7 +19,8 @@
         android:fadeScrollbars="true"
         android:fadingEdge="horizontal|vertical"
         android:scrollbarStyle="insideOverlay"
-        android:visibility="visible" tools:targetApi="lollipop">
+        android:visibility="visible"
+        tools:targetApi="lollipop">
 
 
         <LinearLayout
@@ -119,7 +120,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginTop="70dp"
+                android:layout_marginTop="50dp"
                 android:text="@string/plongee"
                 android:textAlignment="center"
                 android:textColor="@color/colorPrimaryDark"
@@ -281,7 +282,7 @@
                 android:id="@+id/modificiation_compte_btn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="30dp"
+                android:layout_margin="40dp"
                 android:height="60dp"
                 android:background="@color/colorPrimary"
                 android:text="@string/modifiez_le_compte"
@@ -293,8 +294,9 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="30dp"
                 android:background="@color/colorPrimary"
-                android:text="Supprimez le compte"
-                android:textColor="@android:color/white"/>
+                android:text="@string/supprimez_le_compte"
+                android:textColor="@android:color/white"
+                android:visibility="gone"/>
 
         </LinearLayout>
 
@@ -305,17 +307,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:inputType="text"
-        android:textSize="@android:dimen/notification_large_icon_height"
         android:text="@string/alertDialog_delete"
-        android:visibility="invisible"/>
+        android:textSize="@android:dimen/notification_large_icon_height"
+        android:visibility="gone"
+        tools:ignore="LabelFor"/>
 
     <EditText
         android:id="@+id/alertdialog_delete_account"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="@android:dimen/notification_large_icon_height"
         android:inputType="text"
         android:text="@string/alertDialog_cancel"
-        android:visibility="invisible"/>
+        android:textSize="@android:dimen/notification_large_icon_height"
+        android:visibility="gone"
+        tools:ignore="LabelFor"/>
 
 </LinearLayout>

@@ -45,37 +45,25 @@ import static android.widget.Toast.LENGTH_SHORT;
 
 public class AccountCreateActivity extends BaseActivity {
 
-    public static final int GET_USERNAME = 40;
+
     // identifiant pour identifier la requete REST
     private static final int SIGN_OUT_TASK = 10;
     private static final int DELETE_USER_TASK = 20;
     private static final int UPDATE_USERNAME = 30;
-    LinearLayout mLinearLayoutFonctionAdherent;
-    TextInputEditText mPrenom;
-    TextInputEditText mNom;
-    TextInputEditText mLicence;
-    Spinner mNiveauPlongeespinner;
-    TextInputEditText mEmail;
-    TextInputEditText mPassword;
-    ProgressBar mProgressBar;
-    Button mCreateAccount;
-    Button mSuppressionCompte;
-    TextView mTitrePage;
-    String fonction;
-
-    /**
-     * Methode permettant de verifier la validité d'une adresse email
-     *
-     * @param target adresse email
-     * @return validité de l'adresse email
-     */
-    private static boolean isValidEmail(CharSequence target) {
-        return target != null && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
-    }
-
+    public static final int GET_USERNAME = 40;
+    // DESIGN
+    private TextInputEditText mPrenom;
+    private TextInputEditText mNom;
+    private TextInputEditText mLicence;
+    private Spinner mNiveauPlongeespinner;
+    private TextInputEditText mEmail;
+    private TextInputEditText mPassword;
+    private ProgressBar mProgressBar;
+    // DATA
+    private String fonction;
 
     // --------------------
-    // UI
+    // LIFECYCLE
     // --------------------
 
     @Override
@@ -83,8 +71,8 @@ public class AccountCreateActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account_create);
 
-        mTitrePage = findViewById(R.id.titre_page_compte_txt);
-        mLinearLayoutFonctionAdherent = findViewById(R.id.linearLayoutFonctionAdherent);
+        TextView titrePage = findViewById(R.id.titre_page_compte_txt);
+        LinearLayout linearLayoutFonctionAdherent = findViewById(R.id.linearLayoutFonctionAdherent);
         mPrenom = findViewById(R.id.prenom_txt);
         mNom = findViewById(R.id.nom_txt);
         mLicence = findViewById(R.id.licence_txt);
@@ -93,9 +81,8 @@ public class AccountCreateActivity extends BaseActivity {
         mEmail = findViewById(R.id.email_txt);
         mPassword = findViewById(R.id.password_input);
         mProgressBar = findViewById(R.id.progress_bar);
-        mCreateAccount = findViewById(R.id.modificiation_compte_btn);
-        //TODO n'afficher le bouton de suppression qu'aux proprieraires des comptes
-        mSuppressionCompte = findViewById(R.id.suppression_compte_btn);
+        Button createAccount = findViewById(R.id.modificiation_compte_btn);
+        Button suppressionCompte = findViewById(R.id.suppression_compte_btn);
         fonction = "Plongeur"; // la fonction par defaut d'un adhrent qui créé son compte a pour fonction "Plongeur"
 
         configureToolbar();
@@ -116,9 +103,7 @@ public class AccountCreateActivity extends BaseActivity {
         // --------------------
 
         //Lorsqu'un utilisateur a rempli correctement le formulaire, il est renvoyé à la page Sommaire
-        // 1 - lorsqu'un plongeur est connecté, le menu deroulant des fonctions est desactivé; tous les autres champs sont acesssibles.
-        // 2 - lorsqu'un encadrant est connecté, tous les chamos sont en lecture seule, sauf le menu deroulant des fonctions
-        mCreateAccount.setOnClickListener(new View.OnClickListener() {
+        createAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Objects.requireNonNull(getCurrentUser()).reload();
@@ -128,7 +113,6 @@ public class AccountCreateActivity extends BaseActivity {
                 assert firebaseUser != null;
                 if (Objects.requireNonNull(firebaseUser.isEmailVerified())) {
                     createUserInFirebase();
-                    //startSummaryActivity();
                 } else {
                     if (!mNom.getText().toString().isEmpty() && !mPrenom.getText().toString().isEmpty() && !email.isEmpty() && isValidEmail(email) && !password.isEmpty()) {
                         System.out.println("nok");
@@ -139,9 +123,8 @@ public class AccountCreateActivity extends BaseActivity {
             }
         });
 
-
         // Suppression d'un compte utilisateur avec alertdialog avant suppression
-        mSuppressionCompte.setOnClickListener(new View.OnClickListener() {
+        suppressionCompte.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 final AlertDialog.Builder adb = new AlertDialog.Builder(AccountCreateActivity.this);
@@ -160,16 +143,16 @@ public class AccountCreateActivity extends BaseActivity {
                         signOutUserFromFirebase();
                         //deleteUser();
                         startMainActivity();
+                        //En cas de negation, l'utilisateur reste sur l'ecran de creation de son compte
                     }
                 }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         EditText editText = findViewById(R.id.alertdialog_delete_account);
                         Toast.makeText(AccountCreateActivity.this, editText.getText(), Toast.LENGTH_LONG).show();
                         //finish();
-                        //TODO est ce qu'on change d'ecran ou pas ?
                     }
                 });
-                adb.show(); // affichage de l'artdialog
+                adb.show();
             }
         });
 
@@ -186,22 +169,33 @@ public class AccountCreateActivity extends BaseActivity {
         mNiveauPlongeespinner.setAdapter(adapterNiveau);
     }
 
+    // --------------------
+    // UI
+    // --------------------
     @Override
     public int getFragmentLayout() {
         return R.layout.activity_account_create;
     }
 
-    public void alertDialogValidationEmail() {
+    /**
+     * Methode permettant d'afficher une alertdialog à un user pour lui indiquer qu'il doit aller
+     * valider son adresse mail saisi lors de la creation de son compte.
+     * Cette methode rafraichit la validation de son email en bdd firebase (sinon, sa validation,
+     * meme effectuée, ne serait jamais prise en compte par firebase)
+     */
+    private void alertDialogValidationEmail() {
 
         Objects.requireNonNull(getCurrentUser()).reload();
 
         AlertDialog.Builder adb = new AlertDialog.Builder(this);
         adb.setTitle("Sécurité !");
+
         // ajouter une couleur à l'icon de warning
         Drawable warning = getResources().getDrawable(android.R.drawable.ic_dialog_alert);
         ColorFilter filter = new LightingColorFilter(Color.RED, Color.BLUE);
         warning.setColorFilter(filter);
         adb.setIcon(warning);
+
         adb.setMessage("Avant de pouvoir créer votre compte, vous devez valider votre adresse mail via le lien qui vous a été envoyé à : '" + Objects.requireNonNull(getCurrentUser()).getEmail() + "'");
         adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
@@ -263,6 +257,16 @@ public class AccountCreateActivity extends BaseActivity {
         }
     }
 
+    /**
+     * Methode permettant de verifier la validité d'une adresse email
+     *
+     * @param target adresse email
+     * @return validité de l'adresse email
+     */
+    private static boolean isValidEmail(CharSequence target) {
+        return target != null && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
+    }
+
     // --------------------
     // REST REQUETES
     // --------------------
@@ -274,7 +278,7 @@ public class AccountCreateActivity extends BaseActivity {
     private void createUserInFirebase() {
         final FirebaseAuth auth = FirebaseAuth.getInstance(FirebaseFirestore.getInstance().getApp());
 
-        setupDb().collection("users").document(getCurrentUser().getUid()).get()
+        setupDb().collection("users").document(Objects.requireNonNull(getCurrentUser()).getUid()).get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -337,11 +341,9 @@ public class AccountCreateActivity extends BaseActivity {
     private void deleteUserFromFirebase() {
         if (this.getCurrentUser() != null) {
 
-            //On supprime un utilisateur de la bdd firestore
             UserHelper.deleteUser(this.getCurrentUser().getUid()).addOnFailureListener(this.onFailureListener());
-            //TODO mettre une notification si elle n'arrive pas avoir ajouté le deleteuser ci dessus
-            AuthUI.getInstance()
-                    .delete(this) // methode utilisée par le singleton authUI.getInstance()
+            AuthUI.getInstance()// methode utilisée par le singleton authUI.getInstance()
+                    .delete(this)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
@@ -362,9 +364,7 @@ public class AccountCreateActivity extends BaseActivity {
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            //RAS
-                        }
+                        task.isSuccessful();
                     }
                 });
     }

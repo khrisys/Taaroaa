@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * Classe represantant les adherents du club
  */
-public class User implements Serializable{
+public class User implements Serializable {
 
     private String uid;
     private String mNom;
@@ -14,20 +14,28 @@ public class User implements Serializable{
     private String mEmail;
     private String mNiveauPlongeur;
     private String mFonction;
-    private Long mHash;
+
 
     public User() {
     }
 
+    /**
+     * Constructeur permettant de retrouver un user par son uid
+     *
+     * @param uid
+     */
     public User(String uid) {
         this.uid = uid;
     }
 
-    public User(String nom, String prenom) {
-        mNom = nom;
-        mPrenom = prenom;
-    }
-
+    /**
+     * Methode servant à la recherche d'un utilisateur dans la classe SearchUser
+     * ainsi qu'à la modification d'un user
+     *
+     * @param uid
+     * @param nom
+     * @param email
+     */
     public User(String uid, String nom, String email) {
         this.uid = uid;
         mNom = nom;
@@ -36,6 +44,7 @@ public class User implements Serializable{
 
     /**
      * Creation d'user lors de la recuperation des infos juste apres la creation d'un compte via l'auth firabse
+     *
      * @param uid
      * @param nom
      * @param prenom
@@ -48,6 +57,17 @@ public class User implements Serializable{
         mEmail = email;
     }
 
+    /**
+     * Methode permettant de creer ou d'updater toutes les caracteristiques d'un user final
+     *
+     * @param uid
+     * @param nom
+     * @param prenom
+     * @param licence
+     * @param email
+     * @param niveauPlongeur
+     * @param fonction
+     */
     public User(String uid, String nom, String prenom, String licence, String email, String niveauPlongeur, String fonction) {
         this.uid = uid;
         mNom = nom;
@@ -58,16 +78,6 @@ public class User implements Serializable{
         mFonction = fonction;
     }
 
-/*    public User(String uid, String nom, String prenom, String licence, String email, String niveauPlongeur, String fonction, Long hash) {
-        this.uid = uid;
-        mNom = nom;
-        mPrenom = prenom;
-        mLicence = licence;
-        mEmail = email;
-        mNiveauPlongeur = niveauPlongeur;
-        mFonction = fonction;
-        mHash = hash;
-    }*/
 
     // GETTERS & SETTERS
 
@@ -127,11 +137,4 @@ public class User implements Serializable{
         mFonction = fonction;
     }
 
-    public Long getHash() {
-        return mHash;
-    }
-
-    public void setHash(Long hash) {
-        mHash = hash;
-    }
 }

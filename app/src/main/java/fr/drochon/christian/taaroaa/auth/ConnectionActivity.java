@@ -28,9 +28,8 @@ import fr.drochon.christian.taaroaa.base.BaseActivity;
 
 public class ConnectionActivity extends BaseActivity {
 
-    TextInputEditText mEmail;
-    TextInputEditText mPassword;
-    Button mValid;
+    private TextInputEditText mEmail;
+    private TextInputEditText mPassword;
 
     /**
      * Verification de la validité de l'adresse email
@@ -54,7 +53,7 @@ public class ConnectionActivity extends BaseActivity {
 
         mEmail = findViewById(R.id.email_input);
         mPassword = findViewById(R.id.password_input);
-        mValid = findViewById(R.id.creation_identifiants_btn);
+        Button valid = findViewById(R.id.creation_identifiants_btn);
 
         configureToolbar();
         giveToolbarAName(R.string.creation_compte);
@@ -63,7 +62,7 @@ public class ConnectionActivity extends BaseActivity {
         // LISTENER
         // --------------------
 
-        mValid.setOnClickListener(new View.OnClickListener() {
+        valid.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (!mEmail.getText().toString().isEmpty() && !mPassword.getText().toString().isEmpty())
@@ -144,18 +143,14 @@ public class ConnectionActivity extends BaseActivity {
 
         // In order to securely pass a continue URL, the domain for the URL will need to be whitelisted in the Firebase console.
         // This is done in the Authentication section by adding this domain to the list of OAuth redirect domains if it is not already there.
-        //String url = "https://taaroaa-fe93c.firebaseapp.com/verify?uid=" + auth.getCurrentUser();
         ActionCodeSettings actionCodeSettings = ActionCodeSettings.newBuilder()
                 .setUrl("https://taaroaa-fe93c.firebaseapp.com/__/auth/action?mode=%3Caction%3E&oobCode=%3Ccode%3E")
-                //.setUrl(url)
-                //.setUrl("https://dhu3y.app.goo.gl/taaroaa")
                 .setHandleCodeInApp(true)
                 //.setIOSBundleId("com.example.ios")
-                // The default for this is populated with the current android package name.
                 .setAndroidPackageName(
-                        "fr.drochon.christian.taaroaa",
+                        "fr.drochon.christian.taaroaa",// The default for this is populated with the current android package name.
                         true,
-                        "19")
+                        "19") // minimum SDK
                 .build();
 
         if (!Objects.requireNonNull(auth.getCurrentUser()).isEmailVerified()) {

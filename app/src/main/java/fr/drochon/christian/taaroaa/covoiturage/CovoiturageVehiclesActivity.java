@@ -2,19 +2,16 @@ package fr.drochon.christian.taaroaa.covoiturage;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.android.gms.common.util.ListUtils;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
@@ -31,19 +28,14 @@ import fr.drochon.christian.taaroaa.model.Covoiturage;
 
 public class CovoiturageVehiclesActivity extends BaseActivity implements AdapterCovoiturageVehicles.Listener {
 
+    private Covoiturage covoiturage;
     // FOR COMMUNICATION
-    TextView mTextViewEmptyListRecyclerView;
-    CoordinatorLayout mCoordinatorLayoutRoot;
-    LinearLayout mLinearLayoutVehicule;
-    LinearLayout mLinearLayoutRecycleView;
-    ScrollView mScrollViewRecyclerView;
-    RecyclerView mRecyclerViewVehicules;
-
+    private TextView mTextViewEmptyListRecyclerView;
+    private ScrollView mScrollViewRecyclerView;
+    private RecyclerView mRecyclerViewVehicules;
     // FOR DATA
     private AdapterCovoiturageVehicles mAdapterCovoiturageVehicles;
-    List<Covoiturage> listCovoiturages;
-    List<String> listPassagers;
-    Covoiturage covoiturage;
+    private List<String> listPassagers;
 
     // --------------------
     // LIFECYCLE
@@ -54,13 +46,9 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
         setContentView(R.layout.activity_covoiturage_vehicules);
 
         mTextViewEmptyListRecyclerView = findViewById(R.id.empty_list_textview);
-        mCoordinatorLayoutRoot = findViewById(R.id.coordinatorLayoutRoot);
-        mLinearLayoutVehicule = findViewById(R.id.linearLayoutVehicules);
-        mLinearLayoutRecycleView = findViewById(R.id.linearLayoutRecyclerView);
-        //mScrollViewRecyclerView = findViewById(R.id.scrollviewRecyclerView);
         mRecyclerViewVehicules = findViewById(R.id.recyclerViewCovoitVehicules);
 
-        listCovoiturages = new ArrayList<>();
+        List<Covoiturage> listCovoiturages = new ArrayList<>();
         listPassagers = new ArrayList<>();
 
         this.configureRecyclerView();
@@ -176,7 +164,7 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
      */
     @SuppressWarnings("unchecked")
     private Query getAllCovoiturages() {
-        Query mQuery = setupDb().collection("covoiturages").orderBy("horaireRetour",Query.Direction.ASCENDING).whereGreaterThan("horaireRetour", Calendar.getInstance().getTime());
+        Query mQuery = setupDb().collection("covoiturages").orderBy("horaireRetour", Query.Direction.ASCENDING).whereGreaterThan("horaireRetour", Calendar.getInstance().getTime());
         mQuery.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot documentSnapshots) {

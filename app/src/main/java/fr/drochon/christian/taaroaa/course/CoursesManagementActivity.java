@@ -64,17 +64,17 @@ public class CoursesManagementActivity extends BaseActivity {
 
     // id objets graphiques
     @SuppressLint("StaticFieldLeak")
-    static TextInputEditText mHeureCours;
+    private static TextInputEditText mHeureCours;
     @SuppressLint("StaticFieldLeak")
-    static TextInputEditText mDateCours;
-    TextInputEditText mMoniteurCours;
-    TextInputEditText mSujetCours;
-    Spinner mTypeCours;
-    Spinner mNiveauCours;
-    Button mCreerCours;
+    private static TextInputEditText mDateCours;
+    private TextInputEditText mMoniteurCours;
+    private TextInputEditText mSujetCours;
+    private Spinner mTypeCours;
+    private Spinner mNiveauCours;
+    private Button mCreerCours;
 
     // DATAS
-    AlarmManager mAlarmManager;
+    private AlarmManager mAlarmManager;
 
     // --------------------
     // CYCLE DE VIE
@@ -155,24 +155,9 @@ public class CoursesManagementActivity extends BaseActivity {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View v) {
-                //TODO verification d'un id existant dans la bdd et si c'est le cas, remplissage des champs de l'ecran cours +  A voir si il ne vaut mieux pas mettre toujours la fonction create, parce que soit, ca creera le doc soit ca l'ecrasera
                 createCourseInFirebase();
             }
         });
-    }
-
-    @Override
-    public int getFragmentLayout() {
-        return R.layout.activity_courses_management;
-    }
-
-    /**
-     * Methode rappelant l'ecran lorsque celui ci revient au premier plan apres avoir été mis au second plan.
-     */
-    @Override
-    protected void onResume() {
-        super.onResume();
-        this.updateUIWhenResuming(); // recuperation des informations du cours à updater ou deleter
     }
 
 
@@ -210,6 +195,21 @@ public class CoursesManagementActivity extends BaseActivity {
     // UI
     // --------------------
 
+
+    @Override
+    public int getFragmentLayout() {
+        return R.layout.activity_courses_management;
+    }
+
+    /**
+     * Methode rappelant l'ecran lorsque celui ci revient au premier plan apres avoir été mis au second plan.
+     */
+    @Override
+    protected void onResume() {
+        super.onResume();
+        this.updateUIWhenResuming(); // recuperation des informations du cours à updater ou deleter
+    }
+
     /**
      * Methode permettant d'afficher les informations d'un user depuis la bdd firestore
      */
@@ -238,9 +238,11 @@ public class CoursesManagementActivity extends BaseActivity {
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
                 // condition de creation d'un user ou affichage simple d'un message indiquant que l'user existe dejà en bdd.
                 // Avec la generation d'uid aleatoire géré par firebase, il ne peut y avoir de doublon.
+                // verification d'un id existant dans la bdd et si c'est le cas, remplissage des champs de l'ecran
+                // cours + changement de la phrase du bouton
                 if (documentSnapshots.size() == 1) {
                     Log.e("TAG", "Le document existe !");
-                    // verification d'un id existant dans la bdd et si c'est le cas, remplissage des champs de l'ecran cours + changement de la phrase du bouton
+
                     mCreerCours.setText(R.string.button_update_course);
 
                     Course course = new Course(uid);
@@ -248,7 +250,6 @@ public class CoursesManagementActivity extends BaseActivity {
                     mSujetCours.setText(course.getSujetDuCours());
                     mTypeCours.setTag(course.getNiveauDuCours());
                     mNiveauCours.setTag(course.getNiveauDuCours());
-                    //TODO normalement, l'ehure et la date doivent arriver decomposé depuis le clic d'un encadrant sur un item de la liste des cours
                     mDateCours.setText(course.getDateDuCours().toString());
                     mHeureCours.setText(course.getTimeDuCours().toString());
                 } else {
@@ -336,7 +337,6 @@ public class CoursesManagementActivity extends BaseActivity {
         final String timeCoursTxt = mHeureCours.getText().toString();
 
         String horaireCours = dateCoursTxt + " " + timeCoursTxt;
-        //final Date horaires = stringToDate(horaireCours);
         Date horaireDuCours = null;
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.US);
         try {
@@ -399,25 +399,6 @@ public class CoursesManagementActivity extends BaseActivity {
             }
         }
     }
-/*
-    *//**
-     * Methode permettant de recuperer l'objet User connecté
-     *//*
-    private void getConnectedUser(){
-        setupDb().collection("users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot documentSnapshots) {
-                if (documentSnapshots.size() != 0) {
-                    List<DocumentSnapshot> ds = documentSnapshots.getDocuments();
-                    for (int i = 0; i < ds.size(); i++) {
-                        Map<String, Object> map = ds.get(i).getData();
-                        User user = new User(map.get("uid").toString(), map.get("nom").toString(), map.get("prenom").toString());
-                        listUsers.add(user);
-                    }
-                }
-            }
-        });
-    }*/
 
     /**
      * Cette methode ne comprend pas l'update d'une fonction dans le club, car seul les encadrants du club peuvent
@@ -431,12 +412,6 @@ public class CoursesManagementActivity extends BaseActivity {
         String typeCours = mTypeCours.getSelectedItem().toString();
         String niveauCours = mNiveauCours.getSelectedItem().toString();
         String dateCoursTxt = mDateCours.getText().toString();
-        /*Date dateCours = null;
-        try {
-            dateCours = SimpleDateFormat.getDateInstance().parse(String.valueOf(mDateCours));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }*/
         String heureCours = mHeureCours.getText().toString();
         String horaireCours = dateCoursTxt + " " + heureCours;
         Date horaireCoursFormat = null;
@@ -457,23 +432,6 @@ public class CoursesManagementActivity extends BaseActivity {
         }
     }
 
-    /*    */
-
-    /**
-     * Methode permettant à un encadrant de supprimer un compte. Retourne un objet de type Task permettant de realiser ces appels de maniere asynchrone
-     *//*
-    private void deleteCourseFromFirebase() {
-        if (this.getCurrentUser() != null) {
-
-            //On supprime un utilisateur de la bdd firestore
-            UserHelper.deleteUser(this.getCurrentUser().getUid()).addOnFailureListener(this.onFailureListener());
-            //TODO mettre une notification si elle n'arrive pas avoir ajouté le deleteuser ci dessus
-            AuthUI.getInstance()
-                    .delete(this) // methode utilisée par le singleton authUI.getInstance()
-                    .addOnSuccessListener(this, this.updateUIAfterRESTRequestsCompleted(DELETE_USER_TASK));
-        }
-    }*/
-
 
     // --------------------
     // DATETIMEPICKERS
@@ -488,8 +446,9 @@ public class CoursesManagementActivity extends BaseActivity {
         newFragment.show(getSupportFragmentManager(), "timePicker");
     }
 
+
     // --------------------
-    // CLASSES POUR PICKERS HEURE & DATE
+    // CLASSES INTERNES POUR PICKERS HEURE & DATE
     // --------------------
 
     /**

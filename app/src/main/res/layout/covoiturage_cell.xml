@@ -46,7 +46,8 @@
                 android:layout_marginTop="30dp"
                 android:visibility="gone"
                 android:background="@color/fui_transparent"
-                app:srcCompat="@android:drawable/ic_menu_delete"/>
+                app:srcCompat="@android:drawable/ic_menu_delete"
+                android:contentDescription="@string/icone_pour_suppresssion_de_covoiturage"/>
         </RelativeLayout>
 
         <LinearLayout
@@ -119,7 +120,7 @@
                 android:layout_marginStart="30dp"
                 android:layout_marginTop="10dp"
                 android:layout_weight="0.7"
-                android:text="Aller : "
+                android:text="@string/aller"
                 android:textSize="20sp"
                 android:textStyle="bold"/>
 
@@ -146,7 +147,7 @@
                 android:layout_marginStart="30dp"
                 android:layout_marginTop="10dp"
                 android:layout_weight="0.4"
-                android:text="Lieu de rdv aller : "
+                android:text="@string/lieu_de_rdv_aller"
                 android:textSize="20sp"
                 android:textStyle="bold"/>
 
@@ -173,7 +174,7 @@
                 android:layout_marginStart="30dp"
                 android:layout_marginTop="10dp"
                 android:layout_weight="0.7"
-                android:text="Retour"
+                android:text="@string/retour"
                 android:textSize="20sp"
                 android:textStyle="bold"/>
 
@@ -200,7 +201,7 @@
                 android:layout_marginStart="30dp"
                 android:layout_marginTop="10dp"
                 android:layout_weight="0.4"
-                android:text="Lieu de rdv retour : "
+                android:text="@string/lieu_de_rdv_retour"
                 android:textSize="20sp"
                 android:textStyle="bold"/>
 

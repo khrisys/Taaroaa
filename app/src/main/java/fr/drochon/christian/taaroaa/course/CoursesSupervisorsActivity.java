@@ -3,7 +3,6 @@ package fr.drochon.christian.taaroaa.course;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,8 +11,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CalendarView;
-import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -48,20 +45,19 @@ public class CoursesSupervisorsActivity extends BaseActivity implements AdapterC
     // CONTIENT LA RECYCLERVIEW
 
 
-    // FOR DESIGN
-    CoordinatorLayout mCoordinatorLayout;
-    LinearLayout mLinearLayout;
-    CalendarView mCalendarView;
-    RecyclerView recyclerView;
-    TextView mTextView;
-    ScrollView mScrollView;
-    FloatingActionButton mFloatingActionButton;
-    Date calendrierClique;
-    Date calendrierFinJournee;
+    private RecyclerView recyclerView;
+    private TextView mTextView;
 
-    //Configure Adapter & RecyclerView
     // FOR DATA
+    //Configure Adapter & RecyclerView
     private AdapterCoursesSupervisors mAdapterCoursesSupervisors = new AdapterCoursesSupervisors(generateOptionsForAdapter(queryAllCourses()), this);
+    private Date calendrierClique;
+    private Date calendrierFinJournee;
+
+
+    // --------------------
+    // LIFECYCLE
+    // --------------------
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,13 +66,10 @@ public class CoursesSupervisorsActivity extends BaseActivity implements AdapterC
 
         // FOR DESIGN
         // recuperation des var des objets graphiques du layout correspondant
-        mCoordinatorLayout = findViewById(R.id.supervisors_layout_root);
-        mLinearLayout = findViewById(R.id.supervisors_linear_layout);
-        mCalendarView = findViewById(R.id.calendrier_supervisors);
+        CalendarView calendarView = findViewById(R.id.calendrier_supervisors);
         recyclerView = findViewById(R.id.recyclerViewCoursesSupervisors); // liste des cours
         mTextView = findViewById(R.id.empty_list_textview_supervisors);
-        mScrollView = findViewById(R.id.scrollview_calendrier_supervisors);
-        mFloatingActionButton = findViewById(R.id.fab_supervisors);
+        FloatingActionButton floatingActionButton = findViewById(R.id.fab_supervisors);
 
         calendrierClique = new Date();
         calendrierFinJournee = new Date();
@@ -85,25 +78,21 @@ public class CoursesSupervisorsActivity extends BaseActivity implements AdapterC
         configureToolbar();
         giveToolbarAName(R.string.course_supervisors_name);
 
-        //setTitle("Planning encadrants");
-
         // --------------------
         // LISTENERS
         // --------------------
 
         // bouton d'ajout de cours pour les encadrants : renvoi vers la page de gestion des cours si on clique sur l'icone
-        mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               /* Snackbar.make(view, "Redirection vers la page de gestion des cours", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();*/
                 Intent intent = new Intent(CoursesSupervisorsActivity.this, CoursesManagementActivity.class);
                 startActivity(intent);
             }
         });
 
         // recuperation de la date cliquée
-        mCalendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
+        calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
                 Calendar calendar = Calendar.getInstance();

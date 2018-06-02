@@ -24,7 +24,7 @@ public class TimeAlarmCourses extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        Course cours = new Course();
+        Course cours;
         String dateCoursStr = null;
         String heureCoursStr = null;
 

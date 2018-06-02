@@ -22,7 +22,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -32,7 +31,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -52,24 +50,25 @@ import static android.widget.Toast.LENGTH_SHORT;
 
 public class AccountModificationActivity extends BaseActivity {
 
-    public static final int GET_USERNAME = 40;
+
     // identifiant pour identifier la requete REST
     private static final int SIGN_OUT_TASK = 10;
     private static final int DELETE_USER_TASK = 20;
     private static final int UPDATE_USERNAME = 30;
-    LinearLayout mLinearLayoutFonctionAdherent;
-    TextInputEditText mPrenom;
-    TextInputEditText mNom;
-    TextInputEditText mLicence;
-    Spinner mNiveauPlongeespinner;
-    Spinner mFonctionAuClubspinner;
-    TextInputEditText mEmail;
-    ProgressBar mProgressBar;
-    Button mModificationCompte;
-    Button mSuppressionCompte;
-    TextView mTitrePage;
-    Intent mIntent;
-    static User user;
+    private static final int GET_USERNAME = 40;
+    //DESIGN
+    private LinearLayout mLinearLayoutFonctionAdherent;
+    private TextInputEditText mPrenom;
+    private TextInputEditText mNom;
+    private TextInputEditText mLicence;
+    private Spinner mNiveauPlongeespinner;
+    private Spinner mFonctionAuClubspinner;
+    private TextInputEditText mEmail;
+    private ProgressBar mProgressBar;
+    private Button mModificationCompte;
+    private Button mSuppressionCompte;
+    private TextView mTitrePage;
+    private static User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +86,6 @@ public class AccountModificationActivity extends BaseActivity {
         mEmail = findViewById(R.id.email_txt);
         mProgressBar = findViewById(R.id.progress_bar);
         mModificationCompte = findViewById(R.id.modificiation_compte_btn);
-        //TODO n'afficher le bouton de suppression qu'aux proprieraires des comptes
         mSuppressionCompte = findViewById(R.id.suppression_compte_btn);
 
         configureToolbar();
@@ -96,22 +94,17 @@ public class AccountModificationActivity extends BaseActivity {
         // methode à appeler APRES l'initialisation des variables, sinon les variables auront des references null
         this.updateUIWhenCreating(); // recuperation des informations de l'user actuel
 
-        //TODO verifier que tous les champs soient remplis
-
-
         // --------------------
         // LISTENERS
         // --------------------
 
         //Lorsqu'un utilisateur a rempli correctement le formulaire, il est renvoyé à la page Sommaire
-        // 1 - lorsqu'un plongeur est connecté, le menu deroulant des fonctions est desactivé; tous les autres champs sont acesssibles.
-        // 2 - lorsqu'un encadrant est connecté, tous les chamos sont en lecture seule, sauf le menu deroulant des fonctions
+        // 1 - lorsqu'un plongeur est connecté, le menu deroulant du niveau de plongée est disabled / la fonction est invisible; tous les autres champs sont acesssibles.
+        // 2 - lorsqu'un encadrant est connecté, tous les champs sont en lecture seule, sauf les menus deroulants des fonctions et des niveaux de plongée
         mModificationCompte.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                updateUserInFirebase(); // update dans firebase
-                //updateData(mNom.getText().toString(), mPrenom.getText().toString());
-
+                updateUserInFirebase();
             }
         });
 
@@ -125,7 +118,7 @@ public class AccountModificationActivity extends BaseActivity {
 
                 // ajouter une couleur à l'icon de warning
                 Drawable warning = getResources().getDrawable(android.R.drawable.ic_dialog_alert);
-                ColorFilter filter = new LightingColorFilter( Color.RED, Color.BLUE);
+                ColorFilter filter = new LightingColorFilter(Color.RED, Color.BLUE);
                 warning.setColorFilter(filter);
                 adb.setIcon(warning);
                 adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -138,12 +131,12 @@ public class AccountModificationActivity extends BaseActivity {
                         signOutUserFromFirebase();
                         startMainActivity();
                     }
+                    //En cas de negation, l'utilisateur reste sur l'ecran de creation de son compte
                 }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         EditText editText = findViewById(R.id.alertdialog_delete_account);
                         Toast.makeText(AccountModificationActivity.this, editText.getText(), Toast.LENGTH_LONG).show();
                         //finish();
-                        //TODO est ce qu'on change d'ecran ou pas ?
                     }
                 });
                 adb.show(); // affichage de l'artdialog
@@ -171,6 +164,10 @@ public class AccountModificationActivity extends BaseActivity {
         mFonctionAuClubspinner.setAdapter(adapter);
     }
 
+    // --------------------
+    // UI
+    // --------------------
+
     @Override
     public int getFragmentLayout() {
         return R.layout.activity_account_modification;
@@ -184,38 +181,6 @@ public class AccountModificationActivity extends BaseActivity {
         super.onResume();
         this.updateUIWhenResuming();
     }
-
-    // --------------------
-    // TOOLBAR
-    // --------------------
-
-    /**
-     * Fait appel au fichier xml menu pour definir les icones.
-     * Definit differentes options dans le menu caché.
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.account_create_menu, menu);
-        return true; // true affiche le menu
-    }
-
-    /**
-     * recuperation  du clic d'un user.
-     * On utilise un switch ici car il peut y avoir plusieurs options.
-     * Surtout ne pas oublier le "true" apres chaque case sinon, ce sera toujours le dernier case qui sera executé!
-     *
-     * @param item
-     * @return
-     */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return optionsToolbar(this, item);
-    }
-
-
-    // --------------------
-    // UI
-    // --------------------
 
     /**
      * Methode permettant d'afficher les informations de l'user sur l'ecran AccountCreateActivity lorsqu'un user vient de creer un compte
@@ -260,9 +225,43 @@ public class AccountModificationActivity extends BaseActivity {
 
         final String nom = mNom.getText().toString();
         final String prenom = mPrenom.getText().toString();
-        if (nom.isEmpty()) { mNom.setError("Merci de renseigner ce champ !"); mNom.isFocused(); } else mNom.getText().toString();
-        if (prenom.isEmpty()) { mPrenom.setError("Merci de renseigner ce champ !"); mPrenom.isFocused(); } else mPrenom.getText().toString();
+        if (nom.isEmpty()) {
+            mNom.setError("Merci de renseigner ce champ !");
+            mNom.isFocused();
+        } else mNom.getText();
+        if (prenom.isEmpty()) {
+            mPrenom.setError("Merci de renseigner ce champ !");
+            mPrenom.isFocused();
+        } else mPrenom.getText();
     }
+
+    // --------------------
+    // TOOLBAR
+    // --------------------
+
+    /**
+     * Fait appel au fichier xml menu pour definir les icones.
+     * Definit differentes options dans le menu caché.
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.account_create_menu, menu);
+        return true; // true affiche le menu
+    }
+
+    /**
+     * recuperation  du clic d'un user.
+     * On utilise un switch ici car il peut y avoir plusieurs options.
+     * Surtout ne pas oublier le "true" apres chaque case sinon, ce sera toujours le dernier case qui sera executé!
+     *
+     * @param item
+     * @return
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return optionsToolbar(this, item);
+    }
+
 
     // --------------------
     // REST REQUETES
@@ -286,13 +285,17 @@ public class AccountModificationActivity extends BaseActivity {
                         // creation de la fonction d'un plongeur si elle n'existe pas, notamment
                         // lorsuq'un user vient juste de creer son compte et veut acceder à son compte tout de suite apres (depuis la tuile du sommaire)
                         Object fonction;
-                        if(documentSnapshot.get("fonction") == null) fonction = "Plongeur"; else fonction = documentSnapshot.get("fonction");
+                        if (documentSnapshot.get("fonction") == null) fonction = "Plongeur";
+                        else fonction = documentSnapshot.get("fonction");
 
                         Object nom = documentSnapshot.get("nom");
                         Object prenom = documentSnapshot.get("prenom");
                         // moniteur etant sur un autre compte que le sien dès la premiere connexion ??
+                        assert fonction != null;
+                        //moniteur modofiant le compte d'un adherent
+                        assert nom != null;
+                        assert prenom != null;
                         if (fonction.equals("Moniteur") && !nom.equals(user.getNom()) && !prenom.equals(user.getPrenom())) {
-                            //TODO ici, j'update mon propre compte au lieu de celui de l'adherent
                             mTitrePage.setText(R.string.modifiez_le_compte_d_un_adherent);
                             //mItemView.setVisible(false);
                             mPrenom.setEnabled(false);
@@ -300,14 +303,12 @@ public class AccountModificationActivity extends BaseActivity {
                             mLicence.setEnabled(false);
                             mNiveauPlongeespinner.setEnabled(true);
                             mLinearLayoutFonctionAdherent.setVisibility(View.VISIBLE);
-                            mProgressBar.setVisibility(View.INVISIBLE);
+                            mProgressBar.setVisibility(View.GONE);
                             //Affichage du bouton de suppression uniquement aux proprietaires d'un compte
-                            mSuppressionCompte.setVisibility(View.INVISIBLE);
+                            mSuppressionCompte.setVisibility(View.GONE);
 
                             // moniteur etant sur son propre compte
                         } else {
-                            assert nom != null;
-                            assert prenom != null;
                             if (fonction.equals("Moniteur") && nom.equals(user.getNom()) && prenom.equals(user.getPrenom())) {
                                 mTitrePage.setText(R.string.bienvenue_sur_votre_compte);
                                 //mItemView.setVisible(true);
@@ -373,8 +374,7 @@ public class AccountModificationActivity extends BaseActivity {
                                 startSummaryActivity();
                             }
                         });
-            }
-            else verificationChampsVides();
+            } else verificationChampsVides();
         }
     }
 
@@ -382,26 +382,27 @@ public class AccountModificationActivity extends BaseActivity {
      * Methode permettant de faire un update eventuel sur le nom et le prenom des covoiturages crées par l'utilisateur
      * si celui ci effectue ici un update sur son nom ou son prenom
      */
-    private void updateCovoituragesIfCreated(){
+    private void updateCovoituragesIfCreated() {
         setupDb().collection("covoiturages").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot documentSnapshots) {
-                if(documentSnapshots.size() > 0){
+                if (documentSnapshots.size() > 0) {
                     List<DocumentSnapshot> covoits = documentSnapshots.getDocuments();
-                    for (DocumentSnapshot covoiturage: covoits) {
+                    for (DocumentSnapshot covoiturage : covoits) {
                         Map<String, Object> covoit = covoiturage.getData();
-                        if(covoit.get("nomConducteur").equals(user.getNom()) && covoit.get("prenomConducteur").equals(user.getPrenom())){
+                        assert covoit != null;
+                        if (covoit.get("nomConducteur").equals(user.getNom()) && covoit.get("prenomConducteur").equals(user.getPrenom())) {
                             CovoiturageHelper.updateCovoiturage(covoit.get("id").toString(), mNom.getText().toString(), mPrenom.getText().toString())
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    System.out.println("nok");
-                                }
-                            })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            System.out.println("nok");
+                                        }
+                                    })
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
-                                            // rien ici
+                                            System.out.println("ok");
                                         }
                                     });
                         }
@@ -416,15 +417,28 @@ public class AccountModificationActivity extends BaseActivity {
      * l'activité Sommaire qui a determiné que l'utilisateur voulant afficher ses informations etait enregistré en bdd.
      */
     private void getAndShowUserDatas() {
-        mIntent  = getIntent();
-        user = (User) Objects.requireNonNull(mIntent.getExtras()).getSerializable("user");
+        // recup de l'user passé par un intent depuis la classe SearchUser
+        Intent intent = getIntent();
+        user = (User) Objects.requireNonNull(intent.getExtras()).getSerializable("user");
         assert user != null;
-        mNom.setText(user.getNom());
-        mPrenom.setText(user.getPrenom());
-        mLicence.setText(user.getLicence());
-        mNiveauPlongeespinner.setSelection(getIndexSpinner(mNiveauPlongeespinner, user.getNiveauPlongeur()));
-        mFonctionAuClubspinner.setSelection(getIndexSpinner(mFonctionAuClubspinner, user.getFonction()));
-        mEmail.setText(user.getEmail());
+        // requete avec l'uid de l'user recu
+        setupDb().collection("users").document(user.getUid())
+                .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    Map<String, Object> user = task.getResult().getData();
+                    assert user != null;
+                    mNom.setText(user.get("nom").toString());
+                    mPrenom.setText(user.get("prenom").toString());
+                    mLicence.setText(user.get("licence").toString());
+                    mNiveauPlongeespinner.setSelection(getIndexSpinner(mNiveauPlongeespinner, user.get("niveau").toString()));
+                    mFonctionAuClubspinner.setSelection(getIndexSpinner(mFonctionAuClubspinner, user.get("fonction").toString()));
+                    mEmail.setText(user.get("email").toString());
+                }
+            }
+        });
+
     }
 
     /**
@@ -444,20 +458,19 @@ public class AccountModificationActivity extends BaseActivity {
     /**
      * Methode permettant de supprimer les identifiants de l'user qui supprime son compte
      */
-    private void deleteUserAuth(){
+    private void deleteUserAuth() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         assert user != null;
         user.delete()
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if(task.isSuccessful()){
-                    //RAS
-                }
-                else
-                    System.out.println("nok");
-            }
-    });
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            System.out.println("ok");
+                        } else
+                            System.out.println("nok");
+                    }
+                });
     }
 }

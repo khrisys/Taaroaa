@@ -7,7 +7,7 @@ import java.util.List;
 public class Covoiturage implements Serializable {
 
     /*
-    LES NOMS DES VARIABLES DOIVENT CORRESPONDRENT AU NOM DES CHAMPS DE LA BDD AVEC LA LETTRE "m" EN DEBUT
+    LES NOMS DES VARIABLES DOIVENT CORRESPONDRENT AU NOM DES CHAMPS DE LA BDD AVEC LE PREFIXE "m"
      */
     private String id;
     private String mNomConducteur;
@@ -25,49 +25,30 @@ public class Covoiturage implements Serializable {
     public Covoiturage() {
     }
 
+    /**
+     * Constructeur permettant de retrouver un covoiturage par son uid
+     *
+     * @param id
+     */
     public Covoiturage(String id) {
         this.id = id;
     }
 
-
     /**
-     * Constructeur utilisé lorsqu'aucun passager n'est inscrit à un covoiturage
+     * Methode permettant de creer ou d'updater toutes les caracteristiques d'un covoiturage final
+     *
      * @param id
-     * @param nomCoducteur
-     * @param prenomCoducteur
+     * @param nomConducteur
+     * @param prenomConducteur
      * @param nbPlacesDispo
+     * @param nbPlacesTotal
      * @param typeVehicule
      * @param horaireAller
      * @param horaireRetour
+     * @param lieuDeparttAller
+     * @param lieuDepartRetour
+     * @param passagers
      */
-    public Covoiturage(String id, String nomCoducteur, String prenomCoducteur, String nbPlacesDispo, String typeVehicule, Date horaireAller, Date horaireRetour, String lieuDeparttAller, String lieuDepartRetour) {
-        this.id = id;
-        mNomConducteur = nomCoducteur;
-        mPrenomConducteur = prenomCoducteur;
-        mNbPlacesDispo = nbPlacesDispo;
-        mHoraireAller = horaireAller;
-        mHoraireRetour = horaireRetour;
-        mTypeVehicule = typeVehicule;
-        mLieuDepartAller = lieuDeparttAller;
-        mLieuDepartRetour = lieuDepartRetour;
-    }
-
-
-    //
-    public Covoiturage(String id, String nomConducteur, String prenomConducteur, String nbPlacesDispo, String typeVehicule, Date horaireAller, Date horaireRetour,
-                         String lieuDeparttAller, String lieuDepartRetour, List<String> passagers) {
-        this.id = id;
-        mNomConducteur = nomConducteur;
-        mPrenomConducteur = prenomConducteur;
-        mNbPlacesDispo = nbPlacesDispo;
-        mHoraireAller = horaireAller;
-        mHoraireRetour = horaireRetour;
-        mTypeVehicule = typeVehicule;
-        mLieuDepartAller = lieuDeparttAller;
-        mLieuDepartRetour = lieuDepartRetour;
-        mListPassagers = passagers;
-    }
-
     public Covoiturage(String id, String nomConducteur, String prenomConducteur, String nbPlacesDispo, String nbPlacesTotal, String typeVehicule, Date horaireAller, Date horaireRetour,
                        String lieuDeparttAller, String lieuDepartRetour, List<String> passagers) {
         this.id = id;

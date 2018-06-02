@@ -10,14 +10,11 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 
-import fr.drochon.christian.taaroaa.alarm.NotificationButtonReceiver;
-import fr.drochon.christian.taaroaa.controller.MainActivity;
-import fr.drochon.christian.taaroaa.covoiturage.CovoituragePassagersActivity;
 import fr.drochon.christian.taaroaa.covoiturage.CovoiturageVehiclesActivity;
 
 public class RandomNotification {
 
-    private Context context;
+    private final Context context;
 
     public RandomNotification(Context context) {
         this.context = context;
@@ -46,11 +43,10 @@ public class RandomNotification {
         return notification;
     }
 
-    private Notification.Builder handleNotificationColor(Notification.Builder builder, int colour) {
+    private void handleNotificationColor(Notification.Builder builder, int colour) {
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             builder.setColor(colour);
         }
-        return builder;
     }
 
     private PendingIntent getPendingNotificationIntent() {

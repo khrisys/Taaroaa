@@ -30,10 +30,7 @@ import fr.drochon.christian.taaroaa.model.User;
 
 public class SummaryActivity extends BaseActivity {
 
-    Button mCompte;
-    Button mModifCompte;
-    Button mCours;
-    Button mSortie;
+    private Button mModifCompte;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +41,7 @@ public class SummaryActivity extends BaseActivity {
         assert actionBar != null;
         actionBar.setDisplayShowHomeEnabled(true);
 
-        mCompte = findViewById(R.id.adherents_btn);
+        Button compte = findViewById(R.id.adherents_btn);
         mModifCompte = findViewById(R.id.modif_adherents_btn);
 
         configureToolbar();
@@ -60,7 +57,7 @@ public class SummaryActivity extends BaseActivity {
         Affichage de l'activité de creation de compte ou de modification de compte en fonction de l'existence
         en bdd ou non de l'utilisateur connecté
          */
-        mCompte.setOnClickListener(new View.OnClickListener() {
+        compte.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
               /*  Intent intent = new Intent(SummaryActivity.this, AccountCreateActivity.class);
@@ -75,9 +72,8 @@ public class SummaryActivity extends BaseActivity {
                             List<DocumentSnapshot> ds = documentSnapshots.getDocuments();
                             for (DocumentSnapshot doc : ds) {
                                 Map<String, Object> user = doc.getData();
-                                //TODO mauvaise condition : ne passe dans aucune des 2 et la creation d'un user ici n'a plus lieu d'etre
 
-                                // Si l'user connecté existe en bdd, on recupere l'ensemble de l'objet user et on le passe en param de l'activité
+                                // Si l'user connecté existe en bdd, on recupere l'ensemble de l'objet user et on le passe en extra de l'intent
                                 assert user != null;
                                 if (user.get("uid").equals(Objects.requireNonNull(Objects.requireNonNull(auth.getCurrentUser()).getUid()))) {
                                     User u = new User(user.get("uid").toString(), user.get("nom").toString(), user.get("prenom").toString(), user.get("licence").toString(),
@@ -104,8 +100,8 @@ public class SummaryActivity extends BaseActivity {
 
 
         // redirige un utilisateur vers le planning des cours des eleves ou des encadrants en fonction de sa fonction
-        mCours = findViewById(R.id.cours_btn);
-        mCours.setOnClickListener(new View.OnClickListener() {
+        Button cours = findViewById(R.id.cours_btn);
+        cours.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 setupDb().collection("users").document(Objects.requireNonNull(getCurrentUser()).getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -132,19 +128,14 @@ public class SummaryActivity extends BaseActivity {
 
 
         // Redirige l'utilisateur vers les sorties
-        mSortie = findViewById(R.id.sorties_btn);
-        mSortie.setOnClickListener(new View.OnClickListener() {
+        Button sortie = findViewById(R.id.sorties_btn);
+        sortie.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(SummaryActivity.this, CovoiturageAccueilActivity.class);
                 startActivity(intent);
             }
         });
-    }
-
-    @Override
-    public int getFragmentLayout() {
-        return R.layout.activity_summary;
     }
 
 
@@ -180,17 +171,23 @@ public class SummaryActivity extends BaseActivity {
     // UI
     // --------------------
 
+    @Override
+    public int getFragmentLayout() {
+        return R.layout.activity_summary;
+    }
+
     /**
-     * Fonction permettant d'afficher ou non la tuile de moficiation d'un adherent
+     * Fonction permettant d'afficher ou non la tuile de moficiation d'un adherent si
+     * la personne connectée est un encadrant
      */
     private void showPannelModification() {
-        //TODO afficher le graphique du panneau de modif si l'utilisateur connecté est un encadrant
         DocumentReference documentReference = setupDb().collection("users").document(Objects.requireNonNull(getCurrentUser()).getUid());
         documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 if (documentSnapshot.exists()) {
                     Map<String, Object> user = documentSnapshot.getData();
+                    assert user != null;
                     if (user.get("fonction") == null || !user.get("fonction").equals("Moniteur")) {
                         mModifCompte.setVisibility(View.GONE);
                     }

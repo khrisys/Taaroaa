@@ -34,16 +34,23 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import fr.drochon.christian.taaroaa.R;
+import fr.drochon.christian.taaroaa.alarm.TimeAlarmCovoiturageSuppression;
 import fr.drochon.christian.taaroaa.api.CovoiturageHelper;
 import fr.drochon.christian.taaroaa.model.Covoiturage;
-import fr.drochon.christian.taaroaa.alarm.TimeAlarmCovoiturageSuppression;
 
 public class VehiculeViewHolder extends RecyclerView.ViewHolder {
 
+    //DATA
+    private final List<Covoiturage> mCovoiturageList;
+    private final List<String> mListPassagers;
+    private final FirebaseFirestore db;
+    private final AlarmManager mAlarmManager;
+    private Covoiturage sCovoiturage;
     // DESIGN
     @BindView(R.id.vehicle_linear_layout)
     LinearLayout mLinearLayoutGlobal;
@@ -74,12 +81,6 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.retour_txt)
     TextView mRetour;
 
-    //DATA
-    private List<Covoiturage> mCovoiturageList;
-    private List<String> mListPassagers;
-    private FirebaseFirestore db;
-    private Covoiturage sCovoiturage;
-    private AlarmManager mAlarmManager;
 
 
     /**
@@ -90,7 +91,7 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
      * @param itemView : cellule d'une liste comprenant le nom du conducteur, la liste des passagers pour le covoiturage,
      *                 le type de vehicule et le nombre de place disponible.
      */
-    public VehiculeViewHolder(final View itemView) {
+    VehiculeViewHolder(final View itemView) {
         super(itemView);
         // liaison des elements du layout recyclerview et pupils_cell avec les variables declarées ici
         ButterKnife.bind(this, itemView);
@@ -140,6 +141,7 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
                             for (DocumentSnapshot ds : docSps) {
                                 final Map<String, Object> user = ds.getData();
                                 // comparaison entre les users cde la bdd et l'user ayant créé le covoiturage
+                                assert user != null;
                                 if (mNomConducteur.getText().equals(user.get("prenom") + "  " + user.get("nom"))) {
                                     //suppression de covoit
                                     final AlertDialog.Builder adb = new AlertDialog.Builder(itemView.getContext());
@@ -164,6 +166,7 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
                                                     .putExtra("covoit", sCovoiturage);
                                             PendingIntent operation = PendingIntent.getBroadcast(itemView.getContext(), 3, intent, PendingIntent.FLAG_ONE_SHOT);
                                             // reveil de l'alarm
+                                            assert mAlarmManager != null;
                                             mAlarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), operation);
 
                                             startActivityCovoiturageVehicule();
@@ -267,6 +270,7 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
                     List<DocumentSnapshot> docSps = documentSnapshots.getDocuments();
                     for (DocumentSnapshot ds : docSps) {
                         Map<String, Object> covoit = ds.getData();
+                        assert covoit != null;
                         if (covoit.get("nomConducteur").equals(nom) && covoit.get("prenomConducteur").equals(prenom)) {
                             //CRUD
                             CovoiturageHelper.deleteCovoiturage(covoit.get("id").toString())
@@ -291,12 +295,13 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
      * d'un ou plusieurs covoiturage.
      */
     private void showPoubelle(final Covoiturage currentCovoit) {
-        final String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        final String currentUserId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
         db.collection("users").document(currentUserId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 if (documentSnapshot.exists()) {
                     final Map<String, Object> user = documentSnapshot.getData();
+                    assert user != null;
                     if (currentCovoit.getNomConducteur().equals(user.get("nom").toString()) && currentCovoit.getPrenomConducteur().equals(user.get("prenom").toString())) {
                         mPoubelleImg.setVisibility(View.VISIBLE);
                     }

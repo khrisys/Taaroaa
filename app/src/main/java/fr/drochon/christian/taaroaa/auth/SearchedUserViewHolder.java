@@ -17,9 +17,7 @@ import fr.drochon.christian.taaroaa.model.User;
 public class SearchedUserViewHolder extends RecyclerView.ViewHolder {
 
     //DATA
-    List<User> mSearchedUserList;
-    //CELLULE
-    RecyclerView mRecyclerView;
+    private final List<User> mSearchedUserList;
     // DESIGN
     @BindView(R.id.linearLayout_user_cell)
     LinearLayout mLinearLayoutSearchedUser;
@@ -37,16 +35,21 @@ public class SearchedUserViewHolder extends RecyclerView.ViewHolder {
      *
      * @param itemView : cellule d'une liste comprenant le nom prenom et email de la personne recherchée.
      */
-    public SearchedUserViewHolder(View itemView) {
+    SearchedUserViewHolder(View itemView) {
         super(itemView);
         // liaison des elements du layout recyclerview et pupils_cell avec les variables declarées ici
         ButterKnife.bind(this, itemView);
 
-        mRecyclerView = itemView.findViewById(R.id.recyclerViewSearchedUser);
+        RecyclerView recyclerView = itemView.findViewById(R.id.recyclerViewSearchedUser);
         mSearchedUserList = new ArrayList<>();
+
+        // --------------------
+        // LISTENER
+        // --------------------
 
         // Affichage du contenu de la cellule
         // j'utilise l'ecouteur sur la cellule et recupere les informations pour les affihcer dans une notification
+        // j'envoie un intent vers la classe ModificationAccount pour que cette classe sache quel utilisateur a été selectionné par l'encadrant
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -73,6 +76,5 @@ public class SearchedUserViewHolder extends RecyclerView.ViewHolder {
             mNomSearched.setText(user.getNom());
             mEmailSearched.setText(user.getEmail());
         }
-
     }
 }

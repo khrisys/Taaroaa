@@ -10,7 +10,7 @@ import java.util.Objects;
 
 public class SendNotification extends FirebaseMessagingService {
 
-    FirebaseMessaging fm = FirebaseMessaging.getInstance();
+    private final FirebaseMessaging fm = FirebaseMessaging.getInstance();
 
     /**
      * Called by the system when the service is first created.  Do not call this method directly.

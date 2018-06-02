@@ -15,11 +15,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Objects;
 
 import fr.drochon.christian.taaroaa.covoiturage.CovoiturageVehiclesActivity;
 import fr.drochon.christian.taaroaa.model.Covoiturage;
-import fr.drochon.christian.taaroaa.model.User;
 
 public class TimeAlarmCovoiturageAller extends BroadcastReceiver {
 

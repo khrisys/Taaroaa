@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
+    xmlns:tools2="http://schemas.android.com/tools"
     android:id="@+id/main_activity_coordinator_layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.androidf.com/tools"
@@ -118,7 +119,8 @@
         android:textColor="@color/colorPrimary"
         android:textColorHighlight="@color/colorAccent"
         android:textIsSelectable="true"
-        android:textStyle="italic"/>
+        android:textStyle="italic"
+        tools2:ignore="LabelFor"/>
 
     <TextView
         android:id="@+id/test_coordinator"

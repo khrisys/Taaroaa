@@ -18,7 +18,6 @@ import java.util.Locale;
 
 import fr.drochon.christian.taaroaa.covoiturage.CovoiturageVehiclesActivity;
 import fr.drochon.christian.taaroaa.model.Covoiturage;
-import fr.drochon.christian.taaroaa.model.User;
 
 public class TimeAlarmCovoiturageRetour extends BroadcastReceiver {
 
@@ -71,7 +70,7 @@ public class TimeAlarmCovoiturageRetour extends BroadcastReceiver {
 
         inboxStyle.setBigContentTitle("TAAROAA"); // titre de la notif lorsq'uelle est ouverte
         inboxStyle.addLine("COVOITURAGE"); // sous titre affuché lorsque la notif est affichée
-        inboxStyle.setSummaryText("Votre covoiturage Retour partira " );
+        inboxStyle.setSummaryText("Votre covoiturage Retour partira ");
         inboxStyle.setSummaryText("\t" + dateRetourStr + " à " + heureRetourStr + " !");// decription de la notif lorsqu'elle est ouverte
 
 
@@ -85,7 +84,7 @@ public class TimeAlarmCovoiturageRetour extends BroadcastReceiver {
                         .setSmallIcon(android.R.drawable.ic_notification_overlay)
                         .setContentTitle("TAAROAA")
                         .setContentText("COVOITURAGE")
-                        .setSubText("Départ "  + dateRetourStr + " à " + heureRetourStr + " !")
+                        .setSubText("Départ " + dateRetourStr + " à " + heureRetourStr + " !")
                         .setContentInfo("Trajet Retour")
                         .setPriority(NotificationCompat.PRIORITY_HIGH) //affiche la notif clairement en haut de l'app
                         .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
