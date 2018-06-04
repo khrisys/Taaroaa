@@ -18,6 +18,9 @@
         android:textColor="@color/colorPrimary"
         android:textSize="25sp"/>
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
     <TextView
         android:id="@+id/titre_email_txt"
         android:layout_width="match_parent"
@@ -77,5 +80,7 @@
         android:background="@color/colorPrimary"
         android:text="@string/creation_compte"
         android:textColor="@android:color/white"/>
+
+    </ScrollView>
 
 </LinearLayout>

@@ -260,11 +260,13 @@ public class SearchUserActivity extends BaseActivity {
 
         // un DocumentReference fait référence à un emplacement de document dans une base de données Firestore et peut être utilisé pour
         // écrire, lire ou écouter l'emplacement. Il peut exister ou non un document à l'emplacement référencé.
-        for (int i = 0; i < documentSnapshot.size(); i++) {
-            DocumentSnapshot doc = documentSnapshot.get(i); //Un DocumentSnapshot contient des données lues à partir d'un document dans votre base de données Firestore.
-            User user = new User(doc.getId(), Objects.requireNonNull(doc.get("nom")).toString(), Objects.requireNonNull(doc.get("prenom"))
-                    .toString(), Objects.requireNonNull(doc.get("licence")).toString(), Objects.requireNonNull(doc.get("email")).toString(),
-                    Objects.requireNonNull(doc.get("niveau")).toString(), Objects.requireNonNull(doc.get("fonction")).toString());
+        if(documentSnapshot != null) {
+            for (int i = 0; i < documentSnapshot.size(); i++) {
+                DocumentSnapshot doc = documentSnapshot.get(i); //Un DocumentSnapshot contient des données lues à partir d'un document dans votre base de données Firestore.
+                User user = new User(doc.getId(), Objects.requireNonNull(doc.get("nom")).toString(), Objects.requireNonNull(doc.get("prenom"))
+                        .toString(), Objects.requireNonNull(doc.get("licence")).toString(), Objects.requireNonNull(doc.get("email")).toString(),
+                        Objects.requireNonNull(doc.get("niveau")).toString(), Objects.requireNonNull(doc.get("fonction")).toString());
+            }
         }
     }
 }
