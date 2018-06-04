@@ -444,11 +444,10 @@ public class CovoituragePassagersActivity extends BaseActivity {
                     List<DocumentSnapshot> ds = queryDocumentSnapshots.getDocuments();
                     for (DocumentSnapshot doc : ds) {
                         Map<String, Object> user = doc.getData();
-                        if (user != null) {
-                            User u = new User(user.get("uid").toString(), user.get("nom").toString(), user.get("prenom").toString(), user.get("licence").toString(),
-                                    user.get("email").toString(), user.get("niveau").toString(), user.get("fonction").toString());
-                            listUsers.add(u);
-                        }
+                        assert user != null;
+                        User u = new User(user.get("uid").toString(), user.get("nom").toString(), user.get("prenom").toString(), user.get("licence").toString(),
+                                user.get("email").toString(), user.get("niveau").toString(), user.get("fonction").toString());
+                        listUsers.add(u);
                     }
                 }
             }

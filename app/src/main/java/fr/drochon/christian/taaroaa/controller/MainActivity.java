@@ -66,7 +66,7 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
         setContentView(layout.activity_main);
         configureToolbar();
         giveToolbarAName(app_name);
-        onTrimMemory(TRIM_MEMORY_BACKGROUND);
+        //onTrimMemory(TRIM_MEMORY_BACKGROUND);
 
 
         mTextViewHiddenForSnackbar = findViewById(R.id.test_coordinator);

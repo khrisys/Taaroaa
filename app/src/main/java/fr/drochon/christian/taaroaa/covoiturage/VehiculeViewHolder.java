@@ -295,23 +295,19 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
      * d'un ou plusieurs covoiturage.
      */
     private void showPoubelle(final Covoiturage currentCovoit) {
-
         final String currentUserId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
-        // gestion erreur debug tel
-        if(currentUserId != null) {
-            db.collection("users").document(currentUserId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                @Override
-                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                    if (documentSnapshot.exists()) {
-                        final Map<String, Object> user = documentSnapshot.getData();
-                        assert user != null;
-                        if (currentCovoit.getNomConducteur().equals(user.get("nom").toString()) && currentCovoit.getPrenomConducteur().equals(user.get("prenom").toString())) {
-                            mPoubelleImg.setVisibility(View.VISIBLE);
-                        }
+        db.collection("users").document(currentUserId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if (documentSnapshot.exists()) {
+                    final Map<String, Object> user = documentSnapshot.getData();
+                    assert user != null;
+                    if (currentCovoit.getNomConducteur().equals(user.get("nom").toString()) && currentCovoit.getPrenomConducteur().equals(user.get("prenom").toString())) {
+                        mPoubelleImg.setVisibility(View.VISIBLE);
                     }
                 }
-            });
-        }
+            }
+        });
     }
 
 
