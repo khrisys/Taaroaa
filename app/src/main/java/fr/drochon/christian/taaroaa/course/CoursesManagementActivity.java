@@ -248,21 +248,25 @@ public class CoursesManagementActivity extends BaseActivity {
                 // Avec la generation d'uid aleatoire géré par firebase, il ne peut y avoir de doublon.
                 // verification d'un id existant dans la bdd et si c'est le cas, remplissage des champs de l'ecran
                 // cours + changement de la phrase du bouton
-                if (documentSnapshots.size() == 1) {
-                    Log.e("TAG", "Le document existe !");
 
-                    mCreerCours.setText(R.string.button_update_course);
+                // test de performance : le calendrier n'est pas affiché
+                if(documentSnapshots != null) {
 
-                    Course course = new Course(uid);
-                    mMoniteurCours.setText(course.getNomDuMoniteur());
-                    mSujetCours.setText(course.getSujetDuCours());
-                    mTypeCours.setTag(course.getNiveauDuCours());
-                    mNiveauCours.setTag(course.getNiveauDuCours());
-                    mDateCours.setText(course.getDateDuCours().toString());
-                    mHeureCours.setText(course.getTimeDuCours().toString());
-                } else {
-                    mCreerCours.setText(R.string.button_create_course);
+                    if (documentSnapshots.size() == 1) {
+                        Log.e("TAG", "Le document existe !");
 
+                        mCreerCours.setText(R.string.button_update_course);
+
+                        Course course = new Course(uid);
+                        mMoniteurCours.setText(course.getNomDuMoniteur());
+                        mSujetCours.setText(course.getSujetDuCours());
+                        mTypeCours.setTag(course.getNiveauDuCours());
+                        mNiveauCours.setTag(course.getNiveauDuCours());
+                        mDateCours.setText(course.getDateDuCours().toString());
+                        mHeureCours.setText(course.getTimeDuCours().toString());
+                    } else {
+                        mCreerCours.setText(R.string.button_create_course);
+                    }
                 }
             }
         });

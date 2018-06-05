@@ -31,6 +31,8 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.perf.FirebasePerformance;
 import com.google.firebase.perf.metrics.Trace;
@@ -450,18 +452,22 @@ public class CovoiturageConducteursActivity extends BaseActivity {
      * avec un compte precis pourra creer un covoiturage.
      */
     private void getInfosCurrentUser() {
-        // recup de la personne connectée avec son uid
-        setupDb().collection("users").document(Objects.requireNonNull(getCurrentUser()).getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                if (documentSnapshot.exists()) {
-                    Map<String, Object> user = documentSnapshot.getData();
-                    assert user != null;
-                    mNom.setText(user.get("nom").toString());
-                    mPrenom.setText(user.get("prenom").toString());
+        // correction test de performance
+        FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
+        if(auth != null) {
+            // recup de la personne connectée avec son uid
+            setupDb().collection("users").document(auth.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    if (documentSnapshot.exists()) {
+                        Map<String, Object> user = documentSnapshot.getData();
+                        assert user != null;
+                        mNom.setText(user.get("nom").toString());
+                        mPrenom.setText(user.get("prenom").toString());
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
 
