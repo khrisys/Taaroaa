@@ -1,11 +1,13 @@
+//noinspection GradleCompatible
 apply plugin: 'com.android.application'
+apply plugin: 'io.fabric' // utile pour l'utilisation de crashytics de firebase
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 27
     defaultConfig {
         applicationId "fr.drochon.christian.taaroaa"
         minSdkVersion 19
-        targetSdkVersion 26
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -21,31 +23,53 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'com.android.support:appcompat-v7:26.1.0'
-    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
-    implementation 'com.android.support:design:26.1.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.0'
+    implementation 'com.google.android.gms:play-services-auth:15.0.1'
+    implementation 'com.google.firebase:firebase-firestore:17.0.1' // connexion à firebase firestore
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.1'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
-    /*recuperation d'une recyclerview*/
-    implementation 'com.android.support:recyclerview-v7:26.1.0'
+    // pour resoudre les problemes de theme, supprimer les 2 versions ci dessous, puis synchroniser, remettre ces 2 versions , puis resynchroniser
+    //noinspection GradleCompatible
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.android.support:design:27.1.1'
 
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    //recuperation d'une recyclerview
+    implementation 'com.android.support:recyclerview-v7:27.1.1'
+    // CRASHLYTIC : generation auto d'un rapport d'erreur lors d'un crash
+    implementation('com.crashlytics.sdk.android:crashlytics:2.7.1@aar') {
+        transitive = true
+    }
     //BUTTERKNIFE : met à disposition les annotations @BindView et @OnClick
     implementation 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
 
-    // FIREBASE
-    //noinspection GradleCompatible
-    implementation 'com.google.firebase:firebase-core:11.8.0' //version ok sinon pb 11.8.0
-
-    // FirebaseUI
+    // FIREBASE ANALYTICS
+    implementation 'com.google.firebase:firebase-core:16.0.0'//version ok sinon pb 11.8.0
+    //implementation 'com.google.firebase:firebase-analytics'
+    // CLOUD FIRESTORE
+    implementation 'com.google.firebase:firebase-firestore:17.0.1'
+    // PERFORMANCE MONITORING
+    implementation 'com.google.firebase:firebase-perf:16.0.0'
+    // REMOTE CONFIG
+    implementation 'com.google.firebase:firebase-config:16.0.0'
+    // APP INDEXING
+    implementation 'com.google.firebase:firebase-appindexing:15.0.1'
+    // INVITES AND DYNAMIC LINK POUR INSCRPTION EMAIL PAR TOKEN
+    implementation 'com.google.firebase:firebase-invites:16.0.0'
+    // CLOUD MESSAGING & NOTIFICATION
+    implementation 'com.google.firebase:firebase-messaging:17.0.0'
+    implementation 'com.android.support:support-compat:27.1.1'
+    // FirebaseUI AUTHENTIFICATION
     //implementation 'com.firebaseui:firebase-ui-storage:3.1.3'
-    implementation 'com.firebaseui:firebase-ui-auth:3.1.3'
-    implementation 'com.firebaseui:firebase-ui-firestore:3.1.3'
-    //implementation 'com.google.firebase:firebase-database:12.0.1'
-
-    // FACEBOOK LOGIN SUPPORT
-    implementation 'com.facebook.android:facebook-android-sdk:[4,5)'
+    implementation 'com.firebaseui:firebase-ui-auth:3.3.1'
+    implementation 'com.google.firebase:firebase-auth:16.0.1'
+    implementation 'com.firebaseui:firebase-ui-firestore:3.3.1'
+    //
+    //EASY PERMISSIONS
+    implementation 'pub.devrel:easypermissions:1.1.1'
 }
 
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.firebase-perf' // PERFORMANCE
+

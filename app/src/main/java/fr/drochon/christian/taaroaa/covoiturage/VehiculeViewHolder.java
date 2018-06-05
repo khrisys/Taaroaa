@@ -1,10 +1,18 @@
 package fr.drochon.christian.taaroaa.covoiturage;
 
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.LightingColorFilter;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
@@ -21,19 +29,28 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import fr.drochon.christian.taaroaa.R;
+import fr.drochon.christian.taaroaa.alarm.TimeAlarmCovoiturageSuppression;
 import fr.drochon.christian.taaroaa.api.CovoiturageHelper;
 import fr.drochon.christian.taaroaa.model.Covoiturage;
 
 public class VehiculeViewHolder extends RecyclerView.ViewHolder {
 
+    //DATA
+    private final List<Covoiturage> mCovoiturageList;
+    private final List<String> mListPassagers;
+    private final FirebaseFirestore db;
+    private final AlarmManager mAlarmManager;
+    private Covoiturage sCovoiturage;
     // DESIGN
     @BindView(R.id.vehicle_linear_layout)
     LinearLayout mLinearLayoutGlobal;
@@ -63,39 +80,52 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
     TextView mAller;
     @BindView(R.id.retour_txt)
     TextView mRetour;
-    FirebaseFirestore db;
-    private Covoiturage sCovoiturage;
-    //DATA
-    private List<Covoiturage> mCovoiturageList;
-    private List<String> mListPassagers;
+
+
 
     /**
      * Contructeur qui prend en param la vue affichée.
-     * Je recupere les 2 textview du layout list_cell.
+     * Je recupere les 2 textview du layout pupils_cell.
      * responsable du clic sur les cellules.
      *
      * @param itemView : cellule d'une liste comprenant le nom du conducteur, la liste des passagers pour le covoiturage,
      *                 le type de vehicule et le nombre de place disponible.
      */
-    public VehiculeViewHolder(final View itemView) {
+    VehiculeViewHolder(final View itemView) {
         super(itemView);
-        // liaison des elements du layout recyclerview et list_cell avec les variables declarées ici
+        // liaison des elements du layout recyclerview et pupils_cell avec les variables declarées ici
         ButterKnife.bind(this, itemView);
 
         mCovoiturageList = new ArrayList<>();
         mListPassagers = new ArrayList<>();
         db = FirebaseFirestore.getInstance();
+        mAlarmManager = (AlarmManager) itemView.getContext().getSystemService(Context.ALARM_SERVICE);
 
 
         // --------------------
         // LISTENERS
         // --------------------
 
-        // clic sur le nom du conducteur qui renvoi l'utilisateur à la page de reservation
         mGlobalClic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivityCovoituragePassagers();
+
+                // clic sur le nom du conducteur qui renvoi l'utilisateur à la page de reservation
+                if (Integer.parseInt(sCovoiturage.getNbPlacesDispo()) > 0)
+                    startActivityCovoituragePassagers();
+                    //alterdialog de covoit complet et renvoi vers la page des covoiturages
+                else {
+                    final AlertDialog.Builder adb = new AlertDialog.Builder(itemView.getContext());
+                    adb.setTitle("Covoiturage complet !");
+                    adb.setIcon(android.R.drawable.ic_delete);
+                    adb.setTitle("Ce covoiturage est complet !");
+                    adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            startActivityCovoiturageVehicule();
+                        }
+                    });
+                    adb.show();
+                }
             }
         });
 
@@ -111,15 +141,34 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
                             for (DocumentSnapshot ds : docSps) {
                                 final Map<String, Object> user = ds.getData();
                                 // comparaison entre les users cde la bdd et l'user ayant créé le covoiturage
+                                assert user != null;
                                 if (mNomConducteur.getText().equals(user.get("prenom") + "  " + user.get("nom"))) {
-                                    //alterdialog de suppression de covoit
+                                    //suppression de covoit
                                     final AlertDialog.Builder adb = new AlertDialog.Builder(itemView.getContext());
                                     adb.setTitle(R.string.alertDialog_delete_covoit);
+
+                                    // ajouter une couleur à l'icon de warning
+                                    Drawable warning = itemView.getResources().getDrawable(android.R.drawable.ic_dialog_alert);
+                                    ColorFilter filter = new LightingColorFilter(Color.RED, Color.BLUE);
+                                    warning.setColorFilter(filter);
                                     adb.setIcon(android.R.drawable.ic_dialog_alert);
+
                                     adb.setTitle(R.string.alertDialog_delete_covoit);
                                     adb.setPositiveButton("SUPPRIMER ?", new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int which) {
                                             deleteCovoiturageInFirebase(user.get("prenom").toString(), user.get("nom").toString());
+
+                                            //TODO notification aux passagers que le covoit est annulé
+                                            //TODO faire une requete pour boucler sur les users et recuperer les passagers du covoit annulé par leurs noms et prenom. Sur ces personnes :  declencher l'alarm
+                                            Calendar calendar = Calendar.getInstance();
+                                            calendar.getTime();
+                                            Intent intent = new Intent(itemView.getContext(), TimeAlarmCovoiturageSuppression.class)
+                                                    .putExtra("covoit", sCovoiturage);
+                                            PendingIntent operation = PendingIntent.getBroadcast(itemView.getContext(), 3, intent, PendingIntent.FLAG_ONE_SHOT);
+                                            // reveil de l'alarm
+                                            assert mAlarmManager != null;
+                                            mAlarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), operation);
+
                                             startActivityCovoiturageVehicule();
                                         }
                                     });
@@ -150,7 +199,7 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
      *
      * @param covoiturage
      */
-    @SuppressLint("ResourceType")
+    @SuppressLint({"ResourceType", "SetTextI18n"})
     public void updateWithCovoiturage(final Covoiturage covoiturage) {
         // ajout des Covoit dans une liste afin de les retrouver pour l'affichage de chaque cours particulier sous forme de notification
         mCovoiturageList.add(covoiturage);
@@ -168,7 +217,7 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
             // --------------------
             if (covoiturage.getListPassagers() != null) {
                 // Create an ArrayAdapter using the string array and a default spinner layout
-                ArrayAdapter<String> adapterNiveau = new ArrayAdapter<String>(itemView.getContext(), android.R.layout.simple_spinner_item, mListPassagers);
+                ArrayAdapter<String> adapterNiveau = new ArrayAdapter<>(itemView.getContext(), android.R.layout.simple_spinner_item, mListPassagers);
                 // Specify the layout to use when the list of choices appears
                 adapterNiveau.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 // Apply the adapter to the spinner
@@ -176,7 +225,11 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
             }
         }
         mTypeVehicule.setText(covoiturage.getTypeVehicule());
-        mNbPlaceDispo.setText(covoiturage.getNbPlacesDispo());
+        String ratioPlaces = covoiturage.getNbPlacesDispo() + "/" + covoiturage.getNbPlacesTotal();
+        if (Integer.parseInt(covoiturage.getNbPlacesDispo()) > 0)
+            mNbPlaceDispo.setText(Html.fromHtml("<font color='green'><b>" + ratioPlaces + "</b></font>"));
+        else
+            mNbPlaceDispo.setText(Html.fromHtml("<font color='red'><b>" + ratioPlaces + "</b></font>"));
         mAller.setText(stDateToString(covoiturage.getHoraireAller()));
         mRetour.setText(stDateToString(covoiturage.getHoraireRetour()));
         mLieuDepart.setText(covoiturage.getLieuDepartAller());
@@ -217,6 +270,7 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
                     List<DocumentSnapshot> docSps = documentSnapshots.getDocuments();
                     for (DocumentSnapshot ds : docSps) {
                         Map<String, Object> covoit = ds.getData();
+                        assert covoit != null;
                         if (covoit.get("nomConducteur").equals(nom) && covoit.get("prenomConducteur").equals(prenom)) {
                             //CRUD
                             CovoiturageHelper.deleteCovoiturage(covoit.get("id").toString())
@@ -241,18 +295,23 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
      * d'un ou plusieurs covoiturage.
      */
     private void showPoubelle(final Covoiturage currentCovoit) {
-        final String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        db.collection("users").document(currentUserId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                if (documentSnapshot.exists()) {
-                    final Map<String, Object> user = documentSnapshot.getData();
-                    if (currentCovoit.getNomConducteur().equals(user.get("nom").toString()) && currentCovoit.getPrenomConducteur().equals(user.get("prenom").toString())) {
-                        mPoubelleImg.setVisibility(View.VISIBLE);
+
+        final String currentUserId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
+        // gestion erreur debug tel
+        if(currentUserId != null) {
+            db.collection("users").document(currentUserId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    if (documentSnapshot.exists()) {
+                        final Map<String, Object> user = documentSnapshot.getData();
+                        assert user != null;
+                        if (currentCovoit.getNomConducteur().equals(user.get("nom").toString()) && currentCovoit.getPrenomConducteur().equals(user.get("prenom").toString())) {
+                            mPoubelleImg.setVisibility(View.VISIBLE);
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
     }
 
 
@@ -269,8 +328,7 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
     private String stDateToString(Date horaireDuCours) {
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEE dd MMM yyyy ' à ' HH'h'mm", Locale.FRANCE);
-        String dateDuCours = dateFormat.format(horaireDuCours);
-        return dateDuCours;
+        return dateFormat.format(horaireDuCours);
     }
 
 }

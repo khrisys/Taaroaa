@@ -11,10 +11,18 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.model.Covoiturage;
 
-public class AdapterCovoiturageVehicles extends FirestoreRecyclerAdapter<Covoiturage, VehiculeViewHolder> {
+/**
+ * l'adapter s'occupe de l'ensemble du contenu alors que le viewholder s'occupe des specificités d'une cellule.
+ *
+ * Adapter permettant de creer des cellules d'un FirestoreRecyclerView avec des données provenant de l'activité CovoiturageVehiclesActivity.
+ * Le FirestoreRecyclerAdapter (disponible dans la librairie "firebaseui") permet de gerer la MAJ en temps reel d'un recyclerview afin de
+ * refleter exactement la bdd firestore, de mettre en cache toutes les données afin d'y avoir acces meme sans internet.
+ *
+ */
+class AdapterCovoiturageVehicles extends FirestoreRecyclerAdapter<Covoiturage, VehiculeViewHolder> {
 
     //FOR COMMUNICATION
-    private Listener callback;
+    private final Listener callback;
 
     /**
      * Create a new RecyclerView adapter that listens to a Firestore Query.  See {@link
@@ -22,7 +30,7 @@ public class AdapterCovoiturageVehicles extends FirestoreRecyclerAdapter<Covoitu
      *
      * @param options
      */
-    public AdapterCovoiturageVehicles(@NonNull FirestoreRecyclerOptions<Covoiturage> options, Listener callback) {
+    AdapterCovoiturageVehicles(@NonNull FirestoreRecyclerOptions<Covoiturage> options, Listener callback) {
         super(options);
         this.callback = callback;
     }
@@ -48,8 +56,9 @@ public class AdapterCovoiturageVehicles extends FirestoreRecyclerAdapter<Covoitu
      * @param viewType : sert au cas ou il y aurait differents types de cellules
      * @return le vue d'une cellule
      */
+    @NonNull
     @Override
-    public VehiculeViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public VehiculeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new VehiculeViewHolder(LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.covoiturage_cell, parent, false));// creation de la viewholder avec en param la vue du layout
     }

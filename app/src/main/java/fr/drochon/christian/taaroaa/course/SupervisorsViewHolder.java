@@ -1,5 +1,6 @@
 package fr.drochon.christian.taaroaa.course;
 
+import android.annotation.SuppressLint;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -23,7 +24,7 @@ import fr.drochon.christian.taaroaa.model.Course;
 public class SupervisorsViewHolder extends RecyclerView.ViewHolder {
 
     // DATA
-    private List<Course> mCourseList;
+    private final List<Course> mCourseList;
     // CELLULES
     @BindView(R.id.course_subject_supervisors)
     TextView mCourseSubject;
@@ -38,17 +39,20 @@ public class SupervisorsViewHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.course_heure_supervisors)
     TextView mHeure;
 
+    // --------------------
+    // AFFICHAGE DES NOTIFICATIONS DE CELLULE
+    // --------------------
 
     /**
      * Contructeur qui prend en param la vue affichée.
-     * Je recupere les 2 textview du layout list_cell.
+     * Je recupere les 2 textview du layout pupils_cell.
      * responsable du clic sur les cellules.
      *
      * @param itemView : cellule d'une liste comprenant le titre et la description d'un cours
      */
-    public SupervisorsViewHolder(final View itemView) {
+    SupervisorsViewHolder(final View itemView) {
         super(itemView);
-        // liaison des elements du layout recyclerview et list_cell avec les variables declarées ici
+        // liaison des elements du layout recyclerview et pupils_cell avec les variables declarées ici
         ButterKnife.bind(this, itemView);
 
         mCourseList = new ArrayList<>();
@@ -59,18 +63,20 @@ public class SupervisorsViewHolder extends RecyclerView.ViewHolder {
             @Override
             public void onClick(View view) {
                 final String s;
-                for (int i = 0; i < mCourseList.size(); i++) {
-                    new AlertDialog.Builder(itemView.getContext())
-                            .setTitle(mCourseList.get(i).getTypeCours())
-                            .setMessage(Html.fromHtml("<b>Sujet : </b>" + mCourseList.get(i).getSujetDuCours() + "<br/><b>Moniteur : </b>" + mCourseList.get(i).getNomDuMoniteur()
-                                    + "<br/><b>Niveau </b>" + mCourseList.get(i).getNiveauDuCours()
-                                    + "<br/>" + stDateToString(mCourseList.get(i).getHoraireDuCours()) + "<br/>" + stTimeToString(mCourseList.get(i).getHoraireDuCours())))
-                            .show();
-                    break;
-                }
+                int i = mCourseList.size() - 1;
+                new AlertDialog.Builder(itemView.getContext())
+                        .setTitle(mCourseList.get(i).getTypeCours())
+                        .setMessage(Html.fromHtml("<b>Sujet : </b>" + mCourseList.get(i).getSujetDuCours() + "<br/><b>Moniteur : </b>" + mCourseList.get(i).getNomDuMoniteur()
+                                + "<br/><b>Niveau </b>" + mCourseList.get(i).getNiveauDuCours()
+                                + "<br/>" + stDateToString(mCourseList.get(i).getHoraireDuCours()) + "<br/>" + stTimeToString(mCourseList.get(i).getHoraireDuCours())))
+                        .show();
             }
         });
     }
+
+    // --------------------
+    // ADAPTER
+    // --------------------
 
     /**
      * Methode appellée via l'adapter. Cette methode mettra à jour les differentes view du viewholder en fonction d'un objet course passé en param.
@@ -98,17 +104,20 @@ public class SupervisorsViewHolder extends RecyclerView.ViewHolder {
         mHeure.setText(stTimeToString(horaireDuCours));
     }
 
+    // --------------------
+    // FORMATAGE DES HEURE ET DATE
+    // --------------------
+
     /**
      * Methode permettant de formatter une date en string avec locale en francais
      *
      * @param horaireDuCours
      * @return
      */
-    public String stDateToString(Date horaireDuCours) {
+    private String stDateToString(Date horaireDuCours) {
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("EE dd MMM yyyy", Locale.FRANCE);
-        String dateDuCours = dateFormat.format(horaireDuCours);
-        return dateDuCours;
+        return dateFormat.format(horaireDuCours);
 
     }
 
@@ -118,10 +127,9 @@ public class SupervisorsViewHolder extends RecyclerView.ViewHolder {
      * @param horaireDuCours
      * @return
      */
-    public String stTimeToString(Date horaireDuCours) {
+    private String stTimeToString(Date horaireDuCours) {
 
-        SimpleDateFormat dateFormat1 = new SimpleDateFormat("HH:mm:ss");
-        String heureDuCours = dateFormat1.format(horaireDuCours);
-        return heureDuCours;
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat1 = new SimpleDateFormat("HH:mm:ss");
+        return dateFormat1.format(horaireDuCours);
     }
 }

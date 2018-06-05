@@ -3,18 +3,28 @@
           xmlns:android="http://schemas.android.com/apk/res/android"
           xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-sdk
+        android:minSdkVersion="19"
+        android:targetSdkVersion="27"
+        tools:ignore="GradleOverrides"/>
+
     <!-- To auto-complete the email text field in the login form with the user's emails -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
     <uses-permission android:name="android.permission.READ_PROFILE"/>
     <uses-permission android:name="android.permission.READ_CONTACTS"/>
     <uses-permission android:name="android.permission.INTERNET"/>
 
+    <!-- Permission de lire dans la firebase storage -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE"/>
+
     <application
         android:allowBackup="true"
         android:fullBackupContent="@xml/backup_descriptor"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/logo"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/logo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
@@ -25,15 +35,24 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity
-            android:name=".controller.PasswordActivity"
-            android:label="@string/app_name">
+        <activity android:name=".controller.PasswordActivity">
         </activity>
-        <activity
-            android:name=".controller.SummaryActivity"
-            android:label="@string/app_name">
+        <activity android:name=".controller.SummaryActivity">
         </activity>
         <activity android:name=".auth.AccountCreateActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+
+                <data
+                    android:host="yoursite.example.com"
+                    android:scheme="http"/>
+                <data
+                    android:host="yoursite.example.com"
+                    android:scheme="https"/>
+            </intent-filter>
         </activity>
         <activity android:name=".course.CoursesManagementActivity">
         </activity>
@@ -56,6 +75,70 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable">
             </meta-data>
+        </activity>
+        <!-- NOTIFICATION SERVICE -->
+        <service android:name=".notifications.NotificationsService"/>
+        <service android:name=".notifications.MyFirebaseMessagingService"/>
+        <service android:name=".notifications.SendNotification"/>
+        <service android:name=".notifications.MyFirebaseInstanceIDService"/>
+        <!--
+         <service
+             android:name=".notifications.NotificationsService">
+             <intent-filter>
+                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+             </intent-filter>
+         </service>
+        -->
+       <!-- <service android:name=".notifications.MyFirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+            &lt;!&ndash;
+     Set custom default icon. This is used when no icon is set for incoming notification messages.
+     See README(https://goo.gl/l4GJaQ) for more.
+            &ndash;&gt;
+            <meta-data
+                android:name="com.google.firebase.messaging.default_notification_icon"
+                android:resource="@drawable/common_full_open_on_phone"/>
+            &lt;!&ndash;
+                 Set color used with incoming notification messages. This is used when no color is set for the incoming
+                 notification message. See README(https://goo.gl/6BKBk7) for more.
+            &ndash;&gt;
+            <meta-data
+                android:name="com.google.firebase.messaging.default_notification_color"
+                android:resource="@color/colorAccent"/>
+        </service>
+        <service android:name=".notifications.SendNotification">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
+        <service android:name=".notifications.MyFirebaseInstanceIDService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+            </intent-filter>
+        </service>-->
+
+        <receiver android:name=".alarm.TimeAlarmCovoiturageAller"/>
+        <receiver android:name=".alarm.TimeAlarmCovoiturageRetour"/>
+        <receiver android:name=".alarm.TimeAlarmCovoiturageSuppression"/>
+        <receiver android:name=".alarm.TimeAlarmCourses"/>
+        <receiver
+            android:name=".alarm.NotificationButtonReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.NOTIFY"/>
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".alarm.NotificationReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.NOTIFY"/>
+            </intent-filter>
+        </receiver>
+
+        <activity android:name=".auth.ConnectionActivity">
         </activity>
     </application>
 

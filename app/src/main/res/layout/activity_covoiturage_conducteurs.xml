@@ -15,18 +15,20 @@
         android:alwaysDrawnWithCache="true"
         android:animateLayoutChanges="true"
         android:animationCache="true"
+        android:background="@android:color/white"
         android:clipChildren="false"
         android:fadeScrollbars="true"
         android:fadingEdge="horizontal|vertical"
         android:scrollbarStyle="insideOverlay"
         android:visibility="visible"
-        tools:targetApi="lollipop"
-        tools:ignore="MissingConstraints">
+        tools:ignore="MissingConstraints"
+        tools:targetApi="lollipop">
 
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@android:color/white"
             android:orientation="vertical"
             android:visibility="visible">
 
@@ -82,8 +84,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="45dp"
                     android:layout_marginStart="45dp"
-                    android:inputType="textCapCharacters"
                     android:enabled="false"
+                    android:inputType="textCapCharacters"
                     android:lines="1"/>
             </android.support.design.widget.TextInputLayout>
 
@@ -109,8 +111,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="45dp"
                     android:layout_marginStart="45dp"
-                    android:inputType="textCapCharacters"
                     android:enabled="false"
+                    android:inputType="textCapCharacters"
                     android:lines="1"/>
             </android.support.design.widget.TextInputLayout>
 
@@ -121,7 +123,7 @@
                 android:layout_marginStart="60dp"
                 android:layout_marginTop="10dp"
                 android:shadowColor="@color/colorAccent"
-                android:text="@string/nombre_de_places_disponibles"
+                android:text="@string/nombre_de_places_proposees"
                 android:textColor="@color/colorPrimary"
                 android:textSize="18sp"/>
 
@@ -191,9 +193,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
                 android:layout_weight="1"
                 android:baselineAligned="false"
-                android:layout_marginTop="5dp"
                 android:orientation="horizontal">
 
                 <LinearLayout
@@ -270,9 +272,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginTop="5dp"
                 android:layout_marginEnd="50dp"
+                android:layout_marginTop="5dp"
+                android:orientation="vertical"
                 >
 
                 <TextView
@@ -306,17 +308,17 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
                 android:layout_weight="1"
                 android:baselineAligned="false"
-                android:layout_marginTop="5dp"
                 android:orientation="horizontal">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
                     android:layout_weight="0.5"
                     android:orientation="vertical"
-                    android:layout_marginTop="5dp"
                     tools:ignore="NestedWeights">
 
                     <TextView
@@ -381,9 +383,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
+                android:layout_marginEnd="50dp"
                 android:layout_marginTop="5dp"
-                android:layout_marginEnd="50dp">
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/arrivee_retour_txt"
@@ -413,14 +415,14 @@
 
             <ProgressBar
                 android:id="@+id/progress_bar"
-                style="?android:attr/progressBarStyleHorizontal"
+                style="?android:attr/progressBarStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginEnd="40dp"
                 android:layout_marginStart="40dp"
                 android:layout_marginTop="10dp"
-                android:background="@android:color/holo_green_light"
+                android:background="@android:color/white"
                 android:clickable="false"
                 android:foregroundGravity="center"
                 android:visibility="gone"/>
@@ -434,30 +436,30 @@
                 />
 
             <Button
-            android:id="@+id/proposition_covoit_btn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="40dp"
-            android:layout_marginEnd="40dp"
-            android:layout_marginBottom="50dp"
-            android:height="60dp"
-            android:background="@color/colorPrimary"
-            android:lines="2"
-            android:text="@string/proposer_covoit_btn"
-            android:textColor="@android:color/white"/>
+                android:id="@+id/proposition_covoit_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="50dp"
+                android:layout_marginEnd="40dp"
+                android:layout_marginStart="40dp"
+                android:height="60dp"
+                android:background="@color/colorPrimary"
+                android:lines="2"
+                android:text="@string/proposer_covoit_btn"
+                android:textColor="@android:color/white"/>
 
             <Button
                 android:id="@+id/suppression_covoit_btn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="40dp"
                 android:layout_marginEnd="40dp"
+                android:layout_marginStart="40dp"
                 android:height="60dp"
                 android:background="@color/colorPrimary"
                 android:lines="2"
-                android:visibility="gone"
                 android:text="@string/supprimez_un_covoiturage"
-                android:textColor="@android:color/white"/>
+                android:textColor="@android:color/white"
+                android:visibility="gone"/>
 
         </LinearLayout>
 
@@ -469,23 +471,21 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:inputType="text"
-        android:text="Saisir la string correspondante"
         android:textSize="@android:dimen/notification_large_icon_height"
         android:visibility="invisible"
+        tools:ignore="LabelFor,MissingConstraints"
         tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="0dp"
-        tools:ignore="MissingConstraints"/>
+        tools:layout_editor_absoluteY="0dp"/>
 
     <EditText
         android:id="@+id/alertdialog_delete_account"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:inputType="text"
-        android:text="Saisir la string correspodante"
         android:textSize="@android:dimen/notification_large_icon_height"
         android:visibility="invisible"
+        tools:ignore="LabelFor,MissingConstraints"
         tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="0dp"
-        tools:ignore="MissingConstraints"/>
+        tools:layout_editor_absoluteY="0dp"/>
 
 </android.support.constraint.ConstraintLayout>

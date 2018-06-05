@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * Classe represantant les adherents du club
  */
-public class User implements Serializable{
+public class User implements Serializable {
 
     private String uid;
     private String mNom;
@@ -15,24 +15,59 @@ public class User implements Serializable{
     private String mNiveauPlongeur;
     private String mFonction;
 
+
     public User() {
     }
 
+    /**
+     * Constructeur permettant de retrouver un user par son uid
+     *
+     * @param uid
+     */
     public User(String uid) {
         this.uid = uid;
     }
 
-    public User(String nom, String prenom) {
-        mNom = nom;
-        mPrenom = prenom;
-    }
-
+    /**
+     * Methode servant à la recherche d'un utilisateur dans la classe SearchUser
+     * ainsi qu'à la modification d'un user
+     *
+     * @param uid
+     * @param nom
+     * @param email
+     */
     public User(String uid, String nom, String email) {
         this.uid = uid;
         mNom = nom;
         mEmail = email;
     }
 
+    /**
+     * Creation d'user lors de la recuperation des infos juste apres la creation d'un compte via l'auth firabse
+     *
+     * @param uid
+     * @param nom
+     * @param prenom
+     * @param email
+     */
+    public User(String uid, String nom, String prenom, String email) {
+        this.uid = uid;
+        mNom = nom;
+        mPrenom = prenom;
+        mEmail = email;
+    }
+
+    /**
+     * Methode permettant de creer ou d'updater toutes les caracteristiques d'un user final
+     *
+     * @param uid
+     * @param nom
+     * @param prenom
+     * @param licence
+     * @param email
+     * @param niveauPlongeur
+     * @param fonction
+     */
     public User(String uid, String nom, String prenom, String licence, String email, String niveauPlongeur, String fonction) {
         this.uid = uid;
         mNom = nom;
@@ -42,6 +77,7 @@ public class User implements Serializable{
         mNiveauPlongeur = niveauPlongeur;
         mFonction = fonction;
     }
+
 
     // GETTERS & SETTERS
 
@@ -100,4 +136,5 @@ public class User implements Serializable{
     public void setFonction(String fonction) {
         mFonction = fonction;
     }
+
 }

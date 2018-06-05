@@ -1,9 +1,6 @@
 package fr.drochon.christian.taaroaa.model;
 
-import java.sql.Time;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -11,25 +8,40 @@ import java.util.List;
 /**
  * Classe des cours dispensés au sein du club
  */
-public class Course {
+public class Course implements Serializable {
 
+    private List<User> listUsers;
     private String mUid;
     private String mTypeCours;
     private String mSujetDuCours;
     private String mNiveauDuCours;
     private String mNomDuMoniteur;
     private Date mHoraireDuCours;
-    private Date  mDateDuCours;
+    private Date mDateDuCours;
     private Date mTimeDuCours;
 
-    List<User> listUsers;
+    public Course() {
+    }
 
-    public Course(){}
-
+    /**
+     * Constructeur permettant de retrouver un cours par son uid
+     *
+     * @param uid
+     */
     public Course(String uid) {
         mUid = uid;
     }
 
+    /**
+     * Methode permettant de creer ou d'updater toutes les caracteristiques d'un cours final
+     *
+     * @param uid
+     * @param typeCours
+     * @param sujetDuCours
+     * @param niveauDuCours
+     * @param nomDuMoniteur
+     * @param horaireDuCours
+     */
     public Course(String uid, String typeCours, String sujetDuCours, String niveauDuCours, String nomDuMoniteur, Date horaireDuCours) {
         mUid = uid;
         mTypeCours = typeCours;
@@ -37,19 +49,8 @@ public class Course {
         mNiveauDuCours = niveauDuCours;
         mNomDuMoniteur = nomDuMoniteur;
         mHoraireDuCours = horaireDuCours;
-        //this.listUsers = listUsers;
     }
 
-    public Course(String uid, String typeCours, String sujetDuCours, String niveau, String nomDuMoniteur, Date dateDuCours, Date timeDuCours) {
-        mUid = uid;
-        mTypeCours = typeCours;
-        mSujetDuCours = sujetDuCours;
-        mNiveauDuCours = niveau;
-        mNomDuMoniteur = nomDuMoniteur;
-        mDateDuCours = dateDuCours;
-        mTimeDuCours = timeDuCours;
-        //this.listUsers = new ArrayList<>();
-    }
 
     // GETTERS & SETTERS
 

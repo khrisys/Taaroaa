@@ -57,6 +57,7 @@
         android:layout_marginStart="7dp"
         android:layout_weight="0.33"
         android:background="@color/colorPrimary"
+        android:enabled="true"
         android:text="Cours"
         android:textColor="@android:color/white"
         android:textSize="40sp"

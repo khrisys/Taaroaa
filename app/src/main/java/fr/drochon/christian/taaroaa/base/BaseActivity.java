@@ -1,14 +1,20 @@
 package fr.drochon.christian.taaroaa.base;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Gravity;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
@@ -16,11 +22,8 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -38,11 +41,12 @@ import fr.drochon.christian.taaroaa.controller.SummaryActivity;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
-    public static final int GET_USERNAME = 40;
+
     //FOR DATA CONNEXION
     private static final int SIGN_OUT_TASK = 10;
     private static final int DELETE_USER_TASK = 20;
     private static final int UPDATE_USERNAME = 30;
+    private static final int GET_USERNAME = 40;
 
 
     // --------------------
@@ -66,11 +70,32 @@ public abstract class BaseActivity extends AppCompatActivity {
      */
     protected void configureToolbar() {
         ActionBar ab = getSupportActionBar();
-        // ajout d'un icone de l'appli à l'actionbar en haut à gauche
+
         assert ab != null;
+        ab.setDisplayShowTitleEnabled(false); // empeche l'affichage du titre de l'app dans les toolbars de l'app
         ab.setDisplayShowHomeEnabled(true);
-        ab.setIcon(R.mipmap.ic_launcher);
-        //ab.setTitle(R.string.app_name);
+        // ajout d'un icone de l'appli à l'actionbar en haut à gauche
+        //ab.setIcon(R.mipmap.logo);
+    }
+
+    /**
+     * Methode permettant de donner un nom à chacune des pages de l'application
+     * @param title
+     */
+    protected void giveToolbarAName(int title){
+        ActionBar ab = getSupportActionBar();
+        assert ab != null;
+        ab.setDisplayShowCustomEnabled(true);
+        ActionBar.LayoutParams layoutParams = new ActionBar.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL|Gravity.CENTER_VERTICAL);
+
+        TextView tv = new TextView(this);
+        tv.setGravity(View.TEXT_ALIGNMENT_CENTER);
+        tv.setTextColor(Color.WHITE);
+        tv.setTextSize(20f);
+        tv.setTypeface(tv.getTypeface(), Typeface.BOLD);
+        tv.setText(title);
+
+        ab.setCustomView(tv, layoutParams);
     }
 
     /**
@@ -83,9 +108,6 @@ public abstract class BaseActivity extends AppCompatActivity {
      */
     protected boolean optionsToolbar(Activity activity, MenuItem item) {
         switch (item.getItemId()) {
-/*            case R.id.app_bar_search_adherents:
-                // afichage de la barre de recherche
-                return true;*/
             case R.id.app_bar_summary:
                 // redirection à la page sommaire
                 Intent intent = new Intent(activity, SummaryActivity.class);
@@ -94,10 +116,10 @@ public abstract class BaseActivity extends AppCompatActivity {
 
             case R.id.app_bar_deconnexion:
                 // deconnexion
-                AuthUI.getInstance()
-                        .signOut(this) // methode utilisée par le singleton authUI.getInstance()
+                AuthUI.getInstance()// methode utilisée par le singleton authUI.getInstance()
+                        .signOut(this)
                         .addOnSuccessListener(this, this.updateUIAfterRESTRequestsCompleted(SIGN_OUT_TASK));
-                // redirection vers la page d'accueil
+                // redirection vers la page d'accueil, avec un extra à false pour afficher le bouton de creation de compte
                 Intent intent1 = new Intent(activity, MainActivity.class);
                 startActivity(intent1);
                 return true;
@@ -108,7 +130,6 @@ public abstract class BaseActivity extends AppCompatActivity {
     // --------------------
     // CONNEXION ET AUTHENTIFICATION DES USERS
     // --------------------
-    // Recuperation d'un utilisateur et si cette personne est connectée
 
     /**
      * Methode permettant de recuperer un utilisateur actuellement connecté à l'app.
@@ -121,7 +142,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         return FirebaseAuth.getInstance().getCurrentUser();
     }
 
-
     /**
      * Methode permettant de savoir si un utilisateur est correctement identifié à Firebase
      *
@@ -129,30 +149,6 @@ public abstract class BaseActivity extends AppCompatActivity {
      */
     protected Boolean isCurrentUserLogged() {
         return (this.getCurrentUser() != null);
-    }
-
-    /**
-     * Methode permettant d'afficher le floating button à l'ecran si l'utilisateur est un encadrant ou un initiateur.
-     */
-    private Boolean rightsSupervisors() {
-
-        if (this.getCurrentUser() != null) {
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
-            DocumentReference mQuery = db.collection("users").document(getCurrentUser().getUid());
-
-            mQuery.addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                @Override
-                public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                    if(documentSnapshot.exists()){
-                        Object ds = documentSnapshot.get("niveau");
-                        if(ds.equals("4") || ds.equals("MEF1") || ds.equals("MEF2"))
-                            return;
-                            //mFloatingActionButton.setVisibility(View.VISIBLE);
-                    }
-                }
-            });
-        }
-        return false;
     }
 
 
@@ -179,7 +175,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                         finish();
                         break;
                     case SIGN_OUT_TASK:
-                        finish();
+                        //finish();
                         break;
                     case DELETE_USER_TASK:
                         finish();
@@ -214,6 +210,24 @@ public abstract class BaseActivity extends AppCompatActivity {
                 .addOnSuccessListener(this, this.updateUIAfterRESTRequestsCompleted(SIGN_OUT_TASK));
     }
 
+    /**
+     * Methode permettant de faire appel à la classe FirebaseFirestore via son singleton, et pour chaque requete
+     * qui utilisera cette instance, de lui assigner des parametres de persistance des données à true, de maniere
+     * à pouvoir travailler avec des donnée s hors connexion.
+     * @return
+     */
+    protected FirebaseFirestore setupDb(){
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(true)
+                .build();
+
+        db.setFirestoreSettings(settings);
+        return db;
+    }
+
+
     // --------------------
     // HEURE & DATE PARSING
     // --------------------
@@ -226,21 +240,19 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected String  stDateToString(Date horaireDuCours){
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEE dd MMM yyyy ' à ' HH'h'mm", Locale.FRANCE);
-        String dateDuCours = dateFormat.format(horaireDuCours);
-        return dateDuCours;
-
+        return dateFormat.format(horaireDuCours);
     }
 
     /**
      * Methode permettant de formatter une date en format heure
-     * @param horaireDuCours
-     * @return
+     * @param horaireDuCours horaire du cours sous forme de date
+     * @return date sous forme de string
      */
     public String stTimeToString(Date horaireDuCours){
 
+        @SuppressLint("SimpleDateFormat")
         SimpleDateFormat dateFormat1 = new SimpleDateFormat("HH:mm:ss");
-        String heureDuCours = dateFormat1.format(horaireDuCours);
-        return heureDuCours;
+        return dateFormat1.format(horaireDuCours);
     }
 
     protected java.util.Date stStringToDate(String horaire){
@@ -254,6 +266,8 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
         return dateFormatee;
     }
+
+
     // --------------------
     // UI
     // --------------------
@@ -261,9 +275,9 @@ public abstract class BaseActivity extends AppCompatActivity {
     /**
      * Methode permettant de retrouver la position d'un item de la liste des niveaux de plongée d'un user
      *
-     * @param spinner
-     * @param myString
-     * @return int
+     * @param spinner menu deroulant
+     * @param myString item choisi dans la liste
+     * @return int retour la position de l'item choisi
      */
     protected int getIndexSpinner(Spinner spinner, String myString) {
         for (int i = 0; i < spinner.getCount(); i++) {

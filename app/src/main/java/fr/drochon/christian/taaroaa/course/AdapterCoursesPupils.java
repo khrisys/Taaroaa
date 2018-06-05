@@ -12,15 +12,19 @@ import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.model.Course;
 
 /**
- * l'adapter s'occupe de l'ensemble du contenu alors que le viewholder s'occupe des specificités d'une cellule
+ * l'adapter s'occupe de l'ensemble du contenu alors que le viewholder s'occupe des specificités d'une cellule.
+ * <p>
+ * Adapter permettant de creer des cellules d'un FirestoreRecyclerView avec des données provenant de l'activité CoursesPupilsActivity.
+ * Le FirestoreRecyclerAdapter (disponible dans la librairie "firebaseui") permet de gerer la MAJ en temps reel d'un recyclerview afin de
+ * refleter exactement la bdd firestore, de mettre en cache toutes les données afin d'y avoir acces meme sans internet.
  */
-public class AdapterCoursesPupils extends FirestoreRecyclerAdapter<Course, PupilsViewHolder> {
+class AdapterCoursesPupils extends FirestoreRecyclerAdapter<Course, PupilsViewHolder> {
 
 
     //FOR COMMUNICATION
-    private Listener callback;
+    private final Listener callback;
 
-    public AdapterCoursesPupils(FirestoreRecyclerOptions<Course> options, Listener callback) {
+    AdapterCoursesPupils(FirestoreRecyclerOptions<Course> options, Listener callback) {
         super(options);
         this.callback = callback;
     }
@@ -46,14 +50,15 @@ public class AdapterCoursesPupils extends FirestoreRecyclerAdapter<Course, Pupil
      * @param viewType : sert au cas ou il y aurait differents types de cellules
      * @return le vue d'une cellule
      */
+    @NonNull
     @Override
-    public PupilsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public PupilsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new PupilsViewHolder(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.list_cell, parent, false));// creation de la viewholder avec en param la vue du layout
+                .inflate(R.layout.pupils_cell, parent, false));// creation de la viewholder avec en param la vue du layout
     }
 
     // --------------------
-    // INTERFACE LISTENER
+    // INTERFACE LISTENER : CALLBACK
     // --------------------
 
     @Override

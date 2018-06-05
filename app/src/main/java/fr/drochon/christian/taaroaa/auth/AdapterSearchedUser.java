@@ -13,12 +13,18 @@ import java.util.List;
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.model.User;
 
-public class AdapterSearchedUser extends FirestoreRecyclerAdapter<User, SearchedUserViewHolder> {
+/**
+ * Adapter permettant de creer des cellules d'un FirestoreRecyclerView avec des données provenant de l'activité SearchUserActivity.
+ * Le FirestoreRecyclerAdapter (disponible dans la librairie "firebaseui") permet de gerer la MAJ en temps reel d'un recyclerview afin de
+ * refleter exactement la bdd firestore, de mettre en cache toutes les données afin d'y avoir acces meme sans internet.
+ *
+ */
+class AdapterSearchedUser extends FirestoreRecyclerAdapter<User, SearchedUserViewHolder> {
 
     List<User> users;
 
 
-    public AdapterSearchedUser(@NonNull FirestoreRecyclerOptions<User> userFirestoreRecyclerOptions) {
+    AdapterSearchedUser(@NonNull FirestoreRecyclerOptions<User> userFirestoreRecyclerOptions) {
         super(userFirestoreRecyclerOptions);
     }
 
@@ -43,8 +49,9 @@ public class AdapterSearchedUser extends FirestoreRecyclerAdapter<User, Searched
      * @param viewType : sert au cas ou il y aurait differents types de cellules
      * @return le vue d'une cellule
      */
+    @NonNull
     @Override
-    public SearchedUserViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public SearchedUserViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new SearchedUserViewHolder(LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.user_cell, parent, false));// creation de la viewholder avec en param la vue du layout
     }

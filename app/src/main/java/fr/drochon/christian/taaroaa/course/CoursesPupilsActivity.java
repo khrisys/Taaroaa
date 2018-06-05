@@ -1,15 +1,19 @@
 package fr.drochon.christian.taaroaa.course;
 
-import android.content.DialogInterface;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AlertDialog;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,25 +23,27 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import fr.drochon.christian.taaroaa.R;
+import fr.drochon.christian.taaroaa.alarm.TimeAlarmCourses;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
 import fr.drochon.christian.taaroaa.model.Course;
+import fr.drochon.christian.taaroaa.model.User;
 
 /**
  * creer l'ihm
@@ -52,40 +58,57 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
     // CONTIENT LA RECYCLERVIEW
 
 
-    // FOR DESIGN
-    CoordinatorLayout mCoordinatorLayout;
-    Date calendrierClique;
-    LinearLayout mLinearLayout;
-    CalendarView mCalendarView;
-    RecyclerView recyclerView;
-    TextView mTextView;
-    ScrollView mScrollView;
-    FloatingActionButton mFloatingActionButton;
 
+    // FOR DESIGN
+    private CoordinatorLayout mCoordinatorLayout;
+    private LinearLayout mLinearLayout;
+    private RecyclerView recyclerView;
+    private TextView mTextView;
+    private ScrollView mScrollView;
+    private FloatingActionButton mFloatingActionButton;
     // FOR DATA
     private AdapterCoursesPupils mAdapterCoursesPupils;
-    List<DocumentSnapshot> listSnapshot;
-
+    private Date calendrierClique;
+    private Date calendrierFinJournee;
+    private AlarmManager mAlarmManager;
+    private static User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_courses_pupils);
-
-        // FOR DESIGN
-        // recuperation des var des objets graphiques du layout correspondant
-        mCoordinatorLayout = findViewById(R.id.pupils_layout_root);
-        mLinearLayout = findViewById(R.id.linearLayoutRoot);
-        mCalendarView = findViewById(R.id.calendrier_eleves);
+        // DESIGN
+        CalendarView calendarView = findViewById(R.id.calendrier_eleves);
         recyclerView = findViewById(R.id.recyclerViewCoursesPupils); // liste des cours
         mTextView = findViewById(R.id.empty_list_textview);
-        mScrollView = findViewById(R.id.scrollviewRecyclerView);
         mFloatingActionButton = findViewById(R.id.fab);
+        // DATAS
         calendrierClique = new Date();
-        listSnapshot = new ArrayList<DocumentSnapshot>();
+        calendrierFinJournee = new Date();
+        List<DocumentSnapshot> listSnapshot = new ArrayList<>();
+        mAlarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+        Intent intent = getIntent();
+        user = (User) intent.getSerializableExtra("user");
+        /*
+         * <les methodes suivantes permettent
+         * 1 - d'afficher en titre de page le niveau des cours données,
+         * 2 - de lancer une requete prenant en parametre le niveau d'un utilisateur dans l'adapter
+         * et d'afficher ou non le floatingbutton en fonction du niveau de l'utilisateur connecté.
+         * 3 - de gerer le lancement des notifications en fonction d'un user connecté,
+         * et fait en sorte qu'il ne recoive que les notifications des cours concernant son niveau de plongée.
+         */
+        // lance une alarme de notification si le cours correspond au niveau du plongeur connecté
+        if(user != null)
+        alarmConnectedUser(user.getNiveauPlongeur());
+        String name = null;
+        if (user != null) {
+            name = "Cours de niveau " + user.getNiveauPlongeur();
+        }
+        giveToolbarAName(name);
         configureRecyclerView();
-        configureToolbar();
         showFloatingButton();
+        configureToolbar();
 
         // --------------------
         // LISTENERS
@@ -103,22 +126,53 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
         });
 
         // recuperation de la date cliquée
-        mCalendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
+        calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
                 Calendar calendar = Calendar.getInstance();
                 calendar.set(year, month, dayOfMonth);
-                //DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-                calendrierClique = calendar.getTime();
 
+                // formattage de la date pour le debut et la fin de journée
+                DateFormat dateFormatEntree = new SimpleDateFormat("dd MM yyyy", Locale.FRANCE);
+                DateFormat dateFormatSortie = new SimpleDateFormat("dd MM yyyy HH:mm:ss", Locale.FRANCE);
+                String s = dateFormatEntree.format(calendar.getTime());
+                String ss = s.concat(" 00:00:00");
+                String sss = s.concat(" 23:59:59");
+                try {
+                    calendrierClique = dateFormatSortie.parse(ss);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                try {
+                    calendrierFinJournee = dateFormatSortie.parse(sss);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                configureRecyclerViewSorted();
             }
         });
     }
 
 
+    // --------------------
+    // UI
+    // --------------------
+
     @Override
     public int getFragmentLayout() {
         return R.layout.activity_courses_pupils;
+    }
+    /**
+     * Methode permettant d'afficher le floating button à l'ecran si l'utilisateur est un encadrant ou un initiateur.
+     */
+    private void showFloatingButton() {
+
+        if (this.getCurrentUser() != null) {
+            if (user.getFonction().equals("Moniteur") || user.getFonction().equals("Initiateur")) {
+                mFloatingActionButton.setVisibility(View.VISIBLE);
+            }
+        }
     }
 
 
@@ -133,7 +187,7 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.course_pupils_menu, menu);
-        return true; // true affiche le menu
+        return true;
     }
 
     /**
@@ -141,12 +195,33 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
      * On utilise un switch ici car il peut y avoir plusieurs options.
      * Surtout ne pas oublier le "true" apres chaque case sinon, ce sera toujours le dernier case qui sera executé!
      *
-     * @param item
+     * @param item menuitem
      * @return bool
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         return optionsToolbar(this, item);
+    }
+
+    /**
+     * Methode permettant de donner un nom à la page courante de l'application
+     *
+     * @param title titre de l'activité
+     */
+    private void giveToolbarAName(String title) {
+        ActionBar ab = getSupportActionBar();
+        assert ab != null;
+        ab.setDisplayShowCustomEnabled(true);
+        ActionBar.LayoutParams layoutParams = new ActionBar.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL);
+
+        TextView tv = new TextView(this);
+        tv.setGravity(View.TEXT_ALIGNMENT_CENTER);
+        tv.setTextColor(Color.WHITE);
+        tv.setTextSize(20f);
+        tv.setTypeface(tv.getTypeface(), Typeface.BOLD);
+        tv.setText(title);
+
+        ab.setCustomView(tv, layoutParams);
     }
 
     // --------------------
@@ -162,21 +237,15 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
     }
 
     // --------------------
-    // UI
+    // ADAPTER ET RECYCLERVIEW
     // --------------------
 
     /**
-     * Configuration de la recyclerview
-     * Cette methode créé l'adapter et lui passe en param pas mal d'informations 'comme par ex l'objet FireStoreRecyclerOptions generé par la methode
-     * generateOptionsForAdapter.
+     * Configuration de l'adapter et de la recyclerview
+     * Cette methode créé l'adapter et lui passe en param l'ensemble des cours existants
      */
     private void configureRecyclerView() {
-
-        // application du filtre sur la liste des cours
-        filterDateCalendar();
-        //Configure Adapter & RecyclerView
-            mAdapterCoursesPupils = new AdapterCoursesPupils(generateOptionsForAdapter(queryAllCourses()), this);
-            //mAdapterCoursesPupils = new AdapterCoursesPupils(generateOptionsForAdapter(queryDateCourses(calendrierClique)), this);
+        mAdapterCoursesPupils = new AdapterCoursesPupils(generateOptionsForAdapter(queryAllCourses()), this);
         mAdapterCoursesPupils.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onItemRangeInserted(int positionStart, int itemCount) { // c'est cette ligne de code qui insere les données dans la recyclerview
@@ -185,8 +254,26 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
         });
         recyclerView.setLayoutManager(new LinearLayoutManager(this)); // layoutmanager indique comment seront positionnés les elements (linearlayout)
         recyclerView.setAdapter(this.mAdapterCoursesPupils);// l'adapter s'occupe du contenu
+        this.onDataChanged(); // appel du callback explicite en cas d'affichage de cours pour des encadrants (qui reviendrait d'une notification)
     }
 
+    /**
+     * Configuration de l'adapter et de la recyclerview
+     * Cette methode créé l'adapter et lui passe en param la requete de tri des cours en fonction
+     * de la date cliquée sur le calendrier
+     */
+    private void configureRecyclerViewSorted() {
+        mAdapterCoursesPupils = new AdapterCoursesPupils(generateOptionsForAdapter(queryCoursesFiltered()), this);
+        mAdapterCoursesPupils.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onItemRangeInserted(int positionStart, int itemCount) { // c'est cette ligne de code qui insere les données dans la recyclerview
+                recyclerView.smoothScrollToPosition(mAdapterCoursesPupils.getItemCount()); // Scroll to bottom on new messages
+            }
+        });
+        recyclerView.setLayoutManager(new LinearLayoutManager(this)); // layoutmanager indique comment seront positionnés les elements (linearlayout)
+        recyclerView.setAdapter(this.mAdapterCoursesPupils);// l'adapter s'occupe du contenu
+        this.onDataChanged(); // appel explicite du callback pour l'affichage d'un message en cas d'absence de cours à la date cliquée
+    }
 
     /**
      * La methode generateOptionsForAdapter utilise la methode query, precedemment definit dans la classe MessageHelper
@@ -199,39 +286,63 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
                 .build();
     }
 
+
+    // --------------------
+    // ALARM NOTIFICATION
+    // --------------------
+
     /**
-     * Methode permettant d'afficher le floating button à l'ecran si l'utilisateur est un encadrant ou un initiateur.
+     * Methode permettant de boucler sur tous les cours existants, de recuperer les cours correspondant au niveau de la personne connectée,
+     * de maniere à activer toutes les alarms postées sur les cours du niveau de la personne connectée
+     *
+     * @param userLevel niveau du plongeur connecté
      */
-    private void showFloatingButton() {
+    private void alarmConnectedUser(final String userLevel) {
 
-        if (this.getCurrentUser() != null) {
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
-            DocumentReference mQuery = db.collection("users").document(getCurrentUser().getUid());
+        setupDb().collection("courses").addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
-            mQuery.addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                @Override
-                public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                    if(documentSnapshot.exists()){
-                        Object ds = documentSnapshot.get("fonction");
-                        //TODO : decision : est ce que je met le bouton dispo pour les initiateurs?
-                        if(ds.equals("Moniteur") || ds.equals("Initiateur"))
-                            mFloatingActionButton.setVisibility(View.VISIBLE);
+                try {
+                    if (documentSnapshots.size() != 0) {
+                        List<DocumentSnapshot> ds = documentSnapshots.getDocuments();
+                        for (DocumentSnapshot documentSnapshot : ds) {
+                            Map<String, Object> cours = documentSnapshot.getData();
+                            assert cours != null;
+                            Course course = new Course(cours.get("id").toString(), cours.get("typeCours").toString(), cours.get("sujetDuCours").toString(),
+                                    cours.get("niveauDuCours").toString(), cours.get("nomDuMoniteur").toString(), (Date) cours.get("horaireDuCours"));
+                            String niveau = cours.get("niveauDuCours").toString();
+                            if (userLevel.equals(niveau))
+                                // alarm pour notification sur le cours créé
+                                alarmCours(course);
+                        }
                     }
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                    System.out.println("documentSnapshots is null");
                 }
-            });
-        }
-    }
-
-    public void notifCompleteAccount() {
-        AlertDialog.Builder adb = new AlertDialog.Builder(this);
-        adb.setIcon(android.R.drawable.ic_dialog_alert);
-        adb.setTitle("Merci de completer votre compte pour acceder à la liste des cours !");
-        adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                // rien à appeler. pas la peine de faire de toast
             }
         });
-        adb.show(); // affichage de l'artdialog
+    }
+
+    /**
+     * Methode permettant de generer une alarm dans le systeme du telephone de maniere à envoyer une notification à l'utilisateur
+     * 2 heures avant que le cours ne demarre.
+     *
+     * @param course cours
+     */
+    private void alarmCours(Course course) {
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(course.getHoraireDuCours());
+        calendar.add(Calendar.HOUR, -2);
+        // condition de declenchement de l'alarm de 2h avant le commencement du cours jusqu'au demarrage effectif du cours
+        if (Calendar.getInstance().getTime().after(calendar.getTime()) && Calendar.getInstance().getTime().before(course.getHoraireDuCours())) {
+            Intent intent = new Intent(this, TimeAlarmCourses.class).putExtra("cours", course).putExtra("activity", CoursesPupilsActivity.class);
+            PendingIntent operation = PendingIntent.getBroadcast(this, 2, intent, PendingIntent.FLAG_ONE_SHOT);
+            // reveil de l'alarm
+            mAlarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), operation);
+        }
     }
 
 
@@ -240,25 +351,18 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
     // --------------------
 
     /**
-     * Requete en bdd pour recuperer tous les cours existants
+     * Requete en bdd pour recuperer tous les cours existants filtré par le niveau du plongeur
+     * connecté sur l'application.
      *
      * @return query
      */
     private Query queryAllCourses() {
-        // Affichage en fonction du niveau de la personne connectée
-        //final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        Query mQuery = db.collection("courses").orderBy("horaireDuCours", Query.Direction.ASCENDING);
+        Query mQuery = setupDb().collection("courses").whereEqualTo("niveauDuCours", user.getNiveauPlongeur()).orderBy("horaireDuCours");
         mQuery.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-                // condition de creation d'un user ou affichage simple d'un message indiquant que l'user existe dejà en bdd.
-                // Avec les uid, il ne peut y avoir de doublon, on peut donc etre sur qu'il n'y a qu'un seule doc qui existe s'il en existe un.
                 if (documentSnapshots != null) {
                     if (documentSnapshots.size() != 0) {
-                        Log.e("TAG", "Le document existe !");
-                        // liste des docs
                         readDataInList(documentSnapshots.getDocuments());
                     }
                 }
@@ -267,21 +371,20 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
         return mQuery;
     }
 
-    private Query queryDateCourses(Object dateCours) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        Query mQ = db.collection("courses").whereEqualTo("horaireDuCours", dateCours);
+    /**
+     * Methode permettant de requeter avec les conditions suivantes :
+     * n'affiche que les cours de la personne connectée + n'affiche que les cours du jour de la date cliquée
+     *
+     * @return query
+     */
+    private Query queryCoursesFiltered() {
+        Query mQ = setupDb().collection("courses").whereEqualTo("niveauDuCours", user.getNiveauPlongeur()).orderBy("horaireDuCours").startAt(calendrierClique).endAt(calendrierFinJournee);
         mQ.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-                // condition de creation d'un user ou affichage simple d'un message indiquant que l'user existe dejà en bdd.
-                // Avec les uid, il ne peut y avoir de doublon, on peut donc etre sur qu'il n'y a qu'un seule doc qui existe s'il en existe un.
                 if (documentSnapshots != null) {
                     if (documentSnapshots.size() != 0) {
-                        Log.e("TAG", "Le document existe !");
-                        // liste des docs
-                        listSnapshot.addAll(documentSnapshots.getDocuments());
-                        readDataInList(listSnapshot);
+                        readDataInList(documentSnapshots.getDocuments());
                     }
                 }
             }
@@ -292,7 +395,7 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
     /**
      * Methode permettant de recuperer l'integralité de la liste des snapshots et d'en faire des objets "Course"
      *
-     * @param documentSnapshot
+     * @param documentSnapshot liste des elements recupérés de la requete de recuperation de tous les cours ayant un niveau de cours donné
      */
     private void readDataInList(final List<DocumentSnapshot> documentSnapshot) {
 
@@ -315,37 +418,5 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
             course.setTypeCours(typeCours);
             course.setHoraireDuCours(horaireDucours);
         }
-    }
-
-
-    /**
-     * Methode permettant de filtrer les cours à afficher sur l'ecran des eleves lorsqu'un utilisateur clique sur une date du calendrier.
-     * Ce clic agit comme un filtre sur la liste des cours  à afficher.
-     */
-    private void filterDateCalendar() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        //Task<QuerySnapshot> mQuery = db.collection("courses").whereEqualTo("horaireDuCours", "2018-04-04").get();
-        CollectionReference cr = db.collection("courses");
-        cr.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                if (documentSnapshots != null && documentSnapshots.size() != 0) {
-                    List<DocumentSnapshot> ds = documentSnapshots.getDocuments();
-                    for (int i = 0; i < documentSnapshots.size(); i++) {
-                        // recuperation des documents comprenant l'horaire du cours
-                        DocumentSnapshot map = documentSnapshots.getDocuments().get(i);
-                        Object horaireDuCours = map.getData().get("horaireDuCours");
-                        // formatage des donnees recues de la bdd et du clic sur la calendrier et condition
-                        DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-                        if (sdf.format(horaireDuCours).equals(sdf.format(calendrierClique))) {
-                            System.out.println("ok");
-                            queryDateCourses(horaireDuCours);
-                            configureRecyclerView();
-                        }
-                    }
-                }
-            }
-        });
     }
 }
