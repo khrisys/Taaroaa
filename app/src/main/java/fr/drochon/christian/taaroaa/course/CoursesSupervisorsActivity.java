@@ -19,6 +19,8 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.perf.FirebasePerformance;
+import com.google.firebase.perf.metrics.Trace;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -74,9 +76,18 @@ public class CoursesSupervisorsActivity extends BaseActivity implements AdapterC
         calendrierClique = new Date();
         calendrierFinJournee = new Date();
 
+        // Test performance de l'update d'user en bdd
+        final Trace myTrace = FirebasePerformance.getInstance().newTrace("coursesSupervisorsActivityFromStartScreenToShowAllCourses_trace");
+        myTrace.start();
+
+        // Test performance de l'update d'user en bdd
+        final Trace myTrace1 = FirebasePerformance.getInstance().newTrace("coursesSupervisorsActivityFromStartScreenToFilteredCourses_trace");
+        myTrace1.start();
+
         configureRecyclerView();
         configureToolbar();
         giveToolbarAName(R.string.course_supervisors_name);
+        myTrace.stop();
 
         // --------------------
         // LISTENERS
@@ -115,6 +126,7 @@ public class CoursesSupervisorsActivity extends BaseActivity implements AdapterC
                     e.printStackTrace();
                 }
                 configureRecyclerViewSorted();
+                myTrace1.stop();
             }
         });
     }

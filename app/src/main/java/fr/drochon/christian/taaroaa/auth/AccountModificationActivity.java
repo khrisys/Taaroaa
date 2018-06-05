@@ -33,6 +33,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.perf.FirebasePerformance;
+import com.google.firebase.perf.metrics.Trace;
 
 import java.util.List;
 import java.util.Map;
@@ -88,6 +90,10 @@ public class AccountModificationActivity extends BaseActivity {
         mModificationCompte = findViewById(R.id.modificiation_compte_btn);
         mSuppressionCompte = findViewById(R.id.suppression_compte_btn);
 
+        // Test performance de l'update d'user en bdd
+        final Trace myTrace = FirebasePerformance.getInstance().newTrace("accountUpdateActivityFromStartScreenToUpdate_trace");
+        myTrace.start();
+
         configureToolbar();
         this.giveToolbarAName(R.string.account_modif_name);
         showAttributes();
@@ -105,6 +111,7 @@ public class AccountModificationActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 updateUserInFirebase();
+                myTrace.stop();
             }
         });
 

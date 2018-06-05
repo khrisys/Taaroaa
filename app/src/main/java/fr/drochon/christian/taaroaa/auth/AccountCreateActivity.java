@@ -30,6 +30,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.perf.FirebasePerformance;
+import com.google.firebase.perf.metrics.Trace;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -85,6 +87,10 @@ public class AccountCreateActivity extends BaseActivity {
         Button suppressionCompte = findViewById(R.id.suppression_compte_btn);
         fonction = "Plongeur"; // la fonction par defaut d'un adhrent qui créé son compte a pour fonction "Plongeur"
 
+        // Test performance de l'update d'user en bdd
+        final Trace myTrace = FirebasePerformance.getInstance().newTrace("accountCreateActivityFromStartScreenToInsert_trace");
+        myTrace.start();
+
         configureToolbar();
         giveToolbarAName(R.string.account_create_name);
 
@@ -113,6 +119,9 @@ public class AccountCreateActivity extends BaseActivity {
                 assert firebaseUser != null;
                 if (Objects.requireNonNull(firebaseUser.isEmailVerified())) {
                     createUserInFirebase();
+
+                    // fin de trace
+                    myTrace.stop();
                 } else {
                     if (!mNom.getText().toString().isEmpty() && !mPrenom.getText().toString().isEmpty() && !email.isEmpty() && isValidEmail(email) && !password.isEmpty()) {
                         System.out.println("nok");
@@ -123,7 +132,7 @@ public class AccountCreateActivity extends BaseActivity {
             }
         });
 
-        // Suppression d'un compte utilisateur avec alertdialog avant suppression
+  /*      // Suppression d'un compte utilisateur avec alertdialog avant suppression
         suppressionCompte.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -154,7 +163,7 @@ public class AccountCreateActivity extends BaseActivity {
                 });
                 adb.show();
             }
-        });
+        });*/
 
 
         // --------------------

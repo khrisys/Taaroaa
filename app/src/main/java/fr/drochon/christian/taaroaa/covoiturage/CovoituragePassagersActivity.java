@@ -36,6 +36,8 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.perf.FirebasePerformance;
+import com.google.firebase.perf.metrics.Trace;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -56,8 +58,7 @@ import fr.drochon.christian.taaroaa.model.User;
 
 public class CovoituragePassagersActivity extends BaseActivity {
 
-
-    private static Covoiturage covoiturage;
+    // DESIGN
     private TextInputEditText mNomConducteur;
     private TextInputEditText mDateDepart;
     private TextInputEditText mDateretour;
@@ -76,6 +77,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
     private List<String> listSelectedUsers;
     private AlarmManager mAlarmManagerAller;
     private AlarmManager mAlarmManagerRetour;
+    private static Covoiturage covoiturage;
 
     // --------------------
     // LIFECYCLE
@@ -107,6 +109,14 @@ public class CovoituragePassagersActivity extends BaseActivity {
         mAlarmManagerAller = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         mAlarmManagerRetour = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
+        // Test performance
+        final Trace myTrace = FirebasePerformance.getInstance().newTrace("covoituragePassagersActivityFromStartScreenToShowPassengers_trace");
+        myTrace.start();
+
+        // Test performance
+        final Trace myTrace1 = FirebasePerformance.getInstance().newTrace("covoituragePassagersActivityFromStartScreenToReservation_trace");
+        myTrace1.start();
+
         this.configureToolbar();
         this.giveToolbarAName(R.string.covoit_passager_name);
         this.updateUIWhenCreating();
@@ -125,6 +135,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
 
                 showFieldsNamePassengers(s);
+                myTrace.stop();
             }
 
             @Override
@@ -136,6 +147,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 createPassagerInCovoiturage();
+                myTrace1.stop();
             }
         });
     }
@@ -151,6 +163,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
     public int getFragmentLayout() {
         return 0;
     }
+
 
     // --------------------
     // TOOLBAR

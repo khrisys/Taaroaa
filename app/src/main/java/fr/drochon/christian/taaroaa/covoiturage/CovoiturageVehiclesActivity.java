@@ -16,6 +16,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.perf.FirebasePerformance;
+import com.google.firebase.perf.metrics.Trace;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -51,10 +53,16 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
         List<Covoiturage> listCovoiturages = new ArrayList<>();
         listPassagers = new ArrayList<>();
 
+        // Test performance
+        final Trace myTrace = FirebasePerformance.getInstance().newTrace("covoiturageVehiclesActivityFromStartScreenToShowAllVehicles_trace");
+        myTrace.start();
+
+
         this.configureRecyclerView();
         this.configureToolbar();
         this.giveToolbarAName(R.string.covoit_vehicule_name);
-        this.giveToolbarAName(R.string.covoit_vehicule_name);
+        myTrace.stop();
+
 
         // --------------------
         // LISTENERS

@@ -35,6 +35,8 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.perf.FirebasePerformance;
+import com.google.firebase.perf.metrics.Trace;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -94,6 +96,10 @@ public class CoursesManagementActivity extends BaseActivity {
 
         //  les AlarmManager permettront de réveiller le téléphone et d'executer du code à une date précise
         mAlarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+        // Test performance de l'update d'user en bdd
+        final Trace myTrace = FirebasePerformance.getInstance().newTrace("coursesManagementActivityFromStartScreenToCourseCreationIncludingFormErrors_trace");
+        myTrace.start();
 
         configureToolbar();
         giveToolbarAName(R.string.course_management_name);
@@ -156,6 +162,8 @@ public class CoursesManagementActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 createCourseInFirebase();
+
+                myTrace.stop();
             }
         });
     }
@@ -402,7 +410,7 @@ public class CoursesManagementActivity extends BaseActivity {
 
     /**
      * Cette methode ne comprend pas l'update d'une fonction dans le club, car seul les encadrants du club peuvent
-     * le faire, et cette fonctionnalité est donc reservée à une fonction particuliere.
+     * le faire, et cette fonctionnalité est donc reservée à une fonction adherent particuliere.
      */
     private void updateCourseInFirebase() {
 

@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -295,8 +296,10 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
      * d'un ou plusieurs covoiturage.
      */
     private void showPoubelle(final Covoiturage currentCovoit) {
-        final String currentUserId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
-        db.collection("users").document(currentUserId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+        // erreur crashlytics lors du reveil du tel pour les notifs lorsque l'application est eteinte : l'id est null
+        FirebaseUser auth =  FirebaseAuth.getInstance().getCurrentUser();
+        if(auth != null)
+        db.collection("users").document(auth.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 if (documentSnapshot.exists()) {

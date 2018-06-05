@@ -20,6 +20,8 @@ import com.google.firebase.auth.ActionCodeSettings;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.perf.FirebasePerformance;
+import com.google.firebase.perf.metrics.Trace;
 
 import java.util.Objects;
 
@@ -55,6 +57,10 @@ public class ConnectionActivity extends BaseActivity {
         mPassword = findViewById(R.id.password_input);
         Button valid = findViewById(R.id.creation_identifiants_btn);
 
+        // Test performance de l'update d'user en bdd
+        final Trace myTrace = FirebasePerformance.getInstance().newTrace("connectionActivity_trace");
+        myTrace.start();
+
         configureToolbar();
         giveToolbarAName(R.string.creation_compte);
 
@@ -65,9 +71,10 @@ public class ConnectionActivity extends BaseActivity {
         valid.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!mEmail.getText().toString().isEmpty() && !mPassword.getText().toString().isEmpty())
+                if (!mEmail.getText().toString().isEmpty() && !mPassword.getText().toString().isEmpty()) {
                     connectToFirebaseWithEmailAndPassword();
-                else
+                    myTrace.stop();
+                } else
                     verificationChampsVides();
             }
         });

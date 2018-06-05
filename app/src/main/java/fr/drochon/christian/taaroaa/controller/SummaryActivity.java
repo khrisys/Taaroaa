@@ -14,6 +14,8 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.perf.FirebasePerformance;
+import com.google.firebase.perf.metrics.Trace;
 
 import java.util.List;
 import java.util.Map;
@@ -43,6 +45,18 @@ public class SummaryActivity extends BaseActivity {
 
         Button compte = findViewById(R.id.adherents_btn);
         mModifCompte = findViewById(R.id.modif_adherents_btn);
+
+        // Test performance de l'update d'user en bdd
+        final Trace myTrace = FirebasePerformance.getInstance().newTrace("summaryActivityFromStartScreenToUser_trace");
+        myTrace.start();
+        // Test performance de l'update d'user en bdd
+        final Trace myTrace1 = FirebasePerformance.getInstance().newTrace("summaryActivityFromStartScreenToCourses_trace");
+        myTrace1.start();
+
+        // Test performance de l'update d'user en bdd
+        final Trace myTrace2 = FirebasePerformance.getInstance().newTrace("summaryActivityFromStartScreenToCovoiturages_trace");
+        myTrace2.start();
+
 
         configureToolbar();
         showPannelModification();
@@ -80,6 +94,8 @@ public class SummaryActivity extends BaseActivity {
                                             user.get("email").toString(), user.get("niveau").toString(), user.get("fonction").toString());
                                     Intent intent = new Intent(SummaryActivity.this, AccountModificationActivity.class).putExtra("user", u);
                                     startActivity(intent);
+
+                                    myTrace.stop();
                                 }
                             }
                         }
@@ -120,6 +136,8 @@ public class SummaryActivity extends BaseActivity {
                                 Intent intent = new Intent(SummaryActivity.this, CoursesPupilsActivity.class).putExtra("user", user1);
                                 startActivity(intent);
                             }
+
+                            myTrace1.stop();
                         }
                     }
                 });
@@ -134,6 +152,8 @@ public class SummaryActivity extends BaseActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(SummaryActivity.this, CovoiturageAccueilActivity.class);
                 startActivity(intent);
+
+                myTrace2.stop();
             }
         });
     }

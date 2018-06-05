@@ -1,7 +1,7 @@
 package fr.drochon.christian.taaroaa.controller;
 
 import android.app.PendingIntent;
-import android.app.Service;
+import android.content.ClipData;
 import android.content.ComponentCallbacks2;
 import android.content.Intent;
 import android.os.Bundle;
@@ -24,6 +24,8 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.perf.FirebasePerformance;
+import com.google.firebase.perf.metrics.Trace;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -80,8 +82,20 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
         isAppRunning = true;
 
         // Souscription aux notifications
-            FirebaseMessaging.getInstance().subscribeToTopic("courses");
-            FirebaseMessaging.getInstance().subscribeToTopic("covoiturages");
+        FirebaseMessaging.getInstance().subscribeToTopic("courses");
+        FirebaseMessaging.getInstance().subscribeToTopic("covoiturages");
+
+        // Test performance de la creation d'un compte user
+        final Trace myTrace = FirebasePerformance.getInstance().newTrace("mainActivityAccountCreation_trace");
+        myTrace.start();
+
+        // Test performance de l'update d'un compte user
+        final Trace myTrace1 = FirebasePerformance.getInstance().newTrace("mainActivityConnexionToAnExistingAccount_trace");
+        myTrace1.start();
+
+        // Test performance de l'update d'un compte user
+        final Trace myTrace2 = FirebasePerformance.getInstance().newTrace("mainActivityDeconnexionFromAnExistingAccount_trace");
+        myTrace2.start();
 
 
         // --------------------
@@ -96,6 +110,7 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
                 } else {
                     Toast.makeText(MainActivity.this, "Vous etes déjà connecté, vous ne pouvez pas créer un compte !", Toast.LENGTH_LONG).show();
                 }
+                myTrace.stop();
             }
         });
 
@@ -105,11 +120,12 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
             public void onClick(View v) {
                 if (!isCurrentUserLogged()) {
                     //CREATION DU USER
-                    createUserInFirestore();
+                    updateUserInFirestore();
                     startSummaryActivity(); // connecté : renvoyé vers le sommaire
                 } else {
                     startSignInActivity(); // non connecté : inscription
                 }
+                myTrace1.stop();
             }
         });
 
@@ -120,6 +136,8 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
                 showSnackBar(getString(string.connection_end));
                 signOutUserFromFirebase();
                 creationCompte.setVisibility(View.VISIBLE);
+
+                myTrace2.stop();
             }
         });
 
@@ -200,7 +218,6 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
     }
 
 
-
     // --------------------
     // PROVIDERS & AUTHENTIFICATION
     // --------------------
@@ -254,8 +271,9 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
 
         if (requestCode == RC_SIGN_IN) {
             if (resultCode == RESULT_OK) { // SUCCESS
-                this.createUserInFirestore();
+                //this.updateUserInFirestore();
                 this.startSummaryActivity(); // connexion et renvoi vers la page sommaire
+
             }
         } else { // ERRORS
             if (response == null) {
@@ -283,7 +301,6 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
     }
 
 
-
     // --------------------
     // REST REQUESTS
     // --------------------
@@ -292,8 +309,7 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
      * Methode de creation d'un utilisateur, avec condition de creation en fonction de l'existance ou non d'un user dejà en bdd,
      * et decomposant le nom et le prenom saisi à l'enregistrement de la personne.
      */
-    private void createUserInFirestore() {
-
+    private void updateUserInFirestore() {
         if (this.getCurrentUser() != null) {
             Query mQuery = setupDb().collection("users").whereEqualTo("uid", getCurrentUser().getUid());
 
@@ -340,6 +356,8 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
         else {
             startSignInActivity();
         }
+
+
     }
 
     /**

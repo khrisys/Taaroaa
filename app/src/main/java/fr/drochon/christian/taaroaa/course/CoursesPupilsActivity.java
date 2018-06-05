@@ -28,6 +28,8 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.perf.FirebasePerformance;
+import com.google.firebase.perf.metrics.Trace;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -58,7 +60,7 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
     // CONTIENT LA RECYCLERVIEW
 
 
-
+    private static User user;
     // FOR DESIGN
     private CoordinatorLayout mCoordinatorLayout;
     private LinearLayout mLinearLayout;
@@ -71,7 +73,6 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
     private Date calendrierClique;
     private Date calendrierFinJournee;
     private AlarmManager mAlarmManager;
-    private static User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +89,19 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
         List<DocumentSnapshot> listSnapshot = new ArrayList<>();
         mAlarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
+        // Test performance de l'update d'user en bdd
+        final Trace myTrace = FirebasePerformance.getInstance().newTrace("coursesPupilsActivityFromStartScreenToCoursesManagament_trace");
+        myTrace.start();
+
+        // Test performance de l'update d'user en bdd
+        final Trace myTrace1 = FirebasePerformance.getInstance().newTrace("coursesPupilsActivityFromStartScreenToAllCoursesDate_trace");
+        myTrace1.start();
+
+        // Test performance de l'update d'user en bdd
+        final Trace myTrace2 = FirebasePerformance.getInstance().newTrace("coursesPupilsActivityFromStartScreenToFilteredCoursesDate_trace");
+        myTrace2.start();
+
+
         Intent intent = getIntent();
         user = (User) intent.getSerializableExtra("user");
         /*
@@ -99,8 +113,8 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
          * et fait en sorte qu'il ne recoive que les notifications des cours concernant son niveau de plongée.
          */
         // lance une alarme de notification si le cours correspond au niveau du plongeur connecté
-        if(user != null)
-        alarmConnectedUser(user.getNiveauPlongeur());
+        if (user != null)
+            alarmConnectedUser(user.getNiveauPlongeur());
         String name = null;
         if (user != null) {
             name = "Cours de niveau " + user.getNiveauPlongeur();
@@ -109,6 +123,8 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
         configureRecyclerView();
         showFloatingButton();
         configureToolbar();
+
+        myTrace1.stop();
 
         // --------------------
         // LISTENERS
@@ -122,6 +138,7 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
                         .setAction("Action", null).show();*/
                 Intent intent = new Intent(CoursesPupilsActivity.this, CoursesManagementActivity.class);
                 startActivity(intent);
+                myTrace.stop();
             }
         });
 
@@ -150,6 +167,8 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
                     e.printStackTrace();
                 }
                 configureRecyclerViewSorted();
+
+                myTrace2.stop();
             }
         });
     }
@@ -163,6 +182,7 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
     public int getFragmentLayout() {
         return R.layout.activity_courses_pupils;
     }
+
     /**
      * Methode permettant d'afficher le floating button à l'ecran si l'utilisateur est un encadrant ou un initiateur.
      */
@@ -398,25 +418,27 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
      * @param documentSnapshot liste des elements recupérés de la requete de recuperation de tous les cours ayant un niveau de cours donné
      */
     private void readDataInList(final List<DocumentSnapshot> documentSnapshot) {
+        // control apres erreur de debug tel
+        if (documentSnapshot != null) {
+            // un DocumentReference fait référence à un emplacement de document dans une base de données Firestore et peut être utilisé pour
+            // écrire, lire ou écouter l'emplacement. Il peut exister ou non un document à l'emplacement référencé.
+            for (int i = 0; i < documentSnapshot.size(); i++) {
+                DocumentSnapshot doc = documentSnapshot.get(i); //Un DocumentSnapshot contient des données lues à partir d'un document dans votre base de données Firestore.
+                String uid = doc.getId();
+                String niveauDuCours = (String) doc.get("niveauDuCours");
+                String nomDuMoniteur = (String) doc.get("nomDuMoniteur");
+                String sujetDuCours = (String) doc.get("sujetDuCours");
+                String typeCours = (String) doc.get("typeCours");
+                Date horaireDucours = (Date) doc.get("horaireDuCours");
 
-        // un DocumentReference fait référence à un emplacement de document dans une base de données Firestore et peut être utilisé pour
-        // écrire, lire ou écouter l'emplacement. Il peut exister ou non un document à l'emplacement référencé.
-        for (int i = 0; i < documentSnapshot.size(); i++) {
-            DocumentSnapshot doc = documentSnapshot.get(i); //Un DocumentSnapshot contient des données lues à partir d'un document dans votre base de données Firestore.
-            String uid = doc.getId();
-            String niveauDuCours = (String) doc.get("niveauDuCours");
-            String nomDuMoniteur = (String) doc.get("nomDuMoniteur");
-            String sujetDuCours = (String) doc.get("sujetDuCours");
-            String typeCours = (String) doc.get("typeCours");
-            Date horaireDucours = (Date) doc.get("horaireDuCours");
-
-            Course course = new Course(uid);
-            course.setUid(uid);
-            course.setNiveauDuCours(niveauDuCours);
-            course.setNomDuMoniteur(nomDuMoniteur);
-            course.setSujetDuCours(sujetDuCours);
-            course.setTypeCours(typeCours);
-            course.setHoraireDuCours(horaireDucours);
+                Course course = new Course(uid);
+                course.setUid(uid);
+                course.setNiveauDuCours(niveauDuCours);
+                course.setNomDuMoniteur(nomDuMoniteur);
+                course.setSujetDuCours(sujetDuCours);
+                course.setTypeCours(typeCours);
+                course.setHoraireDuCours(horaireDucours);
+            }
         }
     }
 }

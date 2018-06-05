@@ -32,6 +32,8 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.perf.FirebasePerformance;
+import com.google.firebase.perf.metrics.Trace;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -98,6 +100,10 @@ public class CovoiturageConducteursActivity extends BaseActivity {
 
         mNbPlaceTotal.requestFocus();
 
+        // Test performance
+        final Trace myTrace = FirebasePerformance.getInstance().newTrace("covoiturageConducteursActivityFromStartScreenToCreateCovoiturageIncludingFormùErrors_trace");
+        myTrace.start();
+
         this.configureToolbar();
         this.giveToolbarAName(R.string.covoit_conducteur_name);
         this.getInfosCurrentUser();
@@ -156,6 +162,7 @@ public class CovoiturageConducteursActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 createCovoiturageInFirebase();
+                myTrace.stop();
             }
         });
     }

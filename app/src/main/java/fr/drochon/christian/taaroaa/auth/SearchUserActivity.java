@@ -16,6 +16,8 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.perf.FirebasePerformance;
+import com.google.firebase.perf.metrics.Trace;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,25 +41,6 @@ public class SearchUserActivity extends BaseActivity {
     // LIFECYCLE
     // --------------------
 
-    /**
-     * Methode permettant de filtrer la liste des utilisateurs affichés grace à la barre de recherche
-     *
-     * @param models
-     * @param nomUser
-     * @return
-     */
-    private void filter(List<User> models, String nomUser) {
-        final String lowerCaseQuery = nomUser.toLowerCase();
-
-        List<User> filteredModelList = new ArrayList<>();
-        for (User model : models) {
-            final String text = model.getNom().toLowerCase();
-            if (text.contains(lowerCaseQuery)) {
-                filteredModelList.add(model);
-            }
-        }
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,9 +51,19 @@ public class SearchUserActivity extends BaseActivity {
         SearchView searchView = findViewById(R.id.searchbar_user);
 
         listUsers = new ArrayList<>();
-        getListUsers();
 
+        // Test performance d'affichage de tous les users
+        final Trace myTrace = FirebasePerformance.getInstance().newTrace("searchUserActivityShowAllUsers_trace");
+        myTrace.start();
+
+        // Test performance de recherche users filtrés
+        final Trace myTrace1 = FirebasePerformance.getInstance().newTrace("searchUserActivityFilteredlUsers_trace");
+        myTrace.start();
+
+        getListUsers();
         configureRecyclerView();
+        myTrace.stop();
+
         configureToolbar();
         this.giveToolbarAName(R.string.account_search_name);
 
@@ -102,6 +95,8 @@ public class SearchUserActivity extends BaseActivity {
                 });
                 mRecyclerViewUser.setLayoutManager(new LinearLayoutManager(SearchUserActivity.this)); // layoutmanager indique comment seront positionnés les elements (linearlayout)
                 mRecyclerViewUser.setAdapter(mAdapterSearchedUser);// l'adapter s'occupe du contenu
+
+                myTrace1.stop();
                 return true;
             }
         });
@@ -265,6 +260,25 @@ public class SearchUserActivity extends BaseActivity {
             User user = new User(doc.getId(), Objects.requireNonNull(doc.get("nom")).toString(), Objects.requireNonNull(doc.get("prenom"))
                     .toString(), Objects.requireNonNull(doc.get("licence")).toString(), Objects.requireNonNull(doc.get("email")).toString(),
                     Objects.requireNonNull(doc.get("niveau")).toString(), Objects.requireNonNull(doc.get("fonction")).toString());
+        }
+    }
+
+    /**
+     * Methode permettant de filtrer la liste des utilisateurs affichés grace à la barre de recherche
+     *
+     * @param models
+     * @param nomUser
+     * @return
+     */
+    private void filter(List<User> models, String nomUser) {
+        final String lowerCaseQuery = nomUser.toLowerCase();
+
+        List<User> filteredModelList = new ArrayList<>();
+        for (User model : models) {
+            final String text = model.getNom().toLowerCase();
+            if (text.contains(lowerCaseQuery)) {
+                filteredModelList.add(model);
+            }
         }
     }
 }

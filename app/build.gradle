@@ -42,6 +42,7 @@ dependencies {
     //BUTTERKNIFE : met à disposition les annotations @BindView et @OnClick
     implementation 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+
     // FIREBASE
     implementation 'com.google.firebase:firebase-core:16.0.0'//version ok sinon pb 11.8.0
     // DYNAMIC LINK POUR INSCRPTION EMAIL PAR TOKE
@@ -54,10 +55,11 @@ dependencies {
     implementation 'com.firebaseui:firebase-ui-auth:3.3.1'
     implementation 'com.google.firebase:firebase-auth:16.0.1'
     implementation 'com.firebaseui:firebase-ui-firestore:3.3.1'
-    // FACEBOOK LOGIN SUPPORT
-    //implementation 'com.facebook.android:facebook-android-sdk:4.33.0'
+    // PERFORMANCE
+    implementation 'com.google.firebase:firebase-perf:16.0.0'
     //EASY PERMISSIONS
     implementation 'pub.devrel:easypermissions:1.1.1'
 }
 
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.firebase-perf'
