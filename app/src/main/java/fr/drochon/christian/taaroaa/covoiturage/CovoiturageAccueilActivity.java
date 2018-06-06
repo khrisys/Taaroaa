@@ -12,8 +12,6 @@ import android.widget.Button;
 
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.RemoteMessage;
-import com.google.firebase.perf.FirebasePerformance;
-import com.google.firebase.perf.metrics.Trace;
 
 import java.util.Objects;
 
@@ -115,45 +113,6 @@ public class CovoiturageAccueilActivity extends BaseActivity {
             return null;
         }
     }
-
-/*    public void notif() {
-
-        // Créé un intent qui renvoie l'user vers l'activité adequate
-        Intent intent = new Intent(this, SearchUserActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 7, intent, PendingIntent.FLAG_ONE_SHOT);
-
-        // Affichage de la notificaion cliquée, celle qui renvoie vers l'activité voulue
-        NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
-        //inboxStyle.setBigContentTitle(getString(R.string.notification_title));
-        inboxStyle.setBigContentTitle("TAAROAA"); // titre de la notif lorsq'uelle est ouverte
-        inboxStyle.addLine("Covoiturage"); // sous titre affuché lorsque la notif est affichée
-        inboxStyle.setSummaryText("Attention! Votre covoiturage partira de Millau dans 2 heures !"); // decription de la notif lorsqu'elle est ouverte
-
-        String channelId = getString(R.string.default_notification_channel_id);
-
-        // Affichage de la notifqui apparait en premier à l'ecran. Affichage defini par la priorité
-        NotificationCompat.Builder notificationBuilder =
-                new NotificationCompat.Builder(this, channelId)
-                        // Set the notification content
-                        .setSmallIcon(android.R.drawable.ic_notification_overlay)
-                        .setContentTitle(getString(R.string.app_name))
-                        .setContentText(getString(R.string.notification_title))
-                        .setSubText("Covoiturage")
-                        .setPriority(NotificationCompat.PRIORITY_HIGH) //affiche la notif clairement en haut de l'app
-                        .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                        // Set the intent that will fire when the user taps the notification : renvoi vers l'activité definie
-                        .setContentIntent(pendingIntent)
-                        .setAutoCancel(true)
-                        // style permettant une seconde notif personnalisée comprenant plusieurs lignes
-                        .setStyle(inboxStyle);
-
-        int NOTIFICATION_ID = 7;
-        String NOTIFICATION_TAG = "TAAROAA";
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        assert notificationManager != null;
-        notificationManager.notify(NOTIFICATION_TAG, NOTIFICATION_ID, notificationBuilder.build());
-    }*/
 }
 
 

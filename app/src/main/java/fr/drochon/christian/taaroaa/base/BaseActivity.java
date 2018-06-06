@@ -71,11 +71,12 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void configureToolbar() {
         ActionBar ab = getSupportActionBar();
 
-        assert ab != null;
-        ab.setDisplayShowTitleEnabled(false); // empeche l'affichage du titre de l'app dans les toolbars de l'app
-        ab.setDisplayShowHomeEnabled(true);
-        // ajout d'un icone de l'appli à l'actionbar en haut à gauche
-        //ab.setIcon(R.mipmap.logo);
+        if(ab != null) {
+            ab.setDisplayShowTitleEnabled(false); // empeche l'affichage du titre de l'app dans les toolbars de l'app
+            ab.setDisplayShowHomeEnabled(true);
+            // ajout d'un icone de l'appli à l'actionbar en haut à gauche
+            //ab.setIcon(R.mipmap.logo);
+        }
     }
 
     /**
@@ -84,18 +85,19 @@ public abstract class BaseActivity extends AppCompatActivity {
      */
     protected void giveToolbarAName(int title){
         ActionBar ab = getSupportActionBar();
-        assert ab != null;
-        ab.setDisplayShowCustomEnabled(true);
-        ActionBar.LayoutParams layoutParams = new ActionBar.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL|Gravity.CENTER_VERTICAL);
+        if(ab != null) {
+            ab.setDisplayShowCustomEnabled(true);
+            ActionBar.LayoutParams layoutParams = new ActionBar.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL);
 
-        TextView tv = new TextView(this);
-        tv.setGravity(View.TEXT_ALIGNMENT_CENTER);
-        tv.setTextColor(Color.WHITE);
-        tv.setTextSize(20f);
-        tv.setTypeface(tv.getTypeface(), Typeface.BOLD);
-        tv.setText(title);
+            TextView tv = new TextView(this);
+            tv.setGravity(View.TEXT_ALIGNMENT_CENTER);
+            tv.setTextColor(Color.WHITE);
+            tv.setTextSize(20f);
+            tv.setTypeface(tv.getTypeface(), Typeface.BOLD);
+            tv.setText(title);
 
-        ab.setCustomView(tv, layoutParams);
+            ab.setCustomView(tv, layoutParams);
+        }
     }
 
     /**

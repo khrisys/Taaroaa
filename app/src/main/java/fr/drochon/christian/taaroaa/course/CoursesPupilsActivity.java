@@ -230,18 +230,19 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
      */
     private void giveToolbarAName(String title) {
         ActionBar ab = getSupportActionBar();
-        assert ab != null;
-        ab.setDisplayShowCustomEnabled(true);
-        ActionBar.LayoutParams layoutParams = new ActionBar.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL);
+        if(ab != null) {
+            ab.setDisplayShowCustomEnabled(true);
+            ActionBar.LayoutParams layoutParams = new ActionBar.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL);
 
-        TextView tv = new TextView(this);
-        tv.setGravity(View.TEXT_ALIGNMENT_CENTER);
-        tv.setTextColor(Color.WHITE);
-        tv.setTextSize(20f);
-        tv.setTypeface(tv.getTypeface(), Typeface.BOLD);
-        tv.setText(title);
+            TextView tv = new TextView(this);
+            tv.setGravity(View.TEXT_ALIGNMENT_CENTER);
+            tv.setTextColor(Color.WHITE);
+            tv.setTextSize(20f);
+            tv.setTypeface(tv.getTypeface(), Typeface.BOLD);
+            tv.setText(title);
 
-        ab.setCustomView(tv, layoutParams);
+            ab.setCustomView(tv, layoutParams);
+        }
     }
 
     // --------------------
@@ -328,13 +329,14 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
                         List<DocumentSnapshot> ds = documentSnapshots.getDocuments();
                         for (DocumentSnapshot documentSnapshot : ds) {
                             Map<String, Object> cours = documentSnapshot.getData();
-                            assert cours != null;
-                            Course course = new Course(cours.get("id").toString(), cours.get("typeCours").toString(), cours.get("sujetDuCours").toString(),
-                                    cours.get("niveauDuCours").toString(), cours.get("nomDuMoniteur").toString(), (Date) cours.get("horaireDuCours"));
-                            String niveau = cours.get("niveauDuCours").toString();
-                            if (userLevel.equals(niveau))
-                                // alarm pour notification sur le cours créé
-                                alarmCours(course);
+                            if(cours != null) {
+                                Course course = new Course(cours.get("id").toString(), cours.get("typeCours").toString(), cours.get("sujetDuCours").toString(),
+                                        cours.get("niveauDuCours").toString(), cours.get("nomDuMoniteur").toString(), (Date) cours.get("horaireDuCours"));
+                                String niveau = cours.get("niveauDuCours").toString();
+                                if (userLevel.equals(niveau))
+                                    // alarm pour notification sur le cours créé
+                                    alarmCours(course);
+                            }
                         }
                     }
                 } catch (Exception e1) {

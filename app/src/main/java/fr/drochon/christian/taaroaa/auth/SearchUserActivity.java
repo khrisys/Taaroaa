@@ -237,9 +237,10 @@ public class SearchUserActivity extends BaseActivity {
                     List<DocumentSnapshot> ds = documentSnapshots.getDocuments();
                     for (int i = 0; i < ds.size(); i++) {
                         Map<String, Object> map = ds.get(i).getData();
-                        assert map != null;
-                        User user = new User(map.get("uid").toString(), map.get("nom").toString(), map.get("prenom").toString());
-                        listUsers.add(user);
+                        if(map != null) {
+                            User user = new User(map.get("uid").toString(), map.get("nom").toString(), map.get("prenom").toString());
+                            listUsers.add(user);
+                        }
                     }
                 }
             }

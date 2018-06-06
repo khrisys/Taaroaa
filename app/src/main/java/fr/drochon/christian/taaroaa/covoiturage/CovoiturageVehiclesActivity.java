@@ -181,13 +181,14 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
                     for (int i = 0; i < ds.size(); i++) {
                         Map<String, Object> covoit = ds.get(i).getData();
                         listPassagers = new ArrayList<>();
-                        assert covoit != null;
-                        listPassagers = (List<String>) covoit.get("passagers");
+                        if(covoit != null) {
+                            listPassagers = (List<String>) covoit.get("passagers");
 
-                        // recuperation de l'objet covoiturage
-                        covoiturage = new Covoiturage(covoit.get("id").toString(), covoit.get("nomConducteur").toString(), covoit.get("prenomConducteur").toString(),
-                                covoit.get("nbPlacesDispo").toString(), covoit.get("nbPlacesTotal").toString(), covoit.get("typeVehicule").toString(), stStringToDate(covoit.get("horaireAller").toString()),
-                                stStringToDate(covoit.get("horaireRetour").toString()), covoit.get("lieuDepartAller").toString(), covoit.get("lieuDepartRetour").toString(), listPassagers);
+                            // recuperation de l'objet covoiturage
+                            covoiturage = new Covoiturage(covoit.get("id").toString(), covoit.get("nomConducteur").toString(), covoit.get("prenomConducteur").toString(),
+                                    covoit.get("nbPlacesDispo").toString(), covoit.get("nbPlacesTotal").toString(), covoit.get("typeVehicule").toString(), stStringToDate(covoit.get("horaireAller").toString()),
+                                    stStringToDate(covoit.get("horaireRetour").toString()), covoit.get("lieuDepartAller").toString(), covoit.get("lieuDepartRetour").toString(), listPassagers);
+                        }
                     }
                 }
             }

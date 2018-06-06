@@ -10,6 +10,7 @@ import android.widget.Button;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -40,7 +41,7 @@ public class SummaryActivity extends BaseActivity {
         setContentView(R.layout.activity_summary);
 
         ActionBar actionBar = getSupportActionBar();
-        assert actionBar != null;
+        if(actionBar != null)
         actionBar.setDisplayShowHomeEnabled(true);
 
         Button compte = findViewById(R.id.adherents_btn);
@@ -74,9 +75,7 @@ public class SummaryActivity extends BaseActivity {
         compte.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-              /*  Intent intent = new Intent(SummaryActivity.this, AccountCreateActivity.class);
-                startActivity(intent);*/
-                final FirebaseAuth auth = FirebaseAuth.getInstance(FirebaseFirestore.getInstance().getApp());
+                final FirebaseUser auth = FirebaseAuth.getInstance(FirebaseFirestore.getInstance().getApp()).getCurrentUser();
 
                 setupDb().collection("users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
@@ -88,8 +87,8 @@ public class SummaryActivity extends BaseActivity {
                                 Map<String, Object> user = doc.getData();
 
                                 // Si l'user connecté existe en bdd, on recupere l'ensemble de l'objet user et on le passe en extra de l'intent
-                                if(user != null) {
-                                    if (user.get("uid").equals(Objects.requireNonNull(Objects.requireNonNull(auth.getCurrentUser()).getUid()))) {
+                                if(user != null && auth != null) {
+                                    if (user.get("uid").equals(auth.getUid())) {
                                         User u = new User(user.get("uid").toString(), user.get("nom").toString(), user.get("prenom").toString(), user.get("licence").toString(),
                                                 user.get("email").toString(), user.get("niveau").toString(), user.get("fonction").toString());
                                         Intent intent = new Intent(SummaryActivity.this, AccountModificationActivity.class).putExtra("user", u);
@@ -126,19 +125,20 @@ public class SummaryActivity extends BaseActivity {
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         if (documentSnapshot.exists()) {
                             Map<String, Object> user = documentSnapshot.getData();
-                            assert user != null;
-                            User user1 = new User(user.get("uid").toString(), user.get("nom").toString(), user.get("prenom").toString(), user.get("licence").toString(),
-                                    user.get("email").toString(), user.get("niveau").toString(), user.get("fonction").toString());
-                            if (user.get("uid").equals(Objects.requireNonNull(getCurrentUser()).getUid()) &&
-                                    user.get("fonction").equals("Moniteur")) {
-                                Intent intent = new Intent(SummaryActivity.this, CoursesSupervisorsActivity.class);
-                                startActivity(intent);
-                            } else {
-                                Intent intent = new Intent(SummaryActivity.this, CoursesPupilsActivity.class).putExtra("user", user1);
-                                startActivity(intent);
-                            }
+                            if(user != null) {
+                                User user1 = new User(user.get("uid").toString(), user.get("nom").toString(), user.get("prenom").toString(), user.get("licence").toString(),
+                                        user.get("email").toString(), user.get("niveau").toString(), user.get("fonction").toString());
+                                if (user.get("uid").equals(Objects.requireNonNull(getCurrentUser()).getUid()) &&
+                                        user.get("fonction").equals("Moniteur")) {
+                                    Intent intent = new Intent(SummaryActivity.this, CoursesSupervisorsActivity.class);
+                                    startActivity(intent);
+                                } else {
+                                    Intent intent = new Intent(SummaryActivity.this, CoursesPupilsActivity.class).putExtra("user", user1);
+                                    startActivity(intent);
+                                }
 
-                            myTrace1.stop();
+                                myTrace1.stop();
+                            }
                         }
                     }
                 });
@@ -202,21 +202,26 @@ public class SummaryActivity extends BaseActivity {
      * la personne connectée est un encadrant
      */
     private void showPannelModification() {
-        DocumentReference documentReference = setupDb().collection("users").document(Objects.requireNonNull(getCurrentUser()).getUid());
-        documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                if (documentSnapshot.exists()) {
-                    Map<String, Object> user = documentSnapshot.getData();
-                    assert user != null;
-                    if (user.get("fonction") == null || !user.get("fonction").equals("Moniteur")) {
+        FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
+        // changé apres Robo test firebase
+        if(auth != null) {
+            DocumentReference documentReference = setupDb().collection("users").document(auth.getUid());
+            documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    if (documentSnapshot.exists()) {
+                        Map<String, Object> user = documentSnapshot.getData();
+                        if(user != null) {
+                            if (user.get("fonction") == null || !user.get("fonction").equals("Moniteur")) {
+                                mModifCompte.setVisibility(View.GONE);
+                            }
+                        }
+                        //lors de la creation d'un compte, enleve la tuile de modification d'un compte
+                    } else {
                         mModifCompte.setVisibility(View.GONE);
                     }
-                    //lors de la creation d'un compte, enleve la tuile de modification d'un compte
-                } else {
-                    mModifCompte.setVisibility(View.GONE);
                 }
-            }
-        });
+            });
+        }
     }
 }

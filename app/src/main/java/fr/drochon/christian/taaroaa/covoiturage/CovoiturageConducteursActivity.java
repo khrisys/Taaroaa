@@ -461,9 +461,10 @@ public class CovoiturageConducteursActivity extends BaseActivity {
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                     if (documentSnapshot.exists()) {
                         Map<String, Object> user = documentSnapshot.getData();
-                        assert user != null;
-                        mNom.setText(user.get("nom").toString());
-                        mPrenom.setText(user.get("prenom").toString());
+                        if(user != null) {
+                            mNom.setText(user.get("nom").toString());
+                            mPrenom.setText(user.get("prenom").toString());
+                        }
                     }
                 }
             });
@@ -535,11 +536,12 @@ public class CovoiturageConducteursActivity extends BaseActivity {
         @SuppressLint("SetTextI18n")
         @Override
         public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-            assert getTag() != null;
-            if (getTag().equals("dateDepart"))
-                mDateDepart.setText(mDateDepart.getText() + "" + dayOfMonth + "-" + (month + 1) + "-" + year);
-            if (getTag().equals("dateRetour"))
-                mDateRetour.setText(mDateRetour.getText() + "" + dayOfMonth + "-" + (month + 1) + "-" + year);
+            if(getTag() != null) {
+                if (getTag().equals("dateDepart"))
+                    mDateDepart.setText(mDateDepart.getText() + "" + dayOfMonth + "-" + (month + 1) + "-" + year);
+                if (getTag().equals("dateRetour"))
+                    mDateRetour.setText(mDateRetour.getText() + "" + dayOfMonth + "-" + (month + 1) + "-" + year);
+            }
         }
     }
 
@@ -575,11 +577,12 @@ public class CovoiturageConducteursActivity extends BaseActivity {
          */
         @SuppressLint("SetTextI18n")
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-            assert getTag() != null;
-            if (getTag().equals("timeDepart"))
-                mHeureDepart.setText(mHeureDepart.getText() + "" + hourOfDay + ":" + minute + ":00");
-            if (getTag().equals("timeRetour"))
-                mHeureretour.setText(mHeureretour.getText() + "" + hourOfDay + ":" + minute + ":00");
+            if(getTag() != null) {
+                if (getTag().equals("timeDepart"))
+                    mHeureDepart.setText(mHeureDepart.getText() + "" + hourOfDay + ":" + minute + ":00");
+                if (getTag().equals("timeRetour"))
+                    mHeureretour.setText(mHeureretour.getText() + "" + hourOfDay + ":" + minute + ":00");
+            }
         }
     }
 

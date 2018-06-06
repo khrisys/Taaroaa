@@ -58,6 +58,7 @@ public class AccountModificationActivity extends BaseActivity {
     private static final int DELETE_USER_TASK = 20;
     private static final int UPDATE_USERNAME = 30;
     private static final int GET_USERNAME = 40;
+    private static User user;
     //DESIGN
     private LinearLayout mLinearLayoutFonctionAdherent;
     private TextInputEditText mPrenom;
@@ -70,7 +71,6 @@ public class AccountModificationActivity extends BaseActivity {
     private Button mModificationCompte;
     private Button mSuppressionCompte;
     private TextView mTitrePage;
-    private static User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -297,49 +297,47 @@ public class AccountModificationActivity extends BaseActivity {
 
                         Object nom = documentSnapshot.get("nom");
                         Object prenom = documentSnapshot.get("prenom");
-                        // moniteur etant sur un autre compte que le sien dès la premiere connexion ??
-                        assert fonction != null;
-                        //moniteur modofiant le compte d'un adherent
-                        assert nom != null;
-                        assert prenom != null;
-                        if (fonction.equals("Moniteur") && !nom.equals(user.getNom()) && !prenom.equals(user.getPrenom())) {
-                            mTitrePage.setText(R.string.modifiez_le_compte_d_un_adherent);
-                            //mItemView.setVisible(false);
-                            mPrenom.setEnabled(false);
-                            mNom.setEnabled(false);
-                            mLicence.setEnabled(false);
-                            mNiveauPlongeespinner.setEnabled(true);
-                            mLinearLayoutFonctionAdherent.setVisibility(View.VISIBLE);
-                            mProgressBar.setVisibility(View.GONE);
-                            //Affichage du bouton de suppression uniquement aux proprietaires d'un compte
-                            mSuppressionCompte.setVisibility(View.GONE);
 
-                            // moniteur etant sur son propre compte
-                        } else {
-                            if (fonction.equals("Moniteur") && nom.equals(user.getNom()) && prenom.equals(user.getPrenom())) {
-                                mTitrePage.setText(R.string.bienvenue_sur_votre_compte);
-                                //mItemView.setVisible(true);
-                                mPrenom.setEnabled(true);
-                                mNom.setEnabled(true);
-                                mLicence.setEnabled(true);
+                        if (fonction != null && nom != null && prenom != null) {
+                            if (fonction.equals("Moniteur") && !nom.equals(user.getNom()) && !prenom.equals(user.getPrenom())) {
+                                mTitrePage.setText(R.string.modifiez_le_compte_d_un_adherent);
+                                //mItemView.setVisible(false);
+                                mPrenom.setEnabled(false);
+                                mNom.setEnabled(false);
+                                mLicence.setEnabled(false);
                                 mNiveauPlongeespinner.setEnabled(true);
                                 mLinearLayoutFonctionAdherent.setVisibility(View.VISIBLE);
-                                mModificationCompte.setText(R.string.modifiez_votre_compte);
+                                mProgressBar.setVisibility(View.GONE);
                                 //Affichage du bouton de suppression uniquement aux proprietaires d'un compte
-                                mSuppressionCompte.setVisibility(View.VISIBLE);
+                                mSuppressionCompte.setVisibility(View.GONE);
 
-                                // adherent non moniteur sur son propre compte
-                            } else if (!fonction.equals("Moniteur")) {
-                                mTitrePage.setText(R.string.bienvenue_sur_votre_compte);
-                                //mItemView.setVisible(true);
-                                mPrenom.setEnabled(true);
-                                mNom.setEnabled(true);
-                                mLicence.setEnabled(true);
-                                mNiveauPlongeespinner.setEnabled(false);
-                                mLinearLayoutFonctionAdherent.setVisibility(View.GONE);
-                                mModificationCompte.setText(R.string.modifiez_votre_compte);
-                                //Affichage du bouton de suppression uniquement aux proprietaires d'un compte
-                                mSuppressionCompte.setVisibility(View.VISIBLE);
+                                // moniteur etant sur son propre compte
+                            } else {
+                                if (fonction.equals("Moniteur") && nom.equals(user.getNom()) && prenom.equals(user.getPrenom())) {
+                                    mTitrePage.setText(R.string.bienvenue_sur_votre_compte);
+                                    //mItemView.setVisible(true);
+                                    mPrenom.setEnabled(true);
+                                    mNom.setEnabled(true);
+                                    mLicence.setEnabled(true);
+                                    mNiveauPlongeespinner.setEnabled(true);
+                                    mLinearLayoutFonctionAdherent.setVisibility(View.VISIBLE);
+                                    mModificationCompte.setText(R.string.modifiez_votre_compte);
+                                    //Affichage du bouton de suppression uniquement aux proprietaires d'un compte
+                                    mSuppressionCompte.setVisibility(View.VISIBLE);
+
+                                    // adherent non moniteur sur son propre compte
+                                } else if (!fonction.equals("Moniteur")) {
+                                    mTitrePage.setText(R.string.bienvenue_sur_votre_compte);
+                                    //mItemView.setVisible(true);
+                                    mPrenom.setEnabled(true);
+                                    mNom.setEnabled(true);
+                                    mLicence.setEnabled(true);
+                                    mNiveauPlongeespinner.setEnabled(false);
+                                    mLinearLayoutFonctionAdherent.setVisibility(View.GONE);
+                                    mModificationCompte.setText(R.string.modifiez_votre_compte);
+                                    //Affichage du bouton de suppression uniquement aux proprietaires d'un compte
+                                    mSuppressionCompte.setVisibility(View.VISIBLE);
+                                }
                             }
                         }
                     }
@@ -397,21 +395,22 @@ public class AccountModificationActivity extends BaseActivity {
                     List<DocumentSnapshot> covoits = documentSnapshots.getDocuments();
                     for (DocumentSnapshot covoiturage : covoits) {
                         Map<String, Object> covoit = covoiturage.getData();
-                        assert covoit != null;
-                        if (covoit.get("nomConducteur").equals(user.getNom()) && covoit.get("prenomConducteur").equals(user.getPrenom())) {
-                            CovoiturageHelper.updateCovoiturage(covoit.get("id").toString(), mNom.getText().toString(), mPrenom.getText().toString())
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            System.out.println("nok");
-                                        }
-                                    })
-                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void aVoid) {
-                                            System.out.println("ok");
-                                        }
-                                    });
+                        if (covoit != null) {
+                            if (covoit.get("nomConducteur").equals(user.getNom()) && covoit.get("prenomConducteur").equals(user.getPrenom())) {
+                                CovoiturageHelper.updateCovoiturage(covoit.get("id").toString(), mNom.getText().toString(), mPrenom.getText().toString())
+                                        .addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                System.out.println("nok");
+                                            }
+                                        })
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                System.out.println("ok");
+                                            }
+                                        });
+                            }
                         }
                     }
                 }
@@ -427,25 +426,26 @@ public class AccountModificationActivity extends BaseActivity {
         // recup de l'user passé par un intent depuis la classe SearchUser
         Intent intent = getIntent();
         user = (User) Objects.requireNonNull(intent.getExtras()).getSerializable("user");
-        assert user != null;
-        // requete avec l'uid de l'user recu
-        setupDb().collection("users").document(user.getUid())
-                .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    Map<String, Object> user = task.getResult().getData();
-                    assert user != null;
-                    mNom.setText(user.get("nom").toString());
-                    mPrenom.setText(user.get("prenom").toString());
-                    mLicence.setText(user.get("licence").toString());
-                    mNiveauPlongeespinner.setSelection(getIndexSpinner(mNiveauPlongeespinner, user.get("niveau").toString()));
-                    mFonctionAuClubspinner.setSelection(getIndexSpinner(mFonctionAuClubspinner, user.get("fonction").toString()));
-                    mEmail.setText(user.get("email").toString());
+        if (user != null) {
+            // requete avec l'uid de l'user recu
+            setupDb().collection("users").document(user.getUid())
+                    .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        Map<String, Object> user = task.getResult().getData();
+                        if(user != null) {
+                            mNom.setText(user.get("nom").toString());
+                            mPrenom.setText(user.get("prenom").toString());
+                            mLicence.setText(user.get("licence").toString());
+                            mNiveauPlongeespinner.setSelection(getIndexSpinner(mNiveauPlongeespinner, user.get("niveau").toString()));
+                            mFonctionAuClubspinner.setSelection(getIndexSpinner(mFonctionAuClubspinner, user.get("fonction").toString()));
+                            mEmail.setText(user.get("email").toString());
+                        }
+                    }
                 }
-            }
-        });
-
+            });
+        }
     }
 
     /**
@@ -467,17 +467,17 @@ public class AccountModificationActivity extends BaseActivity {
      */
     private void deleteUserAuth() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-        assert user != null;
-        user.delete()
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            System.out.println("ok");
-                        } else
-                            System.out.println("nok");
-                    }
-                });
+        if(user != null) {
+            user.delete()
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                System.out.println("ok");
+                            } else
+                                System.out.println("nok");
+                        }
+                    });
+        }
     }
 }

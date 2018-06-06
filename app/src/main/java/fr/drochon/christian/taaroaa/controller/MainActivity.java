@@ -1,7 +1,6 @@
 package fr.drochon.christian.taaroaa.controller;
 
 import android.app.PendingIntent;
-import android.content.ClipData;
 import android.content.ComponentCallbacks2;
 import android.content.Intent;
 import android.os.Bundle;
@@ -279,12 +278,13 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
             if (response == null) {
                 showSnackBar(getString(string.error_authentication_canceled));
             }
-            assert response != null;
-            if (Objects.requireNonNull(response.getError()).getErrorCode() == ErrorCodes.NO_NETWORK) {
-                showSnackBar(getString(string.error_no_internet));
-            }
-            if (Objects.requireNonNull(response.getError()).getErrorCode() == ErrorCodes.UNKNOWN_ERROR) {
-                showSnackBar(getString(string.error_unknown_error));
+            if(response != null) {
+                if (Objects.requireNonNull(response.getError()).getErrorCode() == ErrorCodes.NO_NETWORK) {
+                    showSnackBar(getString(string.error_no_internet));
+                }
+                if (Objects.requireNonNull(response.getError()).getErrorCode() == ErrorCodes.UNKNOWN_ERROR) {
+                    showSnackBar(getString(string.error_unknown_error));
+                }
             }
         }
     }
@@ -329,25 +329,26 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
                         // decomposition du nom et du prenom recu dans username
                         String nom = null, prenom;
                         String[] parts;
-                        assert username != null;
-                        if (username.contains(" ")) {
-                            parts = username.split(" ");
-                            try {
-                                if (parts[1] != null) nom = parts[1];
-                                else nom = "";
-                            } catch (ArrayIndexOutOfBoundsException e1) {
-                                Log.e("TAG", "ArrayOutOfBoundException " + e1.getMessage());
+                        if(username != null) {
+                            if (username.contains(" ")) {
+                                parts = username.split(" ");
+                                try {
+                                    if (parts[1] != null) nom = parts[1];
+                                    else nom = "";
+                                } catch (ArrayIndexOutOfBoundsException e1) {
+                                    Log.e("TAG", "ArrayOutOfBoundException " + e1.getMessage());
+                                }
+                                if (parts[0] != null) prenom = parts[0];
+                                else prenom = "";
+                            } else {
+                                nom = username;
+                                prenom = "";
                             }
-                            if (parts[0] != null) prenom = parts[0];
-                            else prenom = "";
-                        } else {
-                            nom = username;
-                            prenom = "";
-                        }
-                        String uid = getCurrentUser().getUid();
-                        String email = getCurrentUser().getEmail();
+                            String uid = getCurrentUser().getUid();
+                            String email = getCurrentUser().getEmail();
 
-                        addNewUser(uid, nom, prenom, email);
+                            addNewUser(uid, nom, prenom, email);
+                        }
                     }
                 }
             });
