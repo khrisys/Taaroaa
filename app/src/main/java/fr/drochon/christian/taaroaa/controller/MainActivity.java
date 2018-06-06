@@ -84,19 +84,6 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
         FirebaseMessaging.getInstance().subscribeToTopic("courses");
         FirebaseMessaging.getInstance().subscribeToTopic("covoiturages");
 
-        // Test performance de la creation d'un compte user
-        final Trace myTrace = FirebasePerformance.getInstance().newTrace("mainActivityAccountCreation_trace");
-        myTrace.start();
-
-        // Test performance de l'update d'un compte user
-        final Trace myTrace1 = FirebasePerformance.getInstance().newTrace("mainActivityConnexionToAnExistingAccount_trace");
-        myTrace1.start();
-
-        // Test performance de l'update d'un compte user
-        final Trace myTrace2 = FirebasePerformance.getInstance().newTrace("mainActivityDeconnexionFromAnExistingAccount_trace");
-        myTrace2.start();
-
-
         // --------------------
         // LISTENERS
         // --------------------
@@ -104,6 +91,10 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
         creationCompte.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Test performance de la creation d'un compte user
+                final Trace myTrace = FirebasePerformance.getInstance().newTrace("mainActivityAccountCreation_trace");
+                myTrace.start();
+
                 if (!isCurrentUserLogged()) {
                     startConnectionActivity();
                 } else {
@@ -117,6 +108,10 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
         mConnexion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Test performance de l'update d'un compte user
+                final Trace myTrace1 = FirebasePerformance.getInstance().newTrace("mainActivityGoToAnExistingAccountWithInformationOnCurrentUser_trace");
+                myTrace1.start();
+
                 if (!isCurrentUserLogged()) {
                     //CREATION DU USER
                     updateUserInFirestore();
@@ -132,6 +127,10 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
         deconnexion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Test performance de l'update d'un compte user
+                final Trace myTrace2 = FirebasePerformance.getInstance().newTrace("mainActivityDeconnexionFromAnExistingAccount_trace");
+                myTrace2.start();
+
                 showSnackBar(getString(string.connection_end));
                 signOutUserFromFirebase();
                 creationCompte.setVisibility(View.VISIBLE);

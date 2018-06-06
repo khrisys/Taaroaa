@@ -89,17 +89,11 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
         List<DocumentSnapshot> listSnapshot = new ArrayList<>();
         mAlarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
-        // Test performance de l'update d'user en bdd
-        final Trace myTrace = FirebasePerformance.getInstance().newTrace("coursesPupilsActivityFromStartScreenToCoursesManagament_trace");
-        myTrace.start();
+
 
         // Test performance de l'update d'user en bdd
-        final Trace myTrace1 = FirebasePerformance.getInstance().newTrace("coursesPupilsActivityFromStartScreenToAllCoursesDate_trace");
+        final Trace myTrace1 = FirebasePerformance.getInstance().newTrace("coursesPupilsActivityGetAndShowAllCoursesDate_trace");
         myTrace1.start();
-
-        // Test performance de l'update d'user en bdd
-        final Trace myTrace2 = FirebasePerformance.getInstance().newTrace("coursesPupilsActivityFromStartScreenToFilteredCoursesDate_trace");
-        myTrace2.start();
 
 
         Intent intent = getIntent();
@@ -134,8 +128,10 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
         mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               /* Snackbar.make(view, "Redirection vers la page de gestion des cours", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();*/
+                // Test performance de l'update d'user en bdd
+                final Trace myTrace = FirebasePerformance.getInstance().newTrace("coursesPupilsActivityGoToCoursesManagament_trace");
+                myTrace.start();
+
                 Intent intent = new Intent(CoursesPupilsActivity.this, CoursesManagementActivity.class);
                 startActivity(intent);
                 myTrace.stop();
@@ -146,6 +142,10 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
+                // Test performance de l'update d'user en bdd
+                final Trace myTrace2 = FirebasePerformance.getInstance().newTrace("coursesPupilsActivityGetFilteredCourses_trace");
+                myTrace2.start();
+
                 Calendar calendar = Calendar.getInstance();
                 calendar.set(year, month, dayOfMonth);
 
@@ -320,6 +320,10 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
      */
     private void alarmConnectedUser(final String userLevel) {
 
+        // Test performance de l'update d'user en bdd
+        final Trace myTrace3 = FirebasePerformance.getInstance().newTrace("coursesPupilsActivityAlarmConnectedUser_trace");
+        myTrace3.start();
+
         setupDb().collection("courses").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -336,6 +340,7 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
                                 if (userLevel.equals(niveau))
                                     // alarm pour notification sur le cours créé
                                     alarmCours(course);
+                                myTrace3.stop();
                             }
                         }
                     }

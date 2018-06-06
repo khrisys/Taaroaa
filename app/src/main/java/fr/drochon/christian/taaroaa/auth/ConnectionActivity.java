@@ -57,10 +57,6 @@ public class ConnectionActivity extends BaseActivity {
         mPassword = findViewById(R.id.password_input);
         Button valid = findViewById(R.id.creation_identifiants_btn);
 
-        // Test performance de l'update d'user en bdd
-        final Trace myTrace = FirebasePerformance.getInstance().newTrace("connectionActivity_trace");
-        myTrace.start();
-
         configureToolbar();
         giveToolbarAName(R.string.creation_compte);
 
@@ -73,7 +69,6 @@ public class ConnectionActivity extends BaseActivity {
             public void onClick(View v) {
                 if (!mEmail.getText().toString().isEmpty() && !mPassword.getText().toString().isEmpty()) {
                     connectToFirebaseWithEmailAndPassword();
-                    myTrace.stop();
                 } else
                     verificationChampsVides();
             }
@@ -108,6 +103,10 @@ public class ConnectionActivity extends BaseActivity {
     // VALIDATION EMAIL PAR LIEN ENVOYE DEPUIS FIREBASE
     // --------------------
     private void connectToFirebaseWithEmailAndPassword() {
+        // Test performance de l'update d'user en bdd
+        final Trace myTrace = FirebasePerformance.getInstance().newTrace("connectionWithEmailAndPassword_trace");
+        myTrace.start();
+
         // recuperation de la bdd FirebaseAuth avec en param l'app taaroaa
         final FirebaseAuth auth = FirebaseAuth.getInstance(FirebaseFirestore.getInstance().getApp());
 
@@ -119,6 +118,8 @@ public class ConnectionActivity extends BaseActivity {
                         if (task.isSuccessful()) {
                             // appel de la methode de verification d'email depuis firebase
                             verifEmailUser();
+
+                            myTrace.stop();
                         } else {
                             // If sign in fails, display a message to the user.
                             AlertDialog.Builder adb = new AlertDialog.Builder(ConnectionActivity.this);

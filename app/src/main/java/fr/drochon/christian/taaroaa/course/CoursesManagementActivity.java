@@ -49,10 +49,10 @@ import java.util.Objects;
 import java.util.TimeZone;
 
 import fr.drochon.christian.taaroaa.R;
+import fr.drochon.christian.taaroaa.alarm.TimeAlarmCourses;
 import fr.drochon.christian.taaroaa.api.CourseHelper;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
 import fr.drochon.christian.taaroaa.model.Course;
-import fr.drochon.christian.taaroaa.alarm.TimeAlarmCourses;
 
 import static fr.drochon.christian.taaroaa.api.CourseHelper.getCoursesCollection;
 import static java.util.Calendar.MINUTE;
@@ -96,10 +96,6 @@ public class CoursesManagementActivity extends BaseActivity {
 
         //  les AlarmManager permettront de réveiller le téléphone et d'executer du code à une date précise
         mAlarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-
-        // Test performance de l'update d'user en bdd
-        final Trace myTrace = FirebasePerformance.getInstance().newTrace("coursesManagementActivityFromStartScreenToCourseCreationIncludingFormErrors_trace");
-        myTrace.start();
 
         configureToolbar();
         giveToolbarAName(R.string.course_management_name);
@@ -162,8 +158,6 @@ public class CoursesManagementActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 createCourseInFirebase();
-
-                myTrace.stop();
             }
         });
     }
@@ -236,6 +230,10 @@ public class CoursesManagementActivity extends BaseActivity {
      */
     private void createOrUpdateAffichage(final String uid) {
 
+        // Test performance de l'update d'user en bdd
+        final Trace myTrace1 = FirebasePerformance.getInstance().newTrace("coursesManagementActivityCreateOrUpdateAffichage_trace");
+        myTrace1.start();
+
         Query mQuery = setupDb().collection("courses").whereEqualTo("uid", uid);
 
         // RAJOUTER LE THIS DANS LE 1ER ARG DU LUSTENER PERMET DE RESTREINDRE LE CONTEXT A CETTE ACTIVITE, EVITANT AINSI DE METTRE LES DONNEES
@@ -264,6 +262,8 @@ public class CoursesManagementActivity extends BaseActivity {
                         mNiveauCours.setTag(course.getNiveauDuCours());
                         mDateCours.setText(course.getDateDuCours().toString());
                         mHeureCours.setText(course.getTimeDuCours().toString());
+
+                        myTrace1.stop();
                     } else {
                         mCreerCours.setText(R.string.button_create_course);
                     }
@@ -376,6 +376,10 @@ public class CoursesManagementActivity extends BaseActivity {
         } else {
             if (!moniteur.isEmpty() && !sujet.isEmpty() && !mDateCours.getText().toString().isEmpty() && !mHeureCours.getText().toString().isEmpty()) {
 
+                // Test performance de l'update d'user en bdd
+                final Trace myTrace = FirebasePerformance.getInstance().newTrace("coursesManagementActivityCreateCourse_trace");
+                myTrace.start();
+
                 Map<String, Object> newCourse = new HashMap<>();
                 newCourse.put("id", id);
                 newCourse.put("niveauDuCours", niveauCours);
@@ -396,6 +400,8 @@ public class CoursesManagementActivity extends BaseActivity {
                                 Toast.makeText(CoursesManagementActivity.this, R.string.create_course,
                                         Toast.LENGTH_SHORT).show();
                                 startCoursesSupervisorsActivity(); // renvoi l'encadrant sur la page de tous les cours
+
+                                myTrace.stop();
                             }
                         })
                         .addOnFailureListener(new OnFailureListener() {

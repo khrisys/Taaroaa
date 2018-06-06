@@ -54,9 +54,8 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
         listPassagers = new ArrayList<>();
 
         // Test performance
-        final Trace myTrace = FirebasePerformance.getInstance().newTrace("covoiturageVehiclesActivityFromStartScreenToShowAllVehicles_trace");
+        final Trace myTrace = FirebasePerformance.getInstance().newTrace("covoiturageVehiclesActivityShowAllVehicles_trace");
         myTrace.start();
-
 
         this.configureRecyclerView();
         this.configureToolbar();
@@ -172,6 +171,10 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
      */
     @SuppressWarnings("unchecked")
     private Query getAllCovoiturages() {
+        // Test performance
+        final Trace myTrace1 = FirebasePerformance.getInstance().newTrace("covoiturageVehiclesActivityGetAllCovoiturages_trace");
+        myTrace1.start();
+
         Query mQuery = setupDb().collection("covoiturages").orderBy("horaireRetour", Query.Direction.ASCENDING).whereGreaterThan("horaireRetour", Calendar.getInstance().getTime());
         mQuery.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
@@ -188,6 +191,7 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
                             covoiturage = new Covoiturage(covoit.get("id").toString(), covoit.get("nomConducteur").toString(), covoit.get("prenomConducteur").toString(),
                                     covoit.get("nbPlacesDispo").toString(), covoit.get("nbPlacesTotal").toString(), covoit.get("typeVehicule").toString(), stStringToDate(covoit.get("horaireAller").toString()),
                                     stStringToDate(covoit.get("horaireRetour").toString()), covoit.get("lieuDepartAller").toString(), covoit.get("lieuDepartRetour").toString(), listPassagers);
+                            myTrace1.stop();
                         }
                     }
                 }

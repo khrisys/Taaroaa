@@ -86,10 +86,6 @@ public class AccountCreateActivity extends BaseActivity {
         Button suppressionCompte = findViewById(R.id.suppression_compte_btn);
         fonction = "Plongeur"; // la fonction par defaut d'un adhrent qui créé son compte a pour fonction "Plongeur"
 
-        // Test performance de l'update d'user en bdd
-        final Trace myTrace = FirebasePerformance.getInstance().newTrace("accountCreateActivityFromStartScreenToInsert_trace");
-        myTrace.start();
-
         configureToolbar();
         giveToolbarAName(R.string.account_create_name);
 
@@ -113,6 +109,10 @@ public class AccountCreateActivity extends BaseActivity {
             public void onClick(View v) {
                 Objects.requireNonNull(getCurrentUser()).reload();
 
+                // Test performance de l'update d'user en bdd
+                final Trace myTrace = FirebasePerformance.getInstance().newTrace("accountCreateActivityCreateAUser_trace");
+                myTrace.start();
+
                 FirebaseAuth auth = FirebaseAuth.getInstance(FirebaseFirestore.getInstance().getApp());
                 FirebaseUser firebaseUser = auth.getCurrentUser();
                 if(firebaseUser != null) {
@@ -131,40 +131,6 @@ public class AccountCreateActivity extends BaseActivity {
                 }
             }
         });
-
-  /*      // Suppression d'un compte utilisateur avec alertdialog avant suppression
-        suppressionCompte.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final AlertDialog.Builder adb = new AlertDialog.Builder(AccountCreateActivity.this);
-                adb.setTitle(R.string.alertDialog_account);
-                // ajouter une couleur à l'icon de warning
-                Drawable warning = getResources().getDrawable(android.R.drawable.ic_dialog_alert);
-                ColorFilter filter = new LightingColorFilter(Color.RED, Color.BLUE);
-                warning.setColorFilter(filter);
-                adb.setIcon(warning);
-                adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        EditText editText = findViewById(R.id.alertdialog_ok_account);
-                        Toast.makeText(AccountCreateActivity.this, editText.getText(), Toast.LENGTH_LONG).show();
-                        deleteUserFromFirebase();
-                        deleteUserAuth();
-                        signOutUserFromFirebase();
-                        //deleteUser();
-                        startMainActivity();
-                        //En cas de negation, l'utilisateur reste sur l'ecran de creation de son compte
-                    }
-                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        EditText editText = findViewById(R.id.alertdialog_delete_account);
-                        Toast.makeText(AccountCreateActivity.this, editText.getText(), Toast.LENGTH_LONG).show();
-                        //finish();
-                    }
-                });
-                adb.show();
-            }
-        });*/
-
 
         // --------------------
         // SPINNERS & REMPLISSAGE

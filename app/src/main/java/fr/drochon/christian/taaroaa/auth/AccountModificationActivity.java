@@ -90,10 +90,6 @@ public class AccountModificationActivity extends BaseActivity {
         mModificationCompte = findViewById(R.id.modificiation_compte_btn);
         mSuppressionCompte = findViewById(R.id.suppression_compte_btn);
 
-        // Test performance de l'update d'user en bdd
-        final Trace myTrace = FirebasePerformance.getInstance().newTrace("accountUpdateActivityFromStartScreenToUpdate_trace");
-        myTrace.start();
-
         configureToolbar();
         this.giveToolbarAName(R.string.account_modif_name);
         showAttributes();
@@ -111,7 +107,6 @@ public class AccountModificationActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 updateUserInFirebase();
-                myTrace.stop();
             }
         });
 
@@ -132,11 +127,18 @@ public class AccountModificationActivity extends BaseActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         EditText editText = findViewById(R.id.alertdialog_ok_account);
                         Toast.makeText(AccountModificationActivity.this, editText.getText(), Toast.LENGTH_LONG).show();
-                        //deleteUserFromFirebase();
+
+                        // Test performance de l'update d'user en bdd
+                        final Trace myTrace1 = FirebasePerformance.getInstance().newTrace("accountModificationActivityUserAccountDelete_trace");
+                        myTrace1.start();
+
                         deleteUser();
                         deleteUserAuth();
                         signOutUserFromFirebase();
                         startMainActivity();
+
+                        myTrace1.stop();
+
                     }
                     //En cas de negation, l'utilisateur reste sur l'ecran de creation de son compte
                 }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -357,6 +359,9 @@ public class AccountModificationActivity extends BaseActivity {
         String prenom = this.mPrenom.getText().toString();
         String email = this.mEmail.getText().toString();
 
+        // Test performance de l'update d'user en bdd
+        final Trace myTrace = FirebasePerformance.getInstance().newTrace("accountModificationActivityUserAccountUpdateIncludingCovoiturage_trace");
+        myTrace.start();
 
         if (user.getUid() != null) {
             if (!nom.isEmpty() && !nom.equals(getString(R.string.info_no_username_found)) && !prenom.isEmpty() && !email.isEmpty()) { // verification que tous les champs vides soient remplis
@@ -377,6 +382,8 @@ public class AccountModificationActivity extends BaseActivity {
                                         Toast.LENGTH_SHORT).show();
                                 updateUIAfterRESTRequestsCompleted(UPDATE_USERNAME);
                                 startSummaryActivity();
+
+                                myTrace.stop();
                             }
                         });
             } else verificationChampsVides();
@@ -423,6 +430,11 @@ public class AccountModificationActivity extends BaseActivity {
      * l'activité Sommaire qui a determiné que l'utilisateur voulant afficher ses informations etait enregistré en bdd.
      */
     private void getAndShowUserDatas() {
+
+        // Test performance de l'update d'user en bdd
+        final Trace myTrace1 = FirebasePerformance.getInstance().newTrace("accountModificationActivityGetAndShowUserDatas_trace");
+        myTrace1.start();
+
         // recup de l'user passé par un intent depuis la classe SearchUser
         Intent intent = getIntent();
         user = (User) Objects.requireNonNull(intent.getExtras()).getSerializable("user");
@@ -441,6 +453,8 @@ public class AccountModificationActivity extends BaseActivity {
                             mNiveauPlongeespinner.setSelection(getIndexSpinner(mNiveauPlongeespinner, user.get("niveau").toString()));
                             mFonctionAuClubspinner.setSelection(getIndexSpinner(mFonctionAuClubspinner, user.get("fonction").toString()));
                             mEmail.setText(user.get("email").toString());
+
+                            myTrace1.stop();
                         }
                     }
                 }

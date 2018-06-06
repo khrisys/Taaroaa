@@ -48,20 +48,13 @@ public class SummaryActivity extends BaseActivity {
         mModifCompte = findViewById(R.id.modif_adherents_btn);
 
         // Test performance de l'update d'user en bdd
-        final Trace myTrace = FirebasePerformance.getInstance().newTrace("summaryActivityFromStartScreenToUser_trace");
+        final Trace myTrace = FirebasePerformance.getInstance().newTrace("summaryActivityShowTiles_trace");
         myTrace.start();
-        // Test performance de l'update d'user en bdd
-        final Trace myTrace1 = FirebasePerformance.getInstance().newTrace("summaryActivityFromStartScreenToCourses_trace");
-        myTrace1.start();
-
-        // Test performance de l'update d'user en bdd
-        final Trace myTrace2 = FirebasePerformance.getInstance().newTrace("summaryActivityFromStartScreenToCovoiturages_trace");
-        myTrace2.start();
-
 
         configureToolbar();
         showPannelModification();
         giveToolbarAName(R.string.summary_name);
+        myTrace.stop();
 
 
         // --------------------
@@ -76,6 +69,10 @@ public class SummaryActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 final FirebaseUser auth = FirebaseAuth.getInstance(FirebaseFirestore.getInstance().getApp()).getCurrentUser();
+
+                // Test performance de l'update d'user en bdd
+                final Trace myTrace1 = FirebasePerformance.getInstance().newTrace("summaryActivityGoToPersonnalAccountWithBundle_trace");
+                myTrace1.start();
 
                 setupDb().collection("users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
@@ -94,7 +91,7 @@ public class SummaryActivity extends BaseActivity {
                                         Intent intent = new Intent(SummaryActivity.this, AccountModificationActivity.class).putExtra("user", u);
                                         startActivity(intent);
 
-                                        myTrace.stop();
+                                        myTrace1.stop();
                                     }
                                 }
                             }
@@ -120,6 +117,10 @@ public class SummaryActivity extends BaseActivity {
         cours.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Test performance de l'update d'user en bdd
+                final Trace myTrace1 = FirebasePerformance.getInstance().newTrace("summaryActivityGoToCoursesDependingOnLevelCurrentUser_trace");
+                myTrace1.start();
+
                 setupDb().collection("users").document(Objects.requireNonNull(getCurrentUser()).getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -151,6 +152,10 @@ public class SummaryActivity extends BaseActivity {
         sortie.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Test performance de l'update d'user en bdd
+                final Trace myTrace2 = FirebasePerformance.getInstance().newTrace("summaryActivityGoToCovoiturages_trace");
+                myTrace2.start();
+
                 Intent intent = new Intent(SummaryActivity.this, CovoiturageAccueilActivity.class);
                 startActivity(intent);
 

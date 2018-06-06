@@ -56,10 +56,6 @@ public class SearchUserActivity extends BaseActivity {
         final Trace myTrace = FirebasePerformance.getInstance().newTrace("searchUserActivityShowAllUsers_trace");
         myTrace.start();
 
-        // Test performance de recherche users filtrés
-        final Trace myTrace1 = FirebasePerformance.getInstance().newTrace("searchUserActivityFilteredlUsers_trace");
-        myTrace.start();
-
         getListUsers();
         configureRecyclerView();
         myTrace.stop();
@@ -81,6 +77,11 @@ public class SearchUserActivity extends BaseActivity {
             //Configure Adapter & RecyclerView
             @Override
             public boolean onQueryTextChange(String newText) {
+
+                // Test performance de recherche users filtrés
+                final Trace myTrace1 = FirebasePerformance.getInstance().newTrace("searchUserActivityShowFilteredlUsers_trace");
+                myTrace.start();
+
                 // filtre d'affichage sur la liste des users (grace aux conditions "startat" et "endat" de la requete
                 if (!newText.equals(""))
                     mAdapterSearchedUser = new AdapterSearchedUser(generateOptionsForAdapter(getFilteredUser(newText)));
@@ -182,6 +183,10 @@ public class SearchUserActivity extends BaseActivity {
      */
     private Query getAllUsers() {
 
+        // Test performance de recherche users filtrés
+        final Trace myTrace2 = FirebasePerformance.getInstance().newTrace("searchUserActivityGetAllUsersQuery_trace");
+        myTrace2.start();
+
         Query mQuery = setupDb().collection("users").orderBy("nom", Query.Direction.ASCENDING);
         mQuery.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
@@ -193,6 +198,7 @@ public class SearchUserActivity extends BaseActivity {
                         Log.e("TAG", "Le document existe !");
                         // liste des docs
                         readDataInList(documentSnapshots.getDocuments());
+                        myTrace2.stop();
                     }
                 }
             }
@@ -207,6 +213,10 @@ public class SearchUserActivity extends BaseActivity {
      */
     private Query getFilteredUser(final String nom) {
 
+        // Test performance de recherche users filtrés
+        final Trace myTrace3 = FirebasePerformance.getInstance().newTrace("searchUserActivityGetFilteredUsersQuery_trace");
+        myTrace3.start();
+
         Query mQ = setupDb().collection("users").orderBy("nom").startAt(nom).endAt(nom + '\uf8ff');
         mQ.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
@@ -217,6 +227,7 @@ public class SearchUserActivity extends BaseActivity {
                         for (DocumentSnapshot ds : docs) {
                             Map<String, Object> user = ds.getData();
                             filter(listUsers, nom);
+                            myTrace3.stop();
                         }
                     }
                 }

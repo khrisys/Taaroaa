@@ -77,12 +77,8 @@ public class CoursesSupervisorsActivity extends BaseActivity implements AdapterC
         calendrierFinJournee = new Date();
 
         // Test performance de l'update d'user en bdd
-        final Trace myTrace = FirebasePerformance.getInstance().newTrace("coursesSupervisorsActivityFromStartScreenToShowAllCourses_trace");
+        final Trace myTrace = FirebasePerformance.getInstance().newTrace("coursesSupervisorsActivityShowAllCourses_trace");
         myTrace.start();
-
-        // Test performance de l'update d'user en bdd
-        final Trace myTrace1 = FirebasePerformance.getInstance().newTrace("coursesSupervisorsActivityFromStartScreenToFilteredCourses_trace");
-        myTrace1.start();
 
         configureRecyclerView();
         configureToolbar();
@@ -106,6 +102,10 @@ public class CoursesSupervisorsActivity extends BaseActivity implements AdapterC
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
+                // Test performance de l'update d'user en bdd
+                final Trace myTrace1 = FirebasePerformance.getInstance().newTrace("coursesSupervisorsActivityShowFilteredCourses_trace");
+                myTrace1.start();
+
                 Calendar calendar = Calendar.getInstance();
                 calendar.set(year, month, dayOfMonth);
                 // formattage de la date pour le debut et la fin de journée
@@ -237,6 +237,9 @@ public class CoursesSupervisorsActivity extends BaseActivity implements AdapterC
      * @return query
      */
     private Query queryAllCourses() {
+        // Test performance de l'update d'user en bdd
+        final Trace myTrace2 = FirebasePerformance.getInstance().newTrace("coursesSupervisorsActivityAllCoursesQuerys_trace");
+        myTrace2.start();
         Query mQuery = setupDb().collection("courses").orderBy("horaireDuCours", Query.Direction.ASCENDING);
         mQuery.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
@@ -248,6 +251,7 @@ public class CoursesSupervisorsActivity extends BaseActivity implements AdapterC
                         Log.e("TAG", "Le document existe !");
                         // liste des docs
                         readDataInList(documentSnapshots.getDocuments());
+                        myTrace2.stop();
                     }
                 }
             }
@@ -262,6 +266,9 @@ public class CoursesSupervisorsActivity extends BaseActivity implements AdapterC
      * @return query
      */
     private Query queryCoursesFiltered() {
+        // Test performance de l'update d'user en bdd
+        final Trace myTrace3 = FirebasePerformance.getInstance().newTrace("coursesSupervisorsActivityFilteredCoursesQuery_trace");
+        myTrace3.start();
         Query mQ = setupDb().collection("courses").orderBy("horaireDuCours").startAt(calendrierClique).endAt(calendrierFinJournee);
         mQ.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
@@ -269,6 +276,7 @@ public class CoursesSupervisorsActivity extends BaseActivity implements AdapterC
                 if (documentSnapshots != null) {
                     if (documentSnapshots.size() != 0) {
                         readDataInList(documentSnapshots.getDocuments());
+                        myTrace3.stop();
                     }
                 }
             }

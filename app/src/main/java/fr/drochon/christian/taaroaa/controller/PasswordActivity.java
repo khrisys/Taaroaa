@@ -40,10 +40,6 @@ public class PasswordActivity extends BaseActivity {
         mEmailView = findViewById(R.id.email_recup);
 
 
-        // Test performance de recuperation de mot de passe
-        final Trace myTrace = FirebasePerformance.getInstance().newTrace("passwordActivityFromStartScreenToNewConnection_trace");
-        myTrace.start();
-
         // --------------------
         // LISTENER
         // --------------------
@@ -54,6 +50,10 @@ public class PasswordActivity extends BaseActivity {
             public void onClick(View view) {
                 final FirebaseAuth auth = FirebaseAuth.getInstance();
                 String emailAddress = mEmailView.getText().toString();
+
+                // Test performance de recuperation de mot de passe
+                final Trace myTrace = FirebasePerformance.getInstance().newTrace("passwordActivityResetEmail_trace");
+                myTrace.start();
 
                 if (verificationChampsVides()) {
                     auth.sendPasswordResetEmail(emailAddress)

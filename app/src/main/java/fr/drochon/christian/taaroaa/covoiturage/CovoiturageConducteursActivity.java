@@ -103,12 +103,13 @@ public class CovoiturageConducteursActivity extends BaseActivity {
         mNbPlaceTotal.requestFocus();
 
         // Test performance
-        final Trace myTrace = FirebasePerformance.getInstance().newTrace("covoiturageConducteursActivityFromStartScreenToCreateCovoiturageIncludingFormùErrors_trace");
+        final Trace myTrace = FirebasePerformance.getInstance().newTrace("covoiturageConducteursActivityGetInfosCurrentUser_trace");
         myTrace.start();
 
         this.configureToolbar();
         this.giveToolbarAName(R.string.covoit_conducteur_name);
         this.getInfosCurrentUser();
+        myTrace.stop();
 
         // --------------------
         // SPINNERS & REMPLISSAGE
@@ -164,7 +165,7 @@ public class CovoiturageConducteursActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 createCovoiturageInFirebase();
-                myTrace.stop();
+
             }
         });
     }
@@ -391,6 +392,10 @@ public class CovoiturageConducteursActivity extends BaseActivity {
                 if (!nom.isEmpty() && !prenom.isEmpty() && !nbPlacesDispo.isEmpty() && !dateAller.isEmpty() && !dateRetour.isEmpty()
                         && !heureDepart.isEmpty() && !heureRetour.isEmpty() && !lieuAller.isEmpty() && !lieuRetour.isEmpty()) {
 
+                    // Test performance
+                    final Trace myTrace1 = FirebasePerformance.getInstance().newTrace("covoiturageConducteursActivitycreateCovoiturage_trace");
+                    myTrace1.start();
+
                     //creation de l'objet covoiturage et insertion dans la bdd
                     Map<String, Object> covoit = new HashMap<>();
                     covoit.put("id", id);
@@ -429,6 +434,7 @@ public class CovoiturageConducteursActivity extends BaseActivity {
                                     Toast.makeText(CovoiturageConducteursActivity.this, R.string.create_covoit,
                                             Toast.LENGTH_LONG).show();
                                     startMainCovoitActivity(); // renvoi l'covoit sur la page des covoiturages  apres validation de la creation du covoit
+                                    myTrace1.stop();
                                 }
                             })
                             .addOnFailureListener(new OnFailureListener() {
@@ -452,6 +458,7 @@ public class CovoiturageConducteursActivity extends BaseActivity {
      * avec un compte precis pourra creer un covoiturage.
      */
     private void getInfosCurrentUser() {
+
         // correction test de performance
         FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
         if(auth != null) {

@@ -110,17 +110,14 @@ public class CovoituragePassagersActivity extends BaseActivity {
         mAlarmManagerRetour = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
         // Test performance
-        final Trace myTrace = FirebasePerformance.getInstance().newTrace("covoituragePassagersActivityFromStartScreenToShowPassengers_trace");
+        final Trace myTrace = FirebasePerformance.getInstance().newTrace("covoituragePassagersActivityShowPassengers_trace");
         myTrace.start();
-
-        // Test performance
-        final Trace myTrace1 = FirebasePerformance.getInstance().newTrace("covoituragePassagersActivityFromStartScreenToReservation_trace");
-        myTrace1.start();
 
         this.configureToolbar();
         this.giveToolbarAName(R.string.covoit_passager_name);
         this.updateUIWhenCreating();
         this.getAllUsers();
+        myTrace.stop();
 
         // --------------------
         // LISTENERS
@@ -148,7 +145,6 @@ public class CovoituragePassagersActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 createPassagerInCovoiturage();
-                myTrace1.stop();
             }
         });
     }
@@ -547,6 +543,10 @@ public class CovoituragePassagersActivity extends BaseActivity {
             // si le nb de places demandées est bon, on insere tous les noms des passagers dans la bdd
         } else {
             if (verificationChampsVides()) {
+                // Test performance
+                final Trace myTrace1 = FirebasePerformance.getInstance().newTrace("covoituragePassagersActivityReservation_trace");
+                myTrace1.start();
+
                 String placesRestantes = String.valueOf(nbPlacesRestantes);
                 mNbPlaceDispo.setText(placesRestantes);
                 // recuperation passagers existants dejà pour ce covoit
@@ -588,6 +588,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
                                 /*alarmDepart();
                                 alarmRetour();*/
                                 startActivityCovoiturageVehicule(); // renvoi l'user sur la page des covoiturages apres validation de la creation de l'user dans les covoit
+                                myTrace1.stop();
                             }
                         });
             }
@@ -600,6 +601,10 @@ public class CovoituragePassagersActivity extends BaseActivity {
      * @return nb de places restantes pour un covoiturage
      */
     private int calculNbPlacesRestantes() {
+        // Test performance
+        final Trace myTrace2 = FirebasePerformance.getInstance().newTrace("covoituragePassagersActivityCalculNbPlacesRestantes_trace");
+        myTrace2.start();
+
         String passagers = mNbPassagerInput.getText().toString();
         int nbPassagers = 0;
         int nbPlacesDispo;
@@ -615,6 +620,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
             nbPlacesRestantes = nbPlacesDispo - nbPassagers;
         } else
             nbPlacesRestantes = nbPassagers;
+        myTrace2.stop();
         return nbPlacesRestantes;
     }
 }
