@@ -2,6 +2,7 @@
 <resources>
     <string-array name="fonctions_array">
         <item>Plongeur</item>
+        <item>Apnéiste</item>
         <item>Initiateur</item>
         <item>Moniteur</item>
     </string-array>

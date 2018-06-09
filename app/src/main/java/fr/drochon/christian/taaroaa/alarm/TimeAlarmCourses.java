@@ -57,10 +57,12 @@ public class TimeAlarmCourses extends BroadcastReceiver {
         // Créé un nouvel intent. Par contre, on ne renvoie pas l'user vers une nouvelle activité car on s'y trouve dejà.
         // On ne l'y renvoie uniquement que si l'user n'est pas sur la page activityPupilsActivity au moment du declenchement de la notif.
         // Sinon, ca fera une boucle infinie puisque la meme acticité sera rappellée sans cesse.
-        Object activity = Objects.requireNonNull(intent.getExtras().get("activity"));
-        if (activity != null) {
-            if (!activity.equals(CoursesPupilsActivity.class))
-                intent = new Intent(context, CoursesPupilsActivity.class);
+        if(intent.getExtras() != null) {
+            Object activity = Objects.requireNonNull(intent.getExtras().get("activity"));
+            if (activity != null) {
+                if (!activity.equals(CoursesPupilsActivity.class))
+                    intent = new Intent(context, CoursesPupilsActivity.class);
+            }
         }
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 2, intent, PendingIntent.FLAG_ONE_SHOT);

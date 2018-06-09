@@ -58,7 +58,7 @@ public class AccountModificationActivity extends BaseActivity {
     private static final int DELETE_USER_TASK = 20;
     private static final int UPDATE_USERNAME = 30;
     private static final int GET_USERNAME = 40;
-    private static User user;
+    private User user;
     //DESIGN
     private LinearLayout mLinearLayoutFonctionAdherent;
     private TextInputEditText mPrenom;
@@ -282,9 +282,9 @@ public class AccountModificationActivity extends BaseActivity {
      * Cette methode desactive toutes les autres options pour empecher les erreurs de manipulation.
      */
     private void showAttributes() {
-
-        if (this.getCurrentUser() != null) {
-            DocumentReference mQuery = setupDb().collection("users").document(getCurrentUser().getUid());
+        FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
+        if (auth != null) {
+            DocumentReference mQuery = setupDb().collection("users").document(auth.getUid());
 
             mQuery.addSnapshotListener(new EventListener<DocumentSnapshot>() {
                 @Override
@@ -363,30 +363,35 @@ public class AccountModificationActivity extends BaseActivity {
         final Trace myTrace = FirebasePerformance.getInstance().newTrace("accountModificationActivityUserAccountUpdateIncludingCovoiturage_trace");
         myTrace.start();
 
-        if (user.getUid() != null) {
-            if (!nom.isEmpty() && !nom.equals(getString(R.string.info_no_username_found)) && !prenom.isEmpty() && !email.isEmpty()) { // verification que tous les champs vides soient remplis
+        // recup de l'user passé par un intent depuis la classe SearchUser
+        Intent intent = getIntent();
+        if (intent != null) {
+            user = (User) Objects.requireNonNull(intent.getExtras()).getSerializable("user");
+            if (user != null) {
+                if (!nom.isEmpty() && !nom.equals(getString(R.string.info_no_username_found)) && !prenom.isEmpty() && !email.isEmpty()) { // verification que tous les champs vides soient remplis
 
-                // Update de la bdd covoiturage si l'user à updater a créé des covoiturages.
-                // Cette fonction est appelée avant la fonction d'update de la bdd user
-                updateCovoituragesIfCreated();
+                    // Update de la bdd covoiturage si l'user à updater a créé des covoiturages.
+                    // Cette fonction est appelée avant la fonction d'update de la bdd user
+                    updateCovoituragesIfCreated();
 
-                // Update de la bdd user
-                this.mProgressBar.setVisibility(View.VISIBLE);
-                UserHelper.updateUser(user.getUid(), this.mNom.getText().toString().toUpperCase(), this.mPrenom.getText().toString().toUpperCase(), this.mLicence.getText().toString(),
-                        this.mEmail.getText().toString(), this.mNiveauPlongeespinner.getSelectedItem().toString(), this.mFonctionAuClubspinner.getSelectedItem().toString()).
-                        addOnFailureListener(this.onFailureListener()).
-                        addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                Toast.makeText(AccountModificationActivity.this, R.string.update_account,
-                                        Toast.LENGTH_SHORT).show();
-                                updateUIAfterRESTRequestsCompleted(UPDATE_USERNAME);
-                                startSummaryActivity();
+                    // Update de la bdd user
+                    this.mProgressBar.setVisibility(View.VISIBLE);
+                    UserHelper.updateUser(user.getUid(), this.mNom.getText().toString().toUpperCase(), this.mPrenom.getText().toString().toUpperCase(), this.mLicence.getText().toString(),
+                            this.mEmail.getText().toString(), this.mNiveauPlongeespinner.getSelectedItem().toString(), this.mFonctionAuClubspinner.getSelectedItem().toString()).
+                            addOnFailureListener(this.onFailureListener()).
+                            addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Toast.makeText(AccountModificationActivity.this, R.string.update_account,
+                                            Toast.LENGTH_SHORT).show();
+                                    updateUIAfterRESTRequestsCompleted(UPDATE_USERNAME);
+                                    startSummaryActivity();
 
-                                myTrace.stop();
-                            }
-                        });
-            } else verificationChampsVides();
+                                    myTrace.stop();
+                                }
+                            });
+                } else verificationChampsVides();
+            }
         }
     }
 
@@ -437,28 +442,30 @@ public class AccountModificationActivity extends BaseActivity {
 
         // recup de l'user passé par un intent depuis la classe SearchUser
         Intent intent = getIntent();
-        user = (User) Objects.requireNonNull(intent.getExtras()).getSerializable("user");
-        if (user != null) {
-            // requete avec l'uid de l'user recu
-            setupDb().collection("users").document(user.getUid())
-                    .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()) {
-                        Map<String, Object> user = task.getResult().getData();
-                        if(user != null) {
-                            mNom.setText(user.get("nom").toString());
-                            mPrenom.setText(user.get("prenom").toString());
-                            mLicence.setText(user.get("licence").toString());
-                            mNiveauPlongeespinner.setSelection(getIndexSpinner(mNiveauPlongeespinner, user.get("niveau").toString()));
-                            mFonctionAuClubspinner.setSelection(getIndexSpinner(mFonctionAuClubspinner, user.get("fonction").toString()));
-                            mEmail.setText(user.get("email").toString());
+        if (intent != null) {
+            user = (User) Objects.requireNonNull(intent.getExtras()).getSerializable("user");
+            if (user != null) {
+                // requete avec l'uid de l'user recu
+                setupDb().collection("users").document(user.getUid())
+                        .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            Map<String, Object> user = task.getResult().getData();
+                            if (user != null) {
+                                mNom.setText(user.get("nom").toString());
+                                mPrenom.setText(user.get("prenom").toString());
+                                mLicence.setText(user.get("licence").toString());
+                                mNiveauPlongeespinner.setSelection(getIndexSpinner(mNiveauPlongeespinner, user.get("niveau").toString()));
+                                mFonctionAuClubspinner.setSelection(getIndexSpinner(mFonctionAuClubspinner, user.get("fonction").toString()));
+                                mEmail.setText(user.get("email").toString());
 
-                            myTrace1.stop();
+                                myTrace1.stop();
+                            }
                         }
                     }
-                }
-            });
+                });
+            }
         }
     }
 
@@ -466,14 +473,17 @@ public class AccountModificationActivity extends BaseActivity {
      * Methode permettant de supprimer un utilisateur
      */
     private void deleteUser() {
-        setupDb().collection("users").document(Objects.requireNonNull(getCurrentUser()).getUid())
-                .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Toast.makeText(AccountModificationActivity.this, R.string.alertDialog_delete,
-                        LENGTH_SHORT).show();
-            }
-        });
+        FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
+        if (auth != null) {
+            setupDb().collection("users").document(auth.getUid())
+                    .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    Toast.makeText(AccountModificationActivity.this, R.string.alertDialog_delete,
+                            LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 
     /**
@@ -481,7 +491,7 @@ public class AccountModificationActivity extends BaseActivity {
      */
     private void deleteUserAuth() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if(user != null) {
+        if (user != null) {
             user.delete()
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override

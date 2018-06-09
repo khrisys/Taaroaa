@@ -357,7 +357,7 @@ public class CovoiturageConducteursActivity extends BaseActivity {
             final AlertDialog.Builder adb = new AlertDialog.Builder(this);
             adb.setTitle("Date incorrecte");
             adb.setIcon(android.R.drawable.ic_delete);
-            adb.setMessage("Le jour du départ ne peut pas être défini avant la date du jour !");
+            adb.setMessage("Le jour et l'heure du départ ne peuvent pas être définis avant l'heure actuelle !");
             adb.setPositiveButton("MODIFIER", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     mDateDepart.setText("");
@@ -408,6 +408,7 @@ public class CovoiturageConducteursActivity extends BaseActivity {
                     covoit.put("horaireRetour", horaireDuRetour);
                     covoit.put("lieuDepartAller", lieuAller);
                     covoit.put("lieuDepartRetour", lieuRetour);
+
                     List<User> users = new ArrayList<>();
                     covoit.put("listPassagers", users);
                     //TODO V2 : ligne à rajouter lors que l'obet Sortie existera
@@ -434,6 +435,7 @@ public class CovoiturageConducteursActivity extends BaseActivity {
                                     Toast.makeText(CovoiturageConducteursActivity.this, R.string.create_covoit,
                                             Toast.LENGTH_LONG).show();
                                     startMainCovoitActivity(); // renvoi l'covoit sur la page des covoiturages  apres validation de la creation du covoit
+
                                     myTrace1.stop();
                                 }
                             })

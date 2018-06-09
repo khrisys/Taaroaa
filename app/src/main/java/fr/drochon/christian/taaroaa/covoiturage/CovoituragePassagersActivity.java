@@ -34,6 +34,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.perf.FirebasePerformance;
@@ -401,15 +403,17 @@ public class CovoituragePassagersActivity extends BaseActivity {
         calendar.setTime(covoiturage.getHoraireAller());
         // Declenchement de l'alarm de 2h avant le depart jusqu'au demarrage effectif du covoit
         calendar.add(Calendar.HOUR, -2);
+        FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
+        if(auth != null) {
+            if (user.getUid().equals(auth.getUid())) {
+                Covoiturage covoit = new Covoiturage();
+                covoit.setHoraireAller(covoiturage.getHoraireAller());
 
-        if (user.getUid().equals(Objects.requireNonNull(getCurrentUser()).getUid())) {
-            Covoiturage covoit = new Covoiturage();
-            covoit.setHoraireAller(covoiturage.getHoraireAller());
-
-            Intent intent = new Intent(this, TimeAlarmCovoiturageAller.class).putExtra("covoiturageAlarm", covoit);//.putExtra("user", passager);
-            PendingIntent operation = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
-            // reveil de l'alarm
-            mAlarmManagerAller.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), operation);
+                Intent intent = new Intent(this, TimeAlarmCovoiturageAller.class).putExtra("covoiturageAlarm", covoit);//.putExtra("user", passager);
+                PendingIntent operation = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+                // reveil de l'alarm
+                mAlarmManagerAller.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), operation);
+            }
         }
     }
 
@@ -423,16 +427,18 @@ public class CovoituragePassagersActivity extends BaseActivity {
         calendar.setTime(covoiturage.getHoraireRetour());
         // Declenchement de l'alarm de 2h avant le depart jusqu'au demarrage effectif du covoit
         calendar.add(Calendar.HOUR, -2);
+        FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
+        if(auth != null) {
+            // personne qui s'inscrit soi meme à un covoiturgae
+            if (user.getUid().equals(auth.getUid())) {
+                Covoiturage covoit = new Covoiturage();
+                covoit.setHoraireRetour(covoiturage.getHoraireRetour());
 
-        // personne qui s'inscrit soi meme à un covoiturgae
-        if (user.getUid().equals(Objects.requireNonNull(getCurrentUser()).getUid())) {
-            Covoiturage covoit = new Covoiturage();
-            covoit.setHoraireRetour(covoiturage.getHoraireRetour());
-
-            Intent intent = new Intent(this, TimeAlarmCovoiturageRetour.class).putExtra("covoiturageAlarm", covoit);//.putExtra("user", passager);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1, intent, PendingIntent.FLAG_ONE_SHOT);
-            // reveil de l'alarm
-            mAlarmManagerRetour.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+                Intent intent = new Intent(this, TimeAlarmCovoiturageRetour.class).putExtra("covoiturageAlarm", covoit);//.putExtra("user", passager);
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1, intent, PendingIntent.FLAG_ONE_SHOT);
+                // reveil de l'alarm
+                mAlarmManagerRetour.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+            }
         }
     }
 

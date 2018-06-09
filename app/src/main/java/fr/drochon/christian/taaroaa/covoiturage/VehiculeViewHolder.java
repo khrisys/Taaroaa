@@ -82,7 +82,6 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
     TextView mRetour;
 
 
-
     /**
      * Contructeur qui prend en param la vue affichée.
      * Je recupere les 2 textview du layout pupils_cell.
@@ -272,7 +271,7 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
                     for (DocumentSnapshot ds : docSps) {
                         Map<String, Object> covoit = ds.getData();
                         if(covoit != null) {
-                            if (covoit.get("nomConducteur").equals(nom) && covoit.get("prenomConducteur").equals(prenom)) {
+                            if (covoit.get("nomConducteur").toString().equals(nom) && covoit.get("prenomConducteur").toString().equals(prenom)) {
                                 //CRUD
                                 CovoiturageHelper.deleteCovoiturage(covoit.get("id").toString())
                                         .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -331,5 +330,4 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEE dd MMM yyyy ' à ' HH'h'mm", Locale.FRANCE);
         return dateFormat.format(horaireDuCours);
     }
-
 }

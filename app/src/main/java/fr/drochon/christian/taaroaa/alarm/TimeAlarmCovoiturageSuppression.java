@@ -38,6 +38,21 @@ public class TimeAlarmCovoiturageSuppression extends BroadcastReceiver {
         // recuperation de l'extra envoyé dans l'intent
         covoiturage = (Covoiturage) Objects.requireNonNull(intent.getExtras()).getSerializable("covoit");
 
+/*        @SuppressLint("Recycle") Parcel parcel = Parcel.obtain();
+        byte[] bytes;
+        parcel.writeValue(intent.getParcelableExtra("covoit"));
+        bytes = parcel.marshall();
+
+        @SuppressLint("Recycle") Parcel parcel1 = Parcel.obtain();
+        parcel1.unmarshall(bytes, 0 , bytes.length);
+        parcel1.setDataPosition(0);
+        covoiturage = (Covoiturage) parcel1.readValue(Covoiturage.class.getClassLoader());
+
+
+        Parcel intent1 = Objects.requireNonNull(intent.getExtras()).getParcelable("covoit");*/
+
+        //covoiturage = intent.getParcelableExtra("covoit");
+
         // Créé un nouvel intent qui renvoie l'user vers l'activité adequate
         intent = new Intent(context, CovoiturageVehiclesActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -81,7 +96,7 @@ public class TimeAlarmCovoiturageSuppression extends BroadcastReceiver {
         inboxStyle.setBigContentTitle("TAAROAA"); // titre de la notif lorsq'uelle est ouverte
         inboxStyle.addLine("Annulation d'un covoiturage"); // sous titre affuché lorsque la notif est affichée
         inboxStyle.addLine(" ");
-        if(covoiturage != null) {
+        if (covoiturage != null) {
             inboxStyle.addLine(covoiturage.getPrenomConducteur() + " " + covoiturage.getNomConducteur() + " a annulé le covoiturage partant ");
             inboxStyle.addLine("le " + dateCovoitAllerStr + " à " + heureCovoitAllerStr + " depuis " + covoiturage.getLieuDepartAller());
             inboxStyle.addLine("et revenant le " + dateCovoitRetourStr + " à " + heureCovoitRetourStr + " à " + covoiturage.getLieuDepartRetour() + " !"); // decription de la notif lorsqu'elle est ouverte
@@ -127,13 +142,13 @@ public class TimeAlarmCovoiturageSuppression extends BroadcastReceiver {
                 // Register the channel with the system; you can't change the importance
                 // or other notification behaviors after this
                 NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
-                if(notificationManager != null)
-                notificationManager.createNotificationChannel(channel);
+                if (notificationManager != null)
+                    notificationManager.createNotificationChannel(channel);
             }
 
             // Show notification
-            if(notificationManager1 != null)
-            notificationManager1.notify(NOTIFICATION_TAG, NOTIFICATION_ID, notificationBuilder.build());
+            if (notificationManager1 != null)
+                notificationManager1.notify(NOTIFICATION_TAG, NOTIFICATION_ID, notificationBuilder.build());
         }
     }
 }

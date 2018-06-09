@@ -18,6 +18,8 @@ import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
@@ -73,6 +75,7 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
         mTextViewHiddenForSnackbar = findViewById(R.id.test_coordinator);
         creationCompte = findViewById(id.creation_compte_btn);
         mConnexion = findViewById(id.connection_valid_btn);
+        mConnexion.requestFocus();
 
         Button deconnexion = findViewById(id.deconnexion_btn);
 
@@ -114,7 +117,7 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
 
                 if (!isCurrentUserLogged()) {
                     //CREATION DU USER
-                    updateUserInFirestore();
+                    //updateUserInFirestore();
                     startSummaryActivity(); // connecté : renvoyé vers le sommaire
                 } else {
                     startSignInActivity(); // non connecté : inscription
@@ -206,6 +209,7 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
         this.mConnexion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 if (isCurrentUserLogged()) {
                     startSummaryActivity();
                 } else {
@@ -224,6 +228,27 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
      * Methode lancant une page autogenerée par Firebase permettant la connexion/inscription à l'app
      */
     private void startSignInActivity() {
+/*        setupDb().collection("users").addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w("TAG", "Listen error", e);
+                    return;
+                }
+                assert queryDocumentSnapshots != null;
+                for (DocumentChange change : queryDocumentSnapshots.getDocumentChanges()) {
+                    if (change.getType() == DocumentChange.Type.ADDED) {
+                        Log.d("TAG", "User : " + change.getDocument().getData());
+                    }
+
+                    String source = queryDocumentSnapshots.getMetadata().isFromCache() ?
+                            "local cache" : "server";
+                    Log.d("TAG", "Data fetched from " + source);
+                }
+            }
+        });*/
+
+
         startActivityForResult(
                 AuthUI.getInstance()
                         .createSignInIntentBuilder() // lance une activité de connexion/inscrption autogeneree
@@ -277,7 +302,7 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
             if (response == null) {
                 showSnackBar(getString(string.error_authentication_canceled));
             }
-            if(response != null) {
+            if (response != null) {
                 if (Objects.requireNonNull(response.getError()).getErrorCode() == ErrorCodes.NO_NETWORK) {
                     showSnackBar(getString(string.error_no_internet));
                 }
@@ -309,8 +334,9 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
      * et decomposant le nom et le prenom saisi à l'enregistrement de la personne.
      */
     private void updateUserInFirestore() {
-        if (this.getCurrentUser() != null) {
-            Query mQuery = setupDb().collection("users").whereEqualTo("uid", getCurrentUser().getUid());
+        final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
+        if (auth != null) {
+            Query mQuery = setupDb().collection("users").whereEqualTo("uid", auth.getUid());
 
             // RAJOUTER LE THIS DANS LE LUSTENER PERMET DE RESTREINDRE LE CONTEXT A CETTE ACTIVITE, EVITANT AINSI DE METTRE LES DONNEES
             // A JOUR A CHAUQE FOIS QU'IL Y A UN UPDATE DANS L'APP.
@@ -324,11 +350,11 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
                         Log.e("TAG", "Le document existe !");
                     } else {
                         // recuperation des données de l'user
-                        String username = getCurrentUser().getDisplayName();
+                        String username = auth.getDisplayName();
                         // decomposition du nom et du prenom recu dans username
                         String nom = null, prenom;
                         String[] parts;
-                        if(username != null) {
+                        if (username != null) {
                             if (username.contains(" ")) {
                                 parts = username.split(" ");
                                 try {
@@ -343,8 +369,8 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
                                 nom = username;
                                 prenom = "";
                             }
-                            String uid = getCurrentUser().getUid();
-                            String email = getCurrentUser().getEmail();
+                            String uid = auth.getUid();
+                            String email = auth.getEmail();
 
                             addNewUser(uid, nom, prenom, email);
                         }
@@ -375,22 +401,26 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
         newContact.put("nom", nom);
         newContact.put("prenom", prenom);
         newContact.put("email", email);
-        setupDb().collection("users").document(Objects.requireNonNull(getCurrentUser()).getUid()).set(newContact)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Toast.makeText(MainActivity.this, string.create_account,
-                                Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(MainActivity.this, "ERROR" + e.toString(),
-                                Toast.LENGTH_SHORT).show();
-                        Log.d("TAG", e.toString());
-                    }
-                });
+
+        FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
+        if (auth != null) {
+            setupDb().collection("users").document(auth.getUid()).set(newContact)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Toast.makeText(MainActivity.this, string.create_account,
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(MainActivity.this, "ERROR" + e.toString(),
+                                    Toast.LENGTH_SHORT).show();
+                            Log.d("TAG", e.toString());
+                        }
+                    });
+        }
     }
 
 
