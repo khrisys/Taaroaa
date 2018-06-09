@@ -1,6 +1,7 @@
 package fr.drochon.christian.taaroaa.auth;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -10,7 +11,6 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -198,6 +198,7 @@ public class SearchUserActivity extends BaseActivity {
                         Log.e("TAG", "Le document existe !");
                         // liste des docs
                         readDataInList(documentSnapshots.getDocuments());
+
                         myTrace2.stop();
                     }
                 }
@@ -218,22 +219,22 @@ public class SearchUserActivity extends BaseActivity {
         myTrace3.start();
 
         Query mQ = setupDb().collection("users").orderBy("nom").startAt(nom).endAt(nom + '\uf8ff');
-        mQ.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        mQ.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
-            public void onSuccess(QuerySnapshot documentSnapshots) {
-                if (documentSnapshots != null) {
-                    if (documentSnapshots.size() != 0) {
-                        List<DocumentSnapshot> docs = documentSnapshots.getDocuments();
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if (queryDocumentSnapshots != null) {
+                    if (queryDocumentSnapshots.size() != 0) {
+                        List<DocumentSnapshot> docs = queryDocumentSnapshots.getDocuments();
                         for (DocumentSnapshot ds : docs) {
                             Map<String, Object> user = ds.getData();
                             filter(listUsers, nom);
+
                             myTrace3.stop();
                         }
                     }
                 }
             }
         });
-
         return mQ;
     }
 
@@ -241,16 +242,18 @@ public class SearchUserActivity extends BaseActivity {
      * Methode permettant de remplir la liste de tous les utilisateurs contenus dans la bdd
      */
     private void getListUsers() {
-        setupDb().collection("users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        setupDb().collection("users").addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
-            public void onSuccess(QuerySnapshot documentSnapshots) {
-                if (documentSnapshots.size() != 0) {
-                    List<DocumentSnapshot> ds = documentSnapshots.getDocuments();
-                    for (int i = 0; i < ds.size(); i++) {
-                        Map<String, Object> map = ds.get(i).getData();
-                        if(map != null) {
-                            User user = new User(map.get("uid").toString(), map.get("nom").toString(), map.get("prenom").toString());
-                            listUsers.add(user);
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if (queryDocumentSnapshots != null) {
+                    if (queryDocumentSnapshots.size() != 0) {
+                        List<DocumentSnapshot> ds = queryDocumentSnapshots.getDocuments();
+                        for (int i = 0; i < ds.size(); i++) {
+                            Map<String, Object> map = ds.get(i).getData();
+                            if (map != null) {
+                                User user = new User(map.get("uid").toString(), map.get("nom").toString(), map.get("prenom").toString());
+                                listUsers.add(user);
+                            }
                         }
                     }
                 }

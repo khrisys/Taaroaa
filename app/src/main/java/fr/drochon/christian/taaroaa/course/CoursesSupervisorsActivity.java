@@ -240,17 +240,19 @@ public class CoursesSupervisorsActivity extends BaseActivity implements AdapterC
         // Test performance de l'update d'user en bdd
         final Trace myTrace2 = FirebasePerformance.getInstance().newTrace("coursesSupervisorsActivityAllCoursesQuerys_trace");
         myTrace2.start();
-        Query mQuery = setupDb().collection("courses").orderBy("horaireDuCours", Query.Direction.ASCENDING);
+
+        Query mQuery = setupDb().collection("courses")
+                .orderBy("horaireDuCours", Query.Direction.ASCENDING)
+                .whereGreaterThanOrEqualTo("horaireDuCours", Calendar.getInstance().getTime());
         mQuery.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-                // condition de creation d'un user ou affichage simple d'un message indiquant que l'user existe dejà en bdd.
-                // Avec les uid, il ne peut y avoir de doublon, on peut donc etre sur qu'il n'y a qu'un seule doc qui existe s'il en existe un.
                 if (documentSnapshots != null) {
                     if (documentSnapshots.size() != 0) {
                         Log.e("TAG", "Le document existe !");
                         // liste des docs
                         readDataInList(documentSnapshots.getDocuments());
+
                         myTrace2.stop();
                     }
                 }
@@ -290,11 +292,9 @@ public class CoursesSupervisorsActivity extends BaseActivity implements AdapterC
      * @param documentSnapshot donnees recuperees de la requete de recherche de l'utilisateur connecté
      */
     private void readDataInList(final List<DocumentSnapshot> documentSnapshot) {
-
-        // un DocumentReference fait référence à un emplacement de document dans une base de données Firestore et peut être utilisé pour
-        // écrire, lire ou écouter l'emplacement. Il peut exister ou non un document à l'emplacement référencé.
         for (int i = 0; i < documentSnapshot.size(); i++) {
-            DocumentSnapshot doc = documentSnapshot.get(i); //Un DocumentSnapshot contient des données lues à partir d'un document dans votre base de données Firestore.
+            //Un DocumentSnapshot contient des données lues à partir d'un document dans votre base de données Firestore.
+            DocumentSnapshot doc = documentSnapshot.get(i);
             String uid = doc.getId();
             String niveauDuCours = (String) doc.get("niveauDuCours");
             String nomDuMoniteur = (String) doc.get("nomDuMoniteur");

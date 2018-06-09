@@ -39,21 +39,18 @@ import com.google.firebase.perf.metrics.Trace;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
 import fr.drochon.christian.taaroaa.R;
-import fr.drochon.christian.taaroaa.api.CovoiturageHelper;
-import fr.drochon.christian.taaroaa.base.BaseActivity;
-import fr.drochon.christian.taaroaa.model.User;
 import fr.drochon.christian.taaroaa.alarm.TimeAlarmCovoiturageAller;
 import fr.drochon.christian.taaroaa.alarm.TimeAlarmCovoiturageRetour;
+import fr.drochon.christian.taaroaa.api.CovoiturageHelper;
+import fr.drochon.christian.taaroaa.base.BaseActivity;
 
 import static java.util.Calendar.MINUTE;
 
@@ -408,24 +405,8 @@ public class CovoiturageConducteursActivity extends BaseActivity {
                     covoit.put("horaireRetour", horaireDuRetour);
                     covoit.put("lieuDepartAller", lieuAller);
                     covoit.put("lieuDepartRetour", lieuRetour);
-
-                    List<User> users = new ArrayList<>();
-                    covoit.put("listPassagers", users);
                     //TODO V2 : ligne à rajouter lors que l'obet Sortie existera
                     //covoit.put("reservation", null);
-
-                    //TODO faire une requete pour boucler sur les users et recuperer les passagers par leurs noms et prenom. Sur ces personnes :  declencher l'alarm
-                    // envoi de l'alarm à la classe TimeAlarmCovoiturageAller pour que les notifications soient prises en compte et envoyées au moment voulu
-                    for(int i = 0; i < users.size(); i++){
-
-                        Intent intent = new Intent(CovoiturageConducteursActivity.this, TimeAlarmCovoiturageAller.class).putExtra("user", users.get(i));
-                        startActivity(intent);
-                        Intent intent1 = new Intent(CovoiturageConducteursActivity.this, TimeAlarmCovoiturageRetour.class).putExtra("user", users.get(i));
-                        startActivity(intent1);
-                    }
-
-                    /*this.alarmDepart(horaireDelAller);
-                    this.alarmRetour(horaireDuRetour);*/
 
                     this.mProgressBar.setVisibility(View.VISIBLE);
                     setupDb().collection("covoiturages").document(id).set(covoit)

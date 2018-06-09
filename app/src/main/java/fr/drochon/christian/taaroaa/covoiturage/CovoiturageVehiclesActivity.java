@@ -2,6 +2,7 @@ package fr.drochon.christian.taaroaa.covoiturage;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,8 +13,9 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.perf.FirebasePerformance;
@@ -176,25 +178,28 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
         myTrace1.start();
 
         Query mQuery = setupDb().collection("covoiturages").orderBy("horaireRetour", Query.Direction.ASCENDING).whereGreaterThan("horaireRetour", Calendar.getInstance().getTime());
-        mQuery.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        mQuery.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
-            public void onSuccess(QuerySnapshot documentSnapshots) {
-                if (documentSnapshots.size() != 0) {
-                    List<DocumentSnapshot> ds = documentSnapshots.getDocuments();
-                    for (int i = 0; i < ds.size(); i++) {
-                        Map<String, Object> covoit = ds.get(i).getData();
-                        listPassagers = new ArrayList<>();
-                        if(covoit != null) {
-                            listPassagers = (List<String>) covoit.get("passagers");
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                    if(queryDocumentSnapshots != null){
+                        if(queryDocumentSnapshots.size() != 0){
+                            List<DocumentSnapshot> ds = queryDocumentSnapshots.getDocuments();
+                            for (int i = 0; i < ds.size(); i++) {
+                                Map<String, Object> covoit = ds.get(i).getData();
+                                listPassagers = new ArrayList<>();
+                                if(covoit != null) {
+                                    listPassagers = (List<String>) covoit.get("passagers");
 
-                            // recuperation de l'objet covoiturage
-                            covoiturage = new Covoiturage(covoit.get("id").toString(), covoit.get("nomConducteur").toString(), covoit.get("prenomConducteur").toString(),
-                                    covoit.get("nbPlacesDispo").toString(), covoit.get("nbPlacesTotal").toString(), covoit.get("typeVehicule").toString(), stStringToDate(covoit.get("horaireAller").toString()),
-                                    stStringToDate(covoit.get("horaireRetour").toString()), covoit.get("lieuDepartAller").toString(), covoit.get("lieuDepartRetour").toString(), listPassagers);
-                            myTrace1.stop();
+                                    // recuperation de l'objet covoiturage
+                                    covoiturage = new Covoiturage(covoit.get("id").toString(), covoit.get("nomConducteur").toString(), covoit.get("prenomConducteur").toString(),
+                                            covoit.get("nbPlacesDispo").toString(), covoit.get("nbPlacesTotal").toString(), covoit.get("typeVehicule").toString(),
+                                            stStringToDate(covoit.get("horaireAller").toString()), stStringToDate(covoit.get("horaireRetour").toString()),
+                                            covoit.get("lieuDepartAller").toString(), covoit.get("lieuDepartRetour").toString(), listPassagers);
+                                    myTrace1.stop();
+                                }
+                            }
                         }
                     }
-                }
             }
         });
         return mQuery;

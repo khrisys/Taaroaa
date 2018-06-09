@@ -234,6 +234,8 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
                 if (e != null) {
                     Log.w("TAG", "Listen error", e);
                     return;
+
+
                 }
                 assert queryDocumentSnapshots != null;
                 for (DocumentChange change : queryDocumentSnapshots.getDocumentChanges()) {

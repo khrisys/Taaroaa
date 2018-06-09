@@ -102,6 +102,11 @@ public class ConnectionActivity extends BaseActivity {
     // --------------------
     // VALIDATION EMAIL PAR LIEN ENVOYE DEPUIS FIREBASE
     // --------------------
+
+    /**
+     * Methode permettant à un nouvel utilisateur de se creer un compte et de pouvoir valider l'adresse
+     * email qu'il a rentré via un lien envoyé sur cette meme adresse, afin d'etre sur que l'adresse email soit valide.
+     */
     private void connectToFirebaseWithEmailAndPassword() {
         // Test performance de l'update d'user en bdd
         final Trace myTrace = FirebasePerformance.getInstance().newTrace("connectionWithEmailAndPassword_trace");
@@ -110,7 +115,7 @@ public class ConnectionActivity extends BaseActivity {
         // recuperation de la bdd FirebaseAuth avec en param l'app taaroaa
         final FirebaseAuth auth = FirebaseAuth.getInstance(FirebaseFirestore.getInstance().getApp());
 
-        // 1 : creation d'un user avec email et password en bdd FirebaseAuth
+        // creation d'un user avec email et password en bdd FirebaseAuth
         auth.createUserWithEmailAndPassword(this.mEmail.getText().toString(), mPassword.getText().toString())
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -167,7 +172,6 @@ public class ConnectionActivity extends BaseActivity {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
-                                //Toast.makeText(ConnectionActivity.this, "Verification email sent to " + Objects.requireNonNull(getCurrentUser()).getEmail(), Toast.LENGTH_LONG).show();
                                 Log.d("TAG", "Verification Email sent.");
                                 Intent intent = new Intent(ConnectionActivity.this, AccountCreateActivity.class)
                                         .putExtra("email", mEmail.getText().toString())
