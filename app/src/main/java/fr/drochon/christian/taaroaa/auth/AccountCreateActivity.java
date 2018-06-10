@@ -92,7 +92,7 @@ public class AccountCreateActivity extends BaseActivity {
         mEmail = findViewById(R.id.email_txt);
         mPassword = findViewById(R.id.password_input);
         mProgressBar = findViewById(R.id.progress_bar);
-        Button createAccount = findViewById(R.id.modificiation_compte_btn);
+        final Button createAccount = findViewById(R.id.modificiation_compte_btn);
         Button suppressionCompte = findViewById(R.id.suppression_compte_btn);
         fonction = "Plongeur"; // la fonction par defaut d'un adhrent qui créé son compte a pour fonction "Plongeur"
 
@@ -101,7 +101,7 @@ public class AccountCreateActivity extends BaseActivity {
 
 
         // recuperation des identifiants de connexion
-        Intent intent = getIntent();
+        final Intent intent = getIntent();
         final String email = intent.getStringExtra("email");
         final String password = intent.getStringExtra("password");
         mEmail.setText(email);
