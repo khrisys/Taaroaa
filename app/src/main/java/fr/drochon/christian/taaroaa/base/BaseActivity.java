@@ -57,7 +57,9 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ButterKnife.bind(this); //Configure Butterknife
+
     }
+
 
     public abstract int getFragmentLayout();
 

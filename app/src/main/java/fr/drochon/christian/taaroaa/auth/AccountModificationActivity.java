@@ -28,10 +28,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.perf.FirebasePerformance;
 import com.google.firebase.perf.metrics.Trace;
@@ -58,7 +55,10 @@ public class AccountModificationActivity extends BaseActivity {
     private static final int DELETE_USER_TASK = 20;
     private static final int UPDATE_USERNAME = 30;
     private static final int GET_USERNAME = 40;
+    String uid;
     private User user;
+    private User summaryUser;
+    private User searchedUser;
     //DESIGN
     private LinearLayout mLinearLayoutFonctionAdherent;
     private TextInputEditText mPrenom;
@@ -71,6 +71,7 @@ public class AccountModificationActivity extends BaseActivity {
     private Button mModificationCompte;
     private Button mSuppressionCompte;
     private TextView mTitrePage;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,11 +91,14 @@ public class AccountModificationActivity extends BaseActivity {
         mModificationCompte = findViewById(R.id.modificiation_compte_btn);
         mSuppressionCompte = findViewById(R.id.suppression_compte_btn);
 
+
         configureToolbar();
         this.giveToolbarAName(R.string.account_modif_name);
-        showAttributes();
+        this.designDependingOnGetUsers();
+        //updateUserInFirebase();
         // methode à appeler APRES l'initialisation des variables, sinon les variables auront des references null
         this.updateUIWhenCreating(); // recuperation des informations de l'user actuel
+
 
         // --------------------
         // LISTENERS
@@ -195,20 +199,22 @@ public class AccountModificationActivity extends BaseActivity {
      * Methode permettant d'afficher les informations de l'user sur l'ecran AccountCreateActivity lorsqu'un user vient de creer un compte
      */
     private void updateUIWhenCreating() {
+        //updateUserInFirebase();
+        designDependingOnGetUsers();
+     /*   if (this.getCurrentUser().getEmail() != null) { // retourne un user FirebaseUser. Permettra de remplir toutes les vues de l'activité
 
-        if (this.getCurrentUser() != null) { // retourne un user FirebaseUser. Permettra de remplir toutes les vues de l'activité
-            getAndShowUserDatas();
-        }
+        }*/
     }
 
     /**
      * Methode permettant d'afficher les informations d'un user depuis la bdd firestore lorsque le cycle de vie de l'application est à OnResume()
      */
     private void updateUIWhenResuming() {
+        designDependingOnGetUsers();
+        //getAndShowUserDatas();
+      /*  if (this.getCurrentUser().getEmail() != null) { // retourne un user FirebaseUser. Permettra de remplir toutes les vues de l'activité
 
-        if (this.getCurrentUser() != null) { // retourne un user FirebaseUser. Permettra de remplir toutes les vues de l'activité
-            getAndShowUserDatas();
-        }
+        }*/
     }
 
     /**
@@ -281,72 +287,173 @@ public class AccountModificationActivity extends BaseActivity {
      * Ceci permettra de changer la fonction d'un adherent par un encadrant.
      * Cette methode desactive toutes les autres options pour empecher les erreurs de manipulation.
      */
-    private void showAttributes() {
-        FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
-        if (auth != null) {
-            DocumentReference mQuery = setupDb().collection("users").document(auth.getUid());
+    private void designDependingOnGetUsers() {
 
-            mQuery.addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                @Override
-                public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                    if (documentSnapshot.exists()) {
 
-                        // creation de la fonction d'un plongeur si elle n'existe pas, notamment
-                        // lorsuq'un user vient juste de creer son compte et veut acceder à son compte tout de suite apres (depuis la tuile du sommaire)
-                        Object fonction;
-                        if (documentSnapshot.get("fonction") == null) fonction = "Plongeur";
-                        else fonction = documentSnapshot.get("fonction");
+        // recup de l'user passé depuis l'activité SummaryActivity
+        Intent intent1 = getIntent();
+        if (intent1 != null) {
+            summaryUser = (User) Objects.requireNonNull(intent1.getExtras()).getSerializable("summaryUser");
+        }
 
-                        Object nom = documentSnapshot.get("nom");
-                        Object prenom = documentSnapshot.get("prenom");
+        // recup de l'user passé par un intent depuis la classe SearchUser
+        Intent intent = getIntent();
+        if (intent != null) {
+            searchedUser = (User) Objects.requireNonNull(intent.getExtras()).getSerializable("searchedUser");
+        }
 
-                        if (fonction != null && nom != null && prenom != null) {
-                            if (fonction.equals("Moniteur") && !nom.equals(user.getNom()) && !prenom.equals(user.getPrenom())) {
-                                mTitrePage.setText(R.string.modifiez_le_compte_d_un_adherent);
-                                //mItemView.setVisible(false);
-                                mPrenom.setEnabled(false);
-                                mNom.setEnabled(false);
-                                mLicence.setEnabled(false);
-                                mNiveauPlongeespinner.setEnabled(true);
-                                mLinearLayoutFonctionAdherent.setVisibility(View.VISIBLE);
-                                mProgressBar.setVisibility(View.GONE);
-                                //Affichage du bouton de suppression uniquement aux proprietaires d'un compte
-                                mSuppressionCompte.setVisibility(View.GONE);
 
-                                // moniteur etant sur son propre compte
-                            } else {
-                                if (fonction.equals("Moniteur") && nom.equals(user.getNom()) && prenom.equals(user.getPrenom())) {
-                                    mTitrePage.setText(R.string.bienvenue_sur_votre_compte);
-                                    //mItemView.setVisible(true);
-                                    mPrenom.setEnabled(true);
-                                    mNom.setEnabled(true);
-                                    mLicence.setEnabled(true);
-                                    mNiveauPlongeespinner.setEnabled(true);
-                                    mLinearLayoutFonctionAdherent.setVisibility(View.VISIBLE);
-                                    mModificationCompte.setText(R.string.modifiez_votre_compte);
-                                    //Affichage du bouton de suppression uniquement aux proprietaires d'un compte
-                                    mSuppressionCompte.setVisibility(View.VISIBLE);
+        // recup de l'user passé par un intent depuis la classe ConnectionActivity
+        Intent intent2 = getIntent();
+        if (intent2 != null) {
+            user = (User) Objects.requireNonNull(intent.getExtras()).getSerializable("user");
+        }
 
-                                    // adherent non moniteur sur son propre compte
-                                } else if (!fonction.equals("Moniteur")) {
-                                    mTitrePage.setText(R.string.bienvenue_sur_votre_compte);
-                                    //mItemView.setVisible(true);
-                                    mPrenom.setEnabled(true);
-                                    mNom.setEnabled(true);
-                                    mLicence.setEnabled(true);
-                                    mNiveauPlongeespinner.setEnabled(false);
-                                    mLinearLayoutFonctionAdherent.setVisibility(View.GONE);
-                                    mModificationCompte.setText(R.string.modifiez_votre_compte);
-                                    //Affichage du bouton de suppression uniquement aux proprietaires d'un compte
-                                    mSuppressionCompte.setVisibility(View.VISIBLE);
-                                }
-                            }
-                        }
+        // affichage d'un user venant juste d'etre créé
+        if (user != null) {
+            // DESIGN
+            mTitrePage.setText(R.string.bienvenue_sur_votre_compte);
+            //mItemView.setVisible(true);
+            mPrenom.setEnabled(true);
+            mNom.setEnabled(true);
+            mLicence.setEnabled(true);
+            mNiveauPlongeespinner.setEnabled(false);
+            mLinearLayoutFonctionAdherent.setVisibility(View.GONE);
+            mModificationCompte.setText(R.string.modifiez_votre_compte);
+            //Affichage du bouton de suppression uniquement aux proprietaires d'un compte
+            mSuppressionCompte.setVisibility(View.VISIBLE);
+            // DATAS
+            if (user != null) {
+                uid = user.getUid();
+                mNom.setText(Objects.requireNonNull(user.getNom().toUpperCase()));
+                mPrenom.setText(Objects.requireNonNull(user.getPrenom().toUpperCase()));
+                mLicence.setText(Objects.requireNonNull(user.getLicence()));
+                mNiveauPlongeespinner.setSelection(getIndexSpinner(mNiveauPlongeespinner, Objects.requireNonNull(user.getNiveau())));
+                mFonctionAuClubspinner.setSelection(getIndexSpinner(mFonctionAuClubspinner, Objects.requireNonNull(user.getFonction())));
+                mEmail.setText(Objects.requireNonNull(user.getEmail()));
+            }
+        }
+
+        // user deja créé provenant du sommaire ou de la recherche d'un adherent
+        // si l'intent n'arrive pas de la recherche d'un encadrant, alors, c'est qu'elle arrive du sommaire.(utilisateur dejà connecté, donc)
+        if (summaryUser != null && searchedUser == null) {
+            // UN moniteur est sur son compte
+            if (summaryUser.getFonction().equals("Initiateur") || summaryUser.getFonction().equals("Moniteur")) {
+                //DESIGN
+                mTitrePage.setText(R.string.bienvenue_sur_votre_compte);
+                //mItemView.setVisible(true);
+                mPrenom.setEnabled(true);
+                mNom.setEnabled(true);
+                mLicence.setEnabled(true);
+                mNiveauPlongeespinner.setEnabled(true);
+                mLinearLayoutFonctionAdherent.setVisibility(View.VISIBLE);
+                mModificationCompte.setText(R.string.modifiez_votre_compte);
+                //Affichage du bouton de suppression uniquement aux proprietaires d'un compte
+                mSuppressionCompte.setVisibility(View.VISIBLE);
+                // DATAS
+                uid = summaryUser.getUid();
+                mPrenom.setText(summaryUser.getPrenom());
+                mNom.setText(summaryUser.getPrenom());
+                mLicence.setText(summaryUser.getLicence());
+                mNiveauPlongeespinner.setSelection(getIndexSpinner(mNiveauPlongeespinner, Objects.requireNonNull(summaryUser.getNiveau())));
+                mFonctionAuClubspinner.setSelection(getIndexSpinner(mFonctionAuClubspinner, Objects.requireNonNull(summaryUser.getFonction())));
+                mEmail.setText(Objects.requireNonNull(summaryUser.getEmail()));
+
+
+            }
+            // il n'y a pas eu de recherche de plongeur par un encadrant. On affiche les caracteristique d'un plongeur classique
+            else {
+                // DESIGN
+                mTitrePage.setText(R.string.bienvenue_sur_votre_compte);
+                //mItemView.setVisible(true);
+                mPrenom.setEnabled(true);
+                mNom.setEnabled(true);
+                mLicence.setEnabled(true);
+                mNiveauPlongeespinner.setEnabled(false);
+                mLinearLayoutFonctionAdherent.setVisibility(View.GONE);
+                mModificationCompte.setText(R.string.modifiez_votre_compte);
+                //Affichage du bouton de suppression uniquement aux proprietaires d'un compte
+                mSuppressionCompte.setVisibility(View.VISIBLE);
+                // DATAS
+                if (summaryUser != null) {
+                    uid = summaryUser.getUid();
+                    mNom.setText(Objects.requireNonNull(summaryUser.getNom().toUpperCase()));
+                    mPrenom.setText(Objects.requireNonNull(summaryUser.getPrenom().toUpperCase()));
+                    mLicence.setText(Objects.requireNonNull(summaryUser.getLicence()));
+                    mNiveauPlongeespinner.setSelection(getIndexSpinner(mNiveauPlongeespinner, Objects.requireNonNull(summaryUser.getNiveau())));
+                    mFonctionAuClubspinner.setSelection(getIndexSpinner(mFonctionAuClubspinner, Objects.requireNonNull(summaryUser.getFonction())));
+                    mEmail.setText(Objects.requireNonNull(summaryUser.getEmail()));
+                }
+            }
+        }
+        //l'intent arrive depuis l'activité de recherche. La mise à jour d'un adherent se fait ici par un encadrant
+        else {
+            if (summaryUser != null) {
+                // DESIGN
+                if (summaryUser.getFonction() != null && summaryUser.getNom() != null && summaryUser.getPrenom() != null) {
+                    if (summaryUser.getFonction().equals("Initiateur") || summaryUser.getFonction().equals("Moniteur") &&
+                            !summaryUser.getNom().equals(searchedUser.getNom()) && !summaryUser.getPrenom().equals(searchedUser.getPrenom())) {
+                        mTitrePage.setText(R.string.modifiez_le_compte_d_un_adherent);
+                        //mItemView.setVisible(false);
+                        mPrenom.setEnabled(false);
+                        mNom.setEnabled(false);
+                        mLicence.setEnabled(false);
+                        mNiveauPlongeespinner.setEnabled(true);
+                        mLinearLayoutFonctionAdherent.setVisibility(View.VISIBLE);
+                        mProgressBar.setVisibility(View.GONE);
+                        //Affichage du bouton de suppression uniquement aux proprietaires d'un compte
+                        mSuppressionCompte.setVisibility(View.GONE);
+
+                        // DATAS
+                        uid = summaryUser.getUid();
+                        mPrenom.setText(summaryUser.getPrenom());
+                        mNom.setText(summaryUser.getPrenom());
+                        mLicence.setText(summaryUser.getLicence());
+                        mNiveauPlongeespinner.setSelection(getIndexSpinner(mNiveauPlongeespinner, Objects.requireNonNull(summaryUser.getNiveau())));
+                        mFonctionAuClubspinner.setSelection(getIndexSpinner(mFonctionAuClubspinner, Objects.requireNonNull(summaryUser.getFonction())));
+                        mEmail.setText(Objects.requireNonNull(summaryUser.getEmail()));
                     }
                 }
-            });
+            }
         }
     }
+
+
+    // user actuellement connecté dans l'app
+    // creation de la fonction d'un plongeur si elle n'existe pas, notamment
+    // lorsuq'un user vient juste de creer son compte et veut acceder à son compte tout de suite apres (depuis la tuile du sommaire)
+               /* Object fonction;
+                if (searchedUser.getFonction() == null) fonction = "Plongeur";
+                else fonction = searchedUser.getFonction();
+
+                Object nom = searchedUser.getNom();
+                Object prenom = searchedUser.getPrenom();*/
+
+    // Modification d'un compte adherent par un encadrant
+                /*if (summaryUser != null) {
+                    if (summaryUser.getFonction() != null && summaryUser.getNom() != null && summaryUser.getPrenom() != null) {
+                        if (summaryUser.getFonction().equals("Initiateur") || summaryUser.getFonction().equals("Moniteur") &&
+                                !summaryUser.getNom().equals(searchedUser.getNom()) && !summaryUser.getPrenom().equals(searchedUser.getPrenom())) {
+                            mTitrePage.setText(R.string.modifiez_le_compte_d_un_adherent);
+                            //mItemView.setVisible(false);
+                            mPrenom.setEnabled(false);
+                            mNom.setEnabled(false);
+                            mLicence.setEnabled(false);
+                            mNiveauPlongeespinner.setEnabled(true);
+                            mLinearLayoutFonctionAdherent.setVisibility(View.VISIBLE);
+                            mProgressBar.setVisibility(View.GONE);
+                            //Affichage du bouton de suppression uniquement aux proprietaires d'un compte
+                            mSuppressionCompte.setVisibility(View.GONE);
+                        }
+                        // moniteur etant sur son propre compte
+                    } else {
+
+                    }
+                }
+            }*/
+    //});
+    //}
+    //}
 
     /**
      * Cette methode ne comprend pas l'update d'une fonction dans le club, car seul les encadrants du club peuvent
@@ -355,20 +462,52 @@ public class AccountModificationActivity extends BaseActivity {
      */
     private void updateUserInFirebase() {
 
-        String nom = this.mNom.getText().toString();
-        String prenom = this.mPrenom.getText().toString();
-        String email = this.mEmail.getText().toString();
-
         // Test performance de l'update d'user en bdd
         final Trace myTrace = FirebasePerformance.getInstance().newTrace("accountModificationActivityUserAccountUpdateIncludingCovoiturage_trace");
         myTrace.start();
 
-        // recup de l'user passé par un intent depuis la classe SearchUser
-        Intent intent = getIntent();
-        if (intent != null) {
-            user = (User) Objects.requireNonNull(intent.getExtras()).getSerializable("user");
-            if (user != null) {
-                if (!nom.isEmpty() && !nom.equals(getString(R.string.info_no_username_found)) && !prenom.isEmpty() && !email.isEmpty()) { // verification que tous les champs vides soient remplis
+
+        //if (user != null) {
+            /*    this.mNom.setText(user.getNom());
+                this.mPrenom.setText(user.getPrenom());
+                this.mEmail.setText(user.getEmail());
+                this.mLicence.setText(user.getEmail());*/
+
+        if (!mNom.getText().toString().isEmpty() && !mNom.getText().equals(getString(R.string.info_no_username_found)) &&
+                !mPrenom.getText().toString().isEmpty() && !mEmail.getText().toString().isEmpty()) { // verification que tous les champs vides soient remplis
+
+            // Update de la bdd covoiturage si l'user à updater a créé des covoiturages.
+            // Cette fonction est appelée avant la fonction d'update de la bdd user
+            updateCovoituragesIfCreated();
+
+            // Update de la bdd user
+            this.mProgressBar.setVisibility(View.VISIBLE);
+            UserHelper.updateUser(uid, this.mNom.getText().toString().toUpperCase(), this.mPrenom.getText().toString().toUpperCase(), this.mLicence.getText().toString(),
+                    this.mEmail.getText().toString(), this.mNiveauPlongeespinner.getSelectedItem().toString(), this.mFonctionAuClubspinner.getSelectedItem().toString()).
+                    addOnFailureListener(this.onFailureListener()).
+                    addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Toast.makeText(AccountModificationActivity.this, R.string.update_account,
+                                    Toast.LENGTH_SHORT).show();
+                            updateUIAfterRESTRequestsCompleted(UPDATE_USERNAME);
+                            startSummaryActivity();
+
+                            myTrace.stop();
+                        }
+                    });
+        } else verificationChampsVides();
+    }
+    // recuperation des données user depuis l'activité Sommaire (un user dejà connecté, doinc)
+            /*else if (summaryUser != null) {
+
+                this.mNom.setText(summaryUser.getNom());
+                this.mPrenom.setText(summaryUser.getPrenom());
+                this.mEmail.setText(summaryUser.getEmail());
+                this.mLicence.setText(summaryUser.getEmail());
+
+                if (!mNom.getText().toString().isEmpty() && !mNom.getText().equals(getString(R.string.info_no_username_found)) &&
+                        !mPrenom.getText().toString().isEmpty() && !mEmail.getText().toString().isEmpty()) { // verification que tous les champs vides soient remplis
 
                     // Update de la bdd covoiturage si l'user à updater a créé des covoiturages.
                     // Cette fonction est appelée avant la fonction d'update de la bdd user
@@ -376,7 +515,7 @@ public class AccountModificationActivity extends BaseActivity {
 
                     // Update de la bdd user
                     this.mProgressBar.setVisibility(View.VISIBLE);
-                    UserHelper.updateUser(user.getUid(), this.mNom.getText().toString().toUpperCase(), this.mPrenom.getText().toString().toUpperCase(), this.mLicence.getText().toString(),
+                    UserHelper.updateUser(summaryUser.getUid(), this.mNom.getText().toString().toUpperCase(), this.mPrenom.getText().toString().toUpperCase(), this.mLicence.getText().toString(),
                             this.mEmail.getText().toString(), this.mNiveauPlongeespinner.getSelectedItem().toString(), this.mFonctionAuClubspinner.getSelectedItem().toString()).
                             addOnFailureListener(this.onFailureListener()).
                             addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -391,9 +530,9 @@ public class AccountModificationActivity extends BaseActivity {
                                 }
                             });
                 } else verificationChampsVides();
-            }
-        }
-    }
+            }*/
+    //}
+    //}
 
     /**
      * Methode permettant de faire un update eventuel sur le nom et le prenom des covoiturages crées par l'utilisateur
@@ -408,7 +547,7 @@ public class AccountModificationActivity extends BaseActivity {
                     for (DocumentSnapshot covoiturage : covoits) {
                         Map<String, Object> covoit = covoiturage.getData();
                         if (covoit != null) {
-                            if (covoit.get("nomConducteur").equals(user.getNom()) && covoit.get("prenomConducteur").equals(user.getPrenom())) {
+                            if (covoit.get("nomConducteur").equals(mNom.getText().toString()) && covoit.get("prenomConducteur").equals(mPrenom.getText().toString())) {
                                 CovoiturageHelper.updateCovoiturage(covoit.get("id").toString(), mNom.getText().toString(), mPrenom.getText().toString())
                                         .addOnFailureListener(new OnFailureListener() {
                                             @Override
@@ -440,7 +579,61 @@ public class AccountModificationActivity extends BaseActivity {
         final Trace myTrace1 = FirebasePerformance.getInstance().newTrace("accountModificationActivityGetAndShowUserDatas_trace");
         myTrace1.start();
 
-        // recup de l'user passé par un intent depuis la classe SearchUser
+        // recup de l'user passé par un intent depuis la classe ConnectionActivity
+        Intent intent = getIntent();
+        if (intent != null) {
+            user = (User) Objects.requireNonNull(intent.getExtras()).getSerializable("user");
+
+
+            if (user != null) {
+                mNom.setText(Objects.requireNonNull(user.getNom().toUpperCase()));
+                mPrenom.setText(Objects.requireNonNull(user.getPrenom().toUpperCase()));
+                mLicence.setText(Objects.requireNonNull(user.getLicence()));
+                mNiveauPlongeespinner.setSelection(getIndexSpinner(mNiveauPlongeespinner, Objects.requireNonNull(user.getNiveau())));
+                mFonctionAuClubspinner.setSelection(getIndexSpinner(mFonctionAuClubspinner, Objects.requireNonNull(user.getFonction())));
+                mEmail.setText(Objects.requireNonNull(user.getEmail()));
+
+         /*       // affichage different en fonction de la personne connectée
+                //this.designDependingOnGetUsers(user);
+                mTitrePage.setText(R.string.bienvenue_sur_votre_compte);
+                //mItemView.setVisible(true);
+                mPrenom.setEnabled(true);
+                mNom.setEnabled(true);
+                mLicence.setEnabled(true);
+                mNiveauPlongeespinner.setEnabled(false);
+                mLinearLayoutFonctionAdherent.setVisibility(View.GONE);
+                mModificationCompte.setText(R.string.modifiez_votre_compte);
+                //Affichage du bouton de suppression uniquement aux proprietaires d'un compte
+                mSuppressionCompte.setVisibility(View.VISIBLE);*/
+
+
+                myTrace1.stop();
+                //if (email != null) {
+                /*setupDb().collection("users").whereEqualTo("email", user.getEmail()).addSnapshotListener(this, new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                        if (queryDocumentSnapshots != null) {
+                            if (queryDocumentSnapshots.size() != 0) {
+                                List<DocumentSnapshot> users = queryDocumentSnapshots.getDocuments();
+                                for(DocumentSnapshot ds : users){
+                                    mNom.setText(Objects.requireNonNull(ds.get("nom")).toString().toUpperCase());
+                                    mPrenom.setText(Objects.requireNonNull(ds.get("prenom")).toString().toUpperCase());
+                                    mLicence.setText(Objects.requireNonNull(ds.get("licence")).toString());
+                                    mNiveauPlongeespinner.setSelection(getIndexSpinner(mNiveauPlongeespinner, Objects.requireNonNull(ds.get("niveau")).toString()));
+                                    mFonctionAuClubspinner.setSelection(getIndexSpinner(mFonctionAuClubspinner, Objects.requireNonNull(ds.get("fonction")).toString()));
+                                    mEmail.setText(Objects.requireNonNull(ds.get("email")).toString());
+
+                                    myTrace1.stop();
+                                }
+
+                            }
+                        }
+                    }
+                });*/
+            }
+        }
+
+       /* // recup de l'user passé par un intent depuis la classe SearchUser
         Intent intent = getIntent();
         if (intent != null) {
             user = (User) Objects.requireNonNull(intent.getExtras()).getSerializable("user");
@@ -466,14 +659,14 @@ public class AccountModificationActivity extends BaseActivity {
                     }
                 });
             }
-        }
+        }*/
     }
 
     /**
      * Methode permettant de supprimer un utilisateur
      */
     private void deleteUser() {
-        FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
+        final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
         if (auth != null) {
             setupDb().collection("users").document(auth.getUid())
                     .delete().addOnSuccessListener(new OnSuccessListener<Void>() {

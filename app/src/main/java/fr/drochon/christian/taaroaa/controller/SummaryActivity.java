@@ -23,6 +23,7 @@ import com.google.firebase.perf.metrics.Trace;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.auth.AccountModificationActivity;
@@ -37,6 +38,7 @@ public class SummaryActivity extends BaseActivity {
 
     private Button mModifCompte;
     private Button mComptePerso;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,9 +56,16 @@ public class SummaryActivity extends BaseActivity {
         final Trace myTrace = FirebasePerformance.getInstance().newTrace("summaryActivityShowTiles_trace");
         myTrace.start();
 
+       /* // recup de l'intent prevenant de l'activité modification de compte
+        Intent intent = getIntent();
+        if (intent != null) {
+            userFromModificationActivity = (User) Objects.requireNonNull(intent.getExtras()).getSerializable("user");
+        }
+*/
         configureToolbar();
         showPannelModification();
         giveToolbarAName(R.string.summary_name);
+
         myTrace.stop();
 
 
@@ -70,11 +79,12 @@ public class SummaryActivity extends BaseActivity {
         mComptePerso.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final FirebaseUser auth = FirebaseAuth.getInstance(FirebaseFirestore.getInstance().getApp()).getCurrentUser();
 
                 // Test performance de l'update d'user en bdd
                 final Trace myTrace1 = FirebasePerformance.getInstance().newTrace("summaryActivityGoToPersonnalAccountWithBundle_trace");
                 myTrace1.start();
+
+                final FirebaseAuth auth = FirebaseAuth.getInstance(FirebaseFirestore.getInstance().getApp());
 
                 setupDb().collection("users").addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
@@ -85,15 +95,16 @@ public class SummaryActivity extends BaseActivity {
                                 for (DocumentSnapshot doc : ds) {
                                     Map<String, Object> user = doc.getData();
 
-                                    // Si l'user connecté existe en bdd, on recupere l'ensemble de l'objet user et on le passe en extra de l'intent
-                                    if (user != null && auth != null) {
-                                        if (user.get("uid").equals(auth.getUid())) {
+                                    if (user != null) {
+                                        // Si l'user connecté existe en bdd, on recupere l'ensemble de l'objet user et on le passe en extra de l'intent
+                                        if (user.get("uid").toString().equals(Objects.requireNonNull(getCurrentUser()).getUid())) {
                                             User u = new User(user.get("uid").toString(), user.get("nom").toString(), user.get("prenom").toString(), user.get("licence").toString(),
                                                     user.get("email").toString(), user.get("niveau").toString(), user.get("fonction").toString());
-                                            Intent intent = new Intent(SummaryActivity.this, AccountModificationActivity.class).putExtra("user", u);
+                                            Intent intent = new Intent(SummaryActivity.this, AccountModificationActivity.class).putExtra("summaryUser", u);
                                             startActivity(intent);
 
                                             myTrace1.stop();
+                                            break;
                                         }
                                     }
                                 }
@@ -224,6 +235,9 @@ public class SummaryActivity extends BaseActivity {
                         if (user != null) {
                             if (user.get("fonction") == null || !user.get("fonction").equals("Moniteur")) {
                                 mModifCompte.setVisibility(View.GONE);
+                            }
+                            else if(user.get("fonction").equals("Moniteur")){
+                                mModifCompte.setVisibility(View.VISIBLE);
                             }
                         }
                         //lors de la creation d'un compte, enleve la tuile de modification d'un compte

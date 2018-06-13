@@ -202,38 +202,40 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
     @SuppressLint({"ResourceType", "SetTextI18n"})
     public void updateWithCovoiturage(final Covoiturage covoiturage) {
         // ajout des Covoit dans une liste afin de les retrouver pour l'affichage de chaque cours particulier sous forme de notification
-        mCovoiturageList.add(covoiturage);
-        mListPassagers.addAll(covoiturage.getListPassagers());
-        sCovoiturage = covoiturage;
+        if(covoiturage != null) {
+            mCovoiturageList.add(covoiturage);
+            mListPassagers.addAll(covoiturage.getListPassagers());
+            sCovoiturage = covoiturage;
 
-        for (int i = 0; i < mCovoiturageList.size(); i++) {
-            String username = covoiturage.getPrenomConducteur() + "  " + covoiturage.getNomConducteur();
-            mNomConducteur.setText(username);
-            // affichage evetnuel de la poubelle des covoits de l'user actuellement connecté
-            showPoubelle(covoiturage);
+            for (int i = 0; i < mCovoiturageList.size(); i++) {
+                String username = covoiturage.getPrenomConducteur() + "  " + covoiturage.getNomConducteur();
+                mNomConducteur.setText(username);
+                // affichage evetnuel de la poubelle des covoits de l'user actuellement connecté
+                showPoubelle(covoiturage);
 
-            // --------------------
-            // REMPLISSAGE SPINNER
-            // --------------------
-            if (covoiturage.getListPassagers() != null) {
-                // Create an ArrayAdapter using the string array and a default spinner layout
-                ArrayAdapter<String> adapterNiveau = new ArrayAdapter<>(itemView.getContext(), android.R.layout.simple_spinner_item, mListPassagers);
-                // Specify the layout to use when the list of choices appears
-                adapterNiveau.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                // Apply the adapter to the spinner
-                mPassagerSpinner.setAdapter(adapterNiveau);
+                // --------------------
+                // REMPLISSAGE SPINNER
+                // --------------------
+                if (covoiturage.getListPassagers() != null) {
+                    // Create an ArrayAdapter using the string array and a default spinner layout
+                    ArrayAdapter<String> adapterNiveau = new ArrayAdapter<>(itemView.getContext(), android.R.layout.simple_spinner_item, mListPassagers);
+                    // Specify the layout to use when the list of choices appears
+                    adapterNiveau.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    // Apply the adapter to the spinner
+                    mPassagerSpinner.setAdapter(adapterNiveau);
+                }
             }
+            mTypeVehicule.setText(covoiturage.getTypeVehicule());
+            String ratioPlaces = covoiturage.getNbPlacesDispo() + "/" + covoiturage.getNbPlacesTotal();
+            if (Integer.parseInt(covoiturage.getNbPlacesDispo()) > 0)
+                mNbPlaceDispo.setText(Html.fromHtml("<font color='green'><b>" + ratioPlaces + "</b></font>"));
+            else
+                mNbPlaceDispo.setText(Html.fromHtml("<font color='red'><b>" + ratioPlaces + "</b></font>"));
+            mAller.setText(stDateToString(covoiturage.getHoraireAller()));
+            mRetour.setText(stDateToString(covoiturage.getHoraireRetour()));
+            mLieuDepart.setText(covoiturage.getLieuDepartAller());
+            mLieuRetour.setText(covoiturage.getLieuDepartRetour());
         }
-        mTypeVehicule.setText(covoiturage.getTypeVehicule());
-        String ratioPlaces = covoiturage.getNbPlacesDispo() + "/" + covoiturage.getNbPlacesTotal();
-        if (Integer.parseInt(covoiturage.getNbPlacesDispo()) > 0)
-            mNbPlaceDispo.setText(Html.fromHtml("<font color='green'><b>" + ratioPlaces + "</b></font>"));
-        else
-            mNbPlaceDispo.setText(Html.fromHtml("<font color='red'><b>" + ratioPlaces + "</b></font>"));
-        mAller.setText(stDateToString(covoiturage.getHoraireAller()));
-        mRetour.setText(stDateToString(covoiturage.getHoraireRetour()));
-        mLieuDepart.setText(covoiturage.getLieuDepartAller());
-        mLieuRetour.setText(covoiturage.getLieuDepartRetour());
     }
 
     /**

@@ -42,7 +42,6 @@ import static fr.drochon.christian.taaroaa.R.id;
 import static fr.drochon.christian.taaroaa.R.layout;
 import static fr.drochon.christian.taaroaa.R.string;
 import static fr.drochon.christian.taaroaa.R.string.app_name;
-import static fr.drochon.christian.taaroaa.R.style;
 
 
 public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
@@ -87,6 +86,8 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
         FirebaseMessaging.getInstance().subscribeToTopic("courses");
         FirebaseMessaging.getInstance().subscribeToTopic("covoiturages");
 
+
+
         // --------------------
         // LISTENERS
         // --------------------
@@ -99,15 +100,17 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
                 myTrace.start();
 
                 if (!isCurrentUserLogged()) {
+                    //startSignInActivity(); // non connecté : inscription
                     startConnectionActivity();
                 } else {
                     Toast.makeText(MainActivity.this, "Vous etes déjà connecté, vous ne pouvez pas créer un compte !", Toast.LENGTH_LONG).show();
+                    startSummaryActivity(); // connecté : renvoyé vers le sommaire
                 }
                 myTrace.stop();
             }
         });
 
-        // Lancement de la page de connection à un compte existant
+/*        // Lancement de la page de connection à un compte existant
         mConnexion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -120,11 +123,11 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
                     //updateUserInFirestore();
                     startSummaryActivity(); // connecté : renvoyé vers le sommaire
                 } else {
-                    startSignInActivity(); // non connecté : inscription
+                    //startSignInActivity(); // non connecté : inscription
                 }
                 myTrace1.stop();
             }
-        });
+        });*/
 
         // Deconnexion de l'utilisateur
         deconnexion.setOnClickListener(new View.OnClickListener() {
@@ -156,6 +159,9 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
     // --------------------
     // UI
     // --------------------
+
+
+
 
     @Override
     public int getFragmentLayout() {
@@ -195,8 +201,9 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
      * Methode permettant d'aller sur la page de rensignement des identifiants de l'utilisateur (email, password)
      */
     private void startConnectionActivity() {
-        Intent intent = new Intent(MainActivity.this, ConnectionActivity.class);
-        startActivity(intent);
+
+            Intent intent = new Intent(MainActivity.this, ConnectionActivity.class);
+            startActivity(intent);
     }
 
     /**
@@ -254,13 +261,14 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
         startActivityForResult(
                 AuthUI.getInstance()
                         .createSignInIntentBuilder() // lance une activité de connexion/inscrption autogeneree
-                        .setTheme(style.LoginTheme) // definir un style dans le fichier res/values/styles.xml
+                        //.setTheme(R.style.LoginTheme) // definir un style dans le fichier res/values/styles.xml
                         .setAvailableProviders( // ajoute des moyens divers de connexion (email, google, fb..)
                                 Collections.singletonList(new AuthUI.IdpConfig.EmailBuilder().build()))
                         .setIsSmartLockEnabled(false, true)
                         .setLogo(R.mipmap.logo1)
                         .build(),
                 RC_SIGN_IN); // identifiant de connexion
+
     }
 
 
@@ -298,6 +306,7 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
             if (resultCode == RESULT_OK) { // SUCCESS
                 //this.updateUserInFirestore();
                 this.startSummaryActivity(); // connexion et renvoi vers la page sommaire
+                //this.startConnectionActivity();
 
             }
         } else { // ERRORS

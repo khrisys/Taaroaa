@@ -8,6 +8,7 @@ import android.graphics.LightingColorFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -19,19 +20,28 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.ActionCodeSettings;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.perf.FirebasePerformance;
 import com.google.firebase.perf.metrics.Trace;
 
+import java.util.List;
 import java.util.Objects;
 
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
+import fr.drochon.christian.taaroaa.model.User;
 
 public class ConnectionActivity extends BaseActivity {
 
     private TextInputEditText mEmail;
     private TextInputEditText mPassword;
+
+    //Id de connexion dans l'activité courante
+    private static final int RC_SIGN_IN = 123;
 
     /**
      * Verification de la validité de l'adresse email
@@ -60,6 +70,7 @@ public class ConnectionActivity extends BaseActivity {
         configureToolbar();
         giveToolbarAName(R.string.creation_compte);
 
+
         // --------------------
         // LISTENER
         // --------------------
@@ -67,10 +78,11 @@ public class ConnectionActivity extends BaseActivity {
         valid.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!mEmail.getText().toString().isEmpty() && !mPassword.getText().toString().isEmpty()) {
-                    connectToFirebaseWithEmailAndPassword();
-                } else
-                    verificationChampsVides();
+                if (verificationChampsVides())
+                    goToAdaptedActivity();
+                //connectToFirebaseWithEmailAndPassword();
+             /*   } else
+                    verificationChampsVides();*/
             }
         });
     }
@@ -83,20 +95,24 @@ public class ConnectionActivity extends BaseActivity {
     /**
      * Methode permettant de signaler une erreur lorsqu'un champ est resté vide alors que la soumission du formulaire a été faite.
      */
-    private void verificationChampsVides() {
+    private boolean verificationChampsVides() {
 
         if (mPassword.getText().toString().isEmpty()) {
             mPassword.setError("Merci de saisir ce champ !");
             mPassword.requestFocus();
+            return false;
         }
         if (!isValidEmail(mEmail.getText().toString())) {
             mEmail.setError("Adresse email non valide !");
             mEmail.requestFocus();
+            return false;
         }
         if (mEmail.getText().toString().isEmpty()) {
             mEmail.setError("Merci de saisir ce champ !");
             mEmail.requestFocus();
+            return false;
         }
+        return true;
     }
 
     // --------------------
@@ -128,13 +144,13 @@ public class ConnectionActivity extends BaseActivity {
                         } else {
                             // If sign in fails, display a message to the user.
                             AlertDialog.Builder adb = new AlertDialog.Builder(ConnectionActivity.this);
-                            adb.setTitle("Adresse email déjà utilisée !");
+                            adb.setTitle("Adresse email incorrecte ou déjà utilisée !");
                             // ajouter une couleur à l'icon de warning
                             Drawable warning = getResources().getDrawable(android.R.drawable.ic_dialog_alert);
                             ColorFilter filter = new LightingColorFilter(Color.RED, Color.BLUE);
                             warning.setColorFilter(filter);
                             adb.setIcon(warning);
-                            adb.setMessage("L'adresse mail " + mEmail.getText().toString() + " est déjà utilisée. \nMerci d'en choisir une autre.");
+                            adb.setMessage("L'adresse mail '" + mEmail.getText().toString() + "' est incorrecte ou déjà utilisée.");
                             adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     mEmail.setText("");
@@ -179,8 +195,64 @@ public class ConnectionActivity extends BaseActivity {
                                 startActivity(intent);
                             } else
                                 System.out.println("nok");
+
                         }
                     });
         }
     }
+
+    /**
+     * Methode permettant de savoir sil'utilisateur actuellement connecté existe en bdd grace à son adresse email, et
+     * pas seulement en bdd FirebaseAuth.
+     */
+    private void goToAdaptedActivity() {
+
+        setupDb().collection("users").whereEqualTo("email", mEmail.getText().toString()).addSnapshotListener(this, new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                // SI USER EXISTE
+                if (queryDocumentSnapshots != null) {
+                    if (queryDocumentSnapshots.size() != 0) {
+                        List<DocumentSnapshot> ds = queryDocumentSnapshots.getDocuments();
+                        for (int i = 0; i < ds.size(); i++) {
+                            if (ds.get(i).exists()) {
+                                String email = Objects.requireNonNull(ds.get(i).get("email")).toString();
+                                User user = new User(Objects.requireNonNull(ds.get(i).get("uid")).toString(), Objects.requireNonNull(ds.get(i).get("nom")).toString(),
+                                        Objects.requireNonNull(ds.get(i).get("prenom")).toString(),
+                                        Objects.requireNonNull(ds.get(i).get("licence")).toString(), Objects.requireNonNull(ds.get(i).get("email")).toString(),
+                                        Objects.requireNonNull(ds.get(i).get("niveau")).toString(), Objects.requireNonNull(ds.get(i).get("fonction")).toString());
+                                Intent intent = new Intent(ConnectionActivity.this, AccountModificationActivity.class).putExtra("user", user);
+                                startActivity(intent);
+                                break;
+                            }
+                        }
+                    }
+                    // SI USER N'EXISTE PAS
+                    else if(queryDocumentSnapshots.size() == 0){
+                       /* Intent intent = new Intent(ConnectionActivity.this, AccountModificationActivity.class)
+                                .putExtra("email", mEmail.getText().toString()).putExtra("password", mPassword.getText().toString());
+                        startActivity(intent);*/
+                        connectToFirebaseWithEmailAndPassword();
+                     /*   AlertDialog.Builder adb = new AlertDialog.Builder(ConnectionActivity.this);
+                        adb.setTitle("Adresse email incorrecte !");
+                        // ajouter une couleur à l'icon de warning
+                        Drawable warning = getResources().getDrawable(android.R.drawable.ic_dialog_alert);
+                        ColorFilter filter = new LightingColorFilter(Color.RED, Color.BLUE);
+                        warning.setColorFilter(filter);
+                        adb.setIcon(warning);
+                        adb.setMessage("L'adresse mail '" + mEmail.getText().toString() + "' est incorrecte.");
+                        adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                mEmail.setText("");
+                                mPassword.setText("");
+                            }
+                        });
+                        adb.show();*/
+                    }
+                }
+            }
+        });
+    }
 }
+
+

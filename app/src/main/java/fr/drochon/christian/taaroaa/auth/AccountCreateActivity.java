@@ -41,6 +41,7 @@ import fr.drochon.christian.taaroaa.api.UserHelper;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
 import fr.drochon.christian.taaroaa.controller.MainActivity;
 import fr.drochon.christian.taaroaa.controller.SummaryActivity;
+import fr.drochon.christian.taaroaa.model.User;
 
 import static android.widget.Toast.LENGTH_SHORT;
 
@@ -62,6 +63,7 @@ public class AccountCreateActivity extends BaseActivity {
     private ProgressBar mProgressBar;
     // DATA
     private String fonction;
+    private User user;
 
     // --------------------
     // LIFECYCLE
@@ -100,8 +102,11 @@ public class AccountCreateActivity extends BaseActivity {
         giveToolbarAName(R.string.account_create_name);
 
 
-        // recuperation des identifiants de connexion
-        final Intent intent = getIntent();
+        // recup de l'user passé par un intent depuis la classe ConnectionActivity
+        Intent intent = getIntent();
+        /*if (intent != null) {
+            user = (User) Objects.requireNonNull(intent.getExtras()).getSerializable("user");
+        }*/
         final String email = intent.getStringExtra("email");
         final String password = intent.getStringExtra("password");
         mEmail.setText(email);
@@ -169,8 +174,8 @@ public class AccountCreateActivity extends BaseActivity {
      * meme effectuée, ne serait jamais prise en compte par firebase)
      */
     private void alertDialogValidationEmail() {
-
-        Objects.requireNonNull(getCurrentUser()).reload();
+        if (getCurrentUser() != null)
+            Objects.requireNonNull(getCurrentUser()).reload();
 
         AlertDialog.Builder adb = new AlertDialog.Builder(this);
         adb.setTitle("Sécurité !");
@@ -280,26 +285,23 @@ public class AccountCreateActivity extends BaseActivity {
                                     user.put("fonction", fonction);
                                     user.put("email", email);
 
-
-                                    if (uid != null) {
-                                        setupDb().collection("users").document(uid).set(user)
-                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                    @Override
-                                                    public void onSuccess(Void aVoid) {
-                                                        Toast.makeText(AccountCreateActivity.this, R.string.create_account,
-                                                                Toast.LENGTH_LONG).show();
-                                                        startSummaryActivity(); // renvoi l'user sur la page sommaire   pres validation de la creation de l'user
-                                                    }
-                                                })
-                                                .addOnFailureListener(new OnFailureListener() {
-                                                    @Override
-                                                    public void onFailure(@NonNull Exception e) {
-                                                        Toast.makeText(AccountCreateActivity.this, "ERROR" + e.toString(),
-                                                                Toast.LENGTH_LONG).show();
-                                                        Log.d("TAG", e.toString());
-                                                    }
-                                                });
-                                    }
+                                    setupDb().collection("users").document(uid).set(user)
+                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    Toast.makeText(AccountCreateActivity.this, R.string.create_account,
+                                                            Toast.LENGTH_LONG).show();
+                                                    startSummaryActivity(); // renvoi l'user sur la page sommaire   pres validation de la creation de l'user
+                                                }
+                                            })
+                                            .addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    Toast.makeText(AccountCreateActivity.this, "ERROR" + e.toString(),
+                                                            Toast.LENGTH_LONG).show();
+                                                    Log.d("TAG", e.toString());
+                                                }
+                                            });
                                 } else verificationChampsVides();
                                 // erreur de creation de compte
                             } else {

@@ -108,10 +108,10 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
          */
         // lance une alarme de notification si le cours correspond au niveau du plongeur connecté
         if (user != null)
-            alarmConnectedUser(user.getNiveauPlongeur());
+            alarmConnectedUser(user.getNiveau());
         String name = null;
         if (user != null) {
-            name = "Cours de niveau " + user.getNiveauPlongeur();
+            name = "Cours de niveau " + user.getNiveau();
         }
         giveToolbarAName(name);
         configureRecyclerView();
@@ -384,7 +384,7 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
      * @return query
      */
     private Query queryAllCourses() {
-        Query mQuery = setupDb().collection("courses").whereEqualTo("niveauDuCours", user.getNiveauPlongeur()).orderBy("horaireDuCours");
+        Query mQuery = setupDb().collection("courses").whereEqualTo("niveauDuCours", user.getNiveau()).orderBy("horaireDuCours");
         mQuery.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -405,7 +405,7 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
      * @return query
      */
     private Query queryCoursesFiltered() {
-        Query mQ = setupDb().collection("courses").whereEqualTo("niveauDuCours", user.getNiveauPlongeur()).orderBy("horaireDuCours").startAt(calendrierClique).endAt(calendrierFinJournee);
+        Query mQ = setupDb().collection("courses").whereEqualTo("niveauDuCours", user.getNiveau()).orderBy("horaireDuCours").startAt(calendrierClique).endAt(calendrierFinJournee);
         mQ.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
