@@ -156,12 +156,10 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
         });
     }
 
+
     // --------------------
     // UI
     // --------------------
-
-
-
 
     @Override
     public int getFragmentLayout() {
