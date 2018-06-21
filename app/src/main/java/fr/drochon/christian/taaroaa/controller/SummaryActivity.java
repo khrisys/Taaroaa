@@ -2,6 +2,7 @@ package fr.drochon.christian.taaroaa.controller;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -10,10 +11,15 @@ import android.widget.Button;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.perf.FirebasePerformance;
+import com.google.firebase.perf.metrics.Trace;
 
 import java.util.List;
 import java.util.Map;
@@ -31,6 +37,8 @@ import fr.drochon.christian.taaroaa.model.User;
 public class SummaryActivity extends BaseActivity {
 
     private Button mModifCompte;
+    private Button mComptePerso;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,15 +46,27 @@ public class SummaryActivity extends BaseActivity {
         setContentView(R.layout.activity_summary);
 
         ActionBar actionBar = getSupportActionBar();
-        assert actionBar != null;
-        actionBar.setDisplayShowHomeEnabled(true);
+        if (actionBar != null)
+            actionBar.setDisplayShowHomeEnabled(true);
 
-        Button compte = findViewById(R.id.adherents_btn);
+        mComptePerso = findViewById(R.id.adherents_btn);
         mModifCompte = findViewById(R.id.modif_adherents_btn);
 
+        // Test performance de l'update d'user en bdd
+        final Trace myTrace = FirebasePerformance.getInstance().newTrace("summaryActivityShowTiles_trace");
+        myTrace.start();
+
+       /* // recup de l'intent prevenant de l'activité modification de compte
+        Intent intent = getIntent();
+        if (intent != null) {
+            userFromModificationActivity = (User) Objects.requireNonNull(intent.getExtras()).getSerializable("user");
+        }
+*/
         configureToolbar();
         showPannelModification();
         giveToolbarAName(R.string.summary_name);
+
+        myTrace.stop();
 
 
         // --------------------
@@ -54,39 +74,44 @@ public class SummaryActivity extends BaseActivity {
         // --------------------
 
         /*
-        Affichage de l'activité de creation de compte ou de modification de compte en fonction de l'existence
-        en bdd ou non de l'utilisateur connecté
+        Modification de compte de l'utilisateur connecté
          */
-        compte.setOnClickListener(new View.OnClickListener() {
+        mComptePerso.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-              /*  Intent intent = new Intent(SummaryActivity.this, AccountCreateActivity.class);
-                startActivity(intent);*/
+
+                // Test performance de l'update d'user en bdd
+                final Trace myTrace1 = FirebasePerformance.getInstance().newTrace("summaryActivityGoToPersonnalAccountWithBundle_trace");
+                myTrace1.start();
+
                 final FirebaseAuth auth = FirebaseAuth.getInstance(FirebaseFirestore.getInstance().getApp());
 
-                setupDb().collection("users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                setupDb().collection("users").addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
-                    public void onSuccess(QuerySnapshot documentSnapshots) {
-                        //int compteur = 0;
-                        if (documentSnapshots.size() != 0) {
-                            List<DocumentSnapshot> ds = documentSnapshots.getDocuments();
-                            for (DocumentSnapshot doc : ds) {
-                                Map<String, Object> user = doc.getData();
+                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                        if (queryDocumentSnapshots != null) {
+                            if (queryDocumentSnapshots.size() != 0) {
+                                List<DocumentSnapshot> ds = queryDocumentSnapshots.getDocuments();
+                                for (DocumentSnapshot doc : ds) {
+                                    Map<String, Object> user = doc.getData();
 
-                                // Si l'user connecté existe en bdd, on recupere l'ensemble de l'objet user et on le passe en extra de l'intent
-                                if (user != null) {
-                                    if (user.get("uid").equals(Objects.requireNonNull(Objects.requireNonNull(auth.getCurrentUser()).getUid()))) {
-                                        User u = new User(user.get("uid").toString(), user.get("nom").toString(), user.get("prenom").toString(), user.get("licence").toString(),
-                                                user.get("email").toString(), user.get("niveau").toString(), user.get("fonction").toString());
-                                        Intent intent = new Intent(SummaryActivity.this, AccountModificationActivity.class).putExtra("user", u);
-                                        startActivity(intent);
+                                    if (user != null) {
+                                        // Si l'user connecté existe en bdd, on recupere l'ensemble de l'objet user et on le passe en extra de l'intent
+                                        if (user.get("uid").toString().equals(Objects.requireNonNull(getCurrentUser()).getUid())) {
+                                            User u = new User(user.get("uid").toString(), user.get("nom").toString(), user.get("prenom").toString(), user.get("licence").toString(),
+                                                    user.get("email").toString(), user.get("niveau").toString(), user.get("fonction").toString());
+                                            Intent intent = new Intent(SummaryActivity.this, AccountModificationActivity.class).putExtra("summaryUser", u);
+                                            startActivity(intent);
+
+                                            myTrace1.stop();
+                                            break;
+                                        }
                                     }
                                 }
                             }
                         }
                     }
                 });
-
             }
         });
 
@@ -105,25 +130,35 @@ public class SummaryActivity extends BaseActivity {
         cours.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setupDb().collection("users").document(Objects.requireNonNull(getCurrentUser()).getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        if (documentSnapshot.exists()) {
-                            Map<String, Object> user = documentSnapshot.getData();
-                            assert user != null;
-                            User user1 = new User(user.get("uid").toString(), user.get("nom").toString(), user.get("prenom").toString(), user.get("licence").toString(),
-                                    user.get("email").toString(), user.get("niveau").toString(), user.get("fonction").toString());
-                            if (user.get("uid").equals(Objects.requireNonNull(getCurrentUser()).getUid()) &&
-                                    user.get("fonction").equals("Moniteur")) {
-                                Intent intent = new Intent(SummaryActivity.this, CoursesSupervisorsActivity.class);
-                                startActivity(intent);
-                            } else {
-                                Intent intent = new Intent(SummaryActivity.this, CoursesPupilsActivity.class).putExtra("user", user1);
-                                startActivity(intent);
+                // Test performance de l'update d'user en bdd
+                final Trace myTrace1 = FirebasePerformance.getInstance().newTrace("summaryActivityGoToCoursesDependingOnLevelCurrentUser_trace");
+                myTrace1.start();
+
+                final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
+                if (auth != null) {
+                    setupDb().collection("users").document(auth.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            if (documentSnapshot.exists()) {
+                                Map<String, Object> user = documentSnapshot.getData();
+                                if (user != null) {
+                                    User user1 = new User(user.get("uid").toString(), user.get("nom").toString(), user.get("prenom").toString(), user.get("licence").toString(),
+                                            user.get("email").toString(), user.get("niveau").toString(), user.get("fonction").toString());
+                                    if (user.get("uid").equals(auth.getUid()) &&
+                                            user.get("fonction").equals("Moniteur")) {
+                                        Intent intent = new Intent(SummaryActivity.this, CoursesSupervisorsActivity.class);
+                                        startActivity(intent);
+                                    } else {
+                                        Intent intent = new Intent(SummaryActivity.this, CoursesPupilsActivity.class).putExtra("user", user1);
+                                        startActivity(intent);
+                                    }
+
+                                    myTrace1.stop();
+                                }
                             }
                         }
-                    }
-                });
+                    });
+                }
             }
         });
 
@@ -133,8 +168,14 @@ public class SummaryActivity extends BaseActivity {
         sortie.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Test performance de l'update d'user en bdd
+                final Trace myTrace2 = FirebasePerformance.getInstance().newTrace("summaryActivityGoToCovoiturages_trace");
+                myTrace2.start();
+
                 Intent intent = new Intent(SummaryActivity.this, CovoiturageAccueilActivity.class);
                 startActivity(intent);
+
+                myTrace2.stop();
             }
         });
     }
@@ -182,21 +223,29 @@ public class SummaryActivity extends BaseActivity {
      * la personne connectée est un encadrant
      */
     private void showPannelModification() {
-        DocumentReference documentReference = setupDb().collection("users").document(Objects.requireNonNull(getCurrentUser()).getUid());
-        documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                if (documentSnapshot.exists()) {
-                    Map<String, Object> user = documentSnapshot.getData();
-                    assert user != null;
-                    if (user.get("fonction") == null || !user.get("fonction").equals("Moniteur")) {
+        FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
+        // changé apres Robo test firebase
+        if (auth != null) {
+            DocumentReference documentReference = setupDb().collection("users").document(auth.getUid());
+            documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    if (documentSnapshot.exists()) {
+                        Map<String, Object> user = documentSnapshot.getData();
+                        if (user != null) {
+                            if (user.get("fonction") == null || !user.get("fonction").equals("Moniteur")) {
+                                mModifCompte.setVisibility(View.GONE);
+                            }
+                            else if(user.get("fonction").equals("Moniteur")){
+                                mModifCompte.setVisibility(View.VISIBLE);
+                            }
+                        }
+                        //lors de la creation d'un compte, enleve la tuile de modification d'un compte
+                    } else {
                         mModifCompte.setVisibility(View.GONE);
                     }
-                    //lors de la creation d'un compte, enleve la tuile de modification d'un compte
-                } else {
-                    mModifCompte.setVisibility(View.GONE);
                 }
-            }
-        });
+            });
+        }
     }
 }

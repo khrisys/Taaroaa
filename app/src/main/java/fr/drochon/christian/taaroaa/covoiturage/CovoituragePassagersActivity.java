@@ -34,8 +34,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.perf.FirebasePerformance;
+import com.google.firebase.perf.metrics.Trace;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -56,8 +60,8 @@ import fr.drochon.christian.taaroaa.model.User;
 
 public class CovoituragePassagersActivity extends BaseActivity {
 
-
     private static Covoiturage covoiturage;
+    // DESIGN
     private TextInputEditText mNomConducteur;
     private TextInputEditText mDateDepart;
     private TextInputEditText mDateretour;
@@ -107,10 +111,15 @@ public class CovoituragePassagersActivity extends BaseActivity {
         mAlarmManagerAller = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         mAlarmManagerRetour = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
+        // Test performance
+        final Trace myTrace = FirebasePerformance.getInstance().newTrace("covoituragePassagersActivityShowPassengers_trace");
+        myTrace.start();
+
         this.configureToolbar();
         this.giveToolbarAName(R.string.covoit_passager_name);
         this.updateUIWhenCreating();
         this.getAllUsers();
+        myTrace.stop();
 
         // --------------------
         // LISTENERS
@@ -124,11 +133,13 @@ public class CovoituragePassagersActivity extends BaseActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
 
-                showFieldsNamePassengers(s);
+
             }
 
             @Override
             public void afterTextChanged(Editable s) {
+                showFieldsNamePassengers(s);
+                myTrace.stop();
             }
         });
 
@@ -151,6 +162,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
     public int getFragmentLayout() {
         return 0;
     }
+
 
     // --------------------
     // TOOLBAR
@@ -313,12 +325,12 @@ public class CovoituragePassagersActivity extends BaseActivity {
                             });
                         }
                     }
-                } else {
-                    mTitrePassager.setVisibility(View.GONE);
-                    mLinearChampsDynamiques.removeAllViews();
-                    listSelectedUsers.clear();
                 }
             }
+        }else {
+            mTitrePassager.setVisibility(View.GONE);
+            mLinearChampsDynamiques.removeAllViews();
+            listSelectedUsers.clear();
         }
     }
 
@@ -337,7 +349,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        assert alarmManager != null;
+        if(alarmManager != null)
         alarmManager.set(AlarmManager.RTC_WAKEUP, alarmTime.getTime(), pendingIntent);
     }
 
@@ -349,7 +361,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        assert alarmManager != null;
+        if(alarmManager != null)
         alarmManager.set(AlarmManager.RTC_WAKEUP, alarmTime.getTime(), pendingIntent);
     }
 
@@ -391,15 +403,17 @@ public class CovoituragePassagersActivity extends BaseActivity {
         calendar.setTime(covoiturage.getHoraireAller());
         // Declenchement de l'alarm de 2h avant le depart jusqu'au demarrage effectif du covoit
         calendar.add(Calendar.HOUR, -2);
+        FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
+        if(auth != null) {
+            if (user.getUid().equals(auth.getUid())) {
+                Covoiturage covoit = new Covoiturage();
+                covoit.setHoraireAller(covoiturage.getHoraireAller());
 
-        if (user.getUid().equals(Objects.requireNonNull(getCurrentUser()).getUid())) {
-            Covoiturage covoit = new Covoiturage();
-            covoit.setHoraireAller(covoiturage.getHoraireAller());
-
-            Intent intent = new Intent(this, TimeAlarmCovoiturageAller.class).putExtra("covoiturageAlarm", covoit);//.putExtra("user", passager);
-            PendingIntent operation = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
-            // reveil de l'alarm
-            mAlarmManagerAller.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), operation);
+                Intent intent = new Intent(this, TimeAlarmCovoiturageAller.class).putExtra("covoiturageAlarm", covoit);//.putExtra("user", passager);
+                PendingIntent operation = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+                // reveil de l'alarm
+                mAlarmManagerAller.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), operation);
+            }
         }
     }
 
@@ -413,16 +427,18 @@ public class CovoituragePassagersActivity extends BaseActivity {
         calendar.setTime(covoiturage.getHoraireRetour());
         // Declenchement de l'alarm de 2h avant le depart jusqu'au demarrage effectif du covoit
         calendar.add(Calendar.HOUR, -2);
+        FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
+        if(auth != null) {
+            // personne qui s'inscrit soi meme à un covoiturgae
+            if (user.getUid().equals(auth.getUid())) {
+                Covoiturage covoit = new Covoiturage();
+                covoit.setHoraireRetour(covoiturage.getHoraireRetour());
 
-        // personne qui s'inscrit soi meme à un covoiturgae
-        if (user.getUid().equals(Objects.requireNonNull(getCurrentUser()).getUid())) {
-            Covoiturage covoit = new Covoiturage();
-            covoit.setHoraireRetour(covoiturage.getHoraireRetour());
-
-            Intent intent = new Intent(this, TimeAlarmCovoiturageRetour.class).putExtra("covoiturageAlarm", covoit);//.putExtra("user", passager);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1, intent, PendingIntent.FLAG_ONE_SHOT);
-            // reveil de l'alarm
-            mAlarmManagerRetour.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+                Intent intent = new Intent(this, TimeAlarmCovoiturageRetour.class).putExtra("covoiturageAlarm", covoit);//.putExtra("user", passager);
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1, intent, PendingIntent.FLAG_ONE_SHOT);
+                // reveil de l'alarm
+                mAlarmManagerRetour.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+            }
         }
     }
 
@@ -444,7 +460,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
                     List<DocumentSnapshot> ds = queryDocumentSnapshots.getDocuments();
                     for (DocumentSnapshot doc : ds) {
                         Map<String, Object> user = doc.getData();
-                        if (user != null) {
+                        if(user != null) {
                             User u = new User(user.get("uid").toString(), user.get("nom").toString(), user.get("prenom").toString(), user.get("licence").toString(),
                                     user.get("email").toString(), user.get("niveau").toString(), user.get("fonction").toString());
                             listUsers.add(u);
@@ -473,13 +489,14 @@ public class CovoituragePassagersActivity extends BaseActivity {
                             List<DocumentSnapshot> ds = queryDocumentSnapshots.getDocuments();
                             for (DocumentSnapshot doc : ds) {
                                 Map<String, Object> user = doc.getData();
-                                assert user != null;
-                                User u = new User(user.get("uid").toString(), user.get("nom").toString(), user.get("prenom").toString(), user.get("licence").toString(),
-                                        user.get("email").toString(), user.get("niveau").toString(), user.get("fonction").toString());
+                                if(user != null) {
+                                    User u = new User(user.get("uid").toString(), user.get("nom").toString(), user.get("prenom").toString(), user.get("licence").toString(),
+                                            user.get("email").toString(), user.get("niveau").toString(), user.get("fonction").toString());
 
-                                // notification d'alarme pour chacun des passagers d'un covoiturage
-                                alarmDepart(u);
-                                alarmRetour(u);
+                                    // notification d'alarme pour chacun des passagers d'un covoiturage
+                                    alarmDepart(u);
+                                    alarmRetour(u);
+                                }
                             }
                         }
                     }
@@ -492,13 +509,13 @@ public class CovoituragePassagersActivity extends BaseActivity {
     private void getAndShowDatas() {
         Intent intent = getIntent();
         covoiturage = (Covoiturage) Objects.requireNonNull(intent.getExtras()).getSerializable("covoit");
-        assert covoiturage != null;
-
-        mNomConducteur.setText(Html.fromHtml("<b>Conducteur : </b>" + covoiturage.getPrenomConducteur() + " " + covoiturage.getNomConducteur()));
-        mDateDepart.setText(Html.fromHtml("<b>Aller : départ le </b>" + stDateToString(covoiturage.getHoraireAller()) + "<b> depuis </b>" + covoiturage.getLieuDepartAller()));
-        mDateretour.setText(Html.fromHtml("<b>Retour : départ le </b>" + stDateToString(covoiturage.getHoraireRetour()) + "<b> jusqu'à </b>" + covoiturage.getLieuDepartRetour()));
-        mNbPlaceDispo.setText(Html.fromHtml("<b>Places disponibles : </b>" + covoiturage.getNbPlacesDispo() + " / " + covoiturage.getNbPlacesTotal()));
-        mTypeVehicule.setText(Html.fromHtml("<b>Type Véhicule : </b>" + covoiturage.getTypeVehicule()));
+        if(covoiturage != null) {
+            mNomConducteur.setText(Html.fromHtml("<b>Conducteur : </b>" + covoiturage.getPrenomConducteur() + " " + covoiturage.getNomConducteur()));
+            mDateDepart.setText(Html.fromHtml("<b>Aller : départ le </b>" + stDateToString(covoiturage.getHoraireAller()) + "<b> depuis </b>" + covoiturage.getLieuDepartAller()));
+            mDateretour.setText(Html.fromHtml("<b>Retour : départ le </b>" + stDateToString(covoiturage.getHoraireRetour()) + "<b> jusqu'à </b>" + covoiturage.getLieuDepartRetour()));
+            mNbPlaceDispo.setText(Html.fromHtml("<b>Places disponibles : </b>" + covoiturage.getNbPlacesDispo() + " / " + covoiturage.getNbPlacesTotal()));
+            mTypeVehicule.setText(Html.fromHtml("<b>Type Véhicule : </b>" + covoiturage.getTypeVehicule()));
+        }
     }
 
     /**
@@ -532,6 +549,10 @@ public class CovoituragePassagersActivity extends BaseActivity {
             // si le nb de places demandées est bon, on insere tous les noms des passagers dans la bdd
         } else {
             if (verificationChampsVides()) {
+                // Test performance
+                final Trace myTrace1 = FirebasePerformance.getInstance().newTrace("covoituragePassagersActivityReservation_trace");
+                myTrace1.start();
+
                 String placesRestantes = String.valueOf(nbPlacesRestantes);
                 mNbPlaceDispo.setText(placesRestantes);
                 // recuperation passagers existants dejà pour ce covoit
@@ -573,6 +594,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
                                 /*alarmDepart();
                                 alarmRetour();*/
                                 startActivityCovoiturageVehicule(); // renvoi l'user sur la page des covoiturages apres validation de la creation de l'user dans les covoit
+                                myTrace1.stop();
                             }
                         });
             }
@@ -585,13 +607,26 @@ public class CovoituragePassagersActivity extends BaseActivity {
      * @return nb de places restantes pour un covoiturage
      */
     private int calculNbPlacesRestantes() {
+        // Test performance
+        final Trace myTrace2 = FirebasePerformance.getInstance().newTrace("covoituragePassagersActivityCalculNbPlacesRestantes_trace");
+        myTrace2.start();
+
         String passagers = mNbPassagerInput.getText().toString();
         int nbPassagers = 0;
+        int nbPlacesDispo;
+        int nbPlacesRestantes;
         if (!passagers.equals("")) {
             nbPassagers = Integer.parseInt(passagers);
         }
-        int nbPlacesDispo = Integer.parseInt(covoiturage.getNbPlacesDispo());
-
-        return nbPlacesDispo - nbPassagers;
+        // mis en place d'une securité apres les test firebase test lab en cas covoit null, renvoi le meme nb de passager que recu, comme
+        // s'il n'y avait pas eu de calcul
+        // erreur : "java.lang.NullPointerException: Attempt to read from field 'giv grg.c' on a null object reference" => Rien trouvé sur internet
+        if (covoiturage != null) {
+            nbPlacesDispo = Integer.parseInt(covoiturage.getNbPlacesDispo());
+            nbPlacesRestantes = nbPlacesDispo - nbPassagers;
+        } else
+            nbPlacesRestantes = nbPassagers;
+        myTrace2.stop();
+        return nbPlacesRestantes;
     }
 }

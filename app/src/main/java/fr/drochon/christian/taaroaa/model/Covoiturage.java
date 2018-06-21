@@ -1,10 +1,31 @@
 package fr.drochon.christian.taaroaa.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
 public class Covoiturage implements Serializable {
+
+    /**
+     * Parcelable
+     * this is used to regenerate your object. All Parcelables must have a CREATOR that implements these two methods
+     */
+
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator<Covoiturage>() {
+
+        public Covoiturage createFromParcel(Parcel in) {
+            Covoiturage covoiturage;
+            covoiturage = (Covoiturage) in.readValue(Covoiturage.class.getClassLoader());
+            return covoiturage;
+        }
+
+        public Covoiturage[] newArray(int size) {
+            return new Covoiturage[size];
+        }
+    };
 
     /*
     LES NOMS DES VARIABLES DOIVENT CORRESPONDRENT AU NOM DES CHAMPS DE LA BDD AVEC LE PREFIXE "m"
@@ -33,6 +54,9 @@ public class Covoiturage implements Serializable {
     public Covoiturage(String id) {
         this.id = id;
     }
+
+
+    //GETTERS AND SETTERS
 
     /**
      * Methode permettant de creer ou d'updater toutes les caracteristiques d'un covoiturage final
@@ -64,8 +88,21 @@ public class Covoiturage implements Serializable {
         mListPassagers = passagers;
     }
 
+    // example constructor that takes a Parcel and gives you an object populated with it's values
+    private Covoiturage(Parcel in) {
+        this.id = in.readString();
+        mNomConducteur = in.readString();
+        mPrenomConducteur = in.readString();
+        mNbPlacesDispo = in.readString();
+        mNbPlacesTotal = in.readString();
+        mHoraireAller = (Date) in.readValue(Date.class.getClassLoader());
+        mHoraireRetour = (Date) in.readValue(Date.class.getClassLoader());
+        mTypeVehicule = in.readString();
+        mLieuDepartAller = in.readString();
+        mLieuDepartRetour = in.readString();
+        //in.readStringList(getListPassagers());
+    }
 
-    //GETTERS AND SETTERS
 
     public String getId() {
         return id;
@@ -135,6 +172,15 @@ public class Covoiturage implements Serializable {
         return mLieuDepartAller;
     }
 
+    /*
+    public Reservation getReservation() {
+        return mReservation;
+    }
+
+    public void setReservation(Reservation reservation) {
+        mReservation = reservation;
+    }*/
+
     public void setLieuDepartAller(String lieuDepartAller) {
         mLieuDepartAller = lieuDepartAller;
     }
@@ -147,20 +193,48 @@ public class Covoiturage implements Serializable {
         mLieuDepartRetour = lieuDepartRetour;
     }
 
-    /*
-    public Reservation getReservation() {
-        return mReservation;
-    }
-
-    public void setReservation(Reservation reservation) {
-        mReservation = reservation;
-    }*/
-
     public List<String> getListPassagers() {
         return mListPassagers;
     }
 
+    // --------------------
+    // PARCELABLE
+    // --------------------
+    /* everything below here is for implementing Parcelable */
+
     public void setListPassagers(List<String> listPassagers) {
         this.mListPassagers = listPassagers;
     }
+
+/*    *//**
+     * 99.9% of the time you can just ignore this
+     *
+     * @return code int
+     *//*
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    *//**
+     * write your object's data to the passed-in Parcel
+     *
+     * @param dest  The Parcel in which the object should be written.
+     * @param flags Additional flags about how the object should be written.
+     *              May be 0 or {@link #PARCELABLE_WRITE_RETURN_VALUE}.
+     *//*
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
+        dest.writeString(mNomConducteur);
+        dest.writeString(mPrenomConducteur);
+        dest.writeString(mNbPlacesDispo);
+        dest.writeString(mNbPlacesTotal);
+        dest.writeValue(mHoraireAller);
+        dest.writeValue(mHoraireRetour);
+        dest.writeString(mTypeVehicule);
+        dest.writeString(mLieuDepartAller);
+        dest.writeString(mLieuDepartRetour);
+        dest.writeList(mListPassagers);
+    }*/
 }

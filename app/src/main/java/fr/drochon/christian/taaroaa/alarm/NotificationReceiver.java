@@ -20,13 +20,14 @@ public class NotificationReceiver extends BroadcastReceiver {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         Bundle bundle = intent.getExtras();
-        assert bundle != null;
-        //hAller = bundle.getString("hAller");
-        Date date = (Date) bundle.get("date");
+        if(bundle != null) {
+            //hAller = bundle.getString("hAller");
+            Date date = (Date) bundle.get("date");
+        }
 
         Notification notification = intent.getParcelableExtra(NOTIFICATION);
         int id = intent.getIntExtra(NOTIFICATION_ID, 0);
-        assert notificationManager != null;
+        if(notificationManager != null)
         notificationManager.notify(id, notification);
     }
 }

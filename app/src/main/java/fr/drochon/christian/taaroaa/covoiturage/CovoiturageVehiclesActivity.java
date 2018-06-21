@@ -2,6 +2,7 @@ package fr.drochon.christian.taaroaa.covoiturage;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,10 +13,13 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.perf.FirebasePerformance;
+import com.google.firebase.perf.metrics.Trace;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -51,10 +55,15 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
         List<Covoiturage> listCovoiturages = new ArrayList<>();
         listPassagers = new ArrayList<>();
 
+        // Test performance
+        final Trace myTrace = FirebasePerformance.getInstance().newTrace("covoiturageVehiclesActivityShowAllVehicles_trace");
+        myTrace.start();
+
         this.configureRecyclerView();
         this.configureToolbar();
         this.giveToolbarAName(R.string.covoit_vehicule_name);
-        this.giveToolbarAName(R.string.covoit_vehicule_name);
+        myTrace.stop();
+
 
         // --------------------
         // LISTENERS
@@ -164,24 +173,33 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
      */
     @SuppressWarnings("unchecked")
     private Query getAllCovoiturages() {
-        Query mQuery = setupDb().collection("covoiturages").orderBy("horaireRetour", Query.Direction.ASCENDING).whereGreaterThan("horaireRetour", Calendar.getInstance().getTime());
-        mQuery.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot documentSnapshots) {
-                if (documentSnapshots.size() != 0) {
-                    List<DocumentSnapshot> ds = documentSnapshots.getDocuments();
-                    for (int i = 0; i < ds.size(); i++) {
-                        Map<String, Object> covoit = ds.get(i).getData();
-                        listPassagers = new ArrayList<>();
-                        assert covoit != null;
-                        listPassagers = (List<String>) covoit.get("passagers");
+        // Test performance
+        final Trace myTrace1 = FirebasePerformance.getInstance().newTrace("covoiturageVehiclesActivityGetAllCovoiturages_trace");
+        myTrace1.start();
 
-                        // recuperation de l'objet covoiturage
-                        covoiturage = new Covoiturage(covoit.get("id").toString(), covoit.get("nomConducteur").toString(), covoit.get("prenomConducteur").toString(),
-                                covoit.get("nbPlacesDispo").toString(), covoit.get("nbPlacesTotal").toString(), covoit.get("typeVehicule").toString(), stStringToDate(covoit.get("horaireAller").toString()),
-                                stStringToDate(covoit.get("horaireRetour").toString()), covoit.get("lieuDepartAller").toString(), covoit.get("lieuDepartRetour").toString(), listPassagers);
+        Query mQuery = setupDb().collection("covoiturages").orderBy("horaireRetour", Query.Direction.ASCENDING).whereGreaterThan("horaireRetour", Calendar.getInstance().getTime());
+        mQuery.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                    if(queryDocumentSnapshots != null){
+                        if(queryDocumentSnapshots.size() != 0){
+                            List<DocumentSnapshot> ds = queryDocumentSnapshots.getDocuments();
+                            for (int i = 0; i < ds.size(); i++) {
+                                Map<String, Object> covoit = ds.get(i).getData();
+                                listPassagers = new ArrayList<>();
+                                if(covoit != null) {
+                                    listPassagers = (List<String>) covoit.get("passagers");
+
+                                    // recuperation de l'objet covoiturage
+                                    covoiturage = new Covoiturage(covoit.get("id").toString(), covoit.get("nomConducteur").toString(), covoit.get("prenomConducteur").toString(),
+                                            covoit.get("nbPlacesDispo").toString(), covoit.get("nbPlacesTotal").toString(), covoit.get("typeVehicule").toString(),
+                                            stStringToDate(covoit.get("horaireAller").toString()), stStringToDate(covoit.get("horaireRetour").toString()),
+                                            covoit.get("lieuDepartAller").toString(), covoit.get("lieuDepartRetour").toString(), listPassagers);
+                                    myTrace1.stop();
+                                }
+                            }
+                        }
                     }
-                }
             }
         });
         return mQuery;

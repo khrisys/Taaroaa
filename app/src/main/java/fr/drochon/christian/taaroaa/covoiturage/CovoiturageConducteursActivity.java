@@ -31,25 +31,26 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.perf.FirebasePerformance;
+import com.google.firebase.perf.metrics.Trace;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
 import fr.drochon.christian.taaroaa.R;
-import fr.drochon.christian.taaroaa.api.CovoiturageHelper;
-import fr.drochon.christian.taaroaa.base.BaseActivity;
-import fr.drochon.christian.taaroaa.model.User;
 import fr.drochon.christian.taaroaa.alarm.TimeAlarmCovoiturageAller;
 import fr.drochon.christian.taaroaa.alarm.TimeAlarmCovoiturageRetour;
+import fr.drochon.christian.taaroaa.api.CovoiturageHelper;
+import fr.drochon.christian.taaroaa.base.BaseActivity;
 
 import static java.util.Calendar.MINUTE;
 
@@ -98,9 +99,14 @@ public class CovoiturageConducteursActivity extends BaseActivity {
 
         mNbPlaceTotal.requestFocus();
 
+        // Test performance
+        final Trace myTrace = FirebasePerformance.getInstance().newTrace("covoiturageConducteursActivityGetInfosCurrentUser_trace");
+        myTrace.start();
+
         this.configureToolbar();
         this.giveToolbarAName(R.string.covoit_conducteur_name);
         this.getInfosCurrentUser();
+        myTrace.stop();
 
         // --------------------
         // SPINNERS & REMPLISSAGE
@@ -156,6 +162,7 @@ public class CovoiturageConducteursActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 createCovoiturageInFirebase();
+
             }
         });
     }
@@ -347,7 +354,7 @@ public class CovoiturageConducteursActivity extends BaseActivity {
             final AlertDialog.Builder adb = new AlertDialog.Builder(this);
             adb.setTitle("Date incorrecte");
             adb.setIcon(android.R.drawable.ic_delete);
-            adb.setMessage("Le jour du départ ne peut pas être défini avant la date du jour !");
+            adb.setMessage("Le jour et l'heure du départ ne peuvent pas être définis avant l'heure actuelle !");
             adb.setPositiveButton("MODIFIER", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     mDateDepart.setText("");
@@ -382,6 +389,10 @@ public class CovoiturageConducteursActivity extends BaseActivity {
                 if (!nom.isEmpty() && !prenom.isEmpty() && !nbPlacesDispo.isEmpty() && !dateAller.isEmpty() && !dateRetour.isEmpty()
                         && !heureDepart.isEmpty() && !heureRetour.isEmpty() && !lieuAller.isEmpty() && !lieuRetour.isEmpty()) {
 
+                    // Test performance
+                    final Trace myTrace1 = FirebasePerformance.getInstance().newTrace("covoiturageConducteursActivitycreateCovoiturage_trace");
+                    myTrace1.start();
+
                     //creation de l'objet covoiturage et insertion dans la bdd
                     Map<String, Object> covoit = new HashMap<>();
                     covoit.put("id", id);
@@ -394,23 +405,8 @@ public class CovoiturageConducteursActivity extends BaseActivity {
                     covoit.put("horaireRetour", horaireDuRetour);
                     covoit.put("lieuDepartAller", lieuAller);
                     covoit.put("lieuDepartRetour", lieuRetour);
-                    List<User> users = new ArrayList<>();
-                    covoit.put("listPassagers", users);
                     //TODO V2 : ligne à rajouter lors que l'obet Sortie existera
                     //covoit.put("reservation", null);
-
-                    //TODO faire une requete pour boucler sur les users et recuperer les passagers par leurs noms et prenom. Sur ces personnes :  declencher l'alarm
-                    // envoi de l'alarm à la classe TimeAlarmCovoiturageAller pour que les notifications soient prises en compte et envoyées au moment voulu
-                    for(int i = 0; i < users.size(); i++){
-
-                        Intent intent = new Intent(CovoiturageConducteursActivity.this, TimeAlarmCovoiturageAller.class).putExtra("user", users.get(i));
-                        startActivity(intent);
-                        Intent intent1 = new Intent(CovoiturageConducteursActivity.this, TimeAlarmCovoiturageRetour.class).putExtra("user", users.get(i));
-                        startActivity(intent1);
-                    }
-
-                    /*this.alarmDepart(horaireDelAller);
-                    this.alarmRetour(horaireDuRetour);*/
 
                     this.mProgressBar.setVisibility(View.VISIBLE);
                     setupDb().collection("covoiturages").document(id).set(covoit)
@@ -420,6 +416,8 @@ public class CovoiturageConducteursActivity extends BaseActivity {
                                     Toast.makeText(CovoiturageConducteursActivity.this, R.string.create_covoit,
                                             Toast.LENGTH_LONG).show();
                                     startMainCovoitActivity(); // renvoi l'covoit sur la page des covoiturages  apres validation de la creation du covoit
+
+                                    myTrace1.stop();
                                 }
                             })
                             .addOnFailureListener(new OnFailureListener() {
@@ -443,18 +441,24 @@ public class CovoiturageConducteursActivity extends BaseActivity {
      * avec un compte precis pourra creer un covoiturage.
      */
     private void getInfosCurrentUser() {
-        // recup de la personne connectée avec son uid
-        setupDb().collection("users").document(Objects.requireNonNull(getCurrentUser()).getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                if (documentSnapshot.exists()) {
-                    Map<String, Object> user = documentSnapshot.getData();
-                    assert user != null;
-                    mNom.setText(user.get("nom").toString());
-                    mPrenom.setText(user.get("prenom").toString());
+
+        // correction test de performance
+        FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
+        if(auth != null) {
+            // recup de la personne connectée avec son uid
+            setupDb().collection("users").document(auth.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    if (documentSnapshot.exists()) {
+                        Map<String, Object> user = documentSnapshot.getData();
+                        if(user != null) {
+                            mNom.setText(user.get("nom").toString());
+                            mPrenom.setText(user.get("prenom").toString());
+                        }
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
 
@@ -522,11 +526,12 @@ public class CovoiturageConducteursActivity extends BaseActivity {
         @SuppressLint("SetTextI18n")
         @Override
         public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-            assert getTag() != null;
-            if (getTag().equals("dateDepart"))
-                mDateDepart.setText(mDateDepart.getText() + "" + dayOfMonth + "-" + (month + 1) + "-" + year);
-            if (getTag().equals("dateRetour"))
-                mDateRetour.setText(mDateRetour.getText() + "" + dayOfMonth + "-" + (month + 1) + "-" + year);
+            if(getTag() != null) {
+                if (getTag().equals("dateDepart"))
+                    mDateDepart.setText(mDateDepart.getText() + "" + dayOfMonth + "-" + (month + 1) + "-" + year);
+                if (getTag().equals("dateRetour"))
+                    mDateRetour.setText(mDateRetour.getText() + "" + dayOfMonth + "-" + (month + 1) + "-" + year);
+            }
         }
     }
 
@@ -562,11 +567,12 @@ public class CovoiturageConducteursActivity extends BaseActivity {
          */
         @SuppressLint("SetTextI18n")
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-            assert getTag() != null;
-            if (getTag().equals("timeDepart"))
-                mHeureDepart.setText(mHeureDepart.getText() + "" + hourOfDay + ":" + minute + ":00");
-            if (getTag().equals("timeRetour"))
-                mHeureretour.setText(mHeureretour.getText() + "" + hourOfDay + ":" + minute + ":00");
+            if(getTag() != null) {
+                if (getTag().equals("timeDepart"))
+                    mHeureDepart.setText(mHeureDepart.getText() + "" + hourOfDay + ":" + minute + ":00");
+                if (getTag().equals("timeRetour"))
+                    mHeureretour.setText(mHeureretour.getText() + "" + hourOfDay + ":" + minute + ":00");
+            }
         }
     }
 

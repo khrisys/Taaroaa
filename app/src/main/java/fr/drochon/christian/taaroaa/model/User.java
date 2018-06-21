@@ -12,7 +12,7 @@ public class User implements Serializable {
     private String mPrenom;
     private String mLicence;
     private String mEmail;
-    private String mNiveauPlongeur;
+    private String mNiveau;
     private String mFonction;
 
 
@@ -65,16 +65,16 @@ public class User implements Serializable {
      * @param prenom
      * @param licence
      * @param email
-     * @param niveauPlongeur
+     * @param niveau
      * @param fonction
      */
-    public User(String uid, String nom, String prenom, String licence, String email, String niveauPlongeur, String fonction) {
+    public User(String uid, String nom, String prenom, String licence, String email, String niveau, String fonction) {
         this.uid = uid;
         mNom = nom;
         mPrenom = prenom;
         mLicence = licence;
         mEmail = email;
-        mNiveauPlongeur = niveauPlongeur;
+        mNiveau = niveau;
         mFonction = fonction;
     }
 
@@ -121,12 +121,12 @@ public class User implements Serializable {
         mEmail = email;
     }
 
-    public String getNiveauPlongeur() {
-        return mNiveauPlongeur;
+    public String getNiveau() {
+        return mNiveau;
     }
 
-    public void setNiveauPlongeur(String niveauPlongeur) {
-        mNiveauPlongeur = niveauPlongeur;
+    public void setNiveau(String niveau) {
+        mNiveau = niveau;
     }
 
     public String getFonction() {

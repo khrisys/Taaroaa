@@ -13,6 +13,8 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.perf.FirebasePerformance;
+import com.google.firebase.perf.metrics.Trace;
 
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
@@ -25,15 +27,6 @@ public class PasswordActivity extends BaseActivity {
     private View mProgressView;
     private AutoCompleteTextView mEmailView;
 
-    /**
-     * Verification de la validité de l'adresse email
-     *
-     * @param target adresse email
-     * @return validité ou non de l'adresse email recupérée
-     */
-    private static boolean isValidEmail(CharSequence target) {
-        return target != null && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +51,10 @@ public class PasswordActivity extends BaseActivity {
                 final FirebaseAuth auth = FirebaseAuth.getInstance();
                 String emailAddress = mEmailView.getText().toString();
 
+                // Test performance de recuperation de mot de passe
+                final Trace myTrace = FirebasePerformance.getInstance().newTrace("passwordActivityResetEmail_trace");
+                myTrace.start();
+
                 if (verificationChampsVides()) {
                     auth.sendPasswordResetEmail(emailAddress)
                             .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -70,6 +67,8 @@ public class PasswordActivity extends BaseActivity {
                                                 + mEmailView.getText().toString() + "'.", Toast.LENGTH_LONG).show();
                                         Intent intent = new Intent(PasswordActivity.this, MainActivity.class);
                                         startActivity(intent);
+
+                                        myTrace.stop();
                                     }
                                 }
                             });
@@ -104,6 +103,16 @@ public class PasswordActivity extends BaseActivity {
             return false;
         }
         return true;
+    }
+
+    /**
+     * Verification de la validité de l'adresse email
+     *
+     * @param target adresse email
+     * @return validité ou non de l'adresse email recupérée
+     */
+    private static boolean isValidEmail(CharSequence target) {
+        return target != null && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
     }
 }
 

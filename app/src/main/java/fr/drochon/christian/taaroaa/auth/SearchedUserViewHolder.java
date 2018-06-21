@@ -55,7 +55,7 @@ public class SearchedUserViewHolder extends RecyclerView.ViewHolder {
             public void onClick(View v) {
                 for (User u: mSearchedUserList
                      ) {
-                    Intent intent = new Intent(v.getContext(), AccountModificationActivity.class).putExtra("user", u);
+                    Intent intent = new Intent(v.getContext(), AccountModificationActivity.class).putExtra("searchedUser", u);
                     v.getContext().startActivity(intent);
                 }
             }

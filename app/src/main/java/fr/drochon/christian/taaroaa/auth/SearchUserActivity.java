@@ -1,6 +1,7 @@
 package fr.drochon.christian.taaroaa.auth;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -10,12 +11,13 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.perf.FirebasePerformance;
+import com.google.firebase.perf.metrics.Trace;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,25 +41,6 @@ public class SearchUserActivity extends BaseActivity {
     // LIFECYCLE
     // --------------------
 
-    /**
-     * Methode permettant de filtrer la liste des utilisateurs affichés grace à la barre de recherche
-     *
-     * @param models
-     * @param nomUser
-     * @return
-     */
-    private void filter(List<User> models, String nomUser) {
-        final String lowerCaseQuery = nomUser.toLowerCase();
-
-        List<User> filteredModelList = new ArrayList<>();
-        for (User model : models) {
-            final String text = model.getNom().toLowerCase();
-            if (text.contains(lowerCaseQuery)) {
-                filteredModelList.add(model);
-            }
-        }
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,9 +51,15 @@ public class SearchUserActivity extends BaseActivity {
         SearchView searchView = findViewById(R.id.searchbar_user);
 
         listUsers = new ArrayList<>();
-        getListUsers();
 
+        // Test performance d'affichage de tous les users
+        final Trace myTrace = FirebasePerformance.getInstance().newTrace("searchUserActivityShowAllUsers_trace");
+        myTrace.start();
+
+        getListUsers();
         configureRecyclerView();
+        myTrace.stop();
+
         configureToolbar();
         this.giveToolbarAName(R.string.account_search_name);
 
@@ -88,6 +77,11 @@ public class SearchUserActivity extends BaseActivity {
             //Configure Adapter & RecyclerView
             @Override
             public boolean onQueryTextChange(String newText) {
+
+                // Test performance de recherche users filtrés
+                final Trace myTrace1 = FirebasePerformance.getInstance().newTrace("searchUserActivityShowFilteredlUsers_trace");
+                myTrace.start();
+
                 // filtre d'affichage sur la liste des users (grace aux conditions "startat" et "endat" de la requete
                 if (!newText.equals(""))
                     mAdapterSearchedUser = new AdapterSearchedUser(generateOptionsForAdapter(getFilteredUser(newText)));
@@ -102,6 +96,8 @@ public class SearchUserActivity extends BaseActivity {
                 });
                 mRecyclerViewUser.setLayoutManager(new LinearLayoutManager(SearchUserActivity.this)); // layoutmanager indique comment seront positionnés les elements (linearlayout)
                 mRecyclerViewUser.setAdapter(mAdapterSearchedUser);// l'adapter s'occupe du contenu
+
+                myTrace1.stop();
                 return true;
             }
         });
@@ -187,6 +183,10 @@ public class SearchUserActivity extends BaseActivity {
      */
     private Query getAllUsers() {
 
+        // Test performance de recherche users filtrés
+        final Trace myTrace2 = FirebasePerformance.getInstance().newTrace("searchUserActivityGetAllUsersQuery_trace");
+        myTrace2.start();
+
         Query mQuery = setupDb().collection("users").orderBy("nom", Query.Direction.ASCENDING);
         mQuery.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
@@ -198,6 +198,8 @@ public class SearchUserActivity extends BaseActivity {
                         Log.e("TAG", "Le document existe !");
                         // liste des docs
                         readDataInList(documentSnapshots.getDocuments());
+
+                        myTrace2.stop();
                     }
                 }
             }
@@ -212,22 +214,27 @@ public class SearchUserActivity extends BaseActivity {
      */
     private Query getFilteredUser(final String nom) {
 
+        // Test performance de recherche users filtrés
+        final Trace myTrace3 = FirebasePerformance.getInstance().newTrace("searchUserActivityGetFilteredUsersQuery_trace");
+        myTrace3.start();
+
         Query mQ = setupDb().collection("users").orderBy("nom").startAt(nom).endAt(nom + '\uf8ff');
-        mQ.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        mQ.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
-            public void onSuccess(QuerySnapshot documentSnapshots) {
-                if (documentSnapshots != null) {
-                    if (documentSnapshots.size() != 0) {
-                        List<DocumentSnapshot> docs = documentSnapshots.getDocuments();
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if (queryDocumentSnapshots != null) {
+                    if (queryDocumentSnapshots.size() != 0) {
+                        List<DocumentSnapshot> docs = queryDocumentSnapshots.getDocuments();
                         for (DocumentSnapshot ds : docs) {
                             Map<String, Object> user = ds.getData();
                             filter(listUsers, nom);
+
+                            myTrace3.stop();
                         }
                     }
                 }
             }
         });
-
         return mQ;
     }
 
@@ -235,16 +242,19 @@ public class SearchUserActivity extends BaseActivity {
      * Methode permettant de remplir la liste de tous les utilisateurs contenus dans la bdd
      */
     private void getListUsers() {
-        setupDb().collection("users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        setupDb().collection("users").addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
-            public void onSuccess(QuerySnapshot documentSnapshots) {
-                if (documentSnapshots.size() != 0) {
-                    List<DocumentSnapshot> ds = documentSnapshots.getDocuments();
-                    for (int i = 0; i < ds.size(); i++) {
-                        Map<String, Object> map = ds.get(i).getData();
-                        assert map != null;
-                        User user = new User(map.get("uid").toString(), map.get("nom").toString(), map.get("prenom").toString());
-                        listUsers.add(user);
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if (queryDocumentSnapshots != null) {
+                    if (queryDocumentSnapshots.size() != 0) {
+                        List<DocumentSnapshot> ds = queryDocumentSnapshots.getDocuments();
+                        for (int i = 0; i < ds.size(); i++) {
+                            Map<String, Object> map = ds.get(i).getData();
+                            if (map != null) {
+                                User user = new User(map.get("uid").toString(), map.get("nom").toString(), map.get("prenom").toString());
+                                listUsers.add(user);
+                            }
+                        }
                     }
                 }
             }
@@ -260,12 +270,29 @@ public class SearchUserActivity extends BaseActivity {
 
         // un DocumentReference fait référence à un emplacement de document dans une base de données Firestore et peut être utilisé pour
         // écrire, lire ou écouter l'emplacement. Il peut exister ou non un document à l'emplacement référencé.
-        if(documentSnapshot != null) {
-            for (int i = 0; i < documentSnapshot.size(); i++) {
-                DocumentSnapshot doc = documentSnapshot.get(i); //Un DocumentSnapshot contient des données lues à partir d'un document dans votre base de données Firestore.
-                User user = new User(doc.getId(), Objects.requireNonNull(doc.get("nom")).toString(), Objects.requireNonNull(doc.get("prenom"))
-                        .toString(), Objects.requireNonNull(doc.get("licence")).toString(), Objects.requireNonNull(doc.get("email")).toString(),
-                        Objects.requireNonNull(doc.get("niveau")).toString(), Objects.requireNonNull(doc.get("fonction")).toString());
+        for (int i = 0; i < documentSnapshot.size(); i++) {
+            DocumentSnapshot doc = documentSnapshot.get(i); //Un DocumentSnapshot contient des données lues à partir d'un document dans votre base de données Firestore.
+            User user = new User(doc.getId(), Objects.requireNonNull(doc.get("nom")).toString(), Objects.requireNonNull(doc.get("prenom"))
+                    .toString(), Objects.requireNonNull(doc.get("licence")).toString(), Objects.requireNonNull(doc.get("email")).toString(),
+                    Objects.requireNonNull(doc.get("niveau")).toString(), Objects.requireNonNull(doc.get("fonction")).toString());
+        }
+    }
+
+    /**
+     * Methode permettant de filtrer la liste des utilisateurs affichés grace à la barre de recherche
+     *
+     * @param models
+     * @param nomUser
+     * @return
+     */
+    private void filter(List<User> models, String nomUser) {
+        final String lowerCaseQuery = nomUser.toLowerCase();
+
+        List<User> filteredModelList = new ArrayList<>();
+        for (User model : models) {
+            final String text = model.getNom().toLowerCase();
+            if (text.contains(lowerCaseQuery)) {
+                filteredModelList.add(model);
             }
         }
     }

@@ -19,6 +19,8 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.perf.FirebasePerformance;
+import com.google.firebase.perf.metrics.Trace;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -74,9 +76,14 @@ public class CoursesSupervisorsActivity extends BaseActivity implements AdapterC
         calendrierClique = new Date();
         calendrierFinJournee = new Date();
 
+        // Test performance de l'update d'user en bdd
+        final Trace myTrace = FirebasePerformance.getInstance().newTrace("coursesSupervisorsActivityShowAllCourses_trace");
+        myTrace.start();
+
         configureRecyclerView();
         configureToolbar();
         giveToolbarAName(R.string.course_supervisors_name);
+        myTrace.stop();
 
         // --------------------
         // LISTENERS
@@ -95,6 +102,10 @@ public class CoursesSupervisorsActivity extends BaseActivity implements AdapterC
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
+                // Test performance de l'update d'user en bdd
+                final Trace myTrace1 = FirebasePerformance.getInstance().newTrace("coursesSupervisorsActivityShowFilteredCourses_trace");
+                myTrace1.start();
+
                 Calendar calendar = Calendar.getInstance();
                 calendar.set(year, month, dayOfMonth);
                 // formattage de la date pour le debut et la fin de journée
@@ -115,6 +126,7 @@ public class CoursesSupervisorsActivity extends BaseActivity implements AdapterC
                     e.printStackTrace();
                 }
                 configureRecyclerViewSorted();
+                myTrace1.stop();
             }
         });
     }
@@ -225,17 +237,23 @@ public class CoursesSupervisorsActivity extends BaseActivity implements AdapterC
      * @return query
      */
     private Query queryAllCourses() {
-        Query mQuery = setupDb().collection("courses").orderBy("horaireDuCours", Query.Direction.ASCENDING);
+        // Test performance de l'update d'user en bdd
+        final Trace myTrace2 = FirebasePerformance.getInstance().newTrace("coursesSupervisorsActivityAllCoursesQuerys_trace");
+        myTrace2.start();
+
+        Query mQuery = setupDb().collection("courses")
+                .orderBy("horaireDuCours", Query.Direction.ASCENDING)
+                .whereGreaterThanOrEqualTo("horaireDuCours", Calendar.getInstance().getTime());
         mQuery.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-                // condition de creation d'un user ou affichage simple d'un message indiquant que l'user existe dejà en bdd.
-                // Avec les uid, il ne peut y avoir de doublon, on peut donc etre sur qu'il n'y a qu'un seule doc qui existe s'il en existe un.
                 if (documentSnapshots != null) {
                     if (documentSnapshots.size() != 0) {
                         Log.e("TAG", "Le document existe !");
                         // liste des docs
                         readDataInList(documentSnapshots.getDocuments());
+
+                        myTrace2.stop();
                     }
                 }
             }
@@ -250,6 +268,9 @@ public class CoursesSupervisorsActivity extends BaseActivity implements AdapterC
      * @return query
      */
     private Query queryCoursesFiltered() {
+        // Test performance de l'update d'user en bdd
+        final Trace myTrace3 = FirebasePerformance.getInstance().newTrace("coursesSupervisorsActivityFilteredCoursesQuery_trace");
+        myTrace3.start();
         Query mQ = setupDb().collection("courses").orderBy("horaireDuCours").startAt(calendrierClique).endAt(calendrierFinJournee);
         mQ.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
@@ -257,6 +278,7 @@ public class CoursesSupervisorsActivity extends BaseActivity implements AdapterC
                 if (documentSnapshots != null) {
                     if (documentSnapshots.size() != 0) {
                         readDataInList(documentSnapshots.getDocuments());
+                        myTrace3.stop();
                     }
                 }
             }
@@ -270,11 +292,9 @@ public class CoursesSupervisorsActivity extends BaseActivity implements AdapterC
      * @param documentSnapshot donnees recuperees de la requete de recherche de l'utilisateur connecté
      */
     private void readDataInList(final List<DocumentSnapshot> documentSnapshot) {
-
-        // un DocumentReference fait référence à un emplacement de document dans une base de données Firestore et peut être utilisé pour
-        // écrire, lire ou écouter l'emplacement. Il peut exister ou non un document à l'emplacement référencé.
         for (int i = 0; i < documentSnapshot.size(); i++) {
-            DocumentSnapshot doc = documentSnapshot.get(i); //Un DocumentSnapshot contient des données lues à partir d'un document dans votre base de données Firestore.
+            //Un DocumentSnapshot contient des données lues à partir d'un document dans votre base de données Firestore.
+            DocumentSnapshot doc = documentSnapshot.get(i);
             String uid = doc.getId();
             String niveauDuCours = (String) doc.get("niveauDuCours");
             String nomDuMoniteur = (String) doc.get("nomDuMoniteur");

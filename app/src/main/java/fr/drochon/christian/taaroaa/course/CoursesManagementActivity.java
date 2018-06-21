@@ -35,6 +35,8 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.perf.FirebasePerformance;
+import com.google.firebase.perf.metrics.Trace;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -47,10 +49,10 @@ import java.util.Objects;
 import java.util.TimeZone;
 
 import fr.drochon.christian.taaroaa.R;
+import fr.drochon.christian.taaroaa.alarm.TimeAlarmCourses;
 import fr.drochon.christian.taaroaa.api.CourseHelper;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
 import fr.drochon.christian.taaroaa.model.Course;
-import fr.drochon.christian.taaroaa.alarm.TimeAlarmCourses;
 
 import static fr.drochon.christian.taaroaa.api.CourseHelper.getCoursesCollection;
 import static java.util.Calendar.MINUTE;
@@ -228,6 +230,10 @@ public class CoursesManagementActivity extends BaseActivity {
      */
     private void createOrUpdateAffichage(final String uid) {
 
+        // Test performance de l'update d'user en bdd
+        final Trace myTrace1 = FirebasePerformance.getInstance().newTrace("coursesManagementActivityCreateOrUpdateAffichage_trace");
+        myTrace1.start();
+
         Query mQuery = setupDb().collection("courses").whereEqualTo("uid", uid);
 
         // RAJOUTER LE THIS DANS LE 1ER ARG DU LUSTENER PERMET DE RESTREINDRE LE CONTEXT A CETTE ACTIVITE, EVITANT AINSI DE METTRE LES DONNEES
@@ -240,21 +246,27 @@ public class CoursesManagementActivity extends BaseActivity {
                 // Avec la generation d'uid aleatoire géré par firebase, il ne peut y avoir de doublon.
                 // verification d'un id existant dans la bdd et si c'est le cas, remplissage des champs de l'ecran
                 // cours + changement de la phrase du bouton
-                if (documentSnapshots.size() == 1) {
-                    Log.e("TAG", "Le document existe !");
 
-                    mCreerCours.setText(R.string.button_update_course);
+                // test de performance : le calendrier n'est pas affiché
+                if(documentSnapshots != null) {
 
-                    Course course = new Course(uid);
-                    mMoniteurCours.setText(course.getNomDuMoniteur());
-                    mSujetCours.setText(course.getSujetDuCours());
-                    mTypeCours.setTag(course.getNiveauDuCours());
-                    mNiveauCours.setTag(course.getNiveauDuCours());
-                    mDateCours.setText(course.getDateDuCours().toString());
-                    mHeureCours.setText(course.getTimeDuCours().toString());
-                } else {
-                    mCreerCours.setText(R.string.button_create_course);
+                    if (documentSnapshots.size() == 1) {
+                        Log.e("TAG", "Le document existe !");
 
+                        mCreerCours.setText(R.string.button_update_course);
+
+                        Course course = new Course(uid);
+                        mMoniteurCours.setText(course.getNomDuMoniteur());
+                        mSujetCours.setText(course.getSujetDuCours());
+                        mTypeCours.setTag(course.getNiveauDuCours());
+                        mNiveauCours.setTag(course.getNiveauDuCours());
+                        mDateCours.setText(course.getDateDuCours().toString());
+                        mHeureCours.setText(course.getTimeDuCours().toString());
+
+                        myTrace1.stop();
+                    } else {
+                        mCreerCours.setText(R.string.button_create_course);
+                    }
                 }
             }
         });
@@ -364,6 +376,10 @@ public class CoursesManagementActivity extends BaseActivity {
         } else {
             if (!moniteur.isEmpty() && !sujet.isEmpty() && !mDateCours.getText().toString().isEmpty() && !mHeureCours.getText().toString().isEmpty()) {
 
+                // Test performance de l'update d'user en bdd
+                final Trace myTrace = FirebasePerformance.getInstance().newTrace("coursesManagementActivityCreateCourse_trace");
+                myTrace.start();
+
                 Map<String, Object> newCourse = new HashMap<>();
                 newCourse.put("id", id);
                 newCourse.put("niveauDuCours", niveauCours);
@@ -384,6 +400,8 @@ public class CoursesManagementActivity extends BaseActivity {
                                 Toast.makeText(CoursesManagementActivity.this, R.string.create_course,
                                         Toast.LENGTH_SHORT).show();
                                 startCoursesSupervisorsActivity(); // renvoi l'encadrant sur la page de tous les cours
+
+                                myTrace.stop();
                             }
                         })
                         .addOnFailureListener(new OnFailureListener() {
@@ -402,7 +420,7 @@ public class CoursesManagementActivity extends BaseActivity {
 
     /**
      * Cette methode ne comprend pas l'update d'une fonction dans le club, car seul les encadrants du club peuvent
-     * le faire, et cette fonctionnalité est donc reservée à une fonction particuliere.
+     * le faire, et cette fonctionnalité est donc reservée à une fonction adherent particuliere.
      */
     private void updateCourseInFirebase() {
 

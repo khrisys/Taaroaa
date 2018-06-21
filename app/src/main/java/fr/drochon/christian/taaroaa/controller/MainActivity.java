@@ -1,7 +1,6 @@
 package fr.drochon.christian.taaroaa.controller;
 
 import android.app.PendingIntent;
-import android.app.Service;
 import android.content.ComponentCallbacks2;
 import android.content.Intent;
 import android.os.Bundle;
@@ -19,11 +18,15 @@ import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.perf.FirebasePerformance;
+import com.google.firebase.perf.metrics.Trace;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -39,7 +42,6 @@ import static fr.drochon.christian.taaroaa.R.id;
 import static fr.drochon.christian.taaroaa.R.layout;
 import static fr.drochon.christian.taaroaa.R.string;
 import static fr.drochon.christian.taaroaa.R.string.app_name;
-import static fr.drochon.christian.taaroaa.R.style;
 
 
 public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
@@ -66,12 +68,13 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
         setContentView(layout.activity_main);
         configureToolbar();
         giveToolbarAName(app_name);
-        onTrimMemory(TRIM_MEMORY_BACKGROUND);
+        //onTrimMemory(TRIM_MEMORY_BACKGROUND);
 
 
         mTextViewHiddenForSnackbar = findViewById(R.id.test_coordinator);
         creationCompte = findViewById(id.creation_compte_btn);
         mConnexion = findViewById(id.connection_valid_btn);
+        mConnexion.requestFocus();
 
         Button deconnexion = findViewById(id.deconnexion_btn);
 
@@ -80,8 +83,9 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
         isAppRunning = true;
 
         // Souscription aux notifications
-            FirebaseMessaging.getInstance().subscribeToTopic("courses");
-            FirebaseMessaging.getInstance().subscribeToTopic("covoiturages");
+        FirebaseMessaging.getInstance().subscribeToTopic("courses");
+        FirebaseMessaging.getInstance().subscribeToTopic("covoiturages");
+
 
 
         // --------------------
@@ -91,35 +95,53 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
         creationCompte.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Test performance de la creation d'un compte user
+                final Trace myTrace = FirebasePerformance.getInstance().newTrace("mainActivityAccountCreation_trace");
+                myTrace.start();
+
                 if (!isCurrentUserLogged()) {
+                    //startSignInActivity(); // non connecté : inscription
                     startConnectionActivity();
                 } else {
                     Toast.makeText(MainActivity.this, "Vous etes déjà connecté, vous ne pouvez pas créer un compte !", Toast.LENGTH_LONG).show();
+                    startSummaryActivity(); // connecté : renvoyé vers le sommaire
                 }
+                myTrace.stop();
             }
         });
 
-        // Lancement de la page de connection à un compte existant
+/*        // Lancement de la page de connection à un compte existant
         mConnexion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Test performance de l'update d'un compte user
+                final Trace myTrace1 = FirebasePerformance.getInstance().newTrace("mainActivityGoToAnExistingAccountWithInformationOnCurrentUser_trace");
+                myTrace1.start();
+
                 if (!isCurrentUserLogged()) {
                     //CREATION DU USER
-                    createUserInFirestore();
+                    //updateUserInFirestore();
                     startSummaryActivity(); // connecté : renvoyé vers le sommaire
                 } else {
-                    startSignInActivity(); // non connecté : inscription
+                    //startSignInActivity(); // non connecté : inscription
                 }
+                myTrace1.stop();
             }
-        });
+        });*/
 
         // Deconnexion de l'utilisateur
         deconnexion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Test performance de l'update d'un compte user
+                final Trace myTrace2 = FirebasePerformance.getInstance().newTrace("mainActivityDeconnexionFromAnExistingAccount_trace");
+                myTrace2.start();
+
                 showSnackBar(getString(string.connection_end));
                 signOutUserFromFirebase();
                 creationCompte.setVisibility(View.VISIBLE);
+
+                myTrace2.stop();
             }
         });
 
@@ -137,6 +159,9 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
     // --------------------
     // UI
     // --------------------
+
+
+
 
     @Override
     public int getFragmentLayout() {
@@ -176,8 +201,9 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
      * Methode permettant d'aller sur la page de rensignement des identifiants de l'utilisateur (email, password)
      */
     private void startConnectionActivity() {
-        Intent intent = new Intent(MainActivity.this, ConnectionActivity.class);
-        startActivity(intent);
+
+            Intent intent = new Intent(MainActivity.this, ConnectionActivity.class);
+            startActivity(intent);
     }
 
     /**
@@ -190,6 +216,7 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
         this.mConnexion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 if (isCurrentUserLogged()) {
                     startSummaryActivity();
                 } else {
@@ -200,7 +227,6 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
     }
 
 
-
     // --------------------
     // PROVIDERS & AUTHENTIFICATION
     // --------------------
@@ -209,16 +235,40 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
      * Methode lancant une page autogenerée par Firebase permettant la connexion/inscription à l'app
      */
     private void startSignInActivity() {
+/*        setupDb().collection("users").addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w("TAG", "Listen error", e);
+                    return;
+
+
+                }
+                assert queryDocumentSnapshots != null;
+                for (DocumentChange change : queryDocumentSnapshots.getDocumentChanges()) {
+                    if (change.getType() == DocumentChange.Type.ADDED) {
+                        Log.d("TAG", "User : " + change.getDocument().getData());
+                    }
+
+                    String source = queryDocumentSnapshots.getMetadata().isFromCache() ?
+                            "local cache" : "server";
+                    Log.d("TAG", "Data fetched from " + source);
+                }
+            }
+        });*/
+
+
         startActivityForResult(
                 AuthUI.getInstance()
                         .createSignInIntentBuilder() // lance une activité de connexion/inscrption autogeneree
-                        .setTheme(style.LoginTheme) // definir un style dans le fichier res/values/styles.xml
+                        //.setTheme(R.style.LoginTheme) // definir un style dans le fichier res/values/styles.xml
                         .setAvailableProviders( // ajoute des moyens divers de connexion (email, google, fb..)
                                 Collections.singletonList(new AuthUI.IdpConfig.EmailBuilder().build()))
                         .setIsSmartLockEnabled(false, true)
                         .setLogo(R.mipmap.logo1)
                         .build(),
                 RC_SIGN_IN); // identifiant de connexion
+
     }
 
 
@@ -254,19 +304,22 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
 
         if (requestCode == RC_SIGN_IN) {
             if (resultCode == RESULT_OK) { // SUCCESS
-                this.createUserInFirestore();
+                //this.updateUserInFirestore();
                 this.startSummaryActivity(); // connexion et renvoi vers la page sommaire
+                //this.startConnectionActivity();
+
             }
         } else { // ERRORS
             if (response == null) {
                 showSnackBar(getString(string.error_authentication_canceled));
             }
-            assert response != null;
-            if (Objects.requireNonNull(response.getError()).getErrorCode() == ErrorCodes.NO_NETWORK) {
-                showSnackBar(getString(string.error_no_internet));
-            }
-            if (Objects.requireNonNull(response.getError()).getErrorCode() == ErrorCodes.UNKNOWN_ERROR) {
-                showSnackBar(getString(string.error_unknown_error));
+            if (response != null) {
+                if (Objects.requireNonNull(response.getError()).getErrorCode() == ErrorCodes.NO_NETWORK) {
+                    showSnackBar(getString(string.error_no_internet));
+                }
+                if (Objects.requireNonNull(response.getError()).getErrorCode() == ErrorCodes.UNKNOWN_ERROR) {
+                    showSnackBar(getString(string.error_unknown_error));
+                }
             }
         }
     }
@@ -283,7 +336,6 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
     }
 
 
-
     // --------------------
     // REST REQUESTS
     // --------------------
@@ -292,10 +344,10 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
      * Methode de creation d'un utilisateur, avec condition de creation en fonction de l'existance ou non d'un user dejà en bdd,
      * et decomposant le nom et le prenom saisi à l'enregistrement de la personne.
      */
-    private void createUserInFirestore() {
-
-        if (this.getCurrentUser() != null) {
-            Query mQuery = setupDb().collection("users").whereEqualTo("uid", getCurrentUser().getUid());
+    private void updateUserInFirestore() {
+        final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
+        if (auth != null) {
+            Query mQuery = setupDb().collection("users").whereEqualTo("uid", auth.getUid());
 
             // RAJOUTER LE THIS DANS LE LUSTENER PERMET DE RESTREINDRE LE CONTEXT A CETTE ACTIVITE, EVITANT AINSI DE METTRE LES DONNEES
             // A JOUR A CHAUQE FOIS QU'IL Y A UN UPDATE DANS L'APP.
@@ -309,29 +361,30 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
                         Log.e("TAG", "Le document existe !");
                     } else {
                         // recuperation des données de l'user
-                        String username = getCurrentUser().getDisplayName();
+                        String username = auth.getDisplayName();
                         // decomposition du nom et du prenom recu dans username
                         String nom = null, prenom;
                         String[] parts;
-                        assert username != null;
-                        if (username.contains(" ")) {
-                            parts = username.split(" ");
-                            try {
-                                if (parts[1] != null) nom = parts[1];
-                                else nom = "";
-                            } catch (ArrayIndexOutOfBoundsException e1) {
-                                Log.e("TAG", "ArrayOutOfBoundException " + e1.getMessage());
+                        if (username != null) {
+                            if (username.contains(" ")) {
+                                parts = username.split(" ");
+                                try {
+                                    if (parts[1] != null) nom = parts[1];
+                                    else nom = "";
+                                } catch (ArrayIndexOutOfBoundsException e1) {
+                                    Log.e("TAG", "ArrayOutOfBoundException " + e1.getMessage());
+                                }
+                                if (parts[0] != null) prenom = parts[0];
+                                else prenom = "";
+                            } else {
+                                nom = username;
+                                prenom = "";
                             }
-                            if (parts[0] != null) prenom = parts[0];
-                            else prenom = "";
-                        } else {
-                            nom = username;
-                            prenom = "";
-                        }
-                        String uid = getCurrentUser().getUid();
-                        String email = getCurrentUser().getEmail();
+                            String uid = auth.getUid();
+                            String email = auth.getEmail();
 
-                        addNewUser(uid, nom, prenom, email);
+                            addNewUser(uid, nom, prenom, email);
+                        }
                     }
                 }
             });
@@ -340,6 +393,8 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
         else {
             startSignInActivity();
         }
+
+
     }
 
     /**
@@ -357,22 +412,26 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
         newContact.put("nom", nom);
         newContact.put("prenom", prenom);
         newContact.put("email", email);
-        setupDb().collection("users").document(Objects.requireNonNull(getCurrentUser()).getUid()).set(newContact)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Toast.makeText(MainActivity.this, string.create_account,
-                                Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(MainActivity.this, "ERROR" + e.toString(),
-                                Toast.LENGTH_SHORT).show();
-                        Log.d("TAG", e.toString());
-                    }
-                });
+
+        FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
+        if (auth != null) {
+            setupDb().collection("users").document(auth.getUid()).set(newContact)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Toast.makeText(MainActivity.this, string.create_account,
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(MainActivity.this, "ERROR" + e.toString(),
+                                    Toast.LENGTH_SHORT).show();
+                            Log.d("TAG", e.toString());
+                        }
+                    });
+        }
     }
 
 

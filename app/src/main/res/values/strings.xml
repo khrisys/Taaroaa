@@ -16,7 +16,7 @@
     <string name="covoit_passager_name">Espace passagers</string>
     <string name="covoit_vehicule_name">Covoiturages</string>
     <string name="account_create_name">Espace personnel</string>
-    <string name="account_modif_name">Modification de compte</string>
+    <string name="account_modif_name">Espace personnel</string>
     <string name="account_search_name">Recherche adhérent</string>
 
     <!-- MAIN ACTIVITY -->
