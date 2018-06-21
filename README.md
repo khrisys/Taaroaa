@@ -1,0 +1,2 @@
+# Taaroaa
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/057206f665614c49b13cabe78287070f)](https://app.codacy.com/app/khrisys/Taaroaa?utm_source=github.com&utm_medium=referral&utm_content=khrisys/Taaroaa&utm_campaign=badger)
