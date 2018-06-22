@@ -24,8 +24,8 @@ import java.net.URL;
 import java.util.Map;
 
 import fr.drochon.christian.taaroaa.R;
+import fr.drochon.christian.taaroaa.auth.MainActivity;
 import fr.drochon.christian.taaroaa.auth.SearchUserActivity;
-import fr.drochon.christian.taaroaa.controller.MainActivity;
 import fr.drochon.christian.taaroaa.course.CoursesPupilsActivity;
 import fr.drochon.christian.taaroaa.covoiturage.CovoiturageVehiclesActivity;
 

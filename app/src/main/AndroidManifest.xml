@@ -23,7 +23,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".controller.MainActivity"
+        <activity android:name=".auth.MainActivity"
             android:windowSoftInputMode="stateHidden"> <!--n'ouvre pas le clavier par defaut dans cette activité-->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

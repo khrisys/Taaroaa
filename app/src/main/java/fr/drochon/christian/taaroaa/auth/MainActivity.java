@@ -1,5 +1,6 @@
-package fr.drochon.christian.taaroaa.controller;
+package fr.drochon.christian.taaroaa.auth;
 
+import android.annotation.SuppressLint;
 import android.app.PendingIntent;
 import android.content.ComponentCallbacks2;
 import android.content.Intent;
@@ -34,8 +35,9 @@ import java.util.Map;
 import java.util.Objects;
 
 import fr.drochon.christian.taaroaa.R;
-import fr.drochon.christian.taaroaa.auth.ConnectionActivity;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
+import fr.drochon.christian.taaroaa.controller.PasswordActivity;
+import fr.drochon.christian.taaroaa.controller.SummaryActivity;
 import fr.drochon.christian.taaroaa.notifications.MyFirebaseMessagingService;
 
 import static fr.drochon.christian.taaroaa.R.id;
@@ -52,6 +54,11 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
     private Button mConnexion;
     private Button creationCompte;
     private TextView mTextViewHiddenForSnackbar;
+    private String mName;
+    private String mFirstName;
+    private String mEmailUser;
+    private String mPassword;
+
 
     // --------------------
     // LIFE CYCLE
@@ -85,7 +92,6 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
         // Souscription aux notifications
         FirebaseMessaging.getInstance().subscribeToTopic("courses");
         FirebaseMessaging.getInstance().subscribeToTopic("covoiturages");
-
 
 
         // --------------------
@@ -200,8 +206,8 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
      */
     private void startConnectionActivity() {
 
-            Intent intent = new Intent(MainActivity.this, ConnectionActivity.class);
-            startActivity(intent);
+        Intent intent = new Intent(MainActivity.this, ConnectionActivity.class);
+        startActivity(intent);
     }
 
     /**
@@ -216,9 +222,9 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
             public void onClick(View v) {
 
                 if (isCurrentUserLogged()) {
-                    startSummaryActivity();
+                    startSummaryActivity();//connecté
                 } else {
-                    startSignInActivity();
+                    startSignInActivity(); //deconnecté = je lance la signin!!!
                 }
             }
         });
@@ -230,17 +236,17 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
     // --------------------
 
     /**
-     * Methode lancant une page autogenerée par Firebase permettant la connexion/inscription à l'app
+     * Methode lancant une page autogenerée par Firebase permettant la connexion/inscription à l'app.
+     * Methode permettant egalement de savoir si la personne se connecte en mode hors connexion.
      */
     private void startSignInActivity() {
+
 /*        setupDb().collection("users").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                 if (e != null) {
                     Log.w("TAG", "Listen error", e);
                     return;
-
-
                 }
                 assert queryDocumentSnapshots != null;
                 for (DocumentChange change : queryDocumentSnapshots.getDocumentChanges()) {
@@ -255,7 +261,7 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
             }
         });*/
 
-
+        // Methode qui v=crééé la connexion
         startActivityForResult(
                 AuthUI.getInstance()
                         .createSignInIntentBuilder() // lance une activité de connexion/inscrption autogeneree
@@ -302,8 +308,33 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
 
         if (requestCode == RC_SIGN_IN) {
             if (resultCode == RESULT_OK) { // SUCCESS
+
+                // RECUPERATION DES CARACTERISTIQUES DE LA PERSONNE CONNECTEE
+                // decomposition du nom et du prenom recu dans le param name
+                String[] parts;
+                if (response != null) {
+                    @SuppressLint("RestrictedApi") String mUsername = response.getUser().getName();
+                    mEmailUser = response.getEmail();
+                    mPassword = response.getProviderType();
+                    if (mUsername.contains(" ")) {
+                        parts = mUsername.split(" ");
+                        try {
+                            if (parts[1] != null) mName = parts[1];
+                            else mName = "";
+                        } catch (ArrayIndexOutOfBoundsException e1) {
+                            Log.e("TAG", "ArrayOutOfBoundException " + e1.getMessage());
+                        }
+                        if (parts[0] != null) mFirstName = parts[0];
+                        else mFirstName = "";
+                    } else {
+                        mName = mUsername;
+                        mFirstName = "";
+                    }
+                }
+
+
                 //this.updateUserInFirestore();
-                this.startSummaryActivity(); // connexion et renvoi vers la page sommaire
+                //this.startSummaryActivity(); // connexion et renvoi vers la page sommaire
                 //this.startConnectionActivity();
 
             }

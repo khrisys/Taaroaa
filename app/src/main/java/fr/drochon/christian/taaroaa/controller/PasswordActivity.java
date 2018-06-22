@@ -17,6 +17,7 @@ import com.google.firebase.perf.FirebasePerformance;
 import com.google.firebase.perf.metrics.Trace;
 
 import fr.drochon.christian.taaroaa.R;
+import fr.drochon.christian.taaroaa.auth.MainActivity;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
 
 /**
