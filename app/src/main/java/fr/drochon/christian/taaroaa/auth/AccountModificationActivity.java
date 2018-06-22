@@ -283,8 +283,9 @@ public class AccountModificationActivity extends BaseActivity {
     // --------------------
 
     /**
-     * Methode permettant de donner acces à la fonction d'un adherent si l'utilisateur connecté est un encadrant ou un initiateur.
-     * Ceci permettra de changer la fonction d'un adherent par un encadrant.
+     * Methode permettant de donner acces à la modification d'un adherent si l'utilisateur connecté est
+     * un encadrant ou un initiateur.
+     * Ceci permet de changer la fonction d'un adherent par un encadrant.
      * Cette methode desactive toutes les autres options pour empecher les erreurs de manipulation.
      */
     private void designDependingOnGetUsers() {

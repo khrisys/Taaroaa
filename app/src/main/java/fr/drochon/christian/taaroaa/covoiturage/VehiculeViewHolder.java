@@ -204,6 +204,7 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
         // ajout des Covoit dans une liste afin de les retrouver pour l'affichage de chaque cours particulier sous forme de notification
         if(covoiturage != null) {
             mCovoiturageList.add(covoiturage);
+            if(covoiturage.getListPassagers() != null)
             mListPassagers.addAll(covoiturage.getListPassagers());
             sCovoiturage = covoiturage;
 
