@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "963968628408",
+    "firebase_url": "https://taaroaa-fe93c.firebaseio.com",
+    "project_id": "taaroaa-fe93c",
+    "storage_bucket": "taaroaa-fe93c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:963968628408:android:762c1325c9a0f0f3",
+        "android_client_info": {
+          "package_name": "fr.drochon.christian.taaroaa"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "963968628408-7hgt8ld415ot5igsdrvbtdquddg7vv8p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBVClHsL8_OijvXNJ2fTwIk2mm_p5bC1Yw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
