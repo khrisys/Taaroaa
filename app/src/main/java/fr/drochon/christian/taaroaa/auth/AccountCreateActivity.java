@@ -14,10 +14,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
@@ -40,18 +38,13 @@ import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.api.UserHelper;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
 import fr.drochon.christian.taaroaa.controller.SummaryActivity;
-import fr.drochon.christian.taaroaa.model.User;
-
-import static android.widget.Toast.LENGTH_SHORT;
 
 public class AccountCreateActivity extends BaseActivity {
 
 
     public static final int GET_USERNAME = 40;
     // identifiant pour identifier la requete REST
-    private static final int SIGN_OUT_TASK = 10;
     private static final int DELETE_USER_TASK = 20;
-    private static final int UPDATE_USERNAME = 30;
     // DESIGN
     private TextInputEditText mPrenom;
     private TextInputEditText mNom;
@@ -62,7 +55,6 @@ public class AccountCreateActivity extends BaseActivity {
     private ProgressBar mProgressBar;
     // DATA
     private String fonction;
-    private User user;
 
     // --------------------
     // LIFECYCLE
@@ -83,8 +75,6 @@ public class AccountCreateActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account_create);
 
-        TextView titrePage = findViewById(R.id.titre_page_compte_txt);
-        LinearLayout linearLayoutFonctionAdherent = findViewById(R.id.linearLayoutFonctionAdherent);
         mPrenom = findViewById(R.id.prenom_txt);
         mNom = findViewById(R.id.nom_txt);
         mLicence = findViewById(R.id.licence_txt);
@@ -94,7 +84,6 @@ public class AccountCreateActivity extends BaseActivity {
         mPassword = findViewById(R.id.password_input);
         mProgressBar = findViewById(R.id.progress_bar);
         final Button createAccount = findViewById(R.id.modificiation_compte_btn);
-        Button suppressionCompte = findViewById(R.id.suppression_compte_btn);
         fonction = "Plongeur"; // la fonction par defaut d'un adhrent qui créé son compte est considéré comme un "Plongeur" et non comme un encadrant
 
         configureToolbar();
@@ -230,14 +219,6 @@ public class AccountCreateActivity extends BaseActivity {
     }
 
     /**
-     * Methode permettant de revenir à la page d'accueil lorsqu'un utilisateur a supprimer son compte
-     */
-    private void startMainActivity() {
-        Intent intent = new Intent(AccountCreateActivity.this, MainActivity.class);
-        startActivity(intent);
-    }
-
-    /**
      * Methode permettant de signaler une erreur lorsqu'un champ est resté vide alors que la soumission du formulaire a été faite.
      */
     private void verificationChampsVides() {
@@ -345,7 +326,7 @@ public class AccountCreateActivity extends BaseActivity {
                         @Override
                         public void onSuccess(Void aVoid) {
                             Toast.makeText(AccountCreateActivity.this, R.string.alertDialog_delete,
-                                    LENGTH_SHORT).show();
+                                    Toast.LENGTH_LONG).show();
                             updateUIAfterRESTRequestsCompleted(DELETE_USER_TASK);
                         }
                     });

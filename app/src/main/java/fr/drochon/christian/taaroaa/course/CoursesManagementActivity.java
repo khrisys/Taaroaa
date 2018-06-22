@@ -30,7 +30,6 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
@@ -54,14 +53,11 @@ import fr.drochon.christian.taaroaa.api.CourseHelper;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
 import fr.drochon.christian.taaroaa.model.Course;
 
-import static fr.drochon.christian.taaroaa.api.CourseHelper.getCoursesCollection;
 import static java.util.Calendar.MINUTE;
 
 public class CoursesManagementActivity extends BaseActivity {
 
-    // identifiant pour identifier la requete REST
-    private static final int SIGN_OUT_TASK = 10;
-    private static final int DELETE_USER_TASK = 20;
+    // identifiant pour identifier la requete REST;
     private static final int UPDATE_USERNAME = 30;
 
     // id objets graphiques
@@ -217,7 +213,7 @@ public class CoursesManagementActivity extends BaseActivity {
      */
     private void updateUIWhenResuming() {
         // recuperation de l'id du cours
-        String coursId = CourseHelper.getCoursesCollection().document().getId();
+        String coursId = CourseHelper.getCoursesCollection().getId();
         // choix de l'affichage en fonction de la creation ou de l'update d'un doc
         createOrUpdateAffichage(coursId);
     }
@@ -340,7 +336,7 @@ public class CoursesManagementActivity extends BaseActivity {
     private void createCourseInFirebase() {
 
         // pas d'id pour un objet non créé
-        final String id = CourseHelper.getCoursesCollection().document().getId();
+        final String id = CourseHelper.getCoursesCollection().getId();
         final String moniteur = mMoniteurCours.getText().toString();
         final String sujet = mSujetCours.getText().toString();
         final String typeCours = mTypeCours.getSelectedItem().toString();
@@ -418,13 +414,13 @@ public class CoursesManagementActivity extends BaseActivity {
         }
     }
 
-    /**
-     * Cette methode ne comprend pas l'update d'une fonction dans le club, car seul les encadrants du club peuvent
+/*    *//**
+     * Cette methode ne comprend pas l'update d'un cours dans le club, car seul les encadrants du club peuvent
      * le faire, et cette fonctionnalité est donc reservée à une fonction adherent particuliere.
-     */
+     *//*
     private void updateCourseInFirebase() {
 
-        String id = getCoursesCollection().document().getId();
+        String id = getCoursesCollection().getId();
         String moniteur = mMoniteurCours.getText().toString();
         String sujet = mSujetCours.getText().toString();
         String typeCours = mTypeCours.getSelectedItem().toString();
@@ -442,13 +438,12 @@ public class CoursesManagementActivity extends BaseActivity {
 
 
         DocumentReference reference2 = getCoursesCollection().document(id);
-        Query reference1 = CourseHelper.getCourse(reference2.getId());
         if (!moniteur.isEmpty() && !sujet.isEmpty() && !heureCours.isEmpty()) { // verification que tous les champs vides soient remplis
             CourseHelper.updateCourse(id, typeCours, sujet, niveauCours, moniteur, horaireCoursFormat)
                     .addOnFailureListener(this.onFailureListener())
                     .addOnSuccessListener(this.updateUIAfterRESTRequestsCompleted(UPDATE_USERNAME));
         }
-    }
+    }*/
 
 
     // --------------------

@@ -9,7 +9,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -32,10 +31,8 @@ import fr.drochon.christian.taaroaa.model.Covoiturage;
 
 public class CovoiturageVehiclesActivity extends BaseActivity implements AdapterCovoiturageVehicles.Listener {
 
-    private Covoiturage covoiturage;
     // FOR COMMUNICATION
     private TextView mTextViewEmptyListRecyclerView;
-    private ScrollView mScrollViewRecyclerView;
     private RecyclerView mRecyclerViewVehicules;
     // FOR DATA
     private AdapterCovoiturageVehicles mAdapterCovoiturageVehicles;
@@ -52,7 +49,6 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
         mTextViewEmptyListRecyclerView = findViewById(R.id.empty_list_textview);
         mRecyclerViewVehicules = findViewById(R.id.recyclerViewCovoitVehicules);
 
-        List<Covoiturage> listCovoiturages = new ArrayList<>();
         listPassagers = new ArrayList<>();
 
         // Test performance
@@ -191,7 +187,7 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
                                     listPassagers = (List<String>) covoit.get("passagers");
 
                                     // recuperation de l'objet covoiturage
-                                    covoiturage = new Covoiturage(covoit.get("id").toString(), covoit.get("nomConducteur").toString(), covoit.get("prenomConducteur").toString(),
+                                    new Covoiturage(covoit.get("id").toString(), covoit.get("nomConducteur").toString(), covoit.get("prenomConducteur").toString(),
                                             covoit.get("nbPlacesDispo").toString(), covoit.get("nbPlacesTotal").toString(), covoit.get("typeVehicule").toString(),
                                             stStringToDate(covoit.get("horaireAller").toString()), stStringToDate(covoit.get("horaireRetour").toString()),
                                             covoit.get("lieuDepartAller").toString(), covoit.get("lieuDepartRetour").toString(), listPassagers);

@@ -50,10 +50,7 @@ public class AccountModificationActivity extends BaseActivity {
 
 
     // identifiant pour identifier la requete REST
-    private static final int SIGN_OUT_TASK = 10;
-    private static final int DELETE_USER_TASK = 20;
     private static final int UPDATE_USERNAME = 30;
-    private static final int GET_USERNAME = 40;
     String uid;
     private User user;
     private User summaryUser;
@@ -307,7 +304,7 @@ public class AccountModificationActivity extends BaseActivity {
         // recup de l'user passé par un intent depuis la classe ConnectionActivity
         Intent intent2 = getIntent();
         if (intent2 != null) {
-            user = (User) Objects.requireNonNull(intent.getExtras()).getSerializable("user");
+            user = (User) Objects.requireNonNull(intent2.getExtras()).getSerializable("user");
         }
 
         // affichage d'un user venant juste d'etre créé
@@ -474,30 +471,35 @@ public class AccountModificationActivity extends BaseActivity {
                 this.mEmail.setText(user.getEmail());
                 this.mLicence.setText(user.getEmail());*/
 
-        if (!mNom.getText().toString().isEmpty() && !mNom.getText().equals(getString(R.string.info_no_username_found)) &&
-                !mPrenom.getText().toString().isEmpty() && !mEmail.getText().toString().isEmpty()) { // verification que tous les champs vides soient remplis
+        if (!mNom.getText().equals(getString(R.string.info_no_username_found)))
+            if (!mNom.getText().toString().isEmpty() && !mPrenom.getText().toString().isEmpty() && !mEmail.getText().toString().isEmpty()) { // verification que tous les champs vides soient remplis
 
-            // Update de la bdd covoiturage si l'user à updater a créé des covoiturages.
-            // Cette fonction est appelée avant la fonction d'update de la bdd user
-            updateCovoituragesIfCreated();
+                // Update de la bdd covoiturage si l'user à updater a créé des covoiturages.
+                // Cette fonction est appelée avant la fonction d'update de la bdd user
+                updateCovoituragesIfCreated();
 
-            // Update de la bdd user
-            this.mProgressBar.setVisibility(View.VISIBLE);
-            UserHelper.updateUser(uid, this.mNom.getText().toString().toUpperCase(), this.mPrenom.getText().toString().toUpperCase(), this.mLicence.getText().toString(),
-                    this.mEmail.getText().toString(), this.mNiveauPlongeespinner.getSelectedItem().toString(), this.mFonctionAuClubspinner.getSelectedItem().toString()).
-                    addOnFailureListener(this.onFailureListener()).
-                    addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Toast.makeText(AccountModificationActivity.this, R.string.update_account,
-                                    Toast.LENGTH_SHORT).show();
-                            updateUIAfterRESTRequestsCompleted(UPDATE_USERNAME);
-                            startSummaryActivity();
+                // Update de la bdd user
+                this.mProgressBar.setVisibility(View.VISIBLE);
+                UserHelper.updateUser(uid, this.mNom.getText().toString().toUpperCase(), this.mPrenom.getText().toString().toUpperCase(), this.mLicence.getText().toString(),
+                        this.mEmail.getText().toString(), this.mNiveauPlongeespinner.getSelectedItem().toString(), this.mFonctionAuClubspinner.getSelectedItem().toString()).
+                        addOnFailureListener(this.onFailureListener()).
+                        addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Toast.makeText(AccountModificationActivity.this, R.string.update_account,
+                                        Toast.LENGTH_LONG).show();
+                                updateUIAfterRESTRequestsCompleted(UPDATE_USERNAME);
+                                startSummaryActivity();
 
-                            myTrace.stop();
-                        }
-                    });
-        } else verificationChampsVides();
+                                myTrace.stop();
+                            }
+                        });
+            } else {
+                verificationChampsVides();
+            }
+        else {
+            verificationChampsVides();
+        }
     }
     // recuperation des données user depuis l'activité Sommaire (un user dejà connecté, doinc)
             /*else if (summaryUser != null) {
@@ -574,7 +576,7 @@ public class AccountModificationActivity extends BaseActivity {
      * Methode permettant de recuperer et d'afficher les données de l'utilisateur actuellement connecté depuis
      * l'activité Sommaire qui a determiné que l'utilisateur voulant afficher ses informations etait enregistré en bdd.
      */
-    private void getAndShowUserDatas() {
+    /*private void getAndShowUserDatas() {
 
         // Test performance de l'update d'user en bdd
         final Trace myTrace1 = FirebasePerformance.getInstance().newTrace("accountModificationActivityGetAndShowUserDatas_trace");
@@ -594,7 +596,7 @@ public class AccountModificationActivity extends BaseActivity {
                 mFonctionAuClubspinner.setSelection(getIndexSpinner(mFonctionAuClubspinner, Objects.requireNonNull(user.getFonction())));
                 mEmail.setText(Objects.requireNonNull(user.getEmail()));
 
-         /*       // affichage different en fonction de la personne connectée
+         *//*       // affichage different en fonction de la personne connectée
                 //this.designDependingOnGetUsers(user);
                 mTitrePage.setText(R.string.bienvenue_sur_votre_compte);
                 //mItemView.setVisible(true);
@@ -605,12 +607,12 @@ public class AccountModificationActivity extends BaseActivity {
                 mLinearLayoutFonctionAdherent.setVisibility(View.GONE);
                 mModificationCompte.setText(R.string.modifiez_votre_compte);
                 //Affichage du bouton de suppression uniquement aux proprietaires d'un compte
-                mSuppressionCompte.setVisibility(View.VISIBLE);*/
+                mSuppressionCompte.setVisibility(View.VISIBLE);*//*
 
 
                 myTrace1.stop();
                 //if (email != null) {
-                /*setupDb().collection("users").whereEqualTo("email", user.getEmail()).addSnapshotListener(this, new EventListener<QuerySnapshot>() {
+                *//*setupDb().collection("users").whereEqualTo("email", user.getEmail()).addSnapshotListener(this, new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                         if (queryDocumentSnapshots != null) {
@@ -630,11 +632,11 @@ public class AccountModificationActivity extends BaseActivity {
                             }
                         }
                     }
-                });*/
+                });*//*
             }
         }
 
-       /* // recup de l'user passé par un intent depuis la classe SearchUser
+       *//* // recup de l'user passé par un intent depuis la classe SearchUser
         Intent intent = getIntent();
         if (intent != null) {
             user = (User) Objects.requireNonNull(intent.getExtras()).getSerializable("user");
@@ -660,9 +662,9 @@ public class AccountModificationActivity extends BaseActivity {
                     }
                 });
             }
-        }*/
+        }*//*
     }
-
+*/
     /**
      * Methode permettant de supprimer un utilisateur
      */

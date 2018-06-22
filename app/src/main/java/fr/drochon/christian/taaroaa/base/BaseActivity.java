@@ -47,7 +47,6 @@ public abstract class BaseActivity extends AppCompatActivity {
     private static final int DELETE_USER_TASK = 20;
     private static final int UPDATE_USERNAME = 30;
     private static final int GET_USERNAME = 40;
-    private static final int RC_SIGN_IN = 123;
 
 
     // --------------------
@@ -260,9 +259,9 @@ public abstract class BaseActivity extends AppCompatActivity {
         return dateFormat1.format(horaireDuCours);
     }
 
-    protected java.util.Date stStringToDate(String horaire){
+    protected Date stStringToDate(String horaire){
         SimpleDateFormat formatter = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy", Locale.US);
-        java.util.Date dateFormatee = null;
+        Date dateFormatee = null;
 
         try {
             dateFormatee = formatter.parse(horaire);

@@ -3,20 +3,16 @@ package fr.drochon.christian.taaroaa.covoiturage;
 import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
-import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.LightingColorFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
-import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
@@ -43,14 +39,11 @@ import com.google.firebase.perf.metrics.Trace;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 import fr.drochon.christian.taaroaa.R;
-import fr.drochon.christian.taaroaa.alarm.NotificationReceiver;
-import fr.drochon.christian.taaroaa.alarm.RandomNotification;
 import fr.drochon.christian.taaroaa.alarm.TimeAlarmCovoiturageAller;
 import fr.drochon.christian.taaroaa.alarm.TimeAlarmCovoiturageRetour;
 import fr.drochon.christian.taaroaa.api.CovoiturageHelper;
@@ -72,7 +65,6 @@ public class CovoituragePassagersActivity extends BaseActivity {
     private TextView mTitrePassager;
     private TextInputEditText mNbPassagerInput;
     private ProgressBar mProgressBar;
-    private TextInputEditText mFieldNamePassengers;
     // DATAS
     private int inputs;
     private List<User> listUsers;
@@ -104,7 +96,6 @@ public class CovoituragePassagersActivity extends BaseActivity {
         mNbPassagerInput.requestFocus();
 
         listSelectedUsers = new ArrayList<>();
-        List<User> listFilteredUsers = new ArrayList<>();
         listUsersStr = new ArrayList<>();
         listUsers = new ArrayList<>();
         //  les AlarmManager permettront de réveiller le téléphone et d'executer du code à une date précise
@@ -303,7 +294,6 @@ public class CovoituragePassagersActivity extends BaseActivity {
                                     for (int j = 0; j < inputs; j++) {
                                         // garder une trace du premier objet affiché avant changement par l'user
                                         final Spinner spinner = (Spinner) mLinearChampsDynamiques.getChildAt(j);
-                                        final String precedentUsername = spinner.getSelectedItem().toString();
                                         // si l'user n'existe pas en bdd, supprimer le precedent user et insertion du nouvel user à la place du precedent dans la liste
                                         if (!listSelectedUsers.contains(spinner.getSelectedItem().toString())) {
                                             // capture de l'exception lors de la creation de la liste, car les index n'exitent pas encore
@@ -340,7 +330,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
     // --------------------
 
     //TODO V2 : utiliser les notifications pour la V2
-    private void scheduleNotificationAller(Notification notification, Date alarmTime) {
+/*    private void scheduleNotificationAller(Notification notification, Date alarmTime) {
 
         Intent notificationIntent = new Intent(this, NotificationReceiver.class);
         notificationIntent.putExtra(NotificationReceiver.NOTIFICATION_ID, 7);
@@ -387,7 +377,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
     private Bitmap getLargeNotificationImage() {
         return BitmapFactory.decodeResource(this.getResources(),
                 R.mipmap.logo1);
-    }
+    }*/
 
     // --------------------
     // ALARM
@@ -480,7 +470,6 @@ public class CovoituragePassagersActivity extends BaseActivity {
      * @param prenom prenom du passager
      */
     private void filteredUserWhoCallAlarm(String nom, String prenom) {
-        User u = null;
         setupDb().collection("users").whereEqualTo("nom", nom).whereEqualTo("prenom", prenom).get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
