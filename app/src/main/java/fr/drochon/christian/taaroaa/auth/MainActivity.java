@@ -102,7 +102,8 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
             @Override
             public void onClick(View v) {
                 // Test performance de la creation d'un compte user
-                final Trace myTrace = FirebasePerformance.getInstance().newTrace("mainActivityAccountCreation_trace");
+                final Trace myTrace = FirebasePerformance.getInstance()
+                        .newTrace("mainActivityAccountCreation_trace");
                 myTrace.start();
 
                 if (!isCurrentUserLogged()) {
@@ -310,12 +311,13 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
             if (resultCode == RESULT_OK) { // SUCCESS
 
                 // RECUPERATION DES CARACTERISTIQUES DE LA PERSONNE CONNECTEE
-                // decomposition du nom et du prenom recu dans le param name
+
                 String[] parts;
                 if (response != null) {
                     @SuppressLint("RestrictedApi") String mUsername = response.getUser().getName();
                     mEmailUser = response.getEmail();
                     mPassword = response.getProviderType();
+                    // decomposition du nom et du prenom recu dans le param name
                     if (mUsername.contains(" ")) {
                         parts = mUsername.split(" ");
                         try {
@@ -328,9 +330,18 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
                         else mFirstName = "";
                     } else {
                         mName = mUsername;
-                        mFirstName = "";
+                        mFirstName = " ";// donc firstname non null
                     }
                 }
+
+                //SECURITE DE L4EMAIL DE LA PERSONNE CONNECTEE
+                // envoi des identifiants sur laclasse AccountCreateActivity pour verification que son email
+                // notamment ne soit pas erronée, chose la pls frequente
+                Intent intent = new Intent(MainActivity.this, AccountCreateActivity.class)
+                        .putExtra("name", mName).putExtra("firstname", mFirstName)
+                        .putExtra("email", mEmailUser).putExtra("password", mPassword);
+
+
 
 
                 //this.updateUserInFirestore();

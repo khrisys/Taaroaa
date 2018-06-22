@@ -281,6 +281,7 @@ public class AccountModificationActivity extends BaseActivity {
     // REST REQUETES
     // --------------------
 
+
     /**
      * Methode permettant de donner acces à la modification d'un adherent si l'utilisateur connecté est
      * un encadrant ou un initiateur.

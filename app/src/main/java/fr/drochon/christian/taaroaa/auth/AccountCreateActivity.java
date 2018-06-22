@@ -95,21 +95,22 @@ public class AccountCreateActivity extends BaseActivity {
         mProgressBar = findViewById(R.id.progress_bar);
         final Button createAccount = findViewById(R.id.modificiation_compte_btn);
         Button suppressionCompte = findViewById(R.id.suppression_compte_btn);
-        fonction = "Plongeur"; // la fonction par defaut d'un adhrent qui créé son compte a pour fonction "Plongeur"
+        fonction = "Plongeur"; // la fonction par defaut d'un adhrent qui créé son compte est considéré comme un "Plongeur" et non comme un encadrant
 
         configureToolbar();
         giveToolbarAName(R.string.account_create_name);
+        getConnectedUser();
 
 
-        // recup de l'user passé par un intent depuis la classe ConnectionActivity
+ /*       // recup de l'user passé par un intent depuis la classe ConnectionActivity
         Intent intent = getIntent();
-        /*if (intent != null) {
+        *//*if (intent != null) {
             user = (User) Objects.requireNonNull(intent.getExtras()).getSerializable("user");
-        }*/
+        }*//*
         final String email = intent.getStringExtra("email");
         final String password = intent.getStringExtra("password");
         mEmail.setText(email);
-        mPassword.setText(password);
+        mPassword.setText(password);*/
 
         alertDialogValidationEmail();
 
@@ -136,7 +137,9 @@ public class AccountCreateActivity extends BaseActivity {
                         // fin de trace
                         myTrace.stop();
                     } else {
-                        if (!mNom.getText().toString().isEmpty() && !mPrenom.getText().toString().isEmpty() && !email.isEmpty() && isValidEmail(email) && !password.isEmpty()) {
+                        if (!mNom.getText().toString().isEmpty() && !mPrenom.getText().toString().isEmpty()
+                                && !mEmail.getText().toString().isEmpty() && isValidEmail(mEmail.getText())
+                                && !mPassword.getText().toString().isEmpty()) {
                             System.out.println("nok");
                             alertDialogValidationEmail();
                         } else
@@ -164,6 +167,21 @@ public class AccountCreateActivity extends BaseActivity {
     @Override
     public int getFragmentLayout() {
         return R.layout.activity_account_create;
+    }
+
+    /**
+     * Recuperation et affichage des données d'un  utilisateur qui s'est connecté ou qui s'est créé un compte
+     */
+    private  void getConnectedUser(){
+        Intent intent = getIntent();
+        if(intent != null){
+            mPrenom.setText(getIntent().getStringExtra("firstname"));
+            mNom.setText(getIntent().getStringExtra("name"));
+            mLicence.setText("");
+            mEmail.setText(getIntent().getStringExtra("email"));
+            mNiveauPlongeespinner.setSelection(getIndexSpinner(mNiveauPlongeespinner, "Plongeur"));
+            mPassword.setText(getIntent().getStringExtra("password"));
+        }
     }
 
     /**

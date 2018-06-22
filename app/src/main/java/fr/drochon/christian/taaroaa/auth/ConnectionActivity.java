@@ -66,6 +66,7 @@ public class ConnectionActivity extends BaseActivity {
         mEmail = findViewById(R.id.email_input);
         mPassword = findViewById(R.id.password_input);
         Button valid = findViewById(R.id.creation_identifiants_btn);
+        // passage de bundle depuis la connexion pour afficher les caracteristqiues d'un user connecté
 
         configureToolbar();
         giveToolbarAName(R.string.creation_compte);
