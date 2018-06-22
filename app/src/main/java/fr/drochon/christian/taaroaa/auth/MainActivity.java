@@ -1,7 +1,6 @@
 package fr.drochon.christian.taaroaa.auth;
 
 import android.annotation.SuppressLint;
-import android.app.PendingIntent;
 import android.content.ComponentCallbacks2;
 import android.content.Intent;
 import android.os.Bundle;
@@ -21,10 +20,6 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.perf.FirebasePerformance;
 import com.google.firebase.perf.metrics.Trace;
@@ -187,7 +182,6 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
 
 
         Intent intent = new Intent(this, MyFirebaseMessagingService.class).putExtra("titre", "titre du message").putExtra("text", "message");
-        PendingIntent operation = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
 
 
         //CRASHLYTICS : force application to crash
@@ -337,7 +331,7 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
                 //SECURITE DE L4EMAIL DE LA PERSONNE CONNECTEE
                 // envoi des identifiants sur laclasse AccountCreateActivity pour verification que son email
                 // notamment ne soit pas erronée, chose la pls frequente
-                Intent intent = new Intent(MainActivity.this, AccountCreateActivity.class)
+                new Intent(MainActivity.this, AccountCreateActivity.class)
                         .putExtra("name", mName).putExtra("firstname", mFirstName)
                         .putExtra("email", mEmailUser).putExtra("password", mPassword);
 
@@ -383,7 +377,7 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
     /**
      * Methode de creation d'un utilisateur, avec condition de creation en fonction de l'existance ou non d'un user dejà en bdd,
      * et decomposant le nom et le prenom saisi à l'enregistrement de la personne.
-     */
+     *//*
     private void updateUserInFirestore() {
         final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
         if (auth != null) {
@@ -435,7 +429,7 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
         }
 
 
-    }
+    }*/
 
     /**
      * Methode permettant de creer un user lorsque celui ci vient de se connecter pour la 1ere fois.

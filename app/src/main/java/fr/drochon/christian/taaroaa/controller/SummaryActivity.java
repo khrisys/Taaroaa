@@ -15,7 +15,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.perf.FirebasePerformance;
@@ -83,8 +82,6 @@ public class SummaryActivity extends BaseActivity {
                 // Test performance de l'update d'user en bdd
                 final Trace myTrace1 = FirebasePerformance.getInstance().newTrace("summaryActivityGoToPersonnalAccountWithBundle_trace");
                 myTrace1.start();
-
-                final FirebaseAuth auth = FirebaseAuth.getInstance(FirebaseFirestore.getInstance().getApp());
 
                 setupDb().collection("users").addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override

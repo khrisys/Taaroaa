@@ -7,8 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import java.util.Date;
-
 public class NotificationReceiver extends BroadcastReceiver {
 
     public final static String NOTIFICATION_ID = "7";
@@ -22,7 +20,7 @@ public class NotificationReceiver extends BroadcastReceiver {
         Bundle bundle = intent.getExtras();
         if(bundle != null) {
             //hAller = bundle.getString("hAller");
-            Date date = (Date) bundle.get("date");
+            //Date date = (Date) bundle.get("date"); //codacity
         }
 
         Notification notification = intent.getParcelableExtra(NOTIFICATION);

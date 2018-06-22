@@ -54,7 +54,6 @@ public class PupilsViewHolder extends RecyclerView.ViewHolder {
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final String s;
                 int i = mCourseList.size() - 1;
                 new AlertDialog.Builder(itemView.getContext())
                         .setTitle(mCourseList.get(i).getTypeCours())

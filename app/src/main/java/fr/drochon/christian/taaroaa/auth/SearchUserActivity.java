@@ -8,7 +8,6 @@ import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -46,7 +45,6 @@ public class SearchUserActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_user);
 
-        TextView emptyListMessage = findViewById(R.id.empty_list_textview);
         mRecyclerViewUser = findViewById(R.id.recyclerViewSearchedUser);
         SearchView searchView = findViewById(R.id.searchbar_user);
 
@@ -226,7 +224,6 @@ public class SearchUserActivity extends BaseActivity {
                     if (queryDocumentSnapshots.size() != 0) {
                         List<DocumentSnapshot> docs = queryDocumentSnapshots.getDocuments();
                         for (DocumentSnapshot ds : docs) {
-                            Map<String, Object> user = ds.getData();
                             filter(listUsers, nom);
 
                             myTrace3.stop();
