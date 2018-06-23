@@ -317,7 +317,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
                     }
                 }
             }
-        }else {
+        } else {
             mTitrePassager.setVisibility(View.GONE);
             mLinearChampsDynamiques.removeAllViews();
             listSelectedUsers.clear();
@@ -394,7 +394,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
         // Declenchement de l'alarm de 2h avant le depart jusqu'au demarrage effectif du covoit
         calendar.add(Calendar.HOUR, -2);
         FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
-        if(auth != null) {
+        if (auth != null) {
             if (user.getUid().equals(auth.getUid())) {
                 Covoiturage covoit = new Covoiturage();
                 covoit.setHoraireAller(covoiturage.getHoraireAller());
@@ -418,7 +418,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
         // Declenchement de l'alarm de 2h avant le depart jusqu'au demarrage effectif du covoit
         calendar.add(Calendar.HOUR, -2);
         FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
-        if(auth != null) {
+        if (auth != null) {
             // personne qui s'inscrit soi meme à un covoiturgae
             if (user.getUid().equals(auth.getUid())) {
                 Covoiturage covoit = new Covoiturage();
@@ -450,7 +450,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
                     List<DocumentSnapshot> ds = queryDocumentSnapshots.getDocuments();
                     for (DocumentSnapshot doc : ds) {
                         Map<String, Object> user = doc.getData();
-                        if(user != null) {
+                        if (user != null) {
                             User u = new User(user.get("uid").toString(), user.get("nom").toString(), user.get("prenom").toString(), user.get("licence").toString(),
                                     user.get("email").toString(), user.get("niveau").toString(), user.get("fonction").toString());
                             listUsers.add(u);
@@ -478,7 +478,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
                             List<DocumentSnapshot> ds = queryDocumentSnapshots.getDocuments();
                             for (DocumentSnapshot doc : ds) {
                                 Map<String, Object> user = doc.getData();
-                                if(user != null) {
+                                if (user != null) {
                                     User u = new User(user.get("uid").toString(), user.get("nom").toString(), user.get("prenom").toString(), user.get("licence").toString(),
                                             user.get("email").toString(), user.get("niveau").toString(), user.get("fonction").toString());
 
@@ -498,7 +498,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
     private void getAndShowDatas() {
         Intent intent = getIntent();
         covoiturage = (Covoiturage) Objects.requireNonNull(intent.getExtras()).getSerializable("covoit");
-        if(covoiturage != null) {
+        if (covoiturage != null) {
             mNomConducteur.setText(Html.fromHtml("<b>Conducteur : </b>" + covoiturage.getPrenomConducteur() + " " + covoiturage.getNomConducteur()));
             mDateDepart.setText(Html.fromHtml("<b>Aller : départ le </b>" + stDateToString(covoiturage.getHoraireAller()) + "<b> depuis </b>" + covoiturage.getLieuDepartAller()));
             mDateretour.setText(Html.fromHtml("<b>Retour : départ le </b>" + stDateToString(covoiturage.getHoraireRetour()) + "<b> jusqu'à </b>" + covoiturage.getLieuDepartRetour()));
