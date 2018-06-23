@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.ComponentCallbacks2;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.View;
@@ -16,17 +15,11 @@ import android.widget.Toast;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.perf.FirebasePerformance;
 import com.google.firebase.perf.metrics.Trace;
 
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 import fr.drochon.christian.taaroaa.R;
@@ -181,7 +174,7 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
         bundle.putString("text", "message");
 
 
-        Intent intent = new Intent(this, MyFirebaseMessagingService.class).putExtra("titre", "titre du message").putExtra("text", "message");
+        new Intent(this, MyFirebaseMessagingService.class).putExtra("titre", "titre du message").putExtra("text", "message");
 
 
         //CRASHLYTICS : force application to crash
@@ -431,14 +424,14 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
 
     }*/
 
-    /**
+  /*  *//**
      * Methode permettant de creer un user lorsque celui ci vient de se connecter pour la 1ere fois.
      *
      * @param uid
      * @param nom
      * @param prenom
      * @param email
-     */
+     *//*
     private void addNewUser(String uid, String nom, String prenom, String email) {
 
         Map<String, Object> newContact = new HashMap<>();
@@ -466,7 +459,7 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
                         }
                     });
         }
-    }
+    }*/
 
 
     // --------------------

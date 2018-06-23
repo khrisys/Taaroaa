@@ -57,9 +57,6 @@ import static java.util.Calendar.MINUTE;
 
 public class CoursesManagementActivity extends BaseActivity {
 
-    // identifiant pour identifier la requete REST;
-    private static final int UPDATE_USERNAME = 30;
-
     // id objets graphiques
     @SuppressLint("StaticFieldLeak")
     private static TextInputEditText mHeureCours;

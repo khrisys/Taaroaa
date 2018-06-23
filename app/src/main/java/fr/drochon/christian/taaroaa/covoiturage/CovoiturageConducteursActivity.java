@@ -67,8 +67,6 @@ public class CovoiturageConducteursActivity extends BaseActivity {
     private TextView mLieuDepart;
     private TextView mLieuArrivee;
     private ProgressBar mProgressBar;
-    private AlarmManager mAlarmManagerAller;
-    private AlarmManager mAlarmManagerRetour;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,8 +87,8 @@ public class CovoiturageConducteursActivity extends BaseActivity {
         Button valid = findViewById(R.id.proposition_covoit_btn);
 
         //  les AlarmManager permettront de réveiller le téléphone et d'executer du code à une date précise
-        mAlarmManagerAller = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        mAlarmManagerRetour = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        AlarmManager mAlarmManagerAller = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        AlarmManager mAlarmManagerRetour = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
         mNbPlaceTotal.requestFocus();
 

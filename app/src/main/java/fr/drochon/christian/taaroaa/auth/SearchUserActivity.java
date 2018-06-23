@@ -223,11 +223,10 @@ public class SearchUserActivity extends BaseActivity {
                 if (queryDocumentSnapshots != null) {
                     if (queryDocumentSnapshots.size() != 0) {
                         List<DocumentSnapshot> docs = queryDocumentSnapshots.getDocuments();
-                        for (DocumentSnapshot ds : docs) {
-                            filter(listUsers, nom);
+                        filter(listUsers, nom);
 
-                            myTrace3.stop();
-                        }
+                        myTrace3.stop();
+
                     }
                 }
             }
@@ -269,7 +268,7 @@ public class SearchUserActivity extends BaseActivity {
         // écrire, lire ou écouter l'emplacement. Il peut exister ou non un document à l'emplacement référencé.
         for (int i = 0; i < documentSnapshot.size(); i++) {
             DocumentSnapshot doc = documentSnapshot.get(i); //Un DocumentSnapshot contient des données lues à partir d'un document dans votre base de données Firestore.
-            User user = new User(doc.getId(), Objects.requireNonNull(doc.get("nom")).toString(), Objects.requireNonNull(doc.get("prenom"))
+            new User(doc.getId(), Objects.requireNonNull(doc.get("nom")).toString(), Objects.requireNonNull(doc.get("prenom"))
                     .toString(), Objects.requireNonNull(doc.get("licence")).toString(), Objects.requireNonNull(doc.get("email")).toString(),
                     Objects.requireNonNull(doc.get("niveau")).toString(), Objects.requireNonNull(doc.get("fonction")).toString());
         }
