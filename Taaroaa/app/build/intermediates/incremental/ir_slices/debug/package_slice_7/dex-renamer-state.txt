@@ -1,0 +1,4 @@
+#Sun Apr 08 01:55:06 CEST 2018
+base.0=F\:\\WORKSPACES\\AndroidStudioProjects\\Taaroaa\\Taaroaa\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\367
+path.0=classes.dex
+renamed.0=classes.dex
