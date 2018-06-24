@@ -1,7 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--suppress ALL -->
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?><!--suppress ALL -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -21,7 +19,8 @@
         android:fadeScrollbars="true"
         android:fadingEdge="horizontal|vertical"
         android:scrollbarStyle="insideOverlay"
-        android:visibility="visible" tools:targetApi="lollipop">
+        android:visibility="visible"
+        tools:targetApi="lollipop">
 
 
         <LinearLayout
@@ -40,7 +39,7 @@
                 android:gravity="center"
                 android:text="Bienvenue sur votre compte"
                 android:textColor="@color/colorPrimary"
-                android:textSize="25sp"/>
+                android:textSize="25sp" />
 
 
             <TextView
@@ -53,7 +52,7 @@
                 android:textAlignment="center"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="30sp"
-                android:textStyle="bold"/>
+                android:textStyle="bold" />
 
             <View
                 android:id="@+id/divider"
@@ -61,8 +60,7 @@
                 android:layout_height="2dp"
                 android:layout_marginEnd="15dp"
                 android:layout_marginStart="15dp"
-                android:background="?android:attr/listDivider"
-                />
+                android:background="?android:attr/listDivider" />
 
             <TextView
                 android:id="@+id/titre_prenom_txt"
@@ -73,7 +71,7 @@
                 android:shadowColor="@color/colorAccent"
                 android:text="Prénom :"
                 android:textColor="@color/colorPrimary"
-                android:textSize="18sp"/>
+                android:textSize="18sp" />
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
@@ -86,7 +84,7 @@
                     android:layout_marginEnd="45dp"
                     android:layout_marginStart="45dp"
                     android:inputType="textCapCharacters"
-                    android:lines="1"/>
+                    android:lines="1" />
             </android.support.design.widget.TextInputLayout>
 
             <TextView
@@ -98,7 +96,7 @@
                 android:shadowColor="@color/colorAccent"
                 android:text="Nom :"
                 android:textColor="@color/colorPrimary"
-                android:textSize="18sp"/>
+                android:textSize="18sp" />
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
@@ -111,7 +109,7 @@
                     android:layout_marginEnd="45dp"
                     android:layout_marginStart="45dp"
                     android:inputType="textCapCharacters"
-                    android:lines="1"/>
+                    android:lines="1" />
             </android.support.design.widget.TextInputLayout>
 
             <!--            &lt;!&ndash; PROGRESS BAR &ndash;&gt;
@@ -133,7 +131,7 @@
                 android:textAlignment="center"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="30sp"
-                android:textStyle="bold"/>
+                android:textStyle="bold" />
 
             <View
                 android:id="@+id/divider2"
@@ -141,8 +139,7 @@
                 android:layout_height="2dp"
                 android:layout_marginEnd="15dp"
                 android:layout_marginStart="15dp"
-                android:background="?android:attr/listDivider"
-                />
+                android:background="?android:attr/listDivider" />
 
             <TextView
                 android:id="@+id/titre_numero_licence_txt"
@@ -153,7 +150,7 @@
                 android:shadowColor="@color/colorAccent"
                 android:text="Numéro de licence (optionnel) :"
                 android:textColor="@color/colorPrimary"
-                android:textSize="18sp"/>
+                android:textSize="18sp" />
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
@@ -166,7 +163,7 @@
                     android:layout_marginEnd="45dp"
                     android:layout_marginStart="45dp"
                     android:inputType="textCapCharacters"
-                    android:lines="1"/>
+                    android:lines="1" />
             </android.support.design.widget.TextInputLayout>
 
             <TextView
@@ -178,7 +175,7 @@
                 android:shadowColor="@color/colorAccent"
                 android:text="Niveau de plongée acquis :"
                 android:textColor="@color/colorPrimary"
-                android:textSize="18sp"/>
+                android:textSize="18sp" />
 
             <Spinner
                 android:id="@+id/niveau_spinner"
@@ -188,7 +185,7 @@
                 android:layout_marginStart="70dp"
                 android:fadeScrollbars="true"
                 android:minHeight="40dp"
-                android:visibility="visible"/>
+                android:visibility="visible" />
 
             <TextView
                 android:id="@+id/titre_fonction_txt"
@@ -199,7 +196,7 @@
                 android:shadowColor="@color/colorAccent"
                 android:text="En qualité de :"
                 android:textColor="@color/colorPrimary"
-                android:textSize="18sp"/>
+                android:textSize="18sp" />
 
             <Spinner
                 android:id="@+id/fonction_spinner"
@@ -209,7 +206,7 @@
                 android:layout_marginStart="70dp"
                 android:fadeScrollbars="true"
                 android:minHeight="40dp"
-                android:visibility="visible"/>
+                android:visibility="visible" />
 
 
             <TextView
@@ -222,7 +219,7 @@
                 android:textAlignment="center"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="30sp"
-                android:textStyle="bold"/>
+                android:textStyle="bold" />
 
             <View
                 android:id="@+id/divider3"
@@ -230,8 +227,7 @@
                 android:layout_height="2dp"
                 android:layout_marginEnd="15dp"
                 android:layout_marginStart="15dp"
-                android:background="?android:attr/listDivider"
-                />
+                android:background="?android:attr/listDivider" />
 
             <TextView
                 android:id="@+id/titre_email_txt"
@@ -242,7 +238,7 @@
                 android:shadowColor="@color/colorAccent"
                 android:text="Email :"
                 android:textColor="@color/colorPrimary"
-                android:textSize="18sp"/>
+                android:textSize="18sp" />
 
 
             <android.support.design.widget.TextInputLayout
@@ -255,10 +251,10 @@
                     android:id="@+id/email_txt"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textEmailAddress"
                     android:enabled="false"
+                    android:inputType="textEmailAddress"
                     android:lines="1"
-                    android:visibility="visible"/>
+                    android:visibility="visible" />
 
             </android.support.design.widget.TextInputLayout>
 
@@ -271,7 +267,7 @@
                 android:shadowColor="@color/colorAccent"
                 android:text="Mot de passe :"
                 android:textColor="@color/colorPrimary"
-                android:textSize="18sp"/>
+                android:textSize="18sp" />
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
@@ -283,11 +279,11 @@
                     android:id="@+id/password_input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textPassword"
                     android:enabled="false"
+                    android:inputType="textPassword"
                     android:lines="1"
                     android:textColor="@color/colorPrimary"
-                    android:visibility="visible"/>
+                    android:visibility="visible" />
 
             </android.support.design.widget.TextInputLayout>
 
@@ -303,7 +299,7 @@
                 android:background="@android:color/white"
                 android:clickable="false"
                 android:foregroundGravity="center"
-                android:visibility="gone"/>
+                android:visibility="gone" />
 
             <Button
                 android:id="@+id/modificiation_compte_btn"
@@ -313,7 +309,7 @@
                 android:height="60dp"
                 android:background="@color/colorPrimary"
                 android:text="Créez votre compte"
-                android:textColor="@android:color/white"/>
+                android:textColor="@android:color/white" />
 
             <Button
                 android:id="@+id/suppression_compte_btn"
@@ -323,7 +319,7 @@
                 android:background="@color/colorPrimary"
                 android:text="Supprimez votre compte"
                 android:textColor="@android:color/white"
-                android:visibility="gone"/>
+                android:visibility="gone" />
 
         </LinearLayout>
 
@@ -334,17 +330,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:inputType="text"
-        android:textSize="@android:dimen/notification_large_icon_height"
         android:text="@string/alertDialog_delete"
-        android:visibility="invisible"/>
+        android:textSize="@android:dimen/notification_large_icon_height"
+        android:visibility="invisible" />
 
     <EditText
         android:id="@+id/alertdialog_delete_account"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="@android:dimen/notification_large_icon_height"
         android:inputType="text"
         android:text="@string/alertDialog_cancel"
-        android:visibility="invisible"/>
+        android:textSize="@android:dimen/notification_large_icon_height"
+        android:visibility="invisible" />
 
 </LinearLayout>

@@ -1,7 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--suppress ALL -->
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?><!--suppress ALL -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -14,8 +12,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="0.33"
-        android:weightSum="1"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:weightSum="1">
 
         <Button
             android:id="@+id/modif_adherents_btn"
@@ -28,24 +26,24 @@
             android:background="@color/colorPrimary"
             android:text="Modifiez un compte"
             android:textColor="@android:color/white"
-            android:visibility="gone"
             android:textSize="25sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:visibility="gone" />
 
         <Button
             android:id="@+id/adherents_btn"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginBottom="7dp"
+            android:layout_marginEnd="7dp"
             android:layout_marginStart="7dp"
             android:layout_marginTop="7dp"
-            android:layout_marginEnd="7dp"
             android:layout_weight="0.4"
             android:background="@color/colorPrimary"
             android:text="Mon compte"
             android:textColor="@android:color/white"
             android:textSize="40sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold" />
 
     </LinearLayout>
 
@@ -61,7 +59,7 @@
         android:text="Cours"
         android:textColor="@android:color/white"
         android:textSize="40sp"
-        android:textStyle="bold"/>
+        android:textStyle="bold" />
 
     <Button
         android:id="@+id/sorties_btn"
@@ -73,5 +71,5 @@
         android:text="Sorties"
         android:textColor="@android:color/white"
         android:textSize="40sp"
-        android:textStyle="bold"/>
+        android:textStyle="bold" />
 </LinearLayout>
