@@ -21,11 +21,10 @@ import com.google.firebase.messaging.RemoteMessage;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Map;
 
 import fr.drochon.christian.taaroaa.R;
+import fr.drochon.christian.taaroaa.auth.MainActivity;
 import fr.drochon.christian.taaroaa.auth.SearchUserActivity;
-import fr.drochon.christian.taaroaa.controller.MainActivity;
 import fr.drochon.christian.taaroaa.course.CoursesPupilsActivity;
 import fr.drochon.christian.taaroaa.covoiturage.CovoiturageVehiclesActivity;
 
@@ -34,7 +33,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private static final String NOTIFICATION_ID_EXTRA = "NOTIFICATION_ID";
     private static final String IMAGE_URL_EXTRA = "imageUrl";
     private static final String ADMIN_CHANNEL_ID = "admin_channel";
-    private String NOTIFICATION_TAG = "TAAROAA";
     private NotificationManager notificationManager;
 
     public MyFirebaseMessagingService() {
@@ -79,27 +77,15 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         // verifie que le message contient une ntoficiation paylaod
         if (remoteMessage.getData().size() > 0) {
-            String id = remoteMessage.getMessageId(); // id du message ok. Pas le meme que dans postman
-            String from = remoteMessage.getFrom(); // ici : /topics/covoiturages
-            String to = remoteMessage.getTo(); // null
             String title = remoteMessage.getData().get("title"); //titre data
             String message = remoteMessage.getData().get("text"); // text data
-            String img = remoteMessage.getData().get("image-url"); // img data
-            String extra = remoteMessage.getData().get("extra_information"); // data extra infos
-            Map<String, String> map = remoteMessage.getData(); // toutes les données du message
             sendNotification(title, message);
         }
 
         // verifie que le message contient une ntoficiation paylaod
         if (remoteMessage.getNotification() != null) {
             String title = remoteMessage.getNotification().getTitle(); // titre notif
-            String text = remoteMessage.getNotification().getBody(); // text notif
-            String t = remoteMessage.getNotification().getTag();
-            String tt = remoteMessage.getNotification().getClickAction();
             String message = remoteMessage.getData().get("text"); // text data
-            String img = remoteMessage.getData().get("image-url"); //url img
-            String imageUrl = remoteMessage.getNotification().getIcon();
-            Map<String, String> map = remoteMessage.getData();
             sendNotification(title, message);
         }
     }

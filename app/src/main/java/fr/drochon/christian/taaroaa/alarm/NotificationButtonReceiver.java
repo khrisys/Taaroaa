@@ -15,8 +15,6 @@ import fr.drochon.christian.taaroaa.R;
 
 public class NotificationButtonReceiver extends BroadcastReceiver {
 
-    private Context mContext;
-
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onReceive(Context context, Intent intent) {

@@ -8,7 +8,6 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,8 +17,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CalendarView;
-import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -34,7 +31,6 @@ import com.google.firebase.perf.metrics.Trace;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -62,11 +58,8 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
 
     private static User user;
     // FOR DESIGN
-    private CoordinatorLayout mCoordinatorLayout;
-    private LinearLayout mLinearLayout;
     private RecyclerView recyclerView;
     private TextView mTextView;
-    private ScrollView mScrollView;
     private FloatingActionButton mFloatingActionButton;
     // FOR DATA
     private AdapterCoursesPupils mAdapterCoursesPupils;
@@ -86,7 +79,6 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
         // DATAS
         calendrierClique = new Date();
         calendrierFinJournee = new Date();
-        List<DocumentSnapshot> listSnapshot = new ArrayList<>();
         mAlarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
 

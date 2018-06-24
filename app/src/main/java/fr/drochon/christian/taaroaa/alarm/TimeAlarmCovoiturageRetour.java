@@ -24,7 +24,6 @@ public class TimeAlarmCovoiturageRetour extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        String hRetour;
         String dateRetourStr = null;
         String heureRetourStr = null;
 

@@ -24,8 +24,6 @@ public class TimeAlarmCovoiturageAller extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-
-        String hAller;
         String dateAllerStr = null;
         String heureAllerStr = null;
 

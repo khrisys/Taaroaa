@@ -40,7 +40,6 @@ public class SearchedUserViewHolder extends RecyclerView.ViewHolder {
         // liaison des elements du layout recyclerview et pupils_cell avec les variables declarées ici
         ButterKnife.bind(this, itemView);
 
-        RecyclerView recyclerView = itemView.findViewById(R.id.recyclerViewSearchedUser);
         mSearchedUserList = new ArrayList<>();
 
         // --------------------

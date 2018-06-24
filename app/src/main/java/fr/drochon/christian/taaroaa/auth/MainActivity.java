@@ -1,10 +1,9 @@
-package fr.drochon.christian.taaroaa.controller;
+package fr.drochon.christian.taaroaa.auth;
 
-import android.app.PendingIntent;
+import android.annotation.SuppressLint;
 import android.content.ComponentCallbacks2;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.View;
@@ -16,26 +15,17 @@ import android.widget.Toast;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.perf.FirebasePerformance;
 import com.google.firebase.perf.metrics.Trace;
 
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 import fr.drochon.christian.taaroaa.R;
-import fr.drochon.christian.taaroaa.auth.ConnectionActivity;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
+import fr.drochon.christian.taaroaa.controller.PasswordActivity;
+import fr.drochon.christian.taaroaa.controller.SummaryActivity;
 import fr.drochon.christian.taaroaa.notifications.MyFirebaseMessagingService;
 
 import static fr.drochon.christian.taaroaa.R.id;
@@ -52,6 +42,11 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
     private Button mConnexion;
     private Button creationCompte;
     private TextView mTextViewHiddenForSnackbar;
+    private String mName;
+    private String mFirstName;
+    private String mEmailUser;
+    private String mPassword;
+
 
     // --------------------
     // LIFE CYCLE
@@ -87,7 +82,6 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
         FirebaseMessaging.getInstance().subscribeToTopic("covoiturages");
 
 
-
         // --------------------
         // LISTENERS
         // --------------------
@@ -96,7 +90,8 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
             @Override
             public void onClick(View v) {
                 // Test performance de la creation d'un compte user
-                final Trace myTrace = FirebasePerformance.getInstance().newTrace("mainActivityAccountCreation_trace");
+                final Trace myTrace = FirebasePerformance.getInstance()
+                        .newTrace("mainActivityAccountCreation_trace");
                 myTrace.start();
 
                 if (!isCurrentUserLogged()) {
@@ -179,8 +174,7 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
         bundle.putString("text", "message");
 
 
-        Intent intent = new Intent(this, MyFirebaseMessagingService.class).putExtra("titre", "titre du message").putExtra("text", "message");
-        PendingIntent operation = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+        new Intent(this, MyFirebaseMessagingService.class).putExtra("titre", "titre du message").putExtra("text", "message");
 
 
         //CRASHLYTICS : force application to crash
@@ -200,8 +194,8 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
      */
     private void startConnectionActivity() {
 
-            Intent intent = new Intent(MainActivity.this, ConnectionActivity.class);
-            startActivity(intent);
+        Intent intent = new Intent(MainActivity.this, ConnectionActivity.class);
+        startActivity(intent);
     }
 
     /**
@@ -216,9 +210,9 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
             public void onClick(View v) {
 
                 if (isCurrentUserLogged()) {
-                    startSummaryActivity();
+                    startSummaryActivity();//connecté
                 } else {
-                    startSignInActivity();
+                    startSignInActivity(); //deconnecté = je lance la signin!!!
                 }
             }
         });
@@ -230,17 +224,17 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
     // --------------------
 
     /**
-     * Methode lancant une page autogenerée par Firebase permettant la connexion/inscription à l'app
+     * Methode lancant une page autogenerée par Firebase permettant la connexion/inscription à l'app.
+     * Methode permettant egalement de savoir si la personne se connecte en mode hors connexion.
      */
     private void startSignInActivity() {
+
 /*        setupDb().collection("users").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                 if (e != null) {
                     Log.w("TAG", "Listen error", e);
                     return;
-
-
                 }
                 assert queryDocumentSnapshots != null;
                 for (DocumentChange change : queryDocumentSnapshots.getDocumentChanges()) {
@@ -255,7 +249,7 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
             }
         });*/
 
-
+        // Methode qui v=crééé la connexion
         startActivityForResult(
                 AuthUI.getInstance()
                         .createSignInIntentBuilder() // lance une activité de connexion/inscrption autogeneree
@@ -302,8 +296,43 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
 
         if (requestCode == RC_SIGN_IN) {
             if (resultCode == RESULT_OK) { // SUCCESS
+
+                // RECUPERATION DES CARACTERISTIQUES DE LA PERSONNE CONNECTEE
+
+                String[] parts;
+                if (response != null) {
+                    @SuppressLint("RestrictedApi") String mUsername = response.getUser().getName();
+                    mEmailUser = response.getEmail();
+                    mPassword = response.getProviderType();
+                    // decomposition du nom et du prenom recu dans le param name
+                    if (mUsername.contains(" ")) {
+                        parts = mUsername.split(" ");
+                        try {
+                            if (parts[1] != null) mName = parts[1];
+                            else mName = "";
+                        } catch (ArrayIndexOutOfBoundsException e1) {
+                            Log.e("TAG", "ArrayOutOfBoundException " + e1.getMessage());
+                        }
+                        if (parts[0] != null) mFirstName = parts[0];
+                        else mFirstName = "";
+                    } else {
+                        mName = mUsername;
+                        mFirstName = " ";// donc firstname non null
+                    }
+                }
+
+                //SECURITE DE L4EMAIL DE LA PERSONNE CONNECTEE
+                // envoi des identifiants sur laclasse AccountCreateActivity pour verification que son email
+                // notamment ne soit pas erronée, chose la pls frequente
+                new Intent(MainActivity.this, AccountCreateActivity.class)
+                        .putExtra("name", mName).putExtra("firstname", mFirstName)
+                        .putExtra("email", mEmailUser).putExtra("password", mPassword);
+
+
+
+
                 //this.updateUserInFirestore();
-                this.startSummaryActivity(); // connexion et renvoi vers la page sommaire
+                //this.startSummaryActivity(); // connexion et renvoi vers la page sommaire
                 //this.startConnectionActivity();
 
             }
@@ -341,7 +370,7 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
     /**
      * Methode de creation d'un utilisateur, avec condition de creation en fonction de l'existance ou non d'un user dejà en bdd,
      * et decomposant le nom et le prenom saisi à l'enregistrement de la personne.
-     */
+     *//*
     private void updateUserInFirestore() {
         final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
         if (auth != null) {
@@ -393,16 +422,16 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
         }
 
 
-    }
+    }*/
 
-    /**
+  /*  *//**
      * Methode permettant de creer un user lorsque celui ci vient de se connecter pour la 1ere fois.
      *
      * @param uid
      * @param nom
      * @param prenom
      * @param email
-     */
+     *//*
     private void addNewUser(String uid, String nom, String prenom, String email) {
 
         Map<String, Object> newContact = new HashMap<>();
@@ -430,7 +459,7 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
                         }
                     });
         }
-    }
+    }*/
 
 
     // --------------------

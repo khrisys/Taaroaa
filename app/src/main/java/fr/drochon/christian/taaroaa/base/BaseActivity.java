@@ -32,7 +32,7 @@ import java.util.Locale;
 
 import butterknife.ButterKnife;
 import fr.drochon.christian.taaroaa.R;
-import fr.drochon.christian.taaroaa.controller.MainActivity;
+import fr.drochon.christian.taaroaa.auth.MainActivity;
 import fr.drochon.christian.taaroaa.controller.SummaryActivity;
 
 /**
@@ -259,9 +259,9 @@ public abstract class BaseActivity extends AppCompatActivity {
         return dateFormat1.format(horaireDuCours);
     }
 
-    protected java.util.Date stStringToDate(String horaire){
+    protected Date stStringToDate(String horaire){
         SimpleDateFormat formatter = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy", Locale.US);
-        java.util.Date dateFormatee = null;
+        Date dateFormatee = null;
 
         try {
             dateFormatee = formatter.parse(horaire);

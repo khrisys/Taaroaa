@@ -40,9 +40,6 @@ public class ConnectionActivity extends BaseActivity {
     private TextInputEditText mEmail;
     private TextInputEditText mPassword;
 
-    //Id de connexion dans l'activité courante
-    private static final int RC_SIGN_IN = 123;
-
     /**
      * Verification de la validité de l'adresse email
      *
@@ -66,6 +63,7 @@ public class ConnectionActivity extends BaseActivity {
         mEmail = findViewById(R.id.email_input);
         mPassword = findViewById(R.id.password_input);
         Button valid = findViewById(R.id.creation_identifiants_btn);
+        // passage de bundle depuis la connexion pour afficher les caracteristqiues d'un user connecté
 
         configureToolbar();
         giveToolbarAName(R.string.creation_compte);
@@ -216,7 +214,6 @@ public class ConnectionActivity extends BaseActivity {
                         List<DocumentSnapshot> ds = queryDocumentSnapshots.getDocuments();
                         for (int i = 0; i < ds.size(); i++) {
                             if (ds.get(i).exists()) {
-                                String email = Objects.requireNonNull(ds.get(i).get("email")).toString();
                                 User user = new User(Objects.requireNonNull(ds.get(i).get("uid")).toString(), Objects.requireNonNull(ds.get(i).get("nom")).toString(),
                                         Objects.requireNonNull(ds.get(i).get("prenom")).toString(),
                                         Objects.requireNonNull(ds.get(i).get("licence")).toString(), Objects.requireNonNull(ds.get(i).get("email")).toString(),
