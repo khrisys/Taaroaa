@@ -34,8 +34,7 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     // pour resoudre les problemes de theme, supprimer les 2 versions ci dessous, puis synchroniser,
     // remettre ces 2 versions , puis resynchroniser
-    implementation 'com.android.support:appcompat-v7:27.1.1'
-    implementation 'com.android.support:design:27.1.1'
+
 
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
