@@ -191,6 +191,28 @@
                 android:visibility="visible"/>
 
             <TextView
+                android:id="@+id/titre_fonction_txt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="60dp"
+                android:layout_marginTop="10dp"
+                android:shadowColor="@color/colorAccent"
+                android:text="En qualité de :"
+                android:textColor="@color/colorPrimary"
+                android:textSize="18sp"/>
+
+            <Spinner
+                android:id="@+id/fonction_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="150dp"
+                android:layout_marginStart="70dp"
+                android:fadeScrollbars="true"
+                android:minHeight="40dp"
+                android:visibility="visible"/>
+
+
+            <TextView
                 android:id="@+id/compte_titre_txt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

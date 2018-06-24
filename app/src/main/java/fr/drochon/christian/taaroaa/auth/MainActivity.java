@@ -61,6 +61,7 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(layout.activity_main);
+
         configureToolbar();
         giveToolbarAName(app_name);
         //onTrimMemory(TRIM_MEMORY_BACKGROUND);
@@ -70,7 +71,6 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
         creationCompte = findViewById(id.creation_compte_btn);
         mConnexion = findViewById(id.connection_valid_btn);
         mConnexion.requestFocus();
-
         Button deconnexion = findViewById(id.deconnexion_btn);
 
         // lorsque je suis connecté, c'est que j'ai un compte et je n'ai pas besoin de voir le bouton "creer un compte"
@@ -260,12 +260,11 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
                         .setLogo(R.mipmap.logo1)
                         .build(),
                 RC_SIGN_IN); // identifiant de connexion
-
     }
 
 
     // --------------------
-    // AUTHENTIFICATION
+    // AUTHENTIFICATION ET VERIFICATION VALIDITE EMAIL
     // --------------------
 
     /**
@@ -282,7 +281,6 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
         this.handleResponseAfterSignIn(requestCode, resultCode, data);
     }
 
-
     /**
      * Methode permettant d'afficher un message personnalisé dans une snackbar en fonction du resultat renvoyé par l'activité d'inscription/connexion
      *
@@ -295,48 +293,43 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
         IdpResponse response = IdpResponse.fromResultIntent(data);
 
         if (requestCode == RC_SIGN_IN) {
-            if (resultCode == RESULT_OK) { // SUCCESS
+            if (resultCode == RESULT_OK) {
 
                 // RECUPERATION DES CARACTERISTIQUES DE LA PERSONNE CONNECTEE
-
                 String[] parts;
                 if (response != null) {
                     @SuppressLint("RestrictedApi") String mUsername = response.getUser().getName();
                     mEmailUser = response.getEmail();
                     mPassword = response.getProviderType();
                     // decomposition du nom et du prenom recu dans le param name
-                    if (mUsername.contains(" ")) {
-                        parts = mUsername.split(" ");
-                        try {
-                            if (parts[1] != null) mName = parts[1];
-                            else mName = "";
-                        } catch (ArrayIndexOutOfBoundsException e1) {
-                            Log.e("TAG", "ArrayOutOfBoundException " + e1.getMessage());
+                    if (mUsername != null) {
+                        if (mUsername.contains(" ")) {
+                            parts = mUsername.split(" ");
+                            try {
+                                if (parts[1] != null) mName = parts[1];
+                                else mName = "";
+                            } catch (ArrayIndexOutOfBoundsException e1) {
+                                Log.e("TAG", "ArrayOutOfBoundException " + e1.getMessage());
+                            }
+                            if (parts[0] != null) mFirstName = parts[0];
+                            else mFirstName = "";
+                        } else {
+                            mName = mUsername;
+                            mFirstName = " ";// donc firstname non null
                         }
-                        if (parts[0] != null) mFirstName = parts[0];
-                        else mFirstName = "";
-                    } else {
-                        mName = mUsername;
-                        mFirstName = " ";// donc firstname non null
                     }
+                    //ENVOI VERS LE CONTROKE DE DECURITE DUMAIL DE LA PERSONNE CONNECTEE
+                    // envoi des identifiants sur laclasse AccountCreateActivity pour verification que son email
+                    // notamment ne soit pas erronée, chose la pls frequente
+                    Intent intent = new Intent(MainActivity.this, AccountCreateActivity.class);
+                    intent.putExtra("name", mName);
+                    intent.putExtra("firstname", mFirstName);
+                    intent.putExtra("email", mEmailUser);
+                    intent.putExtra("password", mPassword);
+                    startActivity(intent);
                 }
-
-                //SECURITE DE L4EMAIL DE LA PERSONNE CONNECTEE
-                // envoi des identifiants sur laclasse AccountCreateActivity pour verification que son email
-                // notamment ne soit pas erronée, chose la pls frequente
-                new Intent(MainActivity.this, AccountCreateActivity.class)
-                        .putExtra("name", mName).putExtra("firstname", mFirstName)
-                        .putExtra("email", mEmailUser).putExtra("password", mPassword);
-
-
-
-
-                //this.updateUserInFirestore();
-                //this.startSummaryActivity(); // connexion et renvoi vers la page sommaire
-                //this.startConnectionActivity();
-
             }
-        } else { // ERRORS
+        } else { // ERROR de recuperation de personne avec differents types d'erruer de connexion
             if (response == null) {
                 showSnackBar(getString(string.error_authentication_canceled));
             }
@@ -424,7 +417,7 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
 
     }*/
 
-  /*  *//**
+    /*  *//**
      * Methode permettant de creer un user lorsque celui ci vient de se connecter pour la 1ere fois.
      *
      * @param uid
