@@ -8,7 +8,6 @@ import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,7 +23,6 @@ import java.util.Objects;
 
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
-import fr.drochon.christian.taaroaa.controller.PasswordActivity;
 import fr.drochon.christian.taaroaa.controller.SummaryActivity;
 import fr.drochon.christian.taaroaa.notifications.MyFirebaseMessagingService;
 
@@ -34,7 +32,7 @@ import static fr.drochon.christian.taaroaa.R.string;
 import static fr.drochon.christian.taaroaa.R.string.app_name;
 
 
-public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
+public class MainActivity extends BaseActivity {
 
     //Id de connexion dans l'activité courante
     private static final int RC_SIGN_IN = 123;
@@ -137,16 +135,6 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
                 creationCompte.setVisibility(View.VISIBLE);
 
                 myTrace2.stop();
-            }
-        });
-
-        // Si l'utilisateur a oublié son mot de passe, il clique sur le lien et est envoyé sur la page de recuperation du mot de passe
-        EditText passwordRecovery = findViewById(id.mdp_oubli_lien);
-        passwordRecovery.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, PasswordActivity.class);
-                startActivity(intent);
             }
         });
     }

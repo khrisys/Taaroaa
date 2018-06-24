@@ -54,6 +54,8 @@ public class AccountCreateActivity extends BaseActivity {
     private TextInputEditText mEmail;
     private TextInputEditText mPassword;
     private ProgressBar mProgressBar;
+    private Button mModificationCompte;
+    private Button mSuppressionCompte;
     // DATA
     private String fonction;
 
@@ -78,8 +80,8 @@ public class AccountCreateActivity extends BaseActivity {
         mEmail = findViewById(R.id.email_txt);
         mPassword = findViewById(R.id.password_input);
         mProgressBar = findViewById(R.id.progress_bar);
-        Button mModificationCompte = findViewById(R.id.modificiation_compte_btn);
-        Button mSuppressionCompte = findViewById(R.id.suppression_compte_btn);
+        mModificationCompte = findViewById(R.id.modificiation_compte_btn);
+        mSuppressionCompte = findViewById(R.id.suppression_compte_btn);
 
         configureToolbar();
         giveToolbarAName(R.string.account_create_name);

@@ -24,9 +24,9 @@
     <string name="connection_end">Vous venez de vous déconnecter de l\'application !\nA bientôt!</string>
     <string name="error_no_internet">Aucune connexion internet !</string>
     <string name="error_unknown_error">Une erreur inconnue s\'est produite&#8230;</string>
-    <string name="titre_app">Bonjour.  Bienvenue sur l\'application de gestion d\'un club de plongée sous-marine.</string>
-    <string name="connectez_vous">Connectez vous</string>
-    <string name="deconnectez_vous">Deconnectez vous</string>
+    <string name="titre_app">Bienvenue sur l\'application de gestion d\'un club subaquatique</string>
+    <string name="connectez_vous">Connexion ou création de compte</string>
+    <string name="deconnectez_vous">Déconnexion</string>
     <string name="mot_de_passe_oubli">mot de passe oublié ?</string>
 
     <!-- LOGIN ACTIVITY -->
