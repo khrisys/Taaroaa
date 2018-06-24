@@ -31,12 +31,12 @@ import static fr.drochon.christian.taaroaa.R.string;
 import static fr.drochon.christian.taaroaa.R.string.app_name;
 
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
 
     //Id de connexion dans l'activité courante
     private static final int RC_SIGN_IN = 123;
     public static boolean isAppRunning;
-    private Button mConnexion;
+
     private Button creationCompte;
     private TextView mTextViewHiddenForSnackbar;
     private String mName;
@@ -65,9 +65,7 @@ public class MainActivity extends BaseActivity {
 
 
         mTextViewHiddenForSnackbar = findViewById(R.id.test_coordinator);
-        creationCompte = findViewById(id.creation_compte_btn);
-        mConnexion = findViewById(R.id.connection_valid_btn);
-        mConnexion.requestFocus();
+        creationCompte = findViewById(id.connection_valid_btn);
         Button deconnexion = findViewById(R.id.deconnexion_btn);
 
         // lorsque je suis connecté, c'est que j'ai un compte et je n'ai pas besoin de voir le bouton "creer un compte"
@@ -167,7 +165,7 @@ public class MainActivity extends BaseActivity {
      */
     private void updateUIWhenResuming() {
 
-        this.mConnexion.setOnClickListener(new View.OnClickListener() {
+        this.creationCompte.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
