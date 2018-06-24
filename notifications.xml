@@ -1,0 +1,5 @@
+<application>
+  <component name="NotificationConfiguration" showBalloons="false">
+    <notification groupId="Gradle Import" displayType="STICKY_BALLOON" />
+  </component>
+</application>
