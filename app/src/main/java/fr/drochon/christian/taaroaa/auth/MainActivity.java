@@ -24,7 +24,6 @@ import java.util.Objects;
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
 import fr.drochon.christian.taaroaa.controller.SummaryActivity;
-import fr.drochon.christian.taaroaa.notifications.MyFirebaseMessagingService;
 
 import static fr.drochon.christian.taaroaa.R.id;
 import static fr.drochon.christian.taaroaa.R.layout;
@@ -83,7 +82,8 @@ public class MainActivity extends BaseActivity {
         // --------------------
         // LISTENERS
         // --------------------
-
+        // un user connecté se dirigera vers le sommaire s'il est dejç connecté ou vers
+        // la page de connection s(il ne l'est pas ou q'uil veut creer son compte
         creationCompte.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -103,26 +103,7 @@ public class MainActivity extends BaseActivity {
             }
         });
 
-/*        // Lancement de la page de connection à un compte existant
-        mConnexion.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Test performance de l'update d'un compte user
-                final Trace myTrace1 = FirebasePerformance.getInstance().newTrace("mainActivityGoToAnExistingAccountWithInformationOnCurrentUser_trace");
-                myTrace1.start();
-
-                if (!isCurrentUserLogged()) {
-                    //CREATION DU USER
-                    //updateUserInFirestore();
-                    startSummaryActivity(); // connecté : renvoyé vers le sommaire
-                } else {
-                    //startSignInActivity(); // non connecté : inscription
-                }
-                myTrace1.stop();
-            }
-        });*/
-
-        // Deconnexion de l'utilisateur
+        // Deconnexion de l'utilisateur à l'application avec une petite notification
         deconnexion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -156,13 +137,6 @@ public class MainActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         this.updateUIWhenResuming();
-
-        Bundle bundle = new Bundle();
-        bundle.putString("title", "titre du message");
-        bundle.putString("text", "message");
-
-
-        new Intent(this, MyFirebaseMessagingService.class).putExtra("titre", "titre du message").putExtra("text", "message");
 
 
         //CRASHLYTICS : force application to crash
@@ -216,28 +190,6 @@ public class MainActivity extends BaseActivity {
      * Methode permettant egalement de savoir si la personne se connecte en mode hors connexion.
      */
     private void startSignInActivity() {
-
-/*        setupDb().collection("users").addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w("TAG", "Listen error", e);
-                    return;
-                }
-                assert queryDocumentSnapshots != null;
-                for (DocumentChange change : queryDocumentSnapshots.getDocumentChanges()) {
-                    if (change.getType() == DocumentChange.Type.ADDED) {
-                        Log.d("TAG", "User : " + change.getDocument().getData());
-                    }
-
-                    String source = queryDocumentSnapshots.getMetadata().isFromCache() ?
-                            "local cache" : "server";
-                    Log.d("TAG", "Data fetched from " + source);
-                }
-            }
-        });*/
-
-        // Methode qui v=crééé la connexion
         startActivityForResult(
                 AuthUI.getInstance()
                         .createSignInIntentBuilder() // lance une activité de connexion/inscrption autogeneree
@@ -256,8 +208,10 @@ public class MainActivity extends BaseActivity {
     // --------------------
 
     /**
-     * Methode de recuperer le resultat renvoyé par l'activité autogénérée lors d'une inscription/connexion.
-     * POur utiliser ce resultat, on va dans la methode handleResponseAfterSignIn()
+     * Methode permettant de recuperer le resultat renvoyé par l'activité autogénérée l
+     * ors d'une inscription/connexion.
+     * POur utiliser ce resultat et creer un compte ou simplement connecter un user,
+     * on va dans la methode handleResponseAfterSignIn()
      *
      * @param requestCode
      * @param resultCode
@@ -270,7 +224,8 @@ public class MainActivity extends BaseActivity {
     }
 
     /**
-     * Methode permettant d'afficher un message personnalisé dans une snackbar en fonction du resultat renvoyé par l'activité d'inscription/connexion
+     * Methode permettant d'afficher un message personnalisé dans une snackbar en fonction du
+     * resultat renvoyé par l'activité d'inscription/connexion
      *
      * @param requestCode
      * @param resultCode
@@ -317,7 +272,8 @@ public class MainActivity extends BaseActivity {
                     startActivity(intent);
                 }
             }
-        } else { // ERROR de recuperation de personne avec differents types d'erruer de connexion
+            // ERROR de recuperation de personne avec differents types d'erruer de connexion
+        } else {
             if (response == null) {
                 showSnackBar(getString(string.error_authentication_canceled));
             }
@@ -348,103 +304,9 @@ public class MainActivity extends BaseActivity {
     // REST REQUESTS
     // --------------------
 
-    /**
-     * Methode de creation d'un utilisateur, avec condition de creation en fonction de l'existance ou non d'un user dejà en bdd,
-     * et decomposant le nom et le prenom saisi à l'enregistrement de la personne.
-     *//*
-    private void updateUserInFirestore() {
-        final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
-        if (auth != null) {
-            Query mQuery = setupDb().collection("users").whereEqualTo("uid", auth.getUid());
-
-            // RAJOUTER LE THIS DANS LE LUSTENER PERMET DE RESTREINDRE LE CONTEXT A CETTE ACTIVITE, EVITANT AINSI DE METTRE LES DONNEES
-            // A JOUR A CHAUQE FOIS QU'IL Y A UN UPDATE DANS L'APP.
-            // SI ON ENLEVE LE THIS, ON CREERA UN NOUVEAU DOCUMENT A CHAQUE FOIS QU'ON EN SUPPRIMERA UN, PAR EX !
-            mQuery.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
-                @Override
-                public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-                    // condition de creation d'un user ou affichage simple d'un message indiquant que l'user existe dejà en bdd.
-                    // Avec les uid, il ne peut y avoir de doublon.
-                    if (documentSnapshots.size() == 1) {
-                        Log.e("TAG", "Le document existe !");
-                    } else {
-                        // recuperation des données de l'user
-                        String username = auth.getDisplayName();
-                        // decomposition du nom et du prenom recu dans username
-                        String nom = null, prenom;
-                        String[] parts;
-                        if (username != null) {
-                            if (username.contains(" ")) {
-                                parts = username.split(" ");
-                                try {
-                                    if (parts[1] != null) nom = parts[1];
-                                    else nom = "";
-                                } catch (ArrayIndexOutOfBoundsException e1) {
-                                    Log.e("TAG", "ArrayOutOfBoundException " + e1.getMessage());
-                                }
-                                if (parts[0] != null) prenom = parts[0];
-                                else prenom = "";
-                            } else {
-                                nom = username;
-                                prenom = "";
-                            }
-                            String uid = auth.getUid();
-                            String email = auth.getEmail();
-
-                            addNewUser(uid, nom, prenom, email);
-                        }
-                    }
-                }
-            });
-        }
-        // si l'utilisateur n'a pas de compte , on lui en fait creer un
-        else {
-            startSignInActivity();
-        }
-
-
-    }*/
-
-    /*  *//**
-     * Methode permettant de creer un user lorsque celui ci vient de se connecter pour la 1ere fois.
-     *
-     * @param uid
-     * @param nom
-     * @param prenom
-     * @param email
-     *//*
-    private void addNewUser(String uid, String nom, String prenom, String email) {
-
-        Map<String, Object> newContact = new HashMap<>();
-        newContact.put("uid", uid);
-        newContact.put("nom", nom);
-        newContact.put("prenom", prenom);
-        newContact.put("email", email);
-
-        FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
-        if (auth != null) {
-            setupDb().collection("users").document(auth.getUid()).set(newContact)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Toast.makeText(MainActivity.this, string.create_account,
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(MainActivity.this, "ERROR" + e.toString(),
-                                    Toast.LENGTH_SHORT).show();
-                            Log.d("TAG", e.toString());
-                        }
-                    });
-        }
-    }*/
-
 
     // --------------------
-    // OBSERVATION DANS LE LOGCAT DE LA MEMOIRE UTILISEE POUR LE DEBUG DE MON TEL
+    // PERSO : OBSERVATION DANS LE LOGCAT DE LA MEMOIRE UTILISEE POUR LE DEBUG DE MON TEL
     // --------------------
 
     /**

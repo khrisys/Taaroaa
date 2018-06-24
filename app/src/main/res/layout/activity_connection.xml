@@ -39,7 +39,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="45dp"
             android:layout_marginStart="45dp"
-            android:inputType="textEmailAddress"
+            android:inputType="textWebEmailAddress"
             android:lines="1"/>
     </android.support.design.widget.TextInputLayout>
 
@@ -64,8 +64,8 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="45dp"
             android:layout_marginStart="45dp"
-            android:inputType="textPassword"
-            android:lines="1"/>
+            android:inputType="textWebPassword"
+            android:lines="1" />
     </android.support.design.widget.TextInputLayout>
 
     <Button

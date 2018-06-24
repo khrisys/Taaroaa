@@ -312,7 +312,7 @@
                 android:layout_margin="30dp"
                 android:height="60dp"
                 android:background="@color/colorPrimary"
-                android:text="Modifiez votre compte"
+                android:text="Créez votre compte"
                 android:textColor="@android:color/white"/>
 
             <Button
@@ -322,7 +322,8 @@
                 android:layout_margin="30dp"
                 android:background="@color/colorPrimary"
                 android:text="Supprimez votre compte"
-                android:textColor="@android:color/white" />
+                android:textColor="@android:color/white"
+                android:visibility="gone"/>
 
         </LinearLayout>
 
