@@ -25,16 +25,12 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support.constraint:constraint-layout:1.1.2'
     implementation 'com.google.android.gms:play-services-auth:15.0.1'
-    //Failed to notify dependency resolution listener.
-    //The library com.google.android.gms:play-services-measurement-base is being requested by
-    // various other libraries at [[15.0.4,15.0.4], [16.0.0,16.0.0]], but resolves to 16.0.0.
-    // Disable the plugin and check your dependencies tree using ./gradlew :app:dependencies.
-    implementation 'com.google.android.gms:play-services-measurement-base:16.0.0'
-    implementation 'com.google.firebase:firebase-firestore:17.0.1'//11.8.0
+    implementation 'com.google.firebase:firebase-firestore:11.8.0'
     testImplementation 'junit:junit:4.12'
-    // pour resoudre les problemes de theme, supprimer les 2 versions ci dessous, puis synchroniser,
-    // remettre ces 2 versions , puis resynchroniser
-
+    // pour resoudre les problemes de theme, supprimer les 2 versions ci dessous, puis synchroniser, remettre ces 2 versions , puis resynchroniser
+    //noinspection GradleCompatible
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.android.support:design:27.1.1'
 
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
@@ -49,7 +45,7 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
 
     // FIREBASE
-    implementation 'com.google.firebase:firebase-core:16.0.1'//version ok sinon pb 16.0.0
+    implementation 'com.google.firebase:firebase-core:16.0.0'//version ok sinon pb 11.8.0
     // DYNAMIC LINK POUR INSCRPTION EMAIL PAR TOKE
     implementation 'com.google.firebase:firebase-invites:16.0.0'
     // NOTIFICATION
@@ -57,16 +53,13 @@ dependencies {
     implementation 'com.android.support:support-compat:27.1.1'
     // FirebaseUI
     //implementation 'com.firebaseui:firebase-ui-storage:3.1.3'
-    implementation 'com.firebaseui:firebase-ui-auth:4.0.0'//4.0.0
-    //noinspection GradleDependency
-    implementation 'com.google.firebase:firebase-auth:16.0.1'//16.0.1
+    implementation 'com.firebaseui:firebase-ui-auth:3.3.1'
+    implementation 'com.google.firebase:firebase-auth:16.0.1'
     implementation 'com.firebaseui:firebase-ui-firestore:3.3.1'
     // PERFORMANCE
     implementation 'com.google.firebase:firebase-perf:16.0.0'
     //EASY PERMISSIONS
     implementation 'pub.devrel:easypermissions:1.1.1'
-
-
 }
 
 apply plugin: 'com.google.gms.google-services'
