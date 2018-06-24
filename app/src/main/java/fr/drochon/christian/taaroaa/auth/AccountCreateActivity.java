@@ -78,7 +78,7 @@ public class AccountCreateActivity extends BaseActivity {
         mEmail = findViewById(R.id.email_txt);
         mPassword = findViewById(R.id.password_input);
         mProgressBar = findViewById(R.id.progress_bar);
-        Button mModificationCompte = findViewById(R.id.modificiation_compte_btn);
+        Button mModificationCompte = findViewById(R.id.connection_valid_btn);
         Button mSuppressionCompte = findViewById(R.id.suppression_compte_btn);
 
         configureToolbar();
@@ -177,13 +177,21 @@ public class AccountCreateActivity extends BaseActivity {
         // --------------------
         // SPINNERS & REMPLISSAGE
         // --------------------
-        // Create an ArrayAdapter using the string array and a default spinner layout
+        // Create an ArrayAdapter using the string array and a default spinner layout pour les niveaux
         ArrayAdapter<CharSequence> adapterNiveau = ArrayAdapter.createFromResource(this,
                 R.array.niveaux_array, android.R.layout.simple_spinner_item);
         // Specify the layout to use when the list of choices appears
         adapterNiveau.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
         mNiveauPlongeespinner.setAdapter(adapterNiveau);
+
+        // Default spinner layout pour les fonctions
+        ArrayAdapter<CharSequence> adapterFonction = ArrayAdapter.createFromResource(this,
+                R.array.fonctions_array, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapterFonction.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        mFonctionPlongeur.setAdapter(adapterFonction);
     }
 
 
