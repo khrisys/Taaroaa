@@ -66,9 +66,9 @@ public class MainActivity extends BaseActivity {
 
         mTextViewHiddenForSnackbar = findViewById(R.id.test_coordinator);
         creationCompte = findViewById(id.creation_compte_btn);
-        mConnexion = findViewById(id.connection_valid_btn);
+        mConnexion = findViewById(R.id.connection_valid_btn);
         mConnexion.requestFocus();
-        Button deconnexion = findViewById(id.deconnexion_btn);
+        Button deconnexion = findViewById(R.id.deconnexion_btn);
 
         // lorsque je suis connecté, c'est que j'ai un compte et je n'ai pas besoin de voir le bouton "creer un compte"
         //if(isCurrentUserLogged()) creationCompte.setVisibility(View.GONE);
