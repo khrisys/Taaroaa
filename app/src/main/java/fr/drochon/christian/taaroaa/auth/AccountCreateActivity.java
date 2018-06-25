@@ -39,8 +39,9 @@ import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.api.UserHelper;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
 import fr.drochon.christian.taaroaa.controller.SummaryActivity;
+import fr.drochon.christian.taaroaa.model.User;
 
-public class AccountCreateActivity extends BaseActivity {
+public class AccountCreateActivity extends BaseActivity{
 
     // identifiant pour identifier la requete REST
     private static final int DELETE_USER_TASK = 20;
@@ -90,10 +91,10 @@ public class AccountCreateActivity extends BaseActivity {
         // --------------------
 
         this.getConnectedUser();
-        // Fonction de verification pour la saisie d'un email validevia un
-        // token envoyé sur le compte mail designé
-        this.alertDialogValidationEmail();
 
+        // Fonction de verification pour la saisie d'un email valide via un
+        // token envoyé sur le compte mail designé
+        alertDialogValidationEmail(5000);
 
         // --------------------
         // LISTENERS
@@ -117,12 +118,14 @@ public class AccountCreateActivity extends BaseActivity {
 
                         // fin de trace
                         myTrace.stop();
+
+                        // affichaga de l'alertdialog pendant à nouveau 5s pour avertir l(user de valider son email
                     } else {
                         if (!mNom.getText().toString().isEmpty() && !mPrenom.getText().toString().isEmpty()
                                 && !mEmail.getText().toString().isEmpty() && isValidEmail(mEmail.getText())
                                 && !mPassword.getText().toString().isEmpty()) {
                             System.out.println("nok");
-                            alertDialogValidationEmail();
+                            alertDialogValidationEmail(5000);
                         } else
                             verificationChampsVides();
                     }
@@ -214,27 +217,34 @@ public class AccountCreateActivity extends BaseActivity {
         return target != null && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
     }
 
+
     /**
      * Recuperation et affichage des données d'un  utilisateur qui s'est
-     * connecté ou qui vient de se creer un compte
+     * connecté en possedant un compte ou qui vient de se creer un compte
+     * En gros, qui n'a renseigné ni de nom ni de prenom
      */
     private void getConnectedUser() {
         Intent intent = getIntent();
-        if (intent != null) {
-            String prenom = intent.getStringExtra("firstname");
-            String nom = intent.getStringExtra("name");
-            String licence = "";
-            String mail = intent.getStringExtra("email");
-            String password = intent.getStringExtra("password");
-
+        if (intent.getStringExtra("name") != null) {
             // AFFICHAGE DES DONNEES RECUPEREES DANS L ACTIVITE DE CONNEXION
-            mPrenom.setText(prenom.toUpperCase());
-            mNom.setText(nom.toUpperCase());
-            mLicence.setText(licence);
+            mPrenom.setText(intent.getStringExtra("firstname").toUpperCase());
+            mNom.setText(intent.getStringExtra("name").toUpperCase());
+            mLicence.setText("");
             mNiveauPlongeespinner.setSelection(getIndexSpinner(mNiveauPlongeespinner, "1"));
             mFonctionPlongeur.setSelection(getIndexSpinner(mFonctionPlongeur, "Plongeur"));
-            mEmail.setText(mail);
-            mPassword.setText(password);
+            mEmail.setText(intent.getStringExtra("email"));
+            mPassword.setText(intent.getStringExtra("password"));
+        }
+        //personne ayant saisi tous ses renseignements
+        if(!intent.getStringExtra("connectedUser").isEmpty()){
+            User user = (User) intent.getSerializableExtra("connectedUser");
+            mPrenom.setText(user.getPrenom().toUpperCase());
+            mNom.setText(user.getNom().toUpperCase());
+            mLicence.setText(user.getLicence());
+            mNiveauPlongeespinner.setSelection(getIndexSpinner(mNiveauPlongeespinner, user.getNiveau()));
+            mFonctionPlongeur.setSelection(getIndexSpinner(mFonctionPlongeur, user.getFonction()));
+            mEmail.setText(user.getEmail());
+            mPassword.setText(user.getmPassword());
         }
     }
 
@@ -244,12 +254,13 @@ public class AccountCreateActivity extends BaseActivity {
      * Cette methode rafraichit la validation de son email en bdd firebase (sinon, sa validation,
      * meme effectuée, ne serait jamais prise en compte par firebase)
      */
-    private void alertDialogValidationEmail() {
+    private void alertDialogValidationEmail(int timeSleep) {
         if (getCurrentUser() != null)
             Objects.requireNonNull(getCurrentUser()).reload();
 
         AlertDialog.Builder adb = new AlertDialog.Builder(this);
         adb.setTitle("Sécurité !");
+        adb.setMessage(timeSleep/ 1000 + "seconde(s)");
 
         // ajouter une couleur à l'icon de warning
         Drawable warning = getResources().getDrawable(android.R.drawable.ic_dialog_alert);
@@ -273,6 +284,14 @@ public class AccountCreateActivity extends BaseActivity {
             }
         });
         adb.show();
+
+         // Thread utilisé pour faire patienter l'user en affichant l'alertdialog lui
+        // stipulant quil doit se connecter à son compte pour valider son adresse email
+        try {
+         Thread.sleep(timeSleep);
+         } catch (InterruptedException e) {
+         e.printStackTrace();
+        }
     }
 
     /**

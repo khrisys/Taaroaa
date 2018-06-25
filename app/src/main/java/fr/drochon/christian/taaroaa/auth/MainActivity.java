@@ -4,28 +4,33 @@ import android.annotation.SuppressLint;
 import android.content.ComponentCallbacks2;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
-import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.perf.FirebasePerformance;
 import com.google.firebase.perf.metrics.Trace;
 
 import java.util.Collections;
-import java.util.Objects;
+import java.util.Map;
 
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
 import fr.drochon.christian.taaroaa.controller.SummaryActivity;
+import fr.drochon.christian.taaroaa.model.User;
 
-import static fr.drochon.christian.taaroaa.R.id;
+import static android.view.View.VISIBLE;
 import static fr.drochon.christian.taaroaa.R.layout;
 import static fr.drochon.christian.taaroaa.R.string;
 import static fr.drochon.christian.taaroaa.R.string.app_name;
@@ -38,7 +43,10 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
     public static boolean isAppRunning;
 
     private Button creationCompte;
+    private Button mDeconnexion;
     private TextView mTextViewHiddenForSnackbar;
+    private TextView mTitle;
+
     private String mName;
     private String mFirstName;
     private String mEmailUser;
@@ -65,8 +73,9 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
 
 
         mTextViewHiddenForSnackbar = findViewById(R.id.test_coordinator);
-        creationCompte = findViewById(id.connection_valid_btn);
-        Button deconnexion = findViewById(R.id.deconnexion_btn);
+        mTitle = findViewById(R.id.connexion_presentation_txt);
+        creationCompte = findViewById(R.id.connection_valid_btn);
+        mDeconnexion = findViewById(R.id.deconnexion_btn);
 
         // lorsque je suis connecté, c'est que j'ai un compte et je n'ai pas besoin de voir le bouton "creer un compte"
         //if(isCurrentUserLogged()) creationCompte.setVisibility(View.GONE);
@@ -80,21 +89,18 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
         // --------------------
         // LISTENERS
         // --------------------
-        // un user connecté se dirigera vers le sommaire s'il est dejç connecté ou vers
-        // la page de connection s(il ne l'est pas ou q'uil veut creer son compte
+        // Redirection de l'user vers l'actv=vité adequate en fonction s'il est dejà loggé ou pas
         creationCompte.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Test performance de la creation d'un compte user
-                final Trace myTrace = FirebasePerformance.getInstance()
-                        .newTrace("mainActivityAccountCreation_trace");
+                final Trace myTrace = FirebasePerformance.getInstance().newTrace("mainActivityAccountCreation_trace");
                 myTrace.start();
 
                 if (!isCurrentUserLogged()) {
-                    //startSignInActivity(); // non connecté : inscription
-                    startConnectionActivity();
+                    startSignInActivity(); // non connecté : inscription oou entree valide
                 } else {
-                    Toast.makeText(MainActivity.this, "Vous etes déjà connecté, vous ne pouvez pas créer un compte !", Toast.LENGTH_LONG).show();
+                    //Toast.makeText(SummaryActivity.this, "Vous etes déjà connecté, vous ne pouvez pas créer un compte !", Toast.LENGTH_LONG).show();
                     startSummaryActivity(); // connecté : renvoyé vers le sommaire
                 }
                 myTrace.stop();
@@ -102,16 +108,18 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
         });
 
         // Deconnexion de l'utilisateur à l'application avec une petite notification
-        deconnexion.setOnClickListener(new View.OnClickListener() {
+        mDeconnexion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Test performance de l'update d'un compte user
                 final Trace myTrace2 = FirebasePerformance.getInstance().newTrace("mainActivityDeconnexionFromAnExistingAccount_trace");
                 myTrace2.start();
 
+                // CHOIX SCIEMMENT DE SE DECONNECTER
                 showSnackBar(getString(string.connection_end));
                 signOutUserFromFirebase();
-                creationCompte.setVisibility(View.VISIBLE);
+                creationCompte.setVisibility(VISIBLE);
+                //TODOramener l'user at debut dy jeu
 
                 myTrace2.stop();
             }
@@ -128,18 +136,6 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
         return layout.activity_main;
     }
 
-    /**
-     * Methode permettant un affichage different en fonction de si l'user a dejà été loggé ou pas
-     */
-    @Override
-    protected void onResume() {
-        super.onResume();
-        this.updateUIWhenResuming();
-
-
-        //CRASHLYTICS : force application to crash
-        //Crashlytics.getInstance().crash();
-    }
 
     /**
      * Methode permettant de changer d'ecran lors d'une connexion valide
@@ -150,17 +146,8 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
     }
 
     /**
-     * Methode permettant d'aller sur la page de rensignement des identifiants de l'utilisateur (email, password)
-     */
-    private void startConnectionActivity() {
-
-        Intent intent = new Intent(MainActivity.this, ConnectionActivity.class);
-        startActivity(intent);
-    }
-
-    /**
      * Methode permettant d'afficher sur le bouton de connexion soit la direction de l'ecran de connexion
-     * soit la direction de l'ecran sommaire en fonction de si l'user est connexté ou pas, et de
+     * et de sommaire en fonction de si l'user est connexté ou pas, ou de
      * rediriger l'user vers l'affichage de la page adequate
      */
     private void updateUIWhenResuming() {
@@ -168,14 +155,28 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
         this.creationCompte.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                //condition forcant le heros à entrer et passer le formuli$aire s'il n'est pas loggé
                 if (isCurrentUserLogged()) {
-                    startSummaryActivity();//connecté
+                    startSignInActivity(); //deconnecté = je lance la connexion ou le sommaire
                 } else {
-                    startSignInActivity(); //deconnecté = je lance la signin!!!
+                    signOutUserFromFirebase();
                 }
             }
         });
+    }
+
+    /**
+     * Methode permettant un affichage different en fonction de si l'user a dejà été loggé ou passtartsummary
+     */
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //lancement de l"activite de connexin ou de login
+        this.updateUIWhenResuming();
+
+
+        //CRASHLYTICS : force application to crash
+        //Crashlytics.getInstance().crash();
     }
 
 
@@ -188,16 +189,15 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
      * Methode permettant egalement de savoir si la personne se connecte en mode hors connexion.
      */
     private void startSignInActivity() {
-        startActivityForResult(
-                AuthUI.getInstance()
-                        .createSignInIntentBuilder() // lance une activité de connexion/inscrption autogeneree
-                        //.setTheme(R.style.LoginTheme) // definir un style dans le fichier res/values/styles.xml
-                        .setAvailableProviders( // ajoute des moyens divers de connexion (email, google, fb..)
-                                Collections.singletonList(new AuthUI.IdpConfig.EmailBuilder().build()))
-                        .setIsSmartLockEnabled(false, true)
-                        .setLogo(R.mipmap.logo1)
-                        .build(),
-                RC_SIGN_IN); // identifiant de connexion
+        startActivityForResult(AuthUI.getInstance().createSignInIntentBuilder() // lance une activité de connexion/inscrption autogeneree
+                //.setTheme(R.style.LoginTheme) // definir un style dans le fichier res/values/styles.xml
+                .setAvailableProviders( // ajoute des moyens divers de connexion (email, google, fb..)
+                        Collections.singletonList(new AuthUI.IdpConfig.EmailBuilder().build())).setIsSmartLockEnabled(false, true).setLogo(R.mipmap.logo1).build(), RC_SIGN_IN); // identifiant de connexion
+
+
+        //mTitle.setVisibility(View.GONE);
+        creationCompte.setVisibility(View.GONE);
+        mDeconnexion.setVisibility(View.GONE);
     }
 
 
@@ -229,8 +229,9 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
      * @param resultCode
      * @param data
      */
+    @SuppressLint("RestrictedApi")
     private void handleResponseAfterSignIn(int requestCode, int resultCode, Intent data) {
-
+        //SOIT LA PERSONNE CONNECTEE EXISTE MAIS DU COUP ELLE NA PAS RENTREE SON NOM NI PRENOM
         IdpResponse response = IdpResponse.fromResultIntent(data);
 
         if (requestCode == RC_SIGN_IN) {
@@ -239,24 +240,26 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
                 // RECUPERATION DES CARACTERISTIQUES DE LA PERSONNE CONNECTEE
                 String[] parts;
                 if (response != null) {
-                    @SuppressLint("RestrictedApi") String mUsername = response.getUser().getName();
-                    mEmailUser = response.getEmail();
-                    mPassword = response.getProviderType();
-                    // decomposition du nom et du prenom recu dans le param name
-                    if (mUsername != null) {
-                        if (mUsername.contains(" ")) {
-                            parts = mUsername.split(" ");
-                            try {
-                                if (parts[1] != null) mName = parts[1];
-                                else mName = "";
-                            } catch (ArrayIndexOutOfBoundsException e1) {
-                                Log.e("TAG", "ArrayOutOfBoundException " + e1.getMessage());
+                    if (response.getUser().getName() != null) {
+                        @SuppressLint("RestrictedApi") String mUsername = response.getUser().getName();
+                        mEmailUser = response.getEmail();
+                        mPassword = response.getProviderType();
+                        // decomposition du nom et du prenom recu dans le param name
+                        if (mUsername != null) {
+                            if (mUsername.contains(" ")) {
+                                parts = mUsername.split(" ");
+                                try {
+                                    if (parts[1] != null) mName = parts[1];
+                                    else mName = "";
+                                } catch (ArrayIndexOutOfBoundsException e1) {
+                                    Log.e("TAG", "ArrayOutOfBoundException " + e1.getMessage());
+                                }
+                                if (parts[0] != null) mFirstName = parts[0];
+                                else mFirstName = "";
+                            } else {
+                                mName = mUsername;
+                                mFirstName = " ";// donc firstname non null
                             }
-                            if (parts[0] != null) mFirstName = parts[0];
-                            else mFirstName = "";
-                        } else {
-                            mName = mUsername;
-                            mFirstName = " ";// donc firstname non null
                         }
                     }
                     //ENVOI VERS LE CONTROKE DE DECURITE DUMAIL DE LA PERSONNE CONNECTEE
@@ -269,12 +272,35 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
                     intent.putExtra("password", mPassword);
                     startActivity(intent);
                 }
+
+                //LA PERSONNE CONNECTEE EXISTE ET ON LA RETROUVE EN BDD
+                else {
+                    FirebaseUser user1 = FirebaseAuth.getInstance().getCurrentUser();
+                    setupDb().collection("users").document(user1.getUid())
+                            .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                @Override
+                                public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                                    if(documentSnapshot.exists()){
+                                        Map<String, Object> user = documentSnapshot.getData();
+                                        User u = new User(user.get("uid").toString(), user.get("nom").toString(),
+                                        user.get("prenom").toString(), user.get("licence").toString(),
+                                        user.get("email").toString(), user.get("niveau").toString(), user.get("fonction").toString());
+                                        Intent intent = new Intent(MainActivity.this, AccountCreateActivity.class)
+                                                .putExtra("connectedUser", u);
+                                        startActivity(intent);
+                                    }
+                                }
+                            });
+
+                }
             }
             // ERROR de recuperation de personne avec differents types d'erruer de connexion
         } else {
-            if (response == null) {
-                showSnackBar(getString(string.error_authentication_canceled));
-            }
+            /*if (response == null) {*/
+            showSnackBar(getString(string.error_authentication_canceled));
+            signOutUserFromFirebase();
+            //TODO l'amener au debut de k'appli
+            /*}
             if (response != null) {
                 if (Objects.requireNonNull(response.getError()).getErrorCode() == ErrorCodes.NO_NETWORK) {
                     showSnackBar(getString(string.error_no_internet));
@@ -282,7 +308,7 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
                 if (Objects.requireNonNull(response.getError()).getErrorCode() == ErrorCodes.UNKNOWN_ERROR) {
                     showSnackBar(getString(string.error_unknown_error));
                 }
-            }
+            }*/
         }
     }
 
