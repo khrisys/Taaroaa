@@ -14,7 +14,6 @@ import android.widget.TextView;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -24,6 +23,7 @@ import com.google.firebase.perf.metrics.Trace;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
@@ -240,11 +240,10 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
                 // RECUPERATION DES CARACTERISTIQUES DE LA PERSONNE CONNECTEE
                 String[] parts;
                 if (response != null) {
-                    //LA PERSONNE CONNECTEE EXISTE ET ON LA RETROUVE EN BDD
+                    //LA PERSONNE CONNECTEE EST DEJA ENREGISTREE EN BDD
                     if (response.getUser().getName() == null) {
-                        FirebaseUser user1 = FirebaseAuth.getInstance().getCurrentUser();
-                        if (user1 != null) {
-                            setupDb().collection("users").document(user1.getUid()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                        String user1 = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
+                            setupDb().collection("users").document(user1).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                                 @Override
                                 public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
                                     if (documentSnapshot != null) {
@@ -259,10 +258,11 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
                                     }
                                 }
                             });
-                        }
                     }
-                    //SOIT LA PERSONNE CONNECTEE EXISTE MAIS DU COUP ELLE NA PAS RENTREE SON NOM NI PRENOM
-                    else if (response.getUser().getName() != null) {
+                    //SOIT LA PERSONNE CONNECTEE EXISTE MAIS DU COUP ELLE NA PAS RENTREE SON NOM NI PRENOM OU
+                    // ELLE EST ENTRAIN DE CREER SON COMPTE
+
+                    else if (response.getEmail() != null) {
 
                         @SuppressLint("RestrictedApi") String mUsername = response.getUser().getName();
                         mEmailUser = response.getEmail();
@@ -293,18 +293,14 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
                             intent.putExtra("password", mPassword);
                             startActivity(intent);
                         }
-
                     }
+                    // ERROR de recuperation de personne avec differents types d'erruer de connexion
+                    else {
+                        /*if (response == null) {*/
+                        showSnackBar(getString(string.error_authentication_canceled));
+                        signOutUserFromFirebase();
+                        //TODO l'amener au debut de k'appli
 
-
-                }
-            }
-            // ERROR de recuperation de personne avec differents types d'erruer de connexion
-        } else {
-            /*if (response == null) {*/
-            showSnackBar(getString(string.error_authentication_canceled));
-            signOutUserFromFirebase();
-            //TODO l'amener au debut de k'appli
             /*}
             if (response != null) {
                 if (Objects.requireNonNull(response.getError()).getErrorCode() == ErrorCodes.NO_NETWORK) {
@@ -314,8 +310,12 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
                     showSnackBar(getString(string.error_unknown_error));
                 }
             }*/
+                    }
+                }
+            }
         }
     }
+
 
     /**
      * Methode permettant l'affichage de la snackbar.
