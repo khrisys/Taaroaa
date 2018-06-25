@@ -14,6 +14,7 @@ public class User implements Serializable {
     private String mEmail;
     private String mNiveau;
     private String mFonction;
+    private String mPassword;
 
 
     public User() {
@@ -78,6 +79,17 @@ public class User implements Serializable {
         mFonction = fonction;
     }
 
+    public User(String uid, String nom, String prenom, String licence, String email, String niveau, String fonction, String password) {
+        this.uid = uid;
+        mNom = nom;
+        mPrenom = prenom;
+        mLicence = licence;
+        mEmail = email;
+        mNiveau = niveau;
+        mFonction = fonction;
+        mPassword = password;
+    }
+
 
     // GETTERS & SETTERS
 
@@ -137,4 +149,11 @@ public class User implements Serializable {
         mFonction = fonction;
     }
 
+    public String getmPassword() {
+        return mPassword;
+    }
+
+    public void setmPassword(String mPassword) {
+        this.mPassword = mPassword;
+    }
 }

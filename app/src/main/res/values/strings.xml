@@ -31,6 +31,7 @@
 
     <!-- LOGIN ACTIVITY -->
     <string name="info_no_username_found">Aucun nom d\'utilisateur</string>
+    <string name="no_ad">Vous etes déjà connecté, vous ne pouvez pas créer un compte !</string>
 
     <!--ACCOUNT CREATE AND MODIFICATION USER ACTIVITIES-->
     <string name="alertDialog_account">Voulez vous réellement supprimer votre compte ?</string>
