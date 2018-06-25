@@ -231,7 +231,7 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
      */
     @SuppressLint("RestrictedApi")
     private void handleResponseAfterSignIn(int requestCode, int resultCode, Intent data) {
-        //SOIT LA PERSONNE CONNECTEE EXISTE MAIS DU COUP ELLE NA PAS RENTREE SON NOM NI PRENOM
+
         IdpResponse response = IdpResponse.fromResultIntent(data);
 
         if (requestCode == RC_SIGN_IN) {
@@ -240,7 +240,30 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
                 // RECUPERATION DES CARACTERISTIQUES DE LA PERSONNE CONNECTEE
                 String[] parts;
                 if (response != null) {
-                    if (response.getUser().getName() != null) {
+                    //LA PERSONNE CONNECTEE EXISTE ET ON LA RETROUVE EN BDD
+                    if (response.getUser().getName() == null) {
+                        FirebaseUser user1 = FirebaseAuth.getInstance().getCurrentUser();
+                        if (user1 != null) {
+                            setupDb().collection("users").document(user1.getUid()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                @Override
+                                public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                                    if (documentSnapshot != null) {
+                                        if (documentSnapshot.exists()) {
+                                            Map<String, Object> user = documentSnapshot.getData();
+                                            if (user != null) {
+                                                User u = new User(user.get("uid").toString(), user.get("nom").toString(), user.get("prenom").toString(), user.get("licence").toString(), user.get("email").toString(), user.get("niveau").toString(), user.get("fonction").toString());
+                                                Intent intent = new Intent(MainActivity.this, AccountCreateActivity.class).putExtra("connectedUser", u);
+                                                startActivity(intent);
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    }
+                    //SOIT LA PERSONNE CONNECTEE EXISTE MAIS DU COUP ELLE NA PAS RENTREE SON NOM NI PRENOM
+                    else if (response.getUser().getName() != null) {
+
                         @SuppressLint("RestrictedApi") String mUsername = response.getUser().getName();
                         mEmailUser = response.getEmail();
                         mPassword = response.getProviderType();
@@ -260,37 +283,19 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
                                 mName = mUsername;
                                 mFirstName = " ";// donc firstname non null
                             }
+                            //ENVOI VERS LE CONTROKE DE DECURITE DUMAIL DE LA PERSONNE CONNECTEE
+                            // envoi des identifiants sur laclasse AccountCreateActivity pour verification que son email
+                            // notamment ne soit pas erronée, chose la pls frequente
+                            Intent intent = new Intent(MainActivity.this, AccountCreateActivity.class);
+                            intent.putExtra("name", mName);
+                            intent.putExtra("firstname", mFirstName);
+                            intent.putExtra("email", mEmailUser);
+                            intent.putExtra("password", mPassword);
+                            startActivity(intent);
                         }
-                    }
-                    //ENVOI VERS LE CONTROKE DE DECURITE DUMAIL DE LA PERSONNE CONNECTEE
-                    // envoi des identifiants sur laclasse AccountCreateActivity pour verification que son email
-                    // notamment ne soit pas erronée, chose la pls frequente
-                    Intent intent = new Intent(MainActivity.this, AccountCreateActivity.class);
-                    intent.putExtra("name", mName);
-                    intent.putExtra("firstname", mFirstName);
-                    intent.putExtra("email", mEmailUser);
-                    intent.putExtra("password", mPassword);
-                    startActivity(intent);
-                }
 
-                //LA PERSONNE CONNECTEE EXISTE ET ON LA RETROUVE EN BDD
-                else {
-                    FirebaseUser user1 = FirebaseAuth.getInstance().getCurrentUser();
-                    setupDb().collection("users").document(user1.getUid())
-                            .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                @Override
-                                public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                                    if(documentSnapshot.exists()){
-                                        Map<String, Object> user = documentSnapshot.getData();
-                                        User u = new User(user.get("uid").toString(), user.get("nom").toString(),
-                                        user.get("prenom").toString(), user.get("licence").toString(),
-                                        user.get("email").toString(), user.get("niveau").toString(), user.get("fonction").toString());
-                                        Intent intent = new Intent(MainActivity.this, AccountCreateActivity.class)
-                                                .putExtra("connectedUser", u);
-                                        startActivity(intent);
-                                    }
-                                }
-                            });
+                    }
+
 
                 }
             }

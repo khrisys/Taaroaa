@@ -235,8 +235,8 @@ public class AccountCreateActivity extends BaseActivity{
             mEmail.setText(intent.getStringExtra("email"));
             mPassword.setText(intent.getStringExtra("password"));
         }
-        //personne ayant saisi tous ses renseignements
-        if(!intent.getStringExtra("connectedUser").isEmpty()){
+        //personne possedant un compte
+        if(intent.getStringExtra("connectedUser") != null){
             User user = (User) intent.getSerializableExtra("connectedUser");
             mPrenom.setText(user.getPrenom().toUpperCase());
             mNom.setText(user.getNom().toUpperCase());
