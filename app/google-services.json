@@ -15,8 +15,12 @@
       },
       "oauth_client": [
         {
-          "client_id": "963968628408-7hgt8ld415ot5igsdrvbtdquddg7vv8p.apps.googleusercontent.com",
-          "client_type": 3
+          "client_id": "963968628408-ln7kr6nfn2be7foen8780ugopq1b3i1v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "fr.drochon.christian.taaroaa",
+            "certificate_hash": "c305c7fd57d5006848ae74a75187c83a7dbbf337"
+          }
         },
         {
           "client_id": "963968628408-7hgt8ld415ot5igsdrvbtdquddg7vv8p.apps.googleusercontent.com",
@@ -33,8 +37,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "963968628408-7hgt8ld415ot5igsdrvbtdquddg7vv8p.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2
