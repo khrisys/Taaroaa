@@ -5,6 +5,7 @@ import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -45,6 +46,8 @@ import java.util.Map;
 import java.util.Objects;
 
 import fr.drochon.christian.taaroaa.R;
+import fr.drochon.christian.taaroaa.alarm.TimeAlarmCovoiturageAller;
+import fr.drochon.christian.taaroaa.alarm.TimeAlarmCovoiturageRetour;
 import fr.drochon.christian.taaroaa.api.CovoiturageHelper;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
 
@@ -67,6 +70,8 @@ public class CovoiturageConducteursActivity extends BaseActivity {
     private TextView mLieuDepart;
     private TextView mLieuArrivee;
     private ProgressBar mProgressBar;
+    private AlarmManager mAlarmManagerAller;
+    private AlarmManager mAlarmManagerRetour;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,8 +92,8 @@ public class CovoiturageConducteursActivity extends BaseActivity {
         Button valid = findViewById(R.id.proposition_covoit_btn);
 
         //  les AlarmManager permettront de réveiller le téléphone et d'executer du code à une date précise
-        AlarmManager mAlarmManagerAller = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        AlarmManager mAlarmManagerRetour = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        mAlarmManagerAller = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        mAlarmManagerRetour = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
         mNbPlaceTotal.requestFocus();
 
@@ -260,7 +265,7 @@ public class CovoiturageConducteursActivity extends BaseActivity {
      *
      * @param horaireDelAller date et heure de l'aller
      */
-/*    private void alarmDepart(Date horaireDelAller) {
+    private void alarmDepart(Date horaireDelAller) {
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(horaireDelAller);
@@ -272,7 +277,7 @@ public class CovoiturageConducteursActivity extends BaseActivity {
             // reveil de l'alarm
             mAlarmManagerAller.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), operation);
         }
-    }*/
+    }
 
     /**
      * Methode permettant de generer une alarm dans le systeme du telephone de maniere à envoyer une notification à l'utilisateur
@@ -280,7 +285,7 @@ public class CovoiturageConducteursActivity extends BaseActivity {
      *
      * @param horaireDuRetour date et heure du retour
      */
- /*   private void alarmRetour(Date horaireDuRetour) {
+    private void alarmRetour(Date horaireDuRetour) {
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(horaireDuRetour);
@@ -292,7 +297,7 @@ public class CovoiturageConducteursActivity extends BaseActivity {
             // reveil de l'alarm
             mAlarmManagerRetour.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
         }
-    }*/
+    }
 
 
     // --------------------

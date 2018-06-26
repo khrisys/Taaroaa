@@ -40,19 +40,9 @@ public class ConnectionActivity extends BaseActivity {
     private TextInputEditText mEmail;
     private TextInputEditText mPassword;
 
-    /**
-     * Verification de la validité de l'adresse email
-     *
-     * @param target adresse email
-     * @return validité ou non de l'adresse email recupérée
-     */
-    private static boolean isValidEmail(CharSequence target) {
-        return target != null && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
-    }
-
 
     // --------------------
-    // UI
+    // LIFECIRCLE
     // --------------------
 
     @Override
@@ -60,11 +50,13 @@ public class ConnectionActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_connection);
 
+        //DESIGN
         mEmail = findViewById(R.id.email_input);
         mPassword = findViewById(R.id.password_input);
         Button valid = findViewById(R.id.creation_identifiants_btn);
         // passage de bundle depuis la connexion pour afficher les caracteristqiues d'un user connecté
 
+        //APPLI BASIQUE
         configureToolbar();
         giveToolbarAName(R.string.creation_compte);
 
@@ -73,17 +65,22 @@ public class ConnectionActivity extends BaseActivity {
         // LISTENER
         // --------------------
 
+        //Si tous les champs du formulaire sont remplis, alors l'user
+        //se connecte à l 'application. C' est la methode goToAdaptedActivity ()
+        // qui determinera si cet user doit se créer un compte ou s'il n'aura qu'ç se connecter.
         valid.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (verificationChampsVides())
                     goToAdaptedActivity();
-                //connectToFirebaseWithEmailAndPassword();
-             /*   } else
-                    verificationChampsVides();*/
             }
         });
     }
+
+
+    // --------------------
+    // UI
+    // --------------------
 
     @Override
     public int getFragmentLayout() {
@@ -91,7 +88,20 @@ public class ConnectionActivity extends BaseActivity {
     }
 
     /**
-     * Methode permettant de signaler une erreur lorsqu'un champ est resté vide alors que la soumission du formulaire a été faite.
+     * Verification de la validité de l'adresse email par la reponse au token envoyé
+     * par firebase à un nouvel user, de meniere à s'assurer que son adresse email
+     * soit vlaide (ce qi l'erreur la plis courante).
+     *
+     * @param target adresse email
+     * @return validité ou non de l'adresse email recupérée
+     */
+    private static boolean isValidEmail(CharSequence target) {
+        return target != null && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
+    }
+
+    /**
+     * Methode permettant de signaler une erreur et de demander de reseigner ce ou ces champs
+     * lorsqu'un champ est resté vide pour valider une bonne soulmission du formulaire.
      */
     private boolean verificationChampsVides() {
 
@@ -118,8 +128,9 @@ public class ConnectionActivity extends BaseActivity {
     // --------------------
 
     /**
-     * Methode permettant à un nouvel utilisateur de se creer un compte et de pouvoir valider l'adresse
-     * email qu'il a rentré via un lien envoyé sur cette meme adresse, afin d'etre sur que l'adresse email soit valide.
+     * Methode permettant à un nouvel utilisateur de se creer un compte, puisde recevoir un token afin de valider
+     * l'adresse qu'il a saisi. La validation du lien recu permettra de cofirmer que l'adresse email est valide et de creer un
+     * compte au nouvel utilisateur.
      */
     private void connectToFirebaseWithEmailAndPassword() {
         // Test performance de l'update d'user en bdd
@@ -140,7 +151,8 @@ public class ConnectionActivity extends BaseActivity {
 
                             myTrace.stop();
                         } else {
-                            // If sign in fails, display a message to the user.
+                            // Dans le cas ou l'user ne renseignerait pas cette notificatio lui informant de valider son adresse,
+                            // il ne pourra pas se creer de compte.
                             AlertDialog.Builder adb = new AlertDialog.Builder(ConnectionActivity.this);
                             adb.setTitle("Adresse email incorrecte ou déjà utilisée !");
                             // ajouter une couleur à l'icon de warning
@@ -148,6 +160,7 @@ public class ConnectionActivity extends BaseActivity {
                             ColorFilter filter = new LightingColorFilter(Color.RED, Color.BLUE);
                             warning.setColorFilter(filter);
                             adb.setIcon(warning);
+
                             adb.setMessage("L'adresse mail '" + mEmail.getText().toString() + "' est incorrecte ou déjà utilisée.");
                             adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
@@ -166,21 +179,26 @@ public class ConnectionActivity extends BaseActivity {
      */
     private void verifEmailUser() {
         final FirebaseAuth auth = FirebaseAuth.getInstance(FirebaseFirestore.getInstance().getApp());
-        // An ActionCodeSettings instance needs to be provided when sending a password reset email or a verification email.
+        // un ActionCodeSetting est necessaire à Firebase por savoir à qui envoyer l'email de confilration
+        //et quel type de message. Ainsi, l'user recevra un lien de validation qu'il devra soumettre das une
+        //durée impartie. La validation de ce lien de l'user validera automatiquement la creation de son compte.
 
-        // In order to securely pass a continue URL, the domain for the URL will need to be whitelisted in the Firebase console.
-        // This is done in the Authentication section by adding this domain to the list of OAuth redirect domains if it is not already there.
+        // In order to securely pass a continue URL, the domain for the URL will need to be whitelisted in
+        // the Firebase console. This is done in the Authentication section by adding this domain to
+        // the list of OAuth redirect domains if it is not already there.
         ActionCodeSettings actionCodeSettings = ActionCodeSettings.newBuilder()
                 .setUrl("https://taaroaa-fe93c.firebaseapp.com/__/auth/action?mode=%3Caction%3E&oobCode=%3Ccode%3E")
                 .setHandleCodeInApp(true)
                 //.setIOSBundleId("com.example.ios")
                 .setAndroidPackageName(
-                        "fr.drochon.christian.taaroaa",// The default for this is populated with the current android package name.
+                        "fr.drochon.christian.taaroaa",// Nom du package unique dde li'application. Ainsi ,des emails
+                        // ne peuvent pas etree envoyés pour des autres applications par erreur.
                         true,
                         "19") // minimum SDK
                 .build();
-
-        if (!Objects.requireNonNull(auth.getCurrentUser()).isEmailVerified()) {
+        //Ici, l'user doit s'aquitter des obligations du formulaires, et il recevra alors automatiquement le token via Firebase
+        if (!Objects.requireNonNull(
+                auth.getCurrentUser()).isEmailVerified()) {
             Objects.requireNonNull(auth.getCurrentUser()).sendEmailVerification(actionCodeSettings)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
@@ -200,8 +218,9 @@ public class ConnectionActivity extends BaseActivity {
     }
 
     /**
-     * Methode permettant de savoir sil'utilisateur actuellement connecté existe en bdd grace à son adresse email, et
-     * pas seulement en bdd FirebaseAuth.
+     * Methode permettant de savoir sil'utilisateur avalidé son adresse email et faut alors de lui un utilisateur
+     * automitique, voire actuellement dejà connecté. Cette validation de mail fair=t de lui un user enregistré
+     * en bdd des utilisateurs, mais aussi un utilisateur de ka bdd de l'authentification de l'application.
      */
     private void goToAdaptedActivity() {
 
@@ -224,12 +243,13 @@ public class ConnectionActivity extends BaseActivity {
                             }
                         }
                     }
-                    // SI USER N'EXISTE PAS
-                    else if(queryDocumentSnapshots.size() == 0){
-                       /* Intent intent = new Intent(ConnectionActivity.this, AccountModificationActivity.class)
-                                .putExtra("email", mEmail.getText().toString()).putExtra("password", mPassword.getText().toString());
-                        startActivity(intent);*/
+                    // SI USER N'EXISTE PAS CAR IL N' PAS VALIDE SON ADRESSE OU S4EST TROMPE DANS LE NOM DE SON ADRESSE  MAIL
+                    else if (queryDocumentSnapshots.size() == 0) {
                         connectToFirebaseWithEmailAndPassword();
+                        //ici, on peut avoir le choix de lui rappeller qu'il souhaitait souscrire un compte par
+                        // une notification, un email ou de le laisser transuille!
+
+                        //??????? //TODO A decommenter ou pas selon le choix du client
                      /*   AlertDialog.Builder adb = new AlertDialog.Builder(ConnectionActivity.this);
                         adb.setTitle("Adresse email incorrecte !");
                         // ajouter une couleur à l'icon de warning

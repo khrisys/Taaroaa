@@ -222,7 +222,7 @@ public class SearchUserActivity extends BaseActivity {
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                 if (queryDocumentSnapshots != null) {
                     if (queryDocumentSnapshots.size() != 0) {
-                        List<DocumentSnapshot> docs = queryDocumentSnapshots.getDocuments();
+                        //List<DocumentSnapshot> docs = queryDocumentSnapshots.getDocuments();
                         filter(listUsers, nom);
 
                         myTrace3.stop();

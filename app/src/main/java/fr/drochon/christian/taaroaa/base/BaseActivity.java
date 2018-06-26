@@ -280,7 +280,7 @@ public abstract class BaseActivity extends AppCompatActivity {
      * Methode permettant de retrouver la position d'un item de la liste des niveaux de plongée d'un user
      *
      * @param spinner menu deroulant
-     * @param myString item choisi dans la liste
+     * @param myString item de fonction d'un adherent choisi dans la liste
      * @return int retour la position de l'item choisi
      */
     protected int getIndexSpinner(Spinner spinner, String myString) {

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="fonctions_array">
+        <item>Plongeur</item>
+        <item>Initiateur</item>
+        <item>Moniteur</item>
+    </string-array>
+</resources>

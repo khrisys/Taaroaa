@@ -1,0 +1,7 @@
+#Internal package file, do not edit.
+#Thu Apr 05 13:08:08 CEST 2018
+0.baseType=DIRECTORY
+0.base=F\:\\WORKSPACES\\AndroidStudioProjects\\Taaroaa\\Taaroaa\\app\\build\\intermediates\\assets\\debug
+0.path=crashlytics-build.properties
+0.set=ASSET
+count=1
