@@ -1,6 +1,7 @@
 package fr.drochon.christian.taaroaa.auth;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -9,9 +10,11 @@ import android.graphics.LightingColorFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -19,7 +22,6 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -27,7 +29,9 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.perf.FirebasePerformance;
 import com.google.firebase.perf.metrics.Trace;
 
@@ -36,22 +40,21 @@ import java.util.Map;
 import java.util.Objects;
 
 import fr.drochon.christian.taaroaa.R;
-import fr.drochon.christian.taaroaa.api.UserHelper;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
 import fr.drochon.christian.taaroaa.controller.SummaryActivity;
 import fr.drochon.christian.taaroaa.model.User;
 
-public class AccountCreateActivity extends BaseActivity{
+public class AccountCreateActivity extends BaseActivity {
 
+    public static final int GET_USERNAME = 40;
     // identifiant pour identifier la requete REST
     private static final int DELETE_USER_TASK = 20;
-    public static final int GET_USERNAME = 40;
+    protected Spinner mFonctionPlongeur;
     // DESIGN
     private TextInputEditText mPrenom;
     private TextInputEditText mNom;
     private TextInputEditText mLicence;
     private Spinner mNiveauPlongeespinner;
-    protected Spinner mFonctionPlongeur;
     private TextInputEditText mEmail;
     private TextInputEditText mPassword;
     private ProgressBar mProgressBar;
@@ -62,6 +65,20 @@ public class AccountCreateActivity extends BaseActivity{
     // LIFECYCLE
     // --------------------
 
+    /**
+     * Methode permettant de verifier la validité d'une adresse email
+     *
+     * @param target adresse email
+     * @return validité de l'adresse email
+     */
+    private static boolean isValidEmail(CharSequence target) {
+        return target != null && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
+    }
+
+
+    // --------------------
+    // UI
+    // --------------------
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,11 +96,12 @@ public class AccountCreateActivity extends BaseActivity{
         mEmail = findViewById(R.id.email_txt);
         mPassword = findViewById(R.id.password_input);
         mProgressBar = findViewById(R.id.progress_bar);
-        Button mModificationCompte = findViewById(R.id.connection_valid_btn);
+        Button mModificationCompte = findViewById(R.id.modificiation_compte_btn);
         Button mSuppressionCompte = findViewById(R.id.suppression_compte_btn);
 
         configureToolbar();
         giveToolbarAName(R.string.account_create_name);
+
 
         // --------------------
         // RECUPERATION ET AFFICHAGE DES INFOS PERSONNELLES DE LA PERSONNE QUI CREE SON COMPTE
@@ -94,7 +112,7 @@ public class AccountCreateActivity extends BaseActivity{
 
         // Fonction de verification pour la saisie d'un email valide via un
         // token envoyé sur le compte mail designé
-        alertDialogValidationEmail(5000);
+        //alertDialogValidationEmail();
 
         // --------------------
         // LISTENERS
@@ -104,6 +122,7 @@ public class AccountCreateActivity extends BaseActivity{
         mModificationCompte.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // methode permettant d'actualiser la reponse de l'user pour la verification de l'email
                 Objects.requireNonNull(getCurrentUser()).reload();
 
                 // Test performance de l'update d'user en bdd
@@ -113,7 +132,8 @@ public class AccountCreateActivity extends BaseActivity{
                 FirebaseAuth auth = FirebaseAuth.getInstance(FirebaseFirestore.getInstance().getApp());
                 FirebaseUser firebaseUser = auth.getCurrentUser();
                 if (firebaseUser != null) {
-                    if (Objects.requireNonNull(firebaseUser.isEmailVerified())) {
+                    createUserInFirebase();
+                   /* if (Objects.requireNonNull(firebaseUser.isEmailVerified())) {
                         createUserInFirebase();
 
                         // fin de trace
@@ -121,15 +141,11 @@ public class AccountCreateActivity extends BaseActivity{
 
                         // affichaga de l'alertdialog pendant à nouveau 5s pour avertir l(user de valider son email
                     } else {
-                        if (!mNom.getText().toString().isEmpty() && !mPrenom.getText().toString().isEmpty()
-                                && !mEmail.getText().toString().isEmpty() && isValidEmail(mEmail.getText())
-                                && !mPassword.getText().toString().isEmpty()) {
-                            System.out.println("nok");
-                            alertDialogValidationEmail(5000);
-                        } else
-                            verificationChampsVides();
-                    }
-                }
+                        if (!mNom.getText().toString().isEmpty() && !mPrenom.getText().toString().isEmpty() && !mEmail.getText().toString().isEmpty() && isValidEmail(mEmail.getText()) && !mPassword.getText().toString().isEmpty()) {
+                            //alertDialogValidationEmail();
+                        */} else verificationChampsVides();
+                    //}
+                //}
             }
         });
 
@@ -156,7 +172,7 @@ public class AccountCreateActivity extends BaseActivity{
                         final Trace myTrace1 = FirebasePerformance.getInstance().newTrace("accountModificationActivityUserAccountDelete_trace");
                         myTrace1.start();
 
-                        deleteUserFromFirebase();
+                        deleteUser();
                         deleteUserAuth();
                         signOutUserFromFirebase();
                         startMainActivity();
@@ -181,42 +197,24 @@ public class AccountCreateActivity extends BaseActivity{
         // SPINNERS & REMPLISSAGE
         // --------------------
         // Create an ArrayAdapter using the string array and a default spinner layout pour les niveaux
-        ArrayAdapter<CharSequence> adapterNiveau = ArrayAdapter.createFromResource(this,
-                R.array.niveaux_array, android.R.layout.simple_spinner_item);
+        ArrayAdapter<CharSequence> adapterNiveau = ArrayAdapter.createFromResource(this, R.array.niveaux_array, android.R.layout.simple_spinner_item);
         // Specify the layout to use when the list of choices appears
         adapterNiveau.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
         mNiveauPlongeespinner.setAdapter(adapterNiveau);
 
         // Default spinner layout pour les fonctions
-        ArrayAdapter<CharSequence> adapterFonction = ArrayAdapter.createFromResource(this,
-                R.array.fonctions_array, android.R.layout.simple_spinner_item);
+        ArrayAdapter<CharSequence> adapterFonction = ArrayAdapter.createFromResource(this, R.array.fonctions_array, android.R.layout.simple_spinner_item);
         // Specify the layout to use when the list of choices appears
         adapterFonction.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
         mFonctionPlongeur.setAdapter(adapterFonction);
     }
 
-
-    // --------------------
-    // UI
-    // --------------------
-
     @Override
     public int getFragmentLayout() {
         return R.layout.activity_account_create;
     }
-
-    /**
-     * Methode permettant de verifier la validité d'une adresse email
-     *
-     * @param target adresse email
-     * @return validité de l'adresse email
-     */
-    private static boolean isValidEmail(CharSequence target) {
-        return target != null && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
-    }
-
 
     /**
      * Recuperation et affichage des données d'un  utilisateur qui s'est
@@ -225,10 +223,11 @@ public class AccountCreateActivity extends BaseActivity{
      */
     private void getConnectedUser() {
         Intent intent = getIntent();
-        if (intent.getStringExtra("name") != null) {
+        // COMPTE PAR EFAUT D UN NOUVEL CONNECTE
+        if (intent.getStringExtra("nom") != null) {
             // AFFICHAGE DES DONNEES RECUPEREES DANS L ACTIVITE DE CONNEXION
-            mPrenom.setText(intent.getStringExtra("firstname").toUpperCase());
-            mNom.setText(intent.getStringExtra("name").toUpperCase());
+            mPrenom.setText(intent.getStringExtra("prenom").toUpperCase());
+            mNom.setText(intent.getStringExtra("nom").toUpperCase());
             mLicence.setText("");
             mNiveauPlongeespinner.setSelection(getIndexSpinner(mNiveauPlongeespinner, "1"));
             mFonctionPlongeur.setSelection(getIndexSpinner(mFonctionPlongeur, "Plongeur"));
@@ -236,7 +235,7 @@ public class AccountCreateActivity extends BaseActivity{
             mPassword.setText(intent.getStringExtra("password"));
         }
         //personne possedant un compte
-        if(intent.getStringExtra("connectedUser") != null){
+        else if (intent.getStringExtra("connectedUser") != null) {
             User user = (User) intent.getSerializableExtra("connectedUser");
             mPrenom.setText(user.getPrenom().toUpperCase());
             mNom.setText(user.getNom().toUpperCase());
@@ -244,7 +243,7 @@ public class AccountCreateActivity extends BaseActivity{
             mNiveauPlongeespinner.setSelection(getIndexSpinner(mNiveauPlongeespinner, user.getNiveau()));
             mFonctionPlongeur.setSelection(getIndexSpinner(mFonctionPlongeur, user.getFonction()));
             mEmail.setText(user.getEmail());
-            mPassword.setText(user.getmPassword());
+            mPassword.setText(user.getPassword());
         }
     }
 
@@ -254,13 +253,19 @@ public class AccountCreateActivity extends BaseActivity{
      * Cette methode rafraichit la validation de son email en bdd firebase (sinon, sa validation,
      * meme effectuée, ne serait jamais prise en compte par firebase)
      */
-    private void alertDialogValidationEmail(int timeSleep) {
-        if (getCurrentUser() != null)
-            Objects.requireNonNull(getCurrentUser()).reload();
+    private void alertDialogValidationEmail() {
+        // methode permettant d'actualiser la reponse de l'user pour la verification de l'email
+        if (getCurrentUser() != null) Objects.requireNonNull(getCurrentUser()).reload();
+
+        // à l'affichage de l'activité, on masque le clavier
+        final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        if(imm != null)
+            imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+
 
         AlertDialog.Builder adb = new AlertDialog.Builder(this);
         adb.setTitle("Sécurité !");
-        adb.setMessage(timeSleep/ 1000 + "seconde(s)");
+
 
         // ajouter une couleur à l'icon de warning
         Drawable warning = getResources().getDrawable(android.R.drawable.ic_dialog_alert);
@@ -285,13 +290,6 @@ public class AccountCreateActivity extends BaseActivity{
         });
         adb.show();
 
-         // Thread utilisé pour faire patienter l'user en affichant l'alertdialog lui
-        // stipulant quil doit se connecter à son compte pour valider son adresse email
-        try {
-         Thread.sleep(timeSleep);
-         } catch (InterruptedException e) {
-         e.printStackTrace();
-        }
     }
 
     /**
@@ -349,86 +347,82 @@ public class AccountCreateActivity extends BaseActivity{
     private void createUserInFirebase() {
         final FirebaseUser auth = FirebaseAuth.getInstance(FirebaseFirestore.getInstance().getApp()).getCurrentUser();
         if (auth != null) {
-            setupDb().collection("users").document(auth.getUid()).get()
-                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                            if (task.isSuccessful()) {
+            setupDb().collection("users").document(auth.getUid()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                @Override
+                public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                    if (documentSnapshot != null) {
+                        // creation de l'(utilisateur en bdd
+                        String uid = auth.getUid();
+                        String nom = mNom.getText().toString();
+                        String prenom = mPrenom.getText().toString();
+                        String licence = mLicence.getText().toString();
+                        String niveau = mNiveauPlongeespinner.getSelectedItem().toString();
+                        String fonction = mFonctionPlongeur.getSelectedItem().toString();
+                        String email = mEmail.getText().toString();
+                        String password = mPassword.getText().toString();
 
-                                // creation de l'(utilisateur en bdd
-                                String uid = auth.getUid();
-                                String nom = mNom.getText().toString();
-                                String prenom = mPrenom.getText().toString();
-                                String licence = mLicence.getText().toString();
-                                String niveau = mNiveauPlongeespinner.getSelectedItem().toString();
-                                String email = mEmail.getText().toString();
-                                String password = mPassword.getText().toString();
 
+                        if (!nom.isEmpty() && !prenom.isEmpty() && !email.isEmpty() && isValidEmail(email) && !password.isEmpty()) {
+                            mProgressBar.setVisibility(View.VISIBLE);
+                            Map<String, Object> user = new HashMap<>();
+                            user.put("uid", uid);
+                            user.put("nom", nom.toUpperCase());
+                            user.put("prenom", prenom.toUpperCase());
+                            user.put("licence", licence);
+                            user.put("niveau", niveau);
+                            user.put("fonction", fonction);
+                            user.put("email", email);
+                            user.put("password", password);
 
-                                if (!nom.isEmpty() && !prenom.isEmpty() && !email.isEmpty() && isValidEmail(email) && !password.isEmpty()) {
-                                    mProgressBar.setVisibility(View.VISIBLE);
-                                    Map<String, Object> user = new HashMap<>();
-                                    user.put("uid", uid);
-                                    user.put("nom", nom.toUpperCase());
-                                    user.put("prenom", prenom.toUpperCase());
-                                    user.put("licence", licence);
-                                    user.put("niveau", niveau);
-                                    user.put("fonction", fonction);
-                                    user.put("email", email);
+                            setupDb().collection("users").document(uid).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Toast.makeText(AccountCreateActivity.this, R.string.create_account, Toast.LENGTH_LONG).show();
+                                    startSummaryActivity(); // renvoi l'user sur la page sommaire   pres validation de la creation de l'user
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Toast.makeText(AccountCreateActivity.this, "ERROR" + e.toString(), Toast.LENGTH_LONG).show();
+                                    Log.d("TAG", e.toString());
+                                    startSummaryActivity();
+                                }
+                            });
+                        } else verificationChampsVides();
+                        // erreur de creation de compte
+                    }
+                }
+            });
 
-                                    setupDb().collection("users").document(uid).set(user)
-                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                @Override
-                                                public void onSuccess(Void aVoid) {
-                                                    Toast.makeText(AccountCreateActivity.this, R.string.create_account,
-                                                            Toast.LENGTH_LONG).show();
-                                                    startSummaryActivity(); // renvoi l'user sur la page sommaire   pres validation de la creation de l'user
-                                                }
-                                            })
-                                            .addOnFailureListener(new OnFailureListener() {
-                                                @Override
-                                                public void onFailure(@NonNull Exception e) {
-                                                    Toast.makeText(AccountCreateActivity.this, "ERROR" + e.toString(),
-                                                            Toast.LENGTH_LONG).show();
-                                                    Log.d("TAG", e.toString());
-                                                }
-                                            });
-                                } else verificationChampsVides();
-                                // erreur de creation de compte
-                            } else {
-                                Toast.makeText(AccountCreateActivity.this, "Error creating an account : "
-                                                + Objects.requireNonNull(task.getException()).getMessage(),
-                                        Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
-        }
-    }
+            /**
+             * Methode permettant à un encadrant de supprimer un compte. Retourne un objet de type Task permettant de realiser ces appels de maniere asynchrone
+             */
+            /*private void deleteUserFromFirebase(){
+                FirebaseUser auth1 = FirebaseAuth.getInstance().getCurrentUser();
+                if (auth1 != null) {
 
-    /**
-     * Methode permettant à un encadrant de supprimer un compte. Retourne un objet de type Task permettant de realiser ces appels de maniere asynchrone
-     */
-    private void deleteUserFromFirebase() {
-        FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
-        if (auth != null) {
-
-            UserHelper.deleteUser(auth.getUid()).addOnFailureListener(this.onFailureListener());
-            AuthUI.getInstance()// methode utilisée par le singleton authUI.getInstance()
-                    .delete(this)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    UserHelper.deleteUser(auth1.getUid()).addOnFailureListener(this.onFailureListener());
+                    AuthUI.getInstance()// methode utilisée par le singleton authUI.getInstance()
+                            .delete(this).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                            Toast.makeText(AccountCreateActivity.this, R.string.alertDialog_delete,
-                                    Toast.LENGTH_LONG).show();
+                            Toast.makeText(AccountCreateActivity.this, R.string.alertDialog_delete, Toast.LENGTH_LONG).show();
                             updateUIAfterRESTRequestsCompleted(DELETE_USER_TASK);
                         }
                     });
+                }
+            }*/
         }
     }
-/*
-    *//**
+
+    /*
+     */
+
+    /**
      * Methode permettant de supprimer un utilisateur
-     *//*
+     * <p>
+     * Methode permettant de supprimer les identifiants de l'user qui supprime son compte
+     */
     private void deleteUser() {
         final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
         if (auth != null) {
@@ -441,19 +435,20 @@ public class AccountCreateActivity extends BaseActivity{
                 }
             });
         }
-    }*/
+    }
 
     /**
      * Methode permettant de supprimer les identifiants de l'user qui supprime son compte
      */
     private void deleteUserAuth() {
-        final FirebaseAuth auth = FirebaseAuth.getInstance(FirebaseFirestore.getInstance().getApp());
-        Objects.requireNonNull(auth.getCurrentUser()).delete()
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        task.isSuccessful();
-                    }
-                });
+        final FirebaseAuth auth2 = FirebaseAuth.getInstance(FirebaseFirestore.getInstance().getApp());
+        Objects.requireNonNull(auth2.getCurrentUser()).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                task.isSuccessful();
+            }
+
+        });
     }
 }
+

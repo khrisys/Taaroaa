@@ -63,6 +63,7 @@ public class AccountModificationActivity extends BaseActivity {
     private Spinner mNiveauPlongeespinner;
     private Spinner mFonctionAuClubspinner;
     private TextInputEditText mEmail;
+    private TextInputEditText mPassword;
     private ProgressBar mProgressBar;
     private Button mModificationCompte;
     private Button mSuppressionCompte;
@@ -83,6 +84,7 @@ public class AccountModificationActivity extends BaseActivity {
         mNiveauPlongeespinner.setEnabled(false);
         mFonctionAuClubspinner = findViewById(R.id.fonction_spinner);
         mEmail = findViewById(R.id.email_txt);
+        mPassword = findViewById(R.id.password_txt);
         mProgressBar = findViewById(R.id.progress_bar);
         mModificationCompte = findViewById(R.id.modificiation_compte_btn);
         mSuppressionCompte = findViewById(R.id.suppression_compte_btn);
@@ -132,10 +134,10 @@ public class AccountModificationActivity extends BaseActivity {
                         final Trace myTrace1 = FirebasePerformance.getInstance().newTrace("accountModificationActivityUserAccountDelete_trace");
                         myTrace1.start();
 
+                        //TODO trouver solution pour finaliser reuete  avant de passer dans le sommaire, bref, la fin de la trace
                         deleteUser();
-                        deleteUserAuth();
-                        signOutUserFromFirebase();
-                        startMainActivity();
+
+                        //startMainActivity();
 
                         myTrace1.stop();
 
@@ -329,6 +331,7 @@ public class AccountModificationActivity extends BaseActivity {
                 mNiveauPlongeespinner.setSelection(getIndexSpinner(mNiveauPlongeespinner, Objects.requireNonNull(user.getNiveau())));
                 mFonctionAuClubspinner.setSelection(getIndexSpinner(mFonctionAuClubspinner, Objects.requireNonNull(user.getFonction())));
                 mEmail.setText(Objects.requireNonNull(user.getEmail()));
+                mPassword.setText(user.getPassword());
             }
         }
 
@@ -351,13 +354,12 @@ public class AccountModificationActivity extends BaseActivity {
                 // DATAS
                 uid = summaryUser.getUid();
                 mPrenom.setText(summaryUser.getPrenom());
-                mNom.setText(summaryUser.getPrenom());
+                mNom.setText(summaryUser.getNom());
                 mLicence.setText(summaryUser.getLicence());
                 mNiveauPlongeespinner.setSelection(getIndexSpinner(mNiveauPlongeespinner, Objects.requireNonNull(summaryUser.getNiveau())));
                 mFonctionAuClubspinner.setSelection(getIndexSpinner(mFonctionAuClubspinner, Objects.requireNonNull(summaryUser.getFonction())));
                 mEmail.setText(Objects.requireNonNull(summaryUser.getEmail()));
-
-
+                mPassword.setText(summaryUser.getPassword());
             }
             // il n'y a pas eu de recherche de plongeur par un encadrant. On affiche les caracteristique d'un plongeur classique
             else {
@@ -381,6 +383,7 @@ public class AccountModificationActivity extends BaseActivity {
                     mNiveauPlongeespinner.setSelection(getIndexSpinner(mNiveauPlongeespinner, Objects.requireNonNull(summaryUser.getNiveau())));
                     mFonctionAuClubspinner.setSelection(getIndexSpinner(mFonctionAuClubspinner, Objects.requireNonNull(summaryUser.getFonction())));
                     mEmail.setText(Objects.requireNonNull(summaryUser.getEmail()));
+                    mPassword.setText(summaryUser.getPassword());
                 }
             }
         }
@@ -405,11 +408,12 @@ public class AccountModificationActivity extends BaseActivity {
                         // DATAS
                         uid = summaryUser.getUid();
                         mPrenom.setText(summaryUser.getPrenom());
-                        mNom.setText(summaryUser.getPrenom());
+                        mNom.setText(summaryUser.getNom());
                         mLicence.setText(summaryUser.getLicence());
                         mNiveauPlongeespinner.setSelection(getIndexSpinner(mNiveauPlongeespinner, Objects.requireNonNull(summaryUser.getNiveau())));
                         mFonctionAuClubspinner.setSelection(getIndexSpinner(mFonctionAuClubspinner, Objects.requireNonNull(summaryUser.getFonction())));
                         mEmail.setText(Objects.requireNonNull(summaryUser.getEmail()));
+                        mPassword.setText(summaryUser.getPassword());
                     }
                 }
             }
@@ -464,13 +468,6 @@ public class AccountModificationActivity extends BaseActivity {
         final Trace myTrace = FirebasePerformance.getInstance().newTrace("accountModificationActivityUserAccountUpdateIncludingCovoiturage_trace");
         myTrace.start();
 
-
-        //if (user != null) {
-            /*    this.mNom.setText(user.getNom());
-                this.mPrenom.setText(user.getPrenom());
-                this.mEmail.setText(user.getEmail());
-                this.mLicence.setText(user.getEmail());*/
-
         if (!mNom.getText().equals(getString(R.string.info_no_username_found)))
             if (!mNom.getText().toString().isEmpty() && !mPrenom.getText().toString().isEmpty() && !mEmail.getText().toString().isEmpty()) { // verification que tous les champs vides soient remplis
 
@@ -481,7 +478,8 @@ public class AccountModificationActivity extends BaseActivity {
                 // Update de la bdd user
                 this.mProgressBar.setVisibility(View.VISIBLE);
                 UserHelper.updateUser(uid, this.mNom.getText().toString().toUpperCase(), this.mPrenom.getText().toString().toUpperCase(), this.mLicence.getText().toString(),
-                        this.mEmail.getText().toString(), this.mNiveauPlongeespinner.getSelectedItem().toString(), this.mFonctionAuClubspinner.getSelectedItem().toString()).
+                        this.mEmail.getText().toString(), this.mNiveauPlongeespinner.getSelectedItem().toString(),
+                        this.mFonctionAuClubspinner.getSelectedItem().toString(), this.mPassword.getText().toString()).
                         addOnFailureListener(this.onFailureListener()).
                         addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
@@ -675,6 +673,7 @@ public class AccountModificationActivity extends BaseActivity {
                     .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
+                    deleteUserAuth();
                     Toast.makeText(AccountModificationActivity.this, R.string.alertDialog_delete,
                             LENGTH_SHORT).show();
                 }
@@ -693,7 +692,7 @@ public class AccountModificationActivity extends BaseActivity {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
-                                System.out.println("ok");
+                                signOutUserFromFirebase();
                             } else
                                 System.out.println("nok");
                         }

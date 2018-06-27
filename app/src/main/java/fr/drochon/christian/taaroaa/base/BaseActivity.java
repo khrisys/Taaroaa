@@ -47,6 +47,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     private static final int DELETE_USER_TASK = 20;
     private static final int UPDATE_USERNAME = 30;
     private static final int GET_USERNAME = 40;
+    private static final int RC_SIGN_IN = 123;
 
 
     // --------------------
