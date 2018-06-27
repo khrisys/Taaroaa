@@ -95,7 +95,7 @@ public class AccountCreateActivity extends BaseActivity {
 
         // Fonction de verification pour la saisie d'un email valide via un
         // token envoyé sur le compte mail designé
-        alertDialogValidationEmail();
+        //alertDialogValidationEmail();
 
         // --------------------
         // LISTENERS
@@ -114,19 +114,19 @@ public class AccountCreateActivity extends BaseActivity {
                 FirebaseAuth auth = FirebaseAuth.getInstance(FirebaseFirestore.getInstance().getApp());
                 FirebaseUser firebaseUser = auth.getCurrentUser();
                 if (firebaseUser != null) {
-                    if (Objects.requireNonNull(firebaseUser.isEmailVerified())) {
+                    //if (Objects.requireNonNull(firebaseUser.isEmailVerified())) {
                         createUserInFirebase();
 
                         // fin de trace
                         myTrace.stop();
 
                         // affichaga de l'alertdialog pendant à nouveau 5s pour avertir l(user de valider son email
-                    } else {
+                  /*  } else {
                         if (!mNom.getText().toString().isEmpty() && !mPrenom.getText().toString().isEmpty() && !mEmail.getText().toString().isEmpty() && isValidEmail(mEmail.getText()) && !mPassword.getText().toString().isEmpty()) {
                             System.out.println("nok");
                             alertDialogValidationEmail();
                         } else verificationChampsVides();
-                    }
+                    }*/
                 }
             }
         });
@@ -155,9 +155,7 @@ public class AccountCreateActivity extends BaseActivity {
                         myTrace1.start();
 
                         deleteUser();
-                        deleteUserAuth();
-                        signOutUserFromFirebase();
-                        startMainActivity();
+
 
                         myTrace1.stop();
 
@@ -173,7 +171,6 @@ public class AccountCreateActivity extends BaseActivity {
                 adb.show();
             }
         });
-
 
         // --------------------
         // SPINNERS & REMPLISSAGE
@@ -233,9 +230,11 @@ public class AccountCreateActivity extends BaseActivity {
             mPassword.setText(intent.getStringExtra("password"));
         }
         //personne possedant un compte
-        else if (intent.getStringExtra("connectedUser") != null) {
+        else {
+
             User user = (User) intent.getSerializableExtra("connectedUser");
-            mPrenom.setText(user.getPrenom().toUpperCase());
+
+            if( user.getPrenom() == null) mPrenom.setText("");else mPrenom.setText(user.getPrenom().toUpperCase());
             mNom.setText(user.getNom().toUpperCase());
             mLicence.setText(user.getLicence());
             mNiveauPlongeespinner.setSelection(getIndexSpinner(mNiveauPlongeespinner, user.getNiveau()));
@@ -345,16 +344,17 @@ public class AccountCreateActivity extends BaseActivity {
     private void createUserInFirebase() {
         final FirebaseUser auth = FirebaseAuth.getInstance(FirebaseFirestore.getInstance().getApp()).getCurrentUser();
         if (auth != null) {
-            setupDb().collection("users").document(auth.getUid()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            setupDb().collection("users").document().addSnapshotListener(new EventListener<DocumentSnapshot>() {
                 @Override
                 public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                    if (documentSnapshot != null && documentSnapshot.exists()) {
+                    if (documentSnapshot != null ) {
                         // creation de l'(utilisateur en bdd
                         String uid = auth.getUid();
                         String nom = mNom.getText().toString();
                         String prenom = mPrenom.getText().toString();
                         String licence = mLicence.getText().toString();
                         String niveau = mNiveauPlongeespinner.getSelectedItem().toString();
+                        String fonction = mFonctionPlongeur.getSelectedItem().toString();
                         String email = mEmail.getText().toString();
                         String password = mPassword.getText().toString();
 
@@ -369,6 +369,7 @@ public class AccountCreateActivity extends BaseActivity {
                             user.put("niveau", niveau);
                             user.put("fonction", fonction);
                             user.put("email", email);
+                            user.put("password", password);
 
                             setupDb().collection("users").document(uid).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
@@ -410,12 +411,12 @@ public class AccountCreateActivity extends BaseActivity {
         }
     }
 
-    /*
-     *//**
-     * Methode permettant de supprimer un utilisateur
-     * <p>
-     * Methode permettant de supprimer les identifiants de l'user qui supprime son compte
-     */
+/*
+ *//**
+ * Methode permettant de supprimer un utilisateur
+ * <p>
+ * Methode permettant de supprimer les identifiants de l'user qui supprime son compte
+ */
     private void deleteUser() {
         final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
         if (auth != null) {
@@ -423,6 +424,8 @@ public class AccountCreateActivity extends BaseActivity {
                     .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
+                    deleteUserAuth();
+
                     Toast.makeText(AccountCreateActivity.this, R.string.alertDialog_delete,
                             Toast.LENGTH_LONG).show();
                 }
@@ -430,18 +433,20 @@ public class AccountCreateActivity extends BaseActivity {
         }
     }
 
-    /**
-     * Methode permettant de supprimer les identifiants de l'user qui supprime son compte
-     */
-    private void deleteUserAuth () {
-        final FirebaseAuth auth2 = FirebaseAuth.getInstance(FirebaseFirestore.getInstance().getApp());
-        Objects.requireNonNull(auth2.getCurrentUser()).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                task.isSuccessful();
-            }
+/**
+ * Methode permettant de supprimer les identifiants de l'user qui supprime son compte
+ */
+            private void deleteUserAuth () {
+                final FirebaseAuth auth2 = FirebaseAuth.getInstance(FirebaseFirestore.getInstance().getApp());
+                Objects.requireNonNull(auth2.getCurrentUser()).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful())
+                        signOutUserFromFirebase();
 
-        });
-    }
+                    }
+
+                });
+            }
 }
 
