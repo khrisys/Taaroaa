@@ -1,0 +1,23 @@
+<keymap version="1" name="Default for KDE copy" parent="Default for KDE">
+  <action id="CacheResetOnProcessCanceledToggleAction">
+    <keyboard-shortcut first-keystroke="shift escape" />
+    <keyboard-shortcut first-keystroke="shift #10000b2" />
+  </action>
+  <action id="CommentByBlockComment">
+    <keyboard-shortcut first-keystroke="shift ctrl slash" />
+    <keyboard-shortcut first-keystroke="shift ctrl divide" />
+    <keyboard-shortcut first-keystroke="ctrl alt colon" />
+    <keyboard-shortcut first-keystroke="shift ctrl colon" />
+  </action>
+  <action id="FindInPath" />
+  <action id="InvalidateCaches">
+    <keyboard-shortcut first-keystroke="ctrl #10000b2" />
+  </action>
+  <action id="ReformatCode">
+    <keyboard-shortcut first-keystroke="shift alt l" />
+    <keyboard-shortcut first-keystroke="shift ctrl f" />
+  </action>
+  <action id="StoredExceptionsThrowToggleAction">
+    <keyboard-shortcut first-keystroke="alt #10000b2" />
+  </action>
+</keymap>
