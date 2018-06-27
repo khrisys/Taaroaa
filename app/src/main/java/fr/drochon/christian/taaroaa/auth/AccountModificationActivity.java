@@ -136,8 +136,9 @@ public class AccountModificationActivity extends BaseActivity {
 
                         //TODO trouver solution pour finaliser reuete  avant de passer dans le sommaire, bref, la fin de la trace
                         deleteUser();
-
-                        //startMainActivity();
+                        deleteUserAuth();
+                        signOutUserFromFirebase();
+                        startMainActivity();
 
                         myTrace1.stop();
 
@@ -673,7 +674,7 @@ public class AccountModificationActivity extends BaseActivity {
                     .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
-                    deleteUserAuth();
+
                     Toast.makeText(AccountModificationActivity.this, R.string.alertDialog_delete,
                             LENGTH_SHORT).show();
                 }
@@ -692,7 +693,7 @@ public class AccountModificationActivity extends BaseActivity {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
-                                signOutUserFromFirebase();
+
                             } else
                                 System.out.println("nok");
                         }
