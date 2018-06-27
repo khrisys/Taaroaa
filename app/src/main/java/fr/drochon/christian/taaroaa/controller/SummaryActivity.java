@@ -73,7 +73,7 @@ public class SummaryActivity extends BaseActivity {
         // --------------------
 
         /*
-        Modification de compte personnel de l'utilisateur connecté
+        Modification de compte de l'utilisateur connecté
          */
         mComptePerso.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,11 +92,17 @@ public class SummaryActivity extends BaseActivity {
                                 for (DocumentSnapshot doc : ds) {
                                     Map<String, Object> user = doc.getData();
 
-                                    if (user != null && getCurrentUser() != null) {
+                                    if (user != null) {
                                         // Si l'user connecté existe en bdd, on recupere l'ensemble de l'objet user et on le passe en extra de l'intent
                                         if (user.get("uid").toString().equals(Objects.requireNonNull(getCurrentUser()).getUid())) {
-                                            User u = new User(user.get("uid").toString(), user.get("nom").toString(), user.get("prenom").toString(), user.get("licence").toString(),
-                                                    user.get("email").toString(), user.get("niveau").toString(), user.get("fonction").toString(), user.get("password").toString());
+                                            User u = new User(user.get("uid").toString(),
+                                                    user.get("nom").toString(),
+                                                    user.get("prenom").toString(),
+                                                    user.get("licence").toString(),
+                                                    user.get("email").toString(),
+                                                    user.get("niveau").toString(),
+                                                    user.get("fonction").toString(),
+                                                    user.get("password").toString());
                                             Intent intent = new Intent(SummaryActivity.this, AccountModificationActivity.class).putExtra("summaryUser", u);
                                             startActivity(intent);
 
