@@ -149,11 +149,11 @@ public class User implements Serializable {
         mFonction = fonction;
     }
 
-    public String getmPassword() {
+    public String getPassword() {
         return mPassword;
     }
 
-    public void setmPassword(String mPassword) {
-        this.mPassword = mPassword;
+    public void setPassword(String password) {
+        mPassword = password;
     }
 }

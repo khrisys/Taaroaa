@@ -37,6 +37,14 @@ public class UserHelper {
         return UserHelper.getUsersCollection().document(uid).update("uid", uid, "nom", nom, "prenom", prenom, "licence", licence, "email", email, "niveau", niveau, "fonction", fonction);
     }
 
+    /**
+     * Mehode permettant de mettre à jour un utilisateur.
+     * Auncun utilisateur ne peut updater son adresse email pour eviter de perdre don addresse en la cgngeant trop souvent.
+     */
+    public static Task<Void> updateUser(String uid, String nom, String prenom, String licence, String email, String niveau, String fonction, String password) {
+        return UserHelper.getUsersCollection().document(uid).update("uid", uid, "nom", nom, "prenom", prenom, "licence", licence, "email", email, "niveau", niveau, "fonction", fonction, "password", password);
+    }
+
     // --- DELETE ---
 
     public static Task<Void> deleteUser(String uid) {

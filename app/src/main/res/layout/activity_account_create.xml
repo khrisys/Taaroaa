@@ -1,7 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--suppress ALL -->
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?><!--suppress ALL -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -21,7 +19,8 @@
         android:fadeScrollbars="true"
         android:fadingEdge="horizontal|vertical"
         android:scrollbarStyle="insideOverlay"
-        android:visibility="visible" tools:targetApi="lollipop">
+        android:visibility="visible"
+        tools:targetApi="lollipop">
 
 
         <LinearLayout
@@ -61,8 +60,7 @@
                 android:layout_height="2dp"
                 android:layout_marginEnd="15dp"
                 android:layout_marginStart="15dp"
-                android:background="?android:attr/listDivider"
-                />
+                android:background="?android:attr/listDivider"/>
 
             <TextView
                 android:id="@+id/titre_prenom_txt"
@@ -141,8 +139,7 @@
                 android:layout_height="2dp"
                 android:layout_marginEnd="15dp"
                 android:layout_marginStart="15dp"
-                android:background="?android:attr/listDivider"
-                />
+                android:background="?android:attr/listDivider"/>
 
             <TextView
                 android:id="@+id/titre_numero_licence_txt"
@@ -230,8 +227,7 @@
                 android:layout_height="2dp"
                 android:layout_marginEnd="15dp"
                 android:layout_marginStart="15dp"
-                android:background="?android:attr/listDivider"
-                />
+                android:background="?android:attr/listDivider"/>
 
             <TextView
                 android:id="@+id/titre_email_txt"
@@ -255,8 +251,8 @@
                     android:id="@+id/email_txt"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textEmailAddress"
                     android:enabled="false"
+                    android:inputType="textEmailAddress"
                     android:lines="1"
                     android:visibility="visible"/>
 
@@ -283,8 +279,8 @@
                     android:id="@+id/password_input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textPassword"
                     android:enabled="false"
+                    android:inputType="textPassword"
                     android:lines="1"
                     android:textColor="@color/colorPrimary"
                     android:visibility="visible"/>
@@ -320,6 +316,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="30dp"
+                android:height="60dp"
                 android:background="@color/colorPrimary"
                 android:text="Supprimez votre compte"
                 android:textColor="@android:color/white"
@@ -334,17 +331,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:inputType="text"
-        android:textSize="@android:dimen/notification_large_icon_height"
         android:text="@string/alertDialog_delete"
-        android:visibility="invisible"/>
+        android:textSize="@android:dimen/notification_large_icon_height"
+        android:visibility="invisible" />
 
     <EditText
         android:id="@+id/alertdialog_delete_account"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="@android:dimen/notification_large_icon_height"
         android:inputType="text"
         android:text="@string/alertDialog_cancel"
-        android:visibility="invisible"/>
+        android:textSize="@android:dimen/notification_large_icon_height"
+        android:visibility="invisible" />
 
 </LinearLayout>

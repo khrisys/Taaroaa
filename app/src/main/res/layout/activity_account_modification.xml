@@ -188,16 +188,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
-                android:visibility="gone">
+                android:visibility="visible">
 
                 <TextView
                     android:id="@+id/titre_fonction_txt"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="60dp"
+                    android:layout_marginEnd="40dp"
                     android:layout_marginTop="10dp"
                     android:shadowColor="@color/colorAccent"
-                    android:text="@string/fonction_au_sein_du_club"
+                    android:text="@string/en_qualit_de"
                     android:textColor="@color/colorPrimary"
                     android:textSize="18sp"/>
 
@@ -245,13 +246,43 @@
 
 
             <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="40dp"
+            android:layout_marginStart="40dp">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/email_txt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="45dp"
+                android:layout_marginStart="45dp"
+                android:enabled="false"
+                android:inputType="textPassword|textVisiblePassword"
+                android:lines="1"
+                android:visibility="visible"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+            <TextView
+                android:id="@+id/titre_password_txt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="60dp"
+                android:layout_marginTop="5dp"
+                android:shadowColor="@color/colorAccent"
+                android:text="@string/mot_de_passe"
+                android:textColor="@color/colorPrimary"
+                android:textSize="18sp"/>
+
+            <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="40dp"
                 android:layout_marginStart="40dp">
 
                 <android.support.design.widget.TextInputEditText
-                    android:id="@+id/email_txt"
+                    android:id="@+id/password_txt"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="45dp"
@@ -292,7 +323,7 @@
                 android:id="@+id/suppression_compte_btn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="30dp"
+                android:layout_margin="40dp"
                 android:background="@color/colorPrimary"
                 android:text="@string/supprimez_le_compte"
                 android:textColor="@android:color/white"
