@@ -32,9 +32,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".controller.PasswordActivity"></activity>
-        <activity android:name=".controller.SummaryActivity"></activity>
-        <activity android:name=".auth.AccountCreateActivity">
+        <activity android:name=".controller.PasswordActivity"/>
+        <activity android:name=".controller.SummaryActivity"/>
+        <activity android:name=".auth.AccountCreateActivity"
+                  android:windowSoftInputMode="stateHidden"> <!--ferme le clvier à l'ouverture de la fenetre-->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -49,30 +50,32 @@
                     android:scheme="https" />
             </intent-filter>
         </activity>
-        <activity android:name=".course.CoursesManagementActivity"></activity>
-        <activity android:name=".course.CoursesSupervisorsActivity"></activity>
-        <activity android:name=".course.CoursesPupilsActivity"></activity>
-        <activity android:name=".covoiturage.CovoiturageAccueilActivity"></activity>
-        <activity android:name=".covoiturage.CovoituragePassagersActivity"></activity>
-        <activity android:name=".covoiturage.CovoiturageConducteursActivity"></activity>
-        <activity android:name=".covoiturage.CovoiturageVehiclesActivity"></activity>
-        <activity android:name=".auth.AccountModificationActivity"></activity>
+        <activity android:name=".course.CoursesManagementActivity"/>
+        <activity android:name=".course.CoursesSupervisorsActivity"/>
+        <activity android:name=".course.CoursesPupilsActivity"/>
+        <activity android:name=".covoiturage.CovoiturageAccueilActivity"/>
+        <activity android:name=".covoiturage.CovoituragePassagersActivity"/>
+        <activity android:name=".covoiturage.CovoiturageConducteursActivity"/>
+        <activity android:name=".covoiturage.CovoiturageVehiclesActivity"/>
+        <activity android:name=".auth.AccountModificationActivity"/>
         <activity android:name=".auth.SearchUserActivity">
             <meta-data
                 android:name="android.app.searchable"
-                android:resource="@xml/searchable"></meta-data>
+                android:resource="@xml/searchable"/>
         </activity>
         <!-- NOTIFICATION SERVICE -->
         <!--      <service android:name=".notifications.NotificationsService"/>
               <service android:name=".notifications.MyFirebaseMessagingService"/>
               <service android:name=".notifications.SendNotification"/>
               <service android:name=".notifications.MyFirebaseInstanceIDService"/>-->
-        <service android:name=".notifications.NotificationsService">
+        <service android:name=".notifications.NotificationsService"
+                 android:permission="">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-        <service android:name=".notifications.MyFirebaseMessagingService">
+        <service android:name=".notifications.MyFirebaseMessagingService"
+                 android:permission="">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
@@ -91,12 +94,14 @@
                 android:name="com.google.firebase.messaging.default_notification_color"
                 android:resource="@color/colorAccent" />
         </service>
-        <service android:name=".notifications.SendNotification">
+        <service android:name=".notifications.SendNotification"
+                 android:permission="">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-        <service android:name=".notifications.MyFirebaseInstanceIDService">
+        <service android:name=".notifications.MyFirebaseInstanceIDService"
+                 android:permission="">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
@@ -121,7 +126,7 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".auth.ConnectionActivity"></activity>
+        <activity android:name=".auth.ConnectionActivity"/>
     </application>
 
 </manifest>
