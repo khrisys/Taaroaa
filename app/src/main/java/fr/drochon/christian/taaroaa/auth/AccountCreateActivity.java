@@ -238,7 +238,7 @@ public class AccountCreateActivity extends BaseActivity {
             mNiveauPlongeespinner.setSelection(getIndexSpinner(mNiveauPlongeespinner, user.getNiveau()));
             mFonctionPlongeur.setSelection(getIndexSpinner(mFonctionPlongeur, user.getFonction()));
             mEmail.setText(user.getEmail());
-            mPassword.setText(user.getmPassword());
+            mPassword.setText(user.getPassword());
         }
     }
 
