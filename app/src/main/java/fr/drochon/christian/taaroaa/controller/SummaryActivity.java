@@ -95,8 +95,14 @@ public class SummaryActivity extends BaseActivity {
                                     if (user != null) {
                                         // Si l'user connecté existe en bdd, on recupere l'ensemble de l'objet user et on le passe en extra de l'intent
                                         if (user.get("uid").toString().equals(Objects.requireNonNull(getCurrentUser()).getUid())) {
-                                            User u = new User(user.get("uid").toString(), user.get("nom").toString(), user.get("prenom").toString(), user.get("licence").toString(),
-                                                    user.get("email").toString(), user.get("niveau").toString(), user.get("fonction").toString());
+                                            User u = new User(user.get("uid").toString(),
+                                                    user.get("nom").toString(),
+                                                    user.get("prenom").toString(),
+                                                    user.get("licence").toString(),
+                                                    user.get("email").toString(),
+                                                    user.get("niveau").toString(),
+                                                    user.get("fonction").toString(),
+                                                    user.get("password").toString());
                                             Intent intent = new Intent(SummaryActivity.this, AccountModificationActivity.class).putExtra("summaryUser", u);
                                             startActivity(intent);
 

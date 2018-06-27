@@ -95,7 +95,7 @@ public class AccountCreateActivity extends BaseActivity {
 
         // Fonction de verification pour la saisie d'un email valide via un
         // token envoyé sur le compte mail designé
-        alertDialogValidationEmail();
+        //alertDialogValidationEmail();
 
         // --------------------
         // LISTENERS
@@ -114,19 +114,19 @@ public class AccountCreateActivity extends BaseActivity {
                 FirebaseAuth auth = FirebaseAuth.getInstance(FirebaseFirestore.getInstance().getApp());
                 FirebaseUser firebaseUser = auth.getCurrentUser();
                 if (firebaseUser != null) {
-                    if (Objects.requireNonNull(firebaseUser.isEmailVerified())) {
+                    //if (Objects.requireNonNull(firebaseUser.isEmailVerified())) {
                         createUserInFirebase();
 
                         // fin de trace
                         myTrace.stop();
 
                         // affichaga de l'alertdialog pendant à nouveau 5s pour avertir l(user de valider son email
-                    } else {
+                  /*  } else {
                         if (!mNom.getText().toString().isEmpty() && !mPrenom.getText().toString().isEmpty() && !mEmail.getText().toString().isEmpty() && isValidEmail(mEmail.getText()) && !mPassword.getText().toString().isEmpty()) {
                             System.out.println("nok");
                             alertDialogValidationEmail();
                         } else verificationChampsVides();
-                    }
+                    }*/
                 }
             }
         });
@@ -155,9 +155,7 @@ public class AccountCreateActivity extends BaseActivity {
                         myTrace1.start();
 
                         deleteUser();
-                        deleteUserAuth();
-                        signOutUserFromFirebase();
-                        startMainActivity();
+
 
                         myTrace1.stop();
 
@@ -173,7 +171,6 @@ public class AccountCreateActivity extends BaseActivity {
                 adb.show();
             }
         });
-
 
         // --------------------
         // SPINNERS & REMPLISSAGE
@@ -233,7 +230,7 @@ public class AccountCreateActivity extends BaseActivity {
             mPassword.setText(intent.getStringExtra("password"));
         }
         //personne possedant un compte
-        else if (intent.getStringExtra("connectedUser") != null) {
+        else {
             User user = (User) intent.getSerializableExtra("connectedUser");
             mPrenom.setText(user.getPrenom().toUpperCase());
             mNom.setText(user.getNom().toUpperCase());
@@ -423,6 +420,8 @@ public class AccountCreateActivity extends BaseActivity {
                     .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
+                    deleteUserAuth();
+
                     Toast.makeText(AccountCreateActivity.this, R.string.alertDialog_delete,
                             Toast.LENGTH_LONG).show();
                 }
@@ -438,7 +437,9 @@ public class AccountCreateActivity extends BaseActivity {
                 Objects.requireNonNull(auth2.getCurrentUser()).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        task.isSuccessful();
+                        if(task.isSuccessful())
+                        signOutUserFromFirebase();
+
                     }
 
                 });
