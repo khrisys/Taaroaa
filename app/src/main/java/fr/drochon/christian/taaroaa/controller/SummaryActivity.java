@@ -84,7 +84,7 @@ public class SummaryActivity extends BaseActivity {
                 final Trace myTrace1 = FirebasePerformance.getInstance().newTrace("summaryActivityGoToPersonnalAccountWithBundle_trace");
                 myTrace1.start();
 
-                setupDb().collection("users").addSnapshotListener(new EventListener<QuerySnapshot>() {
+                setupDb().collection("users").addSnapshotListener(SummaryActivity.this, new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                         if (queryDocumentSnapshots != null) {
@@ -141,10 +141,10 @@ public class SummaryActivity extends BaseActivity {
 
                 final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
                 if (auth != null) {
-                    setupDb().collection("users").document(auth.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    setupDb().collection("users").document(auth.getUid()).addSnapshotListener(SummaryActivity.this, new EventListener<DocumentSnapshot>() {
                         @Override
-                        public void onSuccess(DocumentSnapshot documentSnapshot) {
-                            if (documentSnapshot.exists()) {
+                        public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                            if (documentSnapshot != null) {
                                 Map<String, Object> user = documentSnapshot.getData();
                                 if (user != null) {
                                     User user1 = new User(user.get("uid").toString(), user.get("nom").toString(), user.get("prenom").toString(), user.get("licence").toString(),
@@ -232,10 +232,10 @@ public class SummaryActivity extends BaseActivity {
         // changé apres Robo test firebase
         if (auth != null) {
             DocumentReference documentReference = setupDb().collection("users").document(auth.getUid());
-            documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            documentReference.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
                 @Override
-                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                    if (documentSnapshot.exists()) {
+                public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                    if (documentSnapshot != null) {
                         Map<String, Object> user = documentSnapshot.getData();
                         if (user != null) {
                             if (user.get("fonction") == null || !user.get("fonction").equals("Moniteur")) {

@@ -248,18 +248,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         return dateFormat.format(horaireDuCours);
     }
 
-    /**
-     * Methode permettant de formatter une date en format heure
-     * @param horaireDuCours horaire du cours sous forme de date
-     * @return date sous forme de string
-     */
-    public String stTimeToString(Date horaireDuCours){
-
-        @SuppressLint("SimpleDateFormat")
-        SimpleDateFormat dateFormat1 = new SimpleDateFormat("HH:mm:ss");
-        return dateFormat1.format(horaireDuCours);
-    }
-
     protected Date stStringToDate(String horaire){
         SimpleDateFormat formatter = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy", Locale.US);
         Date dateFormatee = null;

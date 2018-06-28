@@ -150,10 +150,7 @@ public class AccountModificationActivity extends BaseActivity {
                         //finish();
                     }
                 });
-                adb.show(); // affichage de l'artdialog
-
-
-
+                adb.show();
             }
         });
 
@@ -668,6 +665,7 @@ public class AccountModificationActivity extends BaseActivity {
         }*//*
     }
 */
+
     /**
      * Methode permettant de supprimer un utilisateur
      */
@@ -697,7 +695,7 @@ public class AccountModificationActivity extends BaseActivity {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
-                                Log.d("TAG","OK! Auth deleted");
+                                Log.d("TAG", "OK! Auth deleted");
                             } else
                                 System.out.println("nok");
                         }

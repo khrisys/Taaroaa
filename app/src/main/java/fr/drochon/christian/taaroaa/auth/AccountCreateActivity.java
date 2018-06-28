@@ -12,6 +12,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -192,6 +194,34 @@ public class AccountCreateActivity extends BaseActivity {
 
 
     // --------------------
+    // TOOLBAR
+    // --------------------
+
+    /**
+     * Fait appel au fichier xml menu pour definir les icones.
+     * Definit differentes options dans le menu caché.
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.summary_menu, menu);
+        return true; // true affiche le menu
+    }
+
+    /**
+     * recuperation  du clic d'un user.
+     * On utilise un switch ici car il peut y avoir plusieurs options.
+     * Surtout ne pas oublier le "true" apres chaque case sinon, ce sera toujours le dernier case qui sera executé!
+     *
+     * @param item
+     * @return
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return optionsToolbar(this, item);
+    }
+
+
+    // --------------------
     // UI
     // --------------------
 
@@ -219,7 +249,7 @@ public class AccountCreateActivity extends BaseActivity {
     private void getConnectedUser() {
         Intent intent = getIntent();
         // COMPTE PAR EFAUT D UN NOUVEL CONNECTE
-        if (intent.getStringExtra("nom") != null) {
+        if (intent.getStringExtra("email") != null) {
             // AFFICHAGE DES DONNEES RECUPEREES DANS L ACTIVITE DE CONNEXION
             mPrenom.setText(intent.getStringExtra("prenom").toUpperCase());
             mNom.setText(intent.getStringExtra("nom").toUpperCase());

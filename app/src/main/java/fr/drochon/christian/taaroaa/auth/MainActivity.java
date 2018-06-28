@@ -206,8 +206,8 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
 
 
         //mTitle.setVisibility(View.GONE);
-        mCreationCompte.setVisibility(View.GONE);
-        mDeconnexion.setVisibility(View.GONE);
+        /*mCreationCompte.setVisibility(View.GONE);
+        mDeconnexion.setVisibility(View.GONE);*/
     }
 
 
@@ -278,15 +278,15 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
                                             startActivity(intent);
                                             break;
                                         }
-                                        //LA PERSONNE CONNECTEE N4EST PAS EN BDD OU ELLE EST ENTRAIN DE CREER SON COMPTE
+                                        //LA PERSONNE CONNECTEE N'EST PAS EN BDD OU ELLE EST ENTRAIN DE CREER SON COMPTE
                                         else if (response.getEmail() != null) {
 
-                                            // deconnexion en cas de fin de programme
+                                     /*       // deconnexion en cas de fin de programme
                                             if(getCurrentUser() == null) {
                                                 startSignInActivity();
                                                 //startMainActivity();
                                                 break;
-                                            }
+                                            }*/
 
                                             String mUsername = Objects.requireNonNull(getCurrentUser()).getDisplayName();
                                             // decomposition du nom et du prenom recu dans le param username
@@ -294,7 +294,7 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
                                             if (mUsername != null) {
                                                 // decomposition du nom et du prenom recu dans le param name
                                                 String nom = null, prenom;
-                                                String[] parts;
+                                                String[] parts = new String[2];
                                                 if (mUsername.contains(" ")) {
                                                     parts = mUsername.split(" ");
                                                     try {
@@ -306,7 +306,7 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
                                                     if (parts[0] != null) prenom = parts[0];
                                                     else prenom = "";
                                                 } else {
-                                                    nom = nom;
+                                                    nom = getCurrentUser().getDisplayName();
                                                     prenom = "";
                                                 }
                                                 mName = nom;
