@@ -46,7 +46,6 @@ public abstract class BaseActivity extends AppCompatActivity {
     private static final int DELETE_USER_TASK = 20;
     private static final int UPDATE_USERNAME = 30;
     private static final int GET_USERNAME = 40;
-    private static final int RC_SIGN_IN = 123;
 
 
     // --------------------
@@ -73,7 +72,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void configureToolbar() {
         ActionBar ab = getSupportActionBar();
 
-        if(ab != null) {
+        if (ab != null) {
             ab.setDisplayShowTitleEnabled(false); // empeche l'affichage du titre de l'app dans les toolbars de l'app
             ab.setDisplayShowHomeEnabled(true);
             // ajout d'un icone de l'appli à l'actionbar en haut à gauche
@@ -83,11 +82,12 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     /**
      * Methode permettant de donner un nom à chacune des pages de l'application
-     * @param title
+     *
+     * @param title titre de la toolbar
      */
-    protected void giveToolbarAName(int title){
+    protected void giveToolbarAName(int title) {
         ActionBar ab = getSupportActionBar();
-        if(ab != null) {
+        if (ab != null) {
             ab.setDisplayShowCustomEnabled(true);
             ActionBar.LayoutParams layoutParams = new ActionBar.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL);
 
@@ -107,8 +107,8 @@ public abstract class BaseActivity extends AppCompatActivity {
      * Recuperation  du clic d'un user = switch car 2 options.
      * Surtout ne pas oublier le "true" apres chaque case sinon, ce sera toujours le dernier case qui sera executé!
      *
-     * @param item
-     * @return boolean
+     * @param item item de menu
+     * @return boolean renvoi une option de toolbar
      */
     protected boolean optionsToolbar(Activity activity, MenuItem item) {
         switch (item.getItemId()) {
@@ -161,11 +161,11 @@ public abstract class BaseActivity extends AppCompatActivity {
     // --------------------
 
     /**
-     * Task Async utilsant un callback onsuccesslistener que l'onreutilisera dans les methodes de deconnexion et de suppresision,
+     * Task Async utilsant un callback onsuccesslistener que l'on reutilisera dans les methodes de deconnexion et de suppresision,
      * permettant de verifier si la deconnexion d'un utilisateur ou la suppression d'un compte s'est correctement terminé.
      *
-     * @param origin
-     * @return
+     * @param origin origine de la demande
+     * @return resultat de la demande
      */
     protected OnSuccessListener<Void> updateUIAfterRESTRequestsCompleted(final int origin) {
         return new OnSuccessListener<Void>() {
@@ -218,9 +218,10 @@ public abstract class BaseActivity extends AppCompatActivity {
      * Methode permettant de faire appel à la classe FirebaseFirestore via son singleton, et pour chaque requete
      * qui utilisera cette instance, de lui assigner des parametres de persistance des données à true, de maniere
      * à pouvoir travailler avec des donnée s hors connexion.
-     * @return
+     *
+     * @return instance de FirebaseFirestore comportant l'autorisation du mode hors connexion
      */
-    protected FirebaseFirestore setupDb(){
+    protected FirebaseFirestore setupDb() {
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
@@ -238,16 +239,17 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     /**
      * Methode permettant de formatter une date en string avec locale en francais
-     * @param horaireDuCours
-     * @return
+     *
+     * @param horaireDuCours horaire du cours
+     * @return horaire du cours sous forme de string
      */
-    protected String  stDateToString(Date horaireDuCours){
+    protected String stDateToString(Date horaireDuCours) {
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEE dd MMM yyyy ' à ' HH'h'mm", Locale.FRANCE);
         return dateFormat.format(horaireDuCours);
     }
 
-    protected Date stStringToDate(String horaire){
+    protected Date stStringToDate(String horaire) {
         SimpleDateFormat formatter = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy", Locale.US);
         Date dateFormatee = null;
 
@@ -267,7 +269,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     /**
      * Methode permettant de retrouver la position d'un item de la liste des niveaux de plongée d'un user
      *
-     * @param spinner menu deroulant
+     * @param spinner  menu deroulant
      * @param myString item de fonction d'un adherent choisi dans la liste
      * @return int retour la position de l'item choisi
      */

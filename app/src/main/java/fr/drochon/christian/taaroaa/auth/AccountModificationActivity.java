@@ -492,41 +492,6 @@ public class AccountModificationActivity extends BaseActivity {
             verificationChampsVides();
         }
     }
-    // recuperation des données user depuis l'activité Sommaire (un user dejà connecté, doinc)
-            /*else if (summaryUser != null) {
-
-                this.mNom.setText(summaryUser.getNom());
-                this.mPrenom.setText(summaryUser.getPrenom());
-                this.mEmail.setText(summaryUser.getEmail());
-                this.mLicence.setText(summaryUser.getEmail());
-
-                if (!mNom.getText().toString().isEmpty() && !mNom.getText().equals(getString(R.string.info_no_username_found)) &&
-                        !mPrenom.getText().toString().isEmpty() && !mEmail.getText().toString().isEmpty()) { // verification que tous les champs vides soient remplis
-
-                    // Update de la bdd covoiturage si l'user à updater a créé des covoiturages.
-                    // Cette fonction est appelée avant la fonction d'update de la bdd user
-                    updateCovoituragesIfCreated();
-
-                    // Update de la bdd user
-                    this.mProgressBar.setVisibility(View.VISIBLE);
-                    UserHelper.updateUser(summaryUser.getUid(), this.mNom.getText().toString().toUpperCase(), this.mPrenom.getText().toString().toUpperCase(), this.mLicence.getText().toString(),
-                            this.mEmail.getText().toString(), this.mNiveauPlongeespinner.getSelectedItem().toString(), this.mFonctionAuClubspinner.getSelectedItem().toString()).
-                            addOnFailureListener(this.onFailureListener()).
-                            addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                    Toast.makeText(AccountModificationActivity.this, R.string.update_account,
-                                            Toast.LENGTH_SHORT).show();
-                                    updateUIAfterRESTRequestsCompleted(UPDATE_USERNAME);
-                                    startSummaryActivity();
-
-                                    myTrace.stop();
-                                }
-                            });
-                } else verificationChampsVides();
-            }*/
-    //}
-    //}
 
     /**
      * Methode permettant de faire un update eventuel sur le nom et le prenom des covoiturages crées par l'utilisateur

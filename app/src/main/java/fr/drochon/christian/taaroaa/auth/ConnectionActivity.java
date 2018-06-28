@@ -147,7 +147,7 @@ public class ConnectionActivity extends BaseActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // appel de la methode de verification d'email depuis firebase
-                            verifEmailUser();
+                            //verifEmailUser();
 
                             myTrace.stop();
                         } else {
@@ -187,7 +187,7 @@ public class ConnectionActivity extends BaseActivity {
         // the Firebase console. This is done in the Authentication section by adding this domain to
         // the list of OAuth redirect domains if it is not already there.
         ActionCodeSettings actionCodeSettings = ActionCodeSettings.newBuilder()
-                .setUrl("")
+                .setUrl("https://console.firebase.google.com/project/taaroaa-fe93c/authentication/emails")
                 .setHandleCodeInApp(true)
                 //.setIOSBundleId("com.example.ios")
                 .setAndroidPackageName(
@@ -196,6 +196,14 @@ public class ConnectionActivity extends BaseActivity {
                         true,
                         "19") // minimum SDK
                 .build();
+  /*      ActionCodeSettings settings = ActionCodeSettings.newBuilder()
+                .setAndroidPackageName(
+                        BuildConfig.APPLICATION_ID,
+                        false, *//* install if not available? *//*
+                        "19"   *//* minimum app version *//*)
+                .setHandleCodeInApp(true)
+                .setUrl("https://www.example.com/emailSignInLink")
+                .build();*/
         //Ici, l'user doit s'aquitter des obligations du formulaires, et il recevra alors automatiquement le token via Firebase
         if (!Objects.requireNonNull(
                 auth.getCurrentUser()).isEmailVerified()) {
