@@ -64,7 +64,7 @@ public class SearchedUserViewHolder extends RecyclerView.ViewHolder {
     /**
      * Methode appellée via l'adapter. Cette methode mettra à jour les differentes view du viewholder en fonction de l'utilisateur connecté
      *
-     * @param user
+     * @param user utilisateur
      */
     public void updateWithUser(final User user) {
         // ajout des Covoit dans une liste afin de les retrouver pour l'affichage de chaque cours particulier sous forme de notification

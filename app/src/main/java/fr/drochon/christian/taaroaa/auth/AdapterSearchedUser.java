@@ -7,8 +7,6 @@ import android.view.ViewGroup;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 
-import java.util.List;
-
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.model.User;
 
@@ -16,12 +14,8 @@ import fr.drochon.christian.taaroaa.model.User;
  * Adapter permettant de creer des cellules d'un FirestoreRecyclerView avec des données provenant de l'activité SearchUserActivity.
  * Le FirestoreRecyclerAdapter (disponible dans la librairie "firebaseui") permet de gerer la MAJ en temps reel d'un recyclerview afin de
  * refleter exactement la bdd firestore, de mettre en cache toutes les données afin d'y avoir acces meme sans internet.
- *
  */
 class AdapterSearchedUser extends FirestoreRecyclerAdapter<User, SearchedUserViewHolder> {
-
-    List<User> users;
-
 
     AdapterSearchedUser(@NonNull FirestoreRecyclerOptions<User> userFirestoreRecyclerOptions) {
         super(userFirestoreRecyclerOptions);
@@ -34,7 +28,6 @@ class AdapterSearchedUser extends FirestoreRecyclerAdapter<User, SearchedUserVie
      * @param holder   : la vue de la cellule qui va recevoir la donnée
      * @param position : position de la cellule
      * @param model    the model object containing the data that should be used to populate the view.
-     * @see #onBindViewHolder(RecyclerView.ViewHolder, int)
      */
     @Override
     protected void onBindViewHolder(@NonNull SearchedUserViewHolder holder, int position, @NonNull User model) {

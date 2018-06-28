@@ -45,6 +45,23 @@ public class ConnectionActivity extends BaseActivity {
     // LIFECIRCLE
     // --------------------
 
+    /**
+     * Verification de la validité de l'adresse email par la reponse au token envoyé
+     * par firebase à un nouvel user, de meniere à s'assurer que son adresse email
+     * soit vlaide (ce qi l'erreur la plis courante).
+     *
+     * @param target adresse email
+     * @return validité ou non de l'adresse email recupérée
+     */
+    private static boolean isValidEmail(CharSequence target) {
+        return target != null && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
+    }
+
+
+    // --------------------
+    // UI
+    // --------------------
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,26 +94,9 @@ public class ConnectionActivity extends BaseActivity {
         });
     }
 
-
-    // --------------------
-    // UI
-    // --------------------
-
     @Override
     public int getFragmentLayout() {
         return 0;
-    }
-
-    /**
-     * Verification de la validité de l'adresse email par la reponse au token envoyé
-     * par firebase à un nouvel user, de meniere à s'assurer que son adresse email
-     * soit vlaide (ce qi l'erreur la plis courante).
-     *
-     * @param target adresse email
-     * @return validité ou non de l'adresse email recupérée
-     */
-    private static boolean isValidEmail(CharSequence target) {
-        return target != null && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
     }
 
     /**
@@ -187,7 +187,7 @@ public class ConnectionActivity extends BaseActivity {
         // the Firebase console. This is done in the Authentication section by adding this domain to
         // the list of OAuth redirect domains if it is not already there.
         ActionCodeSettings actionCodeSettings = ActionCodeSettings.newBuilder()
-                .setUrl("https://taaroaa-fe93c.firebaseapp.com/__/auth/action?mode=%3Caction%3E&oobCode=%3Ccode%3E")
+                .setUrl("")
                 .setHandleCodeInApp(true)
                 //.setIOSBundleId("com.example.ios")
                 .setAndroidPackageName(

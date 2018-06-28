@@ -92,7 +92,7 @@ public class AccountModificationActivity extends BaseActivity {
         configureToolbar();
         this.giveToolbarAName(R.string.account_modif_name);
         this.designDependingOnGetUsers();
-        //updateUserInFirebase();
+
         // methode à appeler APRES l'initialisation des variables, sinon les variables auront des references null
         this.updateUIWhenCreating(); // recuperation des informations de l'user actuel
 
@@ -135,7 +135,6 @@ public class AccountModificationActivity extends BaseActivity {
 
                         deleteUser();
                         deleteUserAuth();
-                        // deconnexion de l'app
                         signOutUserFromFirebase();
                         startMainActivity();
 
@@ -197,11 +196,7 @@ public class AccountModificationActivity extends BaseActivity {
      * Methode permettant d'afficher les informations de l'user sur l'ecran AccountCreateActivity lorsqu'un user vient de creer un compte
      */
     private void updateUIWhenCreating() {
-        //updateUserInFirebase();
         designDependingOnGetUsers();
-     /*   if (this.getCurrentUser().getEmail() != null) { // retourne un user FirebaseUser. Permettra de remplir toutes les vues de l'activité
-
-        }*/
     }
 
     /**
@@ -209,10 +204,6 @@ public class AccountModificationActivity extends BaseActivity {
      */
     private void updateUIWhenResuming() {
         designDependingOnGetUsers();
-        //getAndShowUserDatas();
-      /*  if (this.getCurrentUser().getEmail() != null) { // retourne un user FirebaseUser. Permettra de remplir toutes les vues de l'activité
-
-        }*/
     }
 
     /**
@@ -267,8 +258,8 @@ public class AccountModificationActivity extends BaseActivity {
      * On utilise un switch ici car il peut y avoir plusieurs options.
      * Surtout ne pas oublier le "true" apres chaque case sinon, ce sera toujours le dernier case qui sera executé!
      *
-     * @param item
-     * @return
+     * @param item item de menu
+     * @return option de menu
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -470,7 +461,7 @@ public class AccountModificationActivity extends BaseActivity {
         final Trace myTrace = FirebasePerformance.getInstance().newTrace("accountModificationActivityUserAccountUpdateIncludingCovoiturage_trace");
         myTrace.start();
 
-        if (!mNom.getText().equals(getString(R.string.info_no_username_found)))
+        if (!mNom.getText().toString().equals(getString(R.string.info_no_username_found)))
             if (!mNom.getText().toString().isEmpty() && !mPrenom.getText().toString().isEmpty() && !mEmail.getText().toString().isEmpty()) { // verification que tous les champs vides soient remplis
 
                 // Update de la bdd covoiturage si l'user à updater a créé des covoiturages.
@@ -571,100 +562,6 @@ public class AccountModificationActivity extends BaseActivity {
             }
         });
     }
-
-    /**
-     * Methode permettant de recuperer et d'afficher les données de l'utilisateur actuellement connecté depuis
-     * l'activité Sommaire qui a determiné que l'utilisateur voulant afficher ses informations etait enregistré en bdd.
-     */
-    /*private void getAndShowUserDatas() {
-
-        // Test performance de l'update d'user en bdd
-        final Trace myTrace1 = FirebasePerformance.getInstance().newTrace("accountModificationActivityGetAndShowUserDatas_trace");
-        myTrace1.start();
-
-        // recup de l'user passé par un intent depuis la classe ConnectionActivity
-        Intent intent = getIntent();
-        if (intent != null) {
-            user = (User) Objects.requireNonNull(intent.getExtras()).getSerializable("user");
-
-
-            if (user != null) {
-                mNom.setText(Objects.requireNonNull(user.getNom().toUpperCase()));
-                mPrenom.setText(Objects.requireNonNull(user.getPrenom().toUpperCase()));
-                mLicence.setText(Objects.requireNonNull(user.getLicence()));
-                mNiveauPlongeespinner.setSelection(getIndexSpinner(mNiveauPlongeespinner, Objects.requireNonNull(user.getNiveau())));
-                mFonctionAuClubspinner.setSelection(getIndexSpinner(mFonctionAuClubspinner, Objects.requireNonNull(user.getFonction())));
-                mEmail.setText(Objects.requireNonNull(user.getEmail()));
-
-         *//*       // affichage different en fonction de la personne connectée
-                //this.designDependingOnGetUsers(user);
-                mTitrePage.setText(R.string.bienvenue_sur_votre_compte);
-                //mItemView.setVisible(true);
-                mPrenom.setEnabled(true);
-                mNom.setEnabled(true);
-                mLicence.setEnabled(true);
-                mNiveauPlongeespinner.setEnabled(false);
-                mLinearLayoutFonctionAdherent.setVisibility(View.GONE);
-                mModificationCompte.setText(R.string.modifiez_votre_compte);
-                //Affichage du bouton de suppression uniquement aux proprietaires d'un compte
-                mSuppressionCompte.setVisibility(View.VISIBLE);*//*
-
-
-                myTrace1.stop();
-                //if (email != null) {
-                *//*setupDb().collection("users").whereEqualTo("email", user.getEmail()).addSnapshotListener(this, new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                        if (queryDocumentSnapshots != null) {
-                            if (queryDocumentSnapshots.size() != 0) {
-                                List<DocumentSnapshot> users = queryDocumentSnapshots.getDocuments();
-                                for(DocumentSnapshot ds : users){
-                                    mNom.setText(Objects.requireNonNull(ds.get("nom")).toString().toUpperCase());
-                                    mPrenom.setText(Objects.requireNonNull(ds.get("prenom")).toString().toUpperCase());
-                                    mLicence.setText(Objects.requireNonNull(ds.get("licence")).toString());
-                                    mNiveauPlongeespinner.setSelection(getIndexSpinner(mNiveauPlongeespinner, Objects.requireNonNull(ds.get("niveau")).toString()));
-                                    mFonctionAuClubspinner.setSelection(getIndexSpinner(mFonctionAuClubspinner, Objects.requireNonNull(ds.get("fonction")).toString()));
-                                    mEmail.setText(Objects.requireNonNull(ds.get("email")).toString());
-
-                                    myTrace1.stop();
-                                }
-
-                            }
-                        }
-                    }
-                });*//*
-            }
-        }
-
-       *//* // recup de l'user passé par un intent depuis la classe SearchUser
-        Intent intent = getIntent();
-        if (intent != null) {
-            user = (User) Objects.requireNonNull(intent.getExtras()).getSerializable("user");
-            if (user != null) {
-                // requete avec l'uid de l'user recu
-                setupDb().collection("users").document(user.getUid())
-                        .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if (task.isSuccessful()) {
-                            Map<String, Object> user = task.getResult().getData();
-                            if (user != null) {
-                                mNom.setText(user.get("nom").toString());
-                                mPrenom.setText(user.get("prenom").toString());
-                                mLicence.setText(user.get("licence").toString());
-                                mNiveauPlongeespinner.setSelection(getIndexSpinner(mNiveauPlongeespinner, user.get("niveau").toString()));
-                                mFonctionAuClubspinner.setSelection(getIndexSpinner(mFonctionAuClubspinner, user.get("fonction").toString()));
-                                mEmail.setText(user.get("email").toString());
-
-                                myTrace1.stop();
-                            }
-                        }
-                    }
-                });
-            }
-        }*//*
-    }
-*/
 
     /**
      * Methode permettant de supprimer un utilisateur

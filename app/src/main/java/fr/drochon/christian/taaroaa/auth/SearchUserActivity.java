@@ -131,8 +131,8 @@ public class SearchUserActivity extends BaseActivity {
      * On utilise un switch ici car il peut y avoir plusieurs options.
      * Surtout ne pas oublier le "true" apres chaque case sinon, ce sera toujours le dernier case qui sera executé!
      *
-     * @param item
-     * @return
+     * @param item item de la toolbar
+     * @return option de la toolbar
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -260,7 +260,7 @@ public class SearchUserActivity extends BaseActivity {
     /**
      * Methode permettant de recuperer l'integralité de la liste des snapshots et d'en faire des objets "User"
      *
-     * @param documentSnapshot
+     * @param documentSnapshot liste de documents comportant les données
      */
     private void readDataInList(final List<DocumentSnapshot> documentSnapshot) {
 
@@ -277,9 +277,8 @@ public class SearchUserActivity extends BaseActivity {
     /**
      * Methode permettant de filtrer la liste des utilisateurs affichés grace à la barre de recherche
      *
-     * @param models
-     * @param nomUser
-     * @return
+     * @param models  modele de données User
+     * @param nomUser nom de l'user
      */
     private void filter(List<User> models, String nomUser) {
         final String lowerCaseQuery = nomUser.toLowerCase();
