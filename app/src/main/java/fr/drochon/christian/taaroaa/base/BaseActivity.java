@@ -211,8 +211,8 @@ public abstract class BaseActivity extends AppCompatActivity {
      */
     protected void signOutUserFromFirebase() {
         AuthUI.getInstance()
-                .signOut(this) // methode utilisée par le singleton authUI.getInstance()
-                .addOnSuccessListener(this, this.updateUIAfterRESTRequestsCompleted(SIGN_OUT_TASK));
+                .signOut(this); // methode utilisée par le singleton authUI.getInstance()
+                //.addOnSuccessListener(this, this.updateUIAfterRESTRequestsCompleted(SIGN_OUT_TASK));
     }
 
     /**

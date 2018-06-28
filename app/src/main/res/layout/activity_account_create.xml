@@ -308,7 +308,7 @@
                 android:layout_margin="30dp"
                 android:height="60dp"
                 android:background="@color/colorPrimary"
-                android:text="Créez votre compte"
+                android:text="Modifiez votre compte"
                 android:textColor="@android:color/white"/>
 
             <Button

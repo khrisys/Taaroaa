@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.ComponentCallbacks2;
 import android.content.Intent;
 import android.os.Bundle;
+import android.sax.StartElementListener;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
@@ -167,13 +168,15 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
     }
 
     /**
-     * Methode permettant un affichage different en fonction de si l'user a dejà été loggé ou passtartsummary
+     * Methode permettant un affichage different en fonction de si l'user a dejà été loggé ou pas startsummary
      */
     @Override
     protected void onResume() {
         super.onResume();
         //lancement de l"activite de connexin ou de login
-        this.updateUIWhenResuming();
+
+        // if (!isCurrentUserLogged())
+            startSignInActivity();
 
 
         //CRASHLYTICS : force application to crash
@@ -276,6 +279,14 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
                                         }
                                         //LA PERSONNE CONNECTEE N4EST PAS EN BDD OU ELLE EST ENTRAIN DE CREER SON COMPTE
                                         else if (response.getEmail() != null) {
+
+                                            // deconnexion en cas de fin de programme
+                                            if(getCurrentUser() == null) {
+                                                startSignInActivity();
+                                                //startMainActivity();
+                                                break;
+                                            }
+
                                             String mUsername = Objects.requireNonNull(getCurrentUser()).getDisplayName();
                                             // decomposition du nom et du prenom recu dans le param username
                                             //LA PERSONNE CONNECTEE EST DEJA ENREGISTREE EN BDD?  RECUPERE ET AFFICHE TOUTES SES DONNEES
