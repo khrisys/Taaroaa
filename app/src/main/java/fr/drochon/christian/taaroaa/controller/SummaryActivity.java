@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import fr.drochon.christian.taaroaa.R;
+import fr.drochon.christian.taaroaa.auth.AccountCreateActivity;
 import fr.drochon.christian.taaroaa.auth.AccountModificationActivity;
 import fr.drochon.christian.taaroaa.auth.SearchUserActivity;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
@@ -111,7 +112,7 @@ public class SummaryActivity extends BaseActivity {
                                         }
                                     }
                                 }
-                            }
+                            }else startAccountActivity();
                         }
                     }
                 });
@@ -250,5 +251,10 @@ public class SummaryActivity extends BaseActivity {
                 }
             });
         }
+    }
+
+    private void startAccountActivity(){
+        Intent intent = new Intent(SummaryActivity.this, AccountCreateActivity.class);
+        startActivity(intent);
     }
 }

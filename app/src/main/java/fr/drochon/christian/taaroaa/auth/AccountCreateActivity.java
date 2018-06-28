@@ -271,7 +271,8 @@ public class AccountCreateActivity extends BaseActivity {
         warning.setColorFilter(filter);
         adb.setIcon(warning);
 
-        adb.setMessage("Avant de pouvoir créer votre compte, vous devez valider votre adresse mail via le lien qui vous a été envoyé à : '" + Objects.requireNonNull(getCurrentUser()).getEmail() + "'");
+        adb.setMessage("Avant de pouvoir créer votre compte, vous devez valider votre adresse mail via le lien qui vous a été envoyé à : '" +
+                Objects.requireNonNull(getCurrentUser()).getEmail() + "'");
         adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
 

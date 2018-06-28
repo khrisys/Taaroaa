@@ -138,7 +138,6 @@ public class AccountModificationActivity extends BaseActivity {
                         deleteUser();
                         deleteUserAuth();
                         signOutUserFromFirebase();
-                        startMainActivity();
 
                         myTrace1.stop();
 
@@ -225,7 +224,7 @@ public class AccountModificationActivity extends BaseActivity {
     }
 
     /**
-     * Methode permettant de revenir à la page d'accueil lorsqu'un utilisateur a supprimer son compte
+     * Methode permettant de revenir à la page d'accueil lorsqu'un utilisateur a supprimé son compte
      */
     private void startMainActivity() {
         Intent intent = new Intent(AccountModificationActivity.this, MainActivity.class);
@@ -319,7 +318,8 @@ public class AccountModificationActivity extends BaseActivity {
             mNom.setEnabled(true);
             mLicence.setEnabled(true);
             mNiveauPlongeespinner.setEnabled(false);
-            mLinearLayoutFonctionAdherent.setVisibility(View.GONE);
+            mFonctionAuClubspinner.setEnabled(false);
+            mLinearLayoutFonctionAdherent.setVisibility(View.VISIBLE);
             mModificationCompte.setText(R.string.modifiez_votre_compte);
             //Affichage du bouton de suppression uniquement aux proprietaires d'un compte
             mSuppressionCompte.setVisibility(View.VISIBLE);
@@ -371,7 +371,7 @@ public class AccountModificationActivity extends BaseActivity {
                 mNom.setEnabled(true);
                 mLicence.setEnabled(true);
                 mNiveauPlongeespinner.setEnabled(false);
-                mLinearLayoutFonctionAdherent.setVisibility(View.GONE);
+                mLinearLayoutFonctionAdherent.setVisibility(View.VISIBLE);
                 mModificationCompte.setText(R.string.modifiez_votre_compte);
                 //Affichage du bouton de suppression uniquement aux proprietaires d'un compte
                 mSuppressionCompte.setVisibility(View.VISIBLE);
@@ -671,14 +671,14 @@ public class AccountModificationActivity extends BaseActivity {
         final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
         if (auth != null) {
             setupDb().collection("users").document(auth.getUid())
-                    .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                    .delete();/*.addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
 
                     Toast.makeText(AccountModificationActivity.this, R.string.alertDialog_delete,
                             LENGTH_SHORT).show();
                 }
-            });
+            });*/
         }
     }
 
@@ -688,8 +688,8 @@ public class AccountModificationActivity extends BaseActivity {
     private void deleteUserAuth() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
-            user.delete()
-                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+            user.delete();
+                    /*.addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
@@ -697,7 +697,7 @@ public class AccountModificationActivity extends BaseActivity {
                             } else
                                 System.out.println("nok");
                         }
-                    });
+                    });*/
         }
     }
 }
