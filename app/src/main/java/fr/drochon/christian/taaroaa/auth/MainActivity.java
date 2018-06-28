@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.ComponentCallbacks2;
 import android.content.Intent;
 import android.os.Bundle;
-import android.sax.StartElementListener;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
@@ -250,10 +249,12 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
 
                 if (response != null) {
 
-                    //TODO affiche toujours les memes infos que rentrées lors de l'inscrpition
-                    if (response.getUser().getName() != null) {
+                    //pour un compte existant , response.getUser renvoi l'email et lepassword, ce qui signifie
+                    // que si on est dejà connecté, on a as besoin de rentrer dans cette requete
+                    // en revanche, pour un compte que l'on suhiate creer, il faut rentrer dans cette methode
+       /*             if (response.getUser() != null) {*/
                         final String user1 = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
-                        setupDb().collection("users").addSnapshotListener(new EventListener<QuerySnapshot>() {
+                        setupDb().collection("users").addSnapshotListener(this, new EventListener<QuerySnapshot>() {
                             @Override
                             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                                 if (queryDocumentSnapshots != null) {
@@ -333,7 +334,7 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
                                 }
                             }
                         });
-                    }
+                    //}
                 }
 
 

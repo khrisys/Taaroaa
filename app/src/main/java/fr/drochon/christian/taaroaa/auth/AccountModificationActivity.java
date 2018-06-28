@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -43,8 +44,6 @@ import fr.drochon.christian.taaroaa.api.UserHelper;
 import fr.drochon.christian.taaroaa.base.BaseActivity;
 import fr.drochon.christian.taaroaa.controller.SummaryActivity;
 import fr.drochon.christian.taaroaa.model.User;
-
-import static android.widget.Toast.LENGTH_SHORT;
 
 public class AccountModificationActivity extends BaseActivity {
 
@@ -134,10 +133,11 @@ public class AccountModificationActivity extends BaseActivity {
                         final Trace myTrace1 = FirebasePerformance.getInstance().newTrace("accountModificationActivityUserAccountDelete_trace");
                         myTrace1.start();
 
-                        //TODO trouver solution pour finaliser reuete  avant de passer dans le sommaire, bref, la fin de la trace
                         deleteUser();
                         deleteUserAuth();
+                        // deconnexion de l'app
                         signOutUserFromFirebase();
+                        startMainActivity();
 
                         myTrace1.stop();
 
@@ -151,6 +151,9 @@ public class AccountModificationActivity extends BaseActivity {
                     }
                 });
                 adb.show(); // affichage de l'artdialog
+
+
+
             }
         });
 
@@ -371,6 +374,7 @@ public class AccountModificationActivity extends BaseActivity {
                 mNom.setEnabled(true);
                 mLicence.setEnabled(true);
                 mNiveauPlongeespinner.setEnabled(false);
+                mFonctionAuClubspinner.setEnabled(false);
                 mLinearLayoutFonctionAdherent.setVisibility(View.VISIBLE);
                 mModificationCompte.setText(R.string.modifiez_votre_compte);
                 //Affichage du bouton de suppression uniquement aux proprietaires d'un compte
@@ -671,14 +675,14 @@ public class AccountModificationActivity extends BaseActivity {
         final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
         if (auth != null) {
             setupDb().collection("users").document(auth.getUid())
-                    .delete();/*.addOnSuccessListener(new OnSuccessListener<Void>() {
+                    .delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
 
                     Toast.makeText(AccountModificationActivity.this, R.string.alertDialog_delete,
-                            LENGTH_SHORT).show();
+                            Toast.LENGTH_LONG).show();
                 }
-            });*/
+            });
         }
     }
 
@@ -688,16 +692,16 @@ public class AccountModificationActivity extends BaseActivity {
     private void deleteUserAuth() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
-            user.delete();
-                    /*.addOnCompleteListener(new OnCompleteListener<Void>() {
+            user.delete()
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
-
+                                Log.d("TAG","OK! Auth deleted");
                             } else
                                 System.out.println("nok");
                         }
-                    });*/
+                    });
         }
     }
 }

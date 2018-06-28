@@ -112,7 +112,8 @@ public class SummaryActivity extends BaseActivity {
                                         }
                                     }
                                 }
-                            }else startAccountActivity();
+
+                              }else startAccountActivity();
                         }
                     }
                 });

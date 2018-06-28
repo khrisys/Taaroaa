@@ -229,12 +229,12 @@ public class AccountCreateActivity extends BaseActivity {
             mEmail.setText(intent.getStringExtra("email"));
             mPassword.setText(intent.getStringExtra("password"));
         }
+
         //personne possedant un compte
         else {
-
             User user = (User) intent.getSerializableExtra("connectedUser");
 
-            if( user.getPrenom() == null) mPrenom.setText("");else mPrenom.setText(user.getPrenom().toUpperCase());
+            if( user.getPrenom() == null) mPrenom.setText(" ");else mPrenom.setText(user.getPrenom().toUpperCase());
             mNom.setText(user.getNom().toUpperCase());
             mLicence.setText(user.getLicence());
             mNiveauPlongeespinner.setSelection(getIndexSpinner(mNiveauPlongeespinner, user.getNiveau()));
