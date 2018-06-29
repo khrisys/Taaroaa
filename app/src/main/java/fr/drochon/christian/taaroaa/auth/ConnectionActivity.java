@@ -14,6 +14,7 @@ import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -42,7 +43,7 @@ public class ConnectionActivity extends BaseActivity {
 
 
     // --------------------
-    // LIFECIRCLE
+    // LIFECYCLE
     // --------------------
 
     /**
@@ -147,7 +148,7 @@ public class ConnectionActivity extends BaseActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // appel de la methode de verification d'email depuis firebase
-                            //verifEmailUser();
+                            verifEmailUser();
 
                             myTrace.stop();
                         } else {
@@ -177,7 +178,7 @@ public class ConnectionActivity extends BaseActivity {
     /**
      * Methode permettant d'envoyer un email via un token pour la confirmation d'adresse mail d'un nouvek utilisateur
      */
-    private void verifEmailUser() {
+    protected void verifEmailUser() {
         final FirebaseAuth auth = FirebaseAuth.getInstance(FirebaseFirestore.getInstance().getApp());
         // un ActionCodeSetting est necessaire à Firebase por savoir à qui envoyer l'email de confilration
         //et quel type de message. Ainsi, l'user recevra un lien de validation qu'il devra soumettre das une
@@ -187,23 +188,16 @@ public class ConnectionActivity extends BaseActivity {
         // the Firebase console. This is done in the Authentication section by adding this domain to
         // the list of OAuth redirect domains if it is not already there.
         ActionCodeSettings actionCodeSettings = ActionCodeSettings.newBuilder()
-                .setUrl("https://dhu3y.app.goo.gl/taaroaa")
+                .setUrl("https://taaroaa-fe93c.firebaseapp.com/?page/Auth?mode=%3Caction%3E&oobCode=%3Ccode%3E")
                 .setHandleCodeInApp(true)
                 //.setIOSBundleId("com.example.ios")
                 .setAndroidPackageName(
                         "fr.drochon.christian.taaroaa",// Nom du package unique dde li'application. Ainsi ,des emails
                         // ne peuvent pas etree envoyés pour des autres applications par erreur.
-                        false,
-                        "19") // minimum SDK
+                        true,
+                        null) // minimum SDK
                 .build();
-  /*      ActionCodeSettings settings = ActionCodeSettings.newBuilder()
-                .setAndroidPackageName(
-                        BuildConfig.APPLICATION_ID,
-                        false, *//* install if not available? *//*
-                        "19"   *//* minimum app version *//*)
-                .setHandleCodeInApp(true)
-                .setUrl("https://www.example.com/emailSignInLink")
-                .build();*/
+
         //Ici, l'user doit s'aquitter des obligations du formulaires, et il recevra alors automatiquement le token via Firebase
         if (!Objects.requireNonNull(
                 auth.getCurrentUser()).isEmailVerified()) {
@@ -211,14 +205,17 @@ public class ConnectionActivity extends BaseActivity {
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
+
                             if (task.isSuccessful()) {
-                                Log.d("TAG", "Verification Email sent.");
-                                Intent intent = new Intent(ConnectionActivity.this, AccountCreateActivity.class)
-                                        .putExtra("email", mEmail.getText().toString())
-                                        .putExtra("password", mPassword.getText().toString());
-                                startActivity(intent);
-                            } else
-                                System.out.println("nok");
+                                /*Toast.makeText(ConnectionActivity.this,
+                                        "Verification email sent to " + Objects.requireNonNull(auth.getCurrentUser()).getEmail(),
+                                        Toast.LENGTH_SHORT).show();*/
+                            } else {
+                                Log.e("TAG", "sendEmailVerification", task.getException());
+                                Toast.makeText(ConnectionActivity.this,
+                                        "Failed to send verification email.",
+                                        Toast.LENGTH_SHORT).show();
+                            }
 
                         }
                     });

@@ -290,8 +290,9 @@ public class AccountCreateActivity extends BaseActivity {
                 Objects.requireNonNull(getCurrentUser()).getEmail() + "'");
         adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-
-            }
+                ConnectionActivity connectionActivity = new ConnectionActivity();
+                connectionActivity.verifEmailUser();
+                }
         });
         adb.setNegativeButton("CHANGER D'ADRESSE MAIL ?", new DialogInterface.OnClickListener() {
             @Override
