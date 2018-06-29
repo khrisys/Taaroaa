@@ -187,13 +187,13 @@ public class ConnectionActivity extends BaseActivity {
         // the Firebase console. This is done in the Authentication section by adding this domain to
         // the list of OAuth redirect domains if it is not already there.
         ActionCodeSettings actionCodeSettings = ActionCodeSettings.newBuilder()
-                .setUrl("https://console.firebase.google.com/project/taaroaa-fe93c/authentication/emails")
+                .setUrl("https://dhu3y.app.goo.gl/taaroaa")
                 .setHandleCodeInApp(true)
                 //.setIOSBundleId("com.example.ios")
                 .setAndroidPackageName(
                         "fr.drochon.christian.taaroaa",// Nom du package unique dde li'application. Ainsi ,des emails
                         // ne peuvent pas etree envoyés pour des autres applications par erreur.
-                        true,
+                        false,
                         "19") // minimum SDK
                 .build();
   /*      ActionCodeSettings settings = ActionCodeSettings.newBuilder()

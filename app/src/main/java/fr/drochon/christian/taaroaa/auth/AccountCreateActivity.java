@@ -107,7 +107,7 @@ public class AccountCreateActivity extends BaseActivity {
 
         // Fonction de verification pour la saisie d'un email valide via un
         // token envoyé sur le compte mail designé
-        //alertDialogValidationEmail();
+        alertDialogValidationEmail();
 
         // --------------------
         // LISTENERS
@@ -126,19 +126,19 @@ public class AccountCreateActivity extends BaseActivity {
                 FirebaseAuth auth = FirebaseAuth.getInstance(FirebaseFirestore.getInstance().getApp());
                 FirebaseUser firebaseUser = auth.getCurrentUser();
                 if (firebaseUser != null) {
-                    //if (Objects.requireNonNull(firebaseUser.isEmailVerified())) {
+                    if (Objects.requireNonNull(firebaseUser.isEmailVerified())) {
                         createUserInFirebase();
 
                         // fin de trace
                         myTrace.stop();
 
                         // affichaga de l'alertdialog pendant à nouveau 5s pour avertir l(user de valider son email
-                    /*} else {
+                    } else {
                         if (!mNom.getText().toString().isEmpty() && !mPrenom.getText().toString().isEmpty() && !mEmail.getText().toString().isEmpty() && isValidEmail(mEmail.getText()) && !mPassword.getText().toString().isEmpty()) {
                             System.out.println("nok");
-                            //alertDialogValidationEmail();
+                            alertDialogValidationEmail();
                         } else verificationChampsVides();
-                    }*/
+                    }
                 }
             }
         });
