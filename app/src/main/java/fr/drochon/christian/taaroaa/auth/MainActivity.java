@@ -77,7 +77,7 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
 
         // lorsque je suis connecté, c'est que j'ai un compte et je n'ai pas besoin de voir le bouton "creer un compte"
         //if(isCurrentUserLogged()) creationCompte.setVisibility(View.GONE);
-        isAppRunning = true;
+        //isAppRunning = true;
 
         // Souscription aux notifications
         FirebaseMessaging.getInstance().subscribeToTopic("courses");
@@ -97,12 +97,13 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
                 myTrace.start();
 
                 if (!isCurrentUserLogged()) {
-                    startSignInActivity(); // non connecté : inscription oou entree valide
+                    startSignInActivity(); // non connecté : inscription ou entree valide
                     //getFirstConnectedUser();
                 } else {
                     Toast.makeText(MainActivity.this, "Vous etes déjà connecté, vous ne pouvez pas créer un compte !", Toast.LENGTH_LONG).show();
                     startSummaryActivity(); // connecté : renvoyé vers le sommaire
                 }
+
                 myTrace.stop();
             }
         });
@@ -153,7 +154,7 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
         //lancement de l"activite de connexin ou de login
 
         // if (!isCurrentUserLogged())
-        startSignInActivity();
+        //startSignInActivity();
 
 
         //CRASHLYTICS : force application to crash
