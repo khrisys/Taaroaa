@@ -26,16 +26,20 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.ActionCodeSettings;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.perf.FirebasePerformance;
 import com.google.firebase.perf.metrics.Trace;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -107,6 +111,7 @@ public class AccountCreateActivity extends BaseActivity {
 
         // Fonction de verification pour la saisie d'un email valide via un
         // token envoyé sur le compte mail designé
+        if(Objects.requireNonNull(getCurrentUser()).isEmailVerified())
         alertDialogValidationEmail();
 
         // --------------------
@@ -268,9 +273,115 @@ public class AccountCreateActivity extends BaseActivity {
         }
     }
 
+    // --------------------
+    // VALIDATION EMAIL PAR LIEN ENVOYE DEPUIS FIREBASE
+    // --------------------
+
+    /**
+     * Methode permettant à un nouvel utilisateur de se creer un compte, puisde recevoir un token afin de valider
+     * l'adresse qu'il a saisi. La validation du lien recu permettra de cofirmer que l'adresse email est valide et de creer un
+     * compte au nouvel utilisateur.
+     */
+    private void connectToFirebaseWithEmailAndPassword() {
+        // Test performance de l'update d'user en bdd
+        final Trace myTrace = FirebasePerformance.getInstance().newTrace("connectionWithEmailAndPassword_trace");
+        myTrace.start();
+
+        // recuperation de la bdd FirebaseAuth avec en param l'app taaroaa
+        final FirebaseAuth auth = FirebaseAuth.getInstance(FirebaseFirestore.getInstance().getApp());
+
+        // creation d'un user avec email et password en bdd FirebaseAuth
+        auth.createUserWithEmailAndPassword(this.mEmail.getText().toString(), mPassword.getText().toString())
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // appel de la methode de verification d'email depuis firebase
+                            AccountCreateActivity accountCreateActivity = new AccountCreateActivity();
+                            accountCreateActivity.verifEmailUser();
+
+                            myTrace.stop();
+                        } else {
+                            // Dans le cas ou l'user ne renseignerait pas cette notification lui informant de valider son adresse,
+                            // il ne pourra pas se creer de compte.
+                            android.support.v7.app.AlertDialog.Builder adb = new android.support.v7.app.AlertDialog.Builder(AccountCreateActivity.this);
+                            adb.setTitle("Adresse email incorrecte ou déjà utilisée !");
+                            // création d'un icon de warning
+                            Drawable warning = getResources().getDrawable(android.R.drawable.ic_dialog_alert);
+                            ColorFilter filter = new LightingColorFilter(Color.RED, Color.BLUE);
+                            warning.setColorFilter(filter);
+                            adb.setIcon(warning);
+
+                            adb.setMessage("L'adresse mail '" + mEmail.getText().toString() + "' est incorrecte ou déjà utilisée.");
+                            adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    mEmail.setText("");
+                                    mPassword.setText("");
+                                }
+                            });
+                            adb.show();
+                        }
+                    }
+                });
+    }
+
+
+    /**
+     * Methode permettant de savoir sil'utilisateur avalidé son adresse email et faut alors de lui un utilisateur
+     * automitique, voire actuellement dejà connecté. Cette validation de mail fair=t de lui un user enregistré
+     * en bdd des utilisateurs, mais aussi un utilisateur de ka bdd de l'authentification de l'application.
+     */
+    private void goToAdaptedActivity() {
+
+        setupDb().collection("users").whereEqualTo("email", mEmail.getText().toString()).addSnapshotListener(this, new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                // SI USER EXISTE
+                if (queryDocumentSnapshots != null) {
+                    if (queryDocumentSnapshots.size() != 0) {
+                        List<DocumentSnapshot> ds = queryDocumentSnapshots.getDocuments();
+                        for (int i = 0; i < ds.size(); i++) {
+                            if (ds.get(i).exists()) {
+                                User user = new User(Objects.requireNonNull(ds.get(i).get("uid")).toString(), Objects.requireNonNull(ds.get(i).get("nom")).toString(),
+                                        Objects.requireNonNull(ds.get(i).get("prenom")).toString(),
+                                        Objects.requireNonNull(ds.get(i).get("licence")).toString(), Objects.requireNonNull(ds.get(i).get("email")).toString(),
+                                        Objects.requireNonNull(ds.get(i).get("niveau")).toString(), Objects.requireNonNull(ds.get(i).get("fonction")).toString());
+                                Intent intent = new Intent(AccountCreateActivity.this, AccountModificationActivity.class).putExtra("user", user);
+                                startActivity(intent);
+                                break;
+                            }
+                        }
+                    }
+                    // SI USER N'EXISTE PAS CAR IL N' PAS VALIDE SON ADRESSE OU S4EST TROMPE DANS LE NOM DE SON ADRESSE  MAIL
+                    else if (queryDocumentSnapshots.size() == 0) {
+                        connectToFirebaseWithEmailAndPassword();
+                        //ici, on peut avoir le choix de lui rappeller qu'il souhaitait souscrire un compte par
+                        // une notification, un email ou de le laisser transuille!
+
+                        //??????? //TODO A decommenter ou pas selon le choix du client
+                     /*   AlertDialog.Builder adb = new AlertDialog.Builder(ConnectionActivity.this);
+                        adb.setTitle("Adresse email incorrecte !");
+                        // ajouter une couleur à l'icon de warning
+                        Drawable warning = getResources().getDrawable(android.R.drawable.ic_dialog_alert);
+                        ColorFilter filter = new LightingColorFilter(Color.RED, Color.BLUE);
+                        warning.setColorFilter(filter);
+                        adb.setIcon(warning);
+                        adb.setMessage("L'adresse mail '" + mEmail.getText().toString() + "' est incorrecte.");
+                        adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                mEmail.setText("");
+                                mPassword.setText("");
+                            }
+                        });
+                        adb.show();*/
+                    }
+                }
+            }
+        });
+    }
     /**
      * Methode permettant d'afficher une alertdialog à un user pour lui indiquer qu'il doit aller
-     * valider son adresse mail saisi lors de la creation de son compte.
+     * valider son adresse mail saisi lors de la creation de son compte dans sa boite mail.
      * Cette methode rafraichit la validation de son email en bdd firebase (sinon, sa validation,
      * meme effectuée, ne serait jamais prise en compte par firebase)
      */
@@ -290,8 +401,7 @@ public class AccountCreateActivity extends BaseActivity {
                 Objects.requireNonNull(getCurrentUser()).getEmail() + "'");
         adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                ConnectionActivity connectionActivity = new ConnectionActivity();
-                connectionActivity.verifEmailUser();
+                verifEmailUser();
                 }
         });
         adb.setNegativeButton("CHANGER D'ADRESSE MAIL ?", new DialogInterface.OnClickListener() {
@@ -305,6 +415,59 @@ public class AccountCreateActivity extends BaseActivity {
         });
         adb.show();
     }
+
+    /**
+     * Methode permettant d'envoyer un email via un token pour la confirmation d'adresse mail d'un nouvek utilisateur
+     */
+    protected void verifEmailUser() {
+        if (getCurrentUser() != null) Objects.requireNonNull(getCurrentUser()).reload();
+        final FirebaseAuth auth = FirebaseAuth.getInstance(FirebaseFirestore.getInstance().getApp());
+        // un ActionCodeSetting est necessaire à Firebase por savoir à qui envoyer l'email de confilration
+        //et quel type de message. Ainsi, l'user recevra un lien de validation qu'il devra soumettre dans une
+        //durée impartie. La validation de ce lien de l'user validera automatiquement la creation de son compte.
+
+        // In order to securely pass a continue URL, the domain for the URL will need to be whitelisted in
+        // the Firebase console. This is done in the Authentication section by adding this domain to
+        // the list of OAuth redirect domains if it is not already there.
+        ActionCodeSettings actionCodeSettings = ActionCodeSettings.newBuilder()
+                .setUrl("https://taaroaa-fe93c.firebaseapp.com/?page/Auth?mode=%3Caction%3E&oobCode=%3Ccode%3E")
+                .setHandleCodeInApp(true)
+                //.setIOSBundleId("com.example.ios")
+                .setAndroidPackageName(
+                        "fr.drochon.christian.taaroaa",// Nom du package unique dde li'application. Ainsi ,des emails
+                        // ne peuvent pas etree envoyés pour des autres applications par erreur.
+                        true,
+                        "19") // minimum SDK
+                .build();
+
+        //Afin de valider son formulaire, l'user devra cliquer sur la notif et il recevra alors automatiquement le token via Firebase
+        if (!Objects.requireNonNull(
+                getCurrentUser()).isEmailVerified()) {
+            Objects.requireNonNull(getCurrentUser()).sendEmailVerification(actionCodeSettings)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+
+                            if (task.isSuccessful()) {
+                                System.out.println("ok");
+                                /*Toast.makeText(getBaseContext().getApplicationContext(),
+                                        "Verification d'email envoyée à " + Objects.requireNonNull(getCurrentUser()).getEmail(),
+                                        Toast.LENGTH_LONG).show();*/
+                            } else {
+                                Log.e("TAG", "sendEmailVerification", task.getException());
+                              /*  Toast.makeText(getBaseContext().getApplicationContext(),
+                                        "Echec de l'envoi de vérification d'email !",
+                                        Toast.LENGTH_LONG).show();*/
+                            }
+                        }
+                    });
+        }
+        else {
+            Toast.makeText(this, "Votre adresse email estvalide. Vous pouvez désormais terminer la création de votre compte !",
+                    Toast.LENGTH_LONG).show();
+        }
+    }
+
 
     /**
      * Methode permettant de changer d'ecran lors d'une connexion valide

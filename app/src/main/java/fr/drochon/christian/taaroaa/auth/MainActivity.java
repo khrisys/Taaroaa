@@ -116,7 +116,6 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
                 final Trace myTrace2 = FirebasePerformance.getInstance().newTrace("mainActivityDeconnexionFromAnExistingAccount_trace");
                 myTrace2.start();
 
-                // CHOIX SCIEMMENT DE SE DECONNECTER
                 showSnackBar(getString(string.connection_end));
                 signOutUserFromFirebase();
 

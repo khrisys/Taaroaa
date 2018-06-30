@@ -14,7 +14,6 @@ import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -152,11 +151,11 @@ public class ConnectionActivity extends BaseActivity {
 
                             myTrace.stop();
                         } else {
-                            // Dans le cas ou l'user ne renseignerait pas cette notificatio lui informant de valider son adresse,
+                            // Dans le cas ou l'user ne renseignerait pas cette notification lui informant de valider son adresse,
                             // il ne pourra pas se creer de compte.
                             AlertDialog.Builder adb = new AlertDialog.Builder(ConnectionActivity.this);
                             adb.setTitle("Adresse email incorrecte ou déjà utilisée !");
-                            // ajouter une couleur à l'icon de warning
+                            // création d'un icon de warning
                             Drawable warning = getResources().getDrawable(android.R.drawable.ic_dialog_alert);
                             ColorFilter filter = new LightingColorFilter(Color.RED, Color.BLUE);
                             warning.setColorFilter(filter);
@@ -179,9 +178,10 @@ public class ConnectionActivity extends BaseActivity {
      * Methode permettant d'envoyer un email via un token pour la confirmation d'adresse mail d'un nouvek utilisateur
      */
     protected void verifEmailUser() {
+        if (getCurrentUser() != null) Objects.requireNonNull(getCurrentUser()).reload();
         final FirebaseAuth auth = FirebaseAuth.getInstance(FirebaseFirestore.getInstance().getApp());
         // un ActionCodeSetting est necessaire à Firebase por savoir à qui envoyer l'email de confilration
-        //et quel type de message. Ainsi, l'user recevra un lien de validation qu'il devra soumettre das une
+        //et quel type de message. Ainsi, l'user recevra un lien de validation qu'il devra soumettre dans une
         //durée impartie. La validation de ce lien de l'user validera automatiquement la creation de son compte.
 
         // In order to securely pass a continue URL, the domain for the URL will need to be whitelisted in
@@ -189,36 +189,39 @@ public class ConnectionActivity extends BaseActivity {
         // the list of OAuth redirect domains if it is not already there.
         ActionCodeSettings actionCodeSettings = ActionCodeSettings.newBuilder()
                 .setUrl("https://taaroaa-fe93c.firebaseapp.com/?page/Auth?mode=%3Caction%3E&oobCode=%3Ccode%3E")
-                .setHandleCodeInApp(true)
+                .setHandleCodeInApp(false)
                 //.setIOSBundleId("com.example.ios")
                 .setAndroidPackageName(
                         "fr.drochon.christian.taaroaa",// Nom du package unique dde li'application. Ainsi ,des emails
                         // ne peuvent pas etree envoyés pour des autres applications par erreur.
                         true,
-                        null) // minimum SDK
+                        "19") // minimum SDK
                 .build();
 
-        //Ici, l'user doit s'aquitter des obligations du formulaires, et il recevra alors automatiquement le token via Firebase
+        //Afin de valider son formulaire, l'user devra cliquer sur la notif et il recevra alors automatiquement le token via Firebase
         if (!Objects.requireNonNull(
-                auth.getCurrentUser()).isEmailVerified()) {
-            Objects.requireNonNull(auth.getCurrentUser()).sendEmailVerification(actionCodeSettings)
+                getCurrentUser()).isEmailVerified()) {
+            Objects.requireNonNull(getCurrentUser()).sendEmailVerification(actionCodeSettings)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
 
                             if (task.isSuccessful()) {
-                                /*Toast.makeText(ConnectionActivity.this,
-                                        "Verification email sent to " + Objects.requireNonNull(auth.getCurrentUser()).getEmail(),
-                                        Toast.LENGTH_SHORT).show();*/
+
+                                /*Toast.makeText(getBaseContext().getApplicationContext(),
+                                        "Verification d'email envoyée à " + Objects.requireNonNull(getCurrentUser()).getEmail(),
+                                        Toast.LENGTH_LONG).show();*/
                             } else {
                                 Log.e("TAG", "sendEmailVerification", task.getException());
-                                Toast.makeText(ConnectionActivity.this,
-                                        "Failed to send verification email.",
-                                        Toast.LENGTH_SHORT).show();
+                              /*  Toast.makeText(getBaseContext().getApplicationContext(),
+                                        "Echec de l'envoi de vérification d'email !",
+                                        Toast.LENGTH_LONG).show();*/
                             }
-
                         }
                     });
+        }
+        else {
+            // create user
         }
     }
 
