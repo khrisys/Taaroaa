@@ -54,9 +54,7 @@ public class SearchUserActivity extends BaseActivity {
         final Trace myTrace = FirebasePerformance.getInstance().newTrace("searchUserActivityShowAllUsers_trace");
         myTrace.start();
 
-
         configureRecyclerView();
-        //getListUsers();
         myTrace.stop();
 
         configureToolbar();
@@ -237,37 +235,6 @@ public class SearchUserActivity extends BaseActivity {
         });
         return mQ;
     }
-
-/*    *//**
-     * Methode permettant de remplir la liste de tous les utilisateurs contenus dans la bdd
-     *//*
-    private void getListUsers() {
-        // recup de l'user passé depuis l'activité SummaryActivity
-        Intent intent1 = getIntent();
-        if (intent1 != null) {
-            modifSummaryUser = (User) Objects.requireNonNull(intent1.getExtras()).getSerializable("modifSummaryUser");
-        }
-
-        setupDb().collection("users").addSnapshotListener(this, new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                if (queryDocumentSnapshots != null) {
-                    if (queryDocumentSnapshots.size() != 0) {
-                        List<DocumentSnapshot> ds = queryDocumentSnapshots.getDocuments();
-                        for (int i = 0; i < ds.size(); i++) {
-                            Map<String, Object> map = ds.get(i).getData();
-                            if (map != null) {
-                                if (!map.get("uid").toString().equals(modifSummaryUser.getUid())) {
-                                    User user = new User(map.get("uid").toString(), map.get("nom").toString(), map.get("prenom").toString());
-                                    listUsers.add(user);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        });
-    }*/
 
     /**
      * Methode permettant de recuperer l'integralité de la liste des snapshots et d'en faire des objets "User"

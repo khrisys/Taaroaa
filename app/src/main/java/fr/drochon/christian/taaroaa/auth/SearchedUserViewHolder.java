@@ -27,7 +27,6 @@ public class SearchedUserViewHolder extends RecyclerView.ViewHolder {
     TextView mPrenomSearched;
     @BindView(R.id.list_cell_email)
     TextView mEmailSearched;
-    private User modifSummaryUser;
 
     /**
      * Contructeur qui prend en param la vue affichée.

@@ -76,8 +76,8 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
         Button deconnexion = findViewById(R.id.deconnexion_btn);
 
         // lorsque je suis connecté, c'est que j'ai un compte et je n'ai pas besoin de voir le bouton "creer un compte"
-        //if(isCurrentUserLogged()) creationCompte.setVisibility(View.GONE);
-        //isAppRunning = true;
+        if(isCurrentUserLogged()) creationCompte.setVisibility(View.GONE);
+
 
         // Souscription aux notifications
         FirebaseMessaging.getInstance().subscribeToTopic("courses");
@@ -181,11 +181,6 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
                         .setLogo(R.mipmap.logo1)
                         .build(),
                 RC_SIGN_IN);// identifiant de connexion
-
-
-        //mTitle.setVisibility(View.GONE);
-        /*mCreationCompte.setVisibility(View.GONE);
-        mDeconnexion.setVisibility(View.GONE);*/
     }
 
 
@@ -300,21 +295,8 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
                         }
                     });
                 }
-
-
-
-    /*}
-    if (response != null) {
-        if (Objects.requireNonNull(response.getError()).getErrorCode() == ErrorCodes.NO_NETWORK) {
-            showSnackBar(getString(string.error_no_internet));
-        }
-        if (Objects.requireNonNull(response.getError()).getErrorCode() == ErrorCodes.UNKNOWN_ERROR) {
-            showSnackBar(getString(string.error_unknown_error));
-        }
-    }*/
             }
         }
-
     }
 
 

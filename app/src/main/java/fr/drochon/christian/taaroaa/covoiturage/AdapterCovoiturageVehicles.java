@@ -41,7 +41,6 @@ class AdapterCovoiturageVehicles extends FirestoreRecyclerAdapter<Covoiturage, V
      * @param holder   : la vue de la cellule qui va recevoir la donnée
      * @param position : position de la cellule
      * @param model    the model object containing the data that should be used to populate the view.
-     * @see #onBindViewHolder(RecyclerView.ViewHolder, int)
      */
     @Override
     protected void onBindViewHolder(@NonNull final VehiculeViewHolder holder, int position, @NonNull final Covoiturage model) {

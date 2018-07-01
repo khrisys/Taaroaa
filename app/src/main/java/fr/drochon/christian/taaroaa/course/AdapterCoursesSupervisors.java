@@ -39,7 +39,6 @@ class AdapterCoursesSupervisors extends FirestoreRecyclerAdapter<Course, Supervi
      * @param holder
      * @param position
      * @param model    the model object containing the data that should be used to populate the view.
-     * @see #onBindViewHolder(RecyclerView.ViewHolder, int)
      */
     @Override
     protected void onBindViewHolder(@NonNull SupervisorsViewHolder holder, int position, @NonNull Course model) {

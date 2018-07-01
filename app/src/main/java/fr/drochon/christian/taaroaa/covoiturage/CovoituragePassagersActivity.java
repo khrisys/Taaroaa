@@ -12,6 +12,7 @@ import android.graphics.ColorFilter;
 import android.graphics.LightingColorFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.text.Editable;
 import android.text.Html;
@@ -33,6 +34,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.perf.FirebasePerformance;
 import com.google.firebase.perf.metrics.Trace;
@@ -324,61 +327,6 @@ public class CovoituragePassagersActivity extends BaseActivity {
         }
     }
 
-
-    // --------------------
-    // NOTIFICATION
-    // --------------------
-
-    //TODO V2 : utiliser les notifications pour la V2
-/*    private void scheduleNotificationAller(Notification notification, Date alarmTime) {
-
-        Intent notificationIntent = new Intent(this, NotificationReceiver.class);
-        notificationIntent.putExtra(NotificationReceiver.NOTIFICATION_ID, 7);
-        notificationIntent.putExtra(NotificationReceiver.NOTIFICATION, notification);
-        notificationIntent.putExtra("date", alarmTime);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        if(alarmManager != null)
-        alarmManager.set(AlarmManager.RTC_WAKEUP, alarmTime.getTime(), pendingIntent);
-    }
-
-    private void scheduleNotificationRetour(Notification notification, Date alarmTime) {
-
-        Intent notificationIntent = new Intent(this, NotificationReceiver.class);
-        notificationIntent.putExtra(NotificationReceiver.NOTIFICATION_ID, 7);
-        notificationIntent.putExtra(NotificationReceiver.NOTIFICATION, notification);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        if(alarmManager != null)
-        alarmManager.set(AlarmManager.RTC_WAKEUP, alarmTime.getTime(), pendingIntent);
-    }
-
-    private Notification getNotification() {
-        int colour = getNotificationColour();
-        Bitmap largeNotificationImage = getLargeNotificationImage();
-        return new RandomNotification(this).getNotification(
-                "TAAROAA",
-                "More text",
-                getNotificationImage(),
-                largeNotificationImage,
-                colour);
-    }
-
-    private int getNotificationImage() {
-        return R.mipmap.logo;
-    }
-
-    private int getNotificationColour() {
-        return ContextCompat.getColor(this, R.color.colorAccent);
-    }
-
-    private Bitmap getLargeNotificationImage() {
-        return BitmapFactory.decodeResource(this.getResources(),
-                R.mipmap.logo1);
-    }*/
-
     // --------------------
     // ALARM
     // --------------------
@@ -443,9 +391,10 @@ public class CovoituragePassagersActivity extends BaseActivity {
      */
     private void getAllUsers() {
 
-        setupDb().collection("users").orderBy("nom").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        setupDb().collection("users").orderBy("nom").addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if(queryDocumentSnapshots != null){
                 if (queryDocumentSnapshots.size() != 0) {
                     List<DocumentSnapshot> ds = queryDocumentSnapshots.getDocuments();
                     for (DocumentSnapshot doc : ds) {
@@ -456,6 +405,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
                             listUsers.add(u);
                         }
                     }
+                }
                 }
             }
         });
@@ -470,26 +420,27 @@ public class CovoituragePassagersActivity extends BaseActivity {
      * @param prenom prenom du passager
      */
     private void filteredUserWhoCallAlarm(String nom, String prenom) {
-        setupDb().collection("users").whereEqualTo("nom", nom).whereEqualTo("prenom", prenom).get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        if (queryDocumentSnapshots.size() != 0) {
-                            List<DocumentSnapshot> ds = queryDocumentSnapshots.getDocuments();
-                            for (DocumentSnapshot doc : ds) {
-                                Map<String, Object> user = doc.getData();
-                                if (user != null) {
-                                    User u = new User(user.get("uid").toString(), user.get("nom").toString(), user.get("prenom").toString(), user.get("licence").toString(),
-                                            user.get("email").toString(), user.get("niveau").toString(), user.get("fonction").toString());
+        setupDb().collection("users").whereEqualTo("nom", nom).whereEqualTo("prenom", prenom).addSnapshotListener(this, new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if(queryDocumentSnapshots != null){
+                    if (queryDocumentSnapshots.size() != 0) {
+                        List<DocumentSnapshot> ds = queryDocumentSnapshots.getDocuments();
+                        for (DocumentSnapshot doc : ds) {
+                            Map<String, Object> user = doc.getData();
+                            if (user != null) {
+                                User u = new User(user.get("uid").toString(), user.get("nom").toString(), user.get("prenom").toString(), user.get("licence").toString(),
+                                        user.get("email").toString(), user.get("niveau").toString(), user.get("fonction").toString());
 
-                                    // notification d'alarme pour chacun des passagers d'un covoiturage
-                                    alarmDepart(u);
-                                    alarmRetour(u);
-                                }
+                                // notification d'alarme pour chacun des passagers d'un covoiturage
+                                alarmDepart(u);
+                                alarmRetour(u);
                             }
                         }
                     }
-                });
+                }
+            }
+        });
     }
 
     /**

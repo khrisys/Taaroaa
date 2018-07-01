@@ -218,9 +218,9 @@ public class ConnectionActivity extends BaseActivity {
                                         Toast.LENGTH_LONG).show();
                             } else {
                                 Log.e("TAG", "sendEmailVerification", task.getException());
-                              /*  Toast.makeText(getBaseContext().getApplicationContext(),
+                                Toast.makeText(ConnectionActivity.this,
                                         "Echec de l'envoi de vérification d'email !",
-                                        Toast.LENGTH_LONG).show();*/
+                                        Toast.LENGTH_LONG).show();
                             }
                         }
                     });

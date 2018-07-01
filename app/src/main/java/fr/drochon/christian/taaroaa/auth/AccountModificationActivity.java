@@ -8,6 +8,7 @@ import android.graphics.LightingColorFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -30,6 +31,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.perf.FirebasePerformance;
 import com.google.firebase.perf.metrics.Trace;
@@ -387,30 +390,30 @@ public class AccountModificationActivity extends BaseActivity {
                 // DESIGN
                 if (searchedUser.getFonction() != null && searchedUser.getNom() != null && searchedUser.getPrenom() != null
                         && searchedUser.getEmail() != null && searchedUser.getUid() != null && searchedUser.getNiveau() != null) {
-                        mTitrePage.setText(R.string.modifiez_le_compte_d_un_adherent);
-                        //mItemView.setVisible(false);
-                        mPrenom.setEnabled(false);
-                        mNom.setEnabled(false);
-                        mLicence.setEnabled(false);
-                        mNiveauPlongeespinner.setEnabled(true);
-                        mLinearLayoutFonctionAdherent.setVisibility(View.VISIBLE);
-                        mTitrePassword.setVisibility(View.GONE);
-                        mPassword.setVisibility(View.GONE);
-                        mProgressBar.setVisibility(View.GONE);
-                        //Affichage du bouton de suppression uniquement aux proprietaires d'un compte
-                        mSuppressionCompte.setVisibility(View.GONE);
+                    mTitrePage.setText(R.string.modifiez_le_compte_d_un_adherent);
+                    //mItemView.setVisible(false);
+                    mPrenom.setEnabled(false);
+                    mNom.setEnabled(false);
+                    mLicence.setEnabled(false);
+                    mNiveauPlongeespinner.setEnabled(true);
+                    mLinearLayoutFonctionAdherent.setVisibility(View.VISIBLE);
+                    mTitrePassword.setVisibility(View.GONE);
+                    mPassword.setVisibility(View.GONE);
+                    mProgressBar.setVisibility(View.GONE);
+                    //Affichage du bouton de suppression uniquement aux proprietaires d'un compte
+                    mSuppressionCompte.setVisibility(View.GONE);
 
-                        // DATAS
-                        uid = searchedUser.getUid();
-                        mPrenom.setText(searchedUser.getPrenom());
-                        mNom.setText(searchedUser.getNom());
-                        mLicence.setText(searchedUser.getLicence());
-                        mNiveauPlongeespinner.setSelection(getIndexSpinner(mNiveauPlongeespinner, Objects.requireNonNull(searchedUser.getNiveau())));
-                        mFonctionAuClubspinner.setSelection(getIndexSpinner(mFonctionAuClubspinner, Objects.requireNonNull(searchedUser.getFonction())));
-                        mEmail.setText(Objects.requireNonNull(searchedUser.getEmail()));
-                        mPassword.setText(searchedUser.getPassword());
-                    }
+                    // DATAS
+                    uid = searchedUser.getUid();
+                    mPrenom.setText(searchedUser.getPrenom());
+                    mNom.setText(searchedUser.getNom());
+                    mLicence.setText(searchedUser.getLicence());
+                    mNiveauPlongeespinner.setSelection(getIndexSpinner(mNiveauPlongeespinner, Objects.requireNonNull(searchedUser.getNiveau())));
+                    mFonctionAuClubspinner.setSelection(getIndexSpinner(mFonctionAuClubspinner, Objects.requireNonNull(searchedUser.getFonction())));
+                    mEmail.setText(Objects.requireNonNull(searchedUser.getEmail()));
+                    mPassword.setText(searchedUser.getPassword());
                 }
+            }
         }
     }
 
@@ -467,28 +470,30 @@ public class AccountModificationActivity extends BaseActivity {
      * si celui ci effectue ici un update sur son nom ou son prenom
      */
     private void updateCovoituragesIfCreated() {
-        setupDb().collection("covoiturages").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        setupDb().collection("covoiturages").addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
-            public void onSuccess(QuerySnapshot documentSnapshots) {
-                if (documentSnapshots.size() > 0) {
-                    List<DocumentSnapshot> covoits = documentSnapshots.getDocuments();
-                    for (DocumentSnapshot covoiturage : covoits) {
-                        Map<String, Object> covoit = covoiturage.getData();
-                        if (covoit != null) {
-                            if (covoit.get("nomConducteur").equals(mNom.getText().toString()) && covoit.get("prenomConducteur").equals(mPrenom.getText().toString())) {
-                                CovoiturageHelper.updateCovoiturage(covoit.get("id").toString(), mNom.getText().toString(), mPrenom.getText().toString())
-                                        .addOnFailureListener(new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception e) {
-                                                System.out.println("nok");
-                                            }
-                                        })
-                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                            @Override
-                                            public void onSuccess(Void aVoid) {
-                                                System.out.println("ok");
-                                            }
-                                        });
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if (queryDocumentSnapshots != null) {
+                    if (queryDocumentSnapshots.size() != 0) {
+                        List<DocumentSnapshot> covoits = queryDocumentSnapshots.getDocuments();
+                        for (DocumentSnapshot covoiturage : covoits) {
+                            Map<String, Object> covoit = covoiturage.getData();
+                            if (covoit != null) {
+                                if (covoit.get("nomConducteur").equals(mNom.getText().toString()) && covoit.get("prenomConducteur").equals(mPrenom.getText().toString())) {
+                                    CovoiturageHelper.updateCovoiturage(covoit.get("id").toString(), mNom.getText().toString(), mPrenom.getText().toString())
+                                            .addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    System.out.println("nok");
+                                                }
+                                            })
+                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    System.out.println("ok");
+                                                }
+                                            });
+                                }
                             }
                         }
                     }

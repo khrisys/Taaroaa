@@ -27,7 +27,6 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.ActionCodeSettings;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -110,7 +109,7 @@ public class AccountCreateActivity extends BaseActivity {
         this.getConnectedUser();
 
         // PAS LA PEINE DE VERIFIER LE DOUBLON DE CREATION D'EMAIL, LE WIDGET DE CONNEXION LE FAIRE DEJA
-        //verifEmailAndPassword();
+
         // Affichage d'un formulaire de creation d'user ou affichage de l'user s'il existe
         goToAdaptedActivity();
 
@@ -271,52 +270,6 @@ public class AccountCreateActivity extends BaseActivity {
             mEmail.setText(user.getEmail());
             mPassword.setText(user.getPassword());
         }
-    }
-
-    // --------------------
-    // CREATION EMAIL ET MOT DE PASSE + VERIF
-    // --------------------
-
-    /**
-     * Methode permettant à un nouvel utilisateur de se creer un email et password. En cas d'email dejà pris,
-     * il sera demandé de choisir une autre adresse email.
-     */
-    private void verifEmailAndPassword() {
-
-        FirebaseAuth auth = FirebaseAuth.getInstance(FirebaseFirestore.getInstance().getApp());
-
-        // creation d'un user avec email et password en bdd FirebaseAuth
-        auth.createUserWithEmailAndPassword(this.mEmail.getText().toString(), mPassword.getText().toString())
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            System.out.println("ok");
-                         /*   MainActivity mainActivity = new MainActivity();
-                            mainActivity.onResume();*/
-
-                        } else {
-                            // Dans le cas ou l'user ne renseignerait pas cette notification lui informant de valider son adresse,
-                            // il ne pourra pas se creer de compte.
-                            android.support.v7.app.AlertDialog.Builder adb = new android.support.v7.app.AlertDialog.Builder(AccountCreateActivity.this);
-                            adb.setTitle("Adresse email incorrecte ou déjà utilisée !");
-                            // création d'un icon de warning
-                            Drawable warning = getResources().getDrawable(android.R.drawable.ic_dialog_alert);
-                            ColorFilter filter = new LightingColorFilter(Color.RED, Color.BLUE);
-                            warning.setColorFilter(filter);
-                            adb.setIcon(warning);
-
-                            adb.setMessage("L'adresse mail '" + mEmail.getText().toString() + "' est incorrecte ou déjà utilisée.");
-                            adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    mEmail.setText("");
-                                    mPassword.setText("");
-                                }
-                            });
-                            adb.show();
-                        }
-                    }
-                });
     }
 
 

@@ -36,7 +36,6 @@ import fr.drochon.christian.taaroaa.model.User;
 public class SummaryActivity extends BaseActivity {
 
     private Button mModifCompte;
-    private Button mComptePerso;
 
 
     @Override
@@ -48,19 +47,13 @@ public class SummaryActivity extends BaseActivity {
         if (actionBar != null)
             actionBar.setDisplayShowHomeEnabled(true);
 
-        mComptePerso = findViewById(R.id.adherents_btn);
+        Button comptePerso = findViewById(R.id.adherents_btn);
         mModifCompte = findViewById(R.id.modif_adherents_btn);
 
         // Test performance de l'update d'user en bdd
         final Trace myTrace = FirebasePerformance.getInstance().newTrace("summaryActivityShowTiles_trace");
         myTrace.start();
 
-       /* // recup de l'intent prevenant de l'activité modification de compte
-        Intent intent = getIntent();
-        if (intent != null) {
-            userFromModificationActivity = (User) Objects.requireNonNull(intent.getExtras()).getSerializable("user");
-        }
-*/
         configureToolbar();
         showPannelModification();
         giveToolbarAName(R.string.summary_name);
@@ -75,7 +68,7 @@ public class SummaryActivity extends BaseActivity {
         /*
         Modification de compte de l'utilisateur connecté
          */
-        mComptePerso.setOnClickListener(new View.OnClickListener() {
+        comptePerso.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
