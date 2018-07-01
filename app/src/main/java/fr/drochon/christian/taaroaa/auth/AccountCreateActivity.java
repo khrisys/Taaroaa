@@ -108,11 +108,10 @@ public class AccountCreateActivity extends BaseActivity {
 
         this.getConnectedUser();
 
-        // PAS LA PEINE DE VERIFIER LE DOUBLON DE CREATION D'EMAIL, LE WIDGET DE CONNEXION LE FAIRE DEJA
+        // PAS LA PEINE DE VERIFIER LE DOUBLON DE CREATION D'EMAIL, LE WIDGET DE CONNEXION LE GERE DEJA
 
         // Affichage d'un formulaire de creation d'user ou affichage de l'user s'il existe
         goToAdaptedActivity();
-        if (getCurrentUser() != null) Objects.requireNonNull(getCurrentUser()).reload();
 
         // --------------------
         // LISTENERS
@@ -122,16 +121,18 @@ public class AccountCreateActivity extends BaseActivity {
         mModificationCompte.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Objects.requireNonNull(getCurrentUser()).reload();
 
                 // Test performance de l'update d'user en bdd
                 final Trace myTrace = FirebasePerformance.getInstance().newTrace("accountCreateActivityCreateAUser_trace");
                 myTrace.start();
 
-                FirebaseAuth auth = FirebaseAuth.getInstance(FirebaseFirestore.getInstance().getApp());
-                FirebaseUser firebaseUser = auth.getCurrentUser();
-                if (firebaseUser != null) {
-                    if (Objects.requireNonNull(firebaseUser.isEmailVerified())) {
+              /*  FirebaseAuth auth = FirebaseAuth.getInstance(FirebaseFirestore.getInstance().getApp());
+                FirebaseUser firebaseUser = auth.getCurrentUser();*/
+                if (getCurrentUser() != null) {
+                    //CELUI LA REMET 0 JOUR LA NOTIF VALIDATION EMAIL
+                    Objects.requireNonNull(getCurrentUser()).reload();
+
+                    if (Objects.requireNonNull(getCurrentUser().isEmailVerified())) {
                         createUserInFirebase();
 
                         // fin de trace
@@ -139,8 +140,9 @@ public class AccountCreateActivity extends BaseActivity {
 
                         // affichaga de l'alertdialog pendant à nouveau 5s pour avertir l(user de valider son email
                     } else {
-                        if (!mNom.getText().toString().isEmpty() && !mPrenom.getText().toString().isEmpty() && !mEmail.getText().toString().isEmpty() && isValidEmail(mEmail.getText()) && !mPassword.getText().toString().isEmpty()) {
-                            System.out.println("nok");
+                        if (!mNom.getText().toString().isEmpty() && !mPrenom.getText().toString().isEmpty() &&
+                                !mEmail.getText().toString().isEmpty() && isValidEmail(mEmail.getText())
+                                && !mPassword.getText().toString().isEmpty()) {
                             alertDialogValidationEmail();
                         } else verificationChampsVides();
                     }
@@ -281,7 +283,8 @@ public class AccountCreateActivity extends BaseActivity {
      */
     private void goToAdaptedActivity() {
 
-        setupDb().collection("users").whereEqualTo("email", mEmail.getText().toString()).addSnapshotListener(this, new EventListener<QuerySnapshot>() {
+        setupDb().collection("users").whereEqualTo("email", mEmail.getText().toString())
+                .addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                 // SI USER EXISTE
@@ -338,34 +341,37 @@ public class AccountCreateActivity extends BaseActivity {
      */
     private void alertDialogValidationEmail() {
 
-        if (getCurrentUser() != null) Objects.requireNonNull(getCurrentUser()).reload();
+        Objects.requireNonNull(getCurrentUser()).reload();
+        if (!getCurrentUser().isEmailVerified()) {
 
-        AlertDialog.Builder adb = new AlertDialog.Builder(this);
-        adb.setTitle("Sécurité !");
+            AlertDialog.Builder adb = new AlertDialog.Builder(this);
+            adb.setTitle("Sécurité !");
 
-        // ajouter une couleur à l'icon de warning
-        Drawable warning = getResources().getDrawable(android.R.drawable.ic_dialog_alert);
-        ColorFilter filter = new LightingColorFilter(Color.RED, Color.BLUE);
-        warning.setColorFilter(filter);
-        adb.setIcon(warning);
+            // ajouter une couleur à l'icon de warning
+            Drawable warning = getResources().getDrawable(android.R.drawable.ic_dialog_alert);
+            ColorFilter filter = new LightingColorFilter(Color.RED, Color.BLUE);
+            warning.setColorFilter(filter);
+            adb.setIcon(warning);
 
-        adb.setMessage("Avant de pouvoir créer votre compte, vous devez valider votre adresse mail via le lien qui vous a été envoyé à : '" +
-                Objects.requireNonNull(getCurrentUser()).getEmail() + "'");
-        adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                verifEmailUser();
+            adb.setMessage("Avant de pouvoir créer votre compte, vous devez valider votre adresse mail via le lien qui vous a été envoyé à : '" +
+                    Objects.requireNonNull(getCurrentUser()).getEmail() + "'");
+            adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    Objects.requireNonNull(getCurrentUser()).reload();
+                    verifEmailUser();
                 }
-        });
-        adb.setNegativeButton("CHANGER D'ADRESSE MAIL ?", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                deleteUserAuth();
-                signOutUserFromFirebase();
-                Intent intent = new Intent(AccountCreateActivity.this, ConnectionActivity.class);
-                startActivity(intent);
-            }
-        });
-        adb.show();
+            });
+            adb.setNegativeButton("CHANGER D'ADRESSE MAIL ?", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    deleteUserAuth();
+                    signOutUserFromFirebase();
+                    Intent intent = new Intent(AccountCreateActivity.this, ConnectionActivity.class);
+                    startActivity(intent);
+                }
+            });
+            adb.show();
+        }
     }
 
     /**
@@ -392,10 +398,9 @@ public class AccountCreateActivity extends BaseActivity {
 
         if (getCurrentUser() != null) Objects.requireNonNull(getCurrentUser()).reload();
         //Afin de valider son formulaire, l'user devra cliquer sur la notif et il recevra alors automatiquement le token via Firebase
-        if (!Objects.requireNonNull(
-                getCurrentUser()).isEmailVerified()) {
+        if (!Objects.requireNonNull(getCurrentUser()).isEmailVerified()) {
             Objects.requireNonNull(getCurrentUser()).sendEmailVerification(actionCodeSettings)
-                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    .addOnCompleteListener(this, new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
 
@@ -406,9 +411,9 @@ public class AccountCreateActivity extends BaseActivity {
                                         Toast.LENGTH_LONG).show();
                             } else {
                                 Log.e("TAG", "sendEmailVerification", task.getException());
-                              /*  Toast.makeText(getBaseContext().getApplicationContext(),
+                                Toast.makeText(getApplicationContext(),
                                         "Echec de l'envoi de vérification d'email !",
-                                        Toast.LENGTH_LONG).show();*/
+                                        Toast.LENGTH_LONG).show();
                             }
                         }
                     });
@@ -505,6 +510,8 @@ public class AccountCreateActivity extends BaseActivity {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
                                     Toast.makeText(AccountCreateActivity.this, "ERROR" + e.toString(), Toast.LENGTH_LONG).show();
+                                    deleteUserAuth();
+                                    signOutUserFromFirebase();
                                     Log.d("TAG", e.toString());
                                 }
                             });

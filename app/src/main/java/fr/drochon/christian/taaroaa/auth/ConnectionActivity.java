@@ -46,23 +46,6 @@ public class ConnectionActivity extends BaseActivity {
     // LIFECYCLE
     // --------------------
 
-    /**
-     * Verification de la validité de l'adresse email par la reponse au token envoyé
-     * par firebase à un nouvel user, de meniere à s'assurer que son adresse email
-     * soit vlaide (ce qi l'erreur la plis courante).
-     *
-     * @param target adresse email
-     * @return validité ou non de l'adresse email recupérée
-     */
-    private static boolean isValidEmail(CharSequence target) {
-        return target != null && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
-    }
-
-
-    // --------------------
-    // UI
-    // --------------------
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,7 +57,7 @@ public class ConnectionActivity extends BaseActivity {
         Button valid = findViewById(R.id.creation_identifiants_btn);
         // passage de bundle depuis la connexion pour afficher les caracteristqiues d'un user connecté
 
-        //APPLI BASIQUE
+        //TOOLBAR
         configureToolbar();
         giveToolbarAName(R.string.creation_compte);
 
@@ -101,6 +84,18 @@ public class ConnectionActivity extends BaseActivity {
     @Override
     public int getFragmentLayout() {
         return 0;
+    }
+
+    /**
+     * Verification de la validité de l'adresse email par la reponse au token envoyé
+     * par firebase à un nouvel user, de meniere à s'assurer que son adresse email
+     * soit vlaide (ce qi l'erreur la plis courante).
+     *
+     * @param target adresse email
+     * @return validité ou non de l'adresse email recupérée
+     */
+    private static boolean isValidEmail(CharSequence target) {
+        return target != null && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
     }
 
     /**
@@ -140,6 +135,8 @@ public class ConnectionActivity extends BaseActivity {
         // Test performance de l'update d'user en bdd
         final Trace myTrace = FirebasePerformance.getInstance().newTrace("connectionWithEmailAndPassword_trace");
         myTrace.start();
+
+        Objects.requireNonNull(getCurrentUser()).reload();
 
         // recuperation de la bdd FirebaseAuth avec en param l'app taaroaa
         final FirebaseAuth auth = FirebaseAuth.getInstance(FirebaseFirestore.getInstance().getApp());
@@ -182,7 +179,7 @@ public class ConnectionActivity extends BaseActivity {
      * Methode permettant d'envoyer un email via un token pour la confirmation d'adresse mail d'un nouvek utilisateur
      */
     protected void verifEmailUser() {
-        if (getCurrentUser() != null) Objects.requireNonNull(getCurrentUser()).reload();
+
 
         // un ActionCodeSetting est necessaire à Firebase por savoir à qui envoyer l'email de confilration
         //et quel type de message. Ainsi, l'user recevra un lien de validation qu'il devra soumettre dans une
@@ -202,6 +199,7 @@ public class ConnectionActivity extends BaseActivity {
                         "19") // minimum SDK
                 .build();
 
+        Objects.requireNonNull(getCurrentUser()).reload();
         //Afin de valider son formulaire, l'user devra cliquer sur la notif et il recevra alors automatiquement le token via Firebase
         if (!Objects.requireNonNull(
                 getCurrentUser()).isEmailVerified()) {
@@ -242,10 +240,13 @@ public class ConnectionActivity extends BaseActivity {
                         List<DocumentSnapshot> ds = queryDocumentSnapshots.getDocuments();
                         for (int i = 0; i < ds.size(); i++) {
                             if (ds.get(i).exists()) {
-                                User user = new User(Objects.requireNonNull(ds.get(i).get("uid")).toString(), Objects.requireNonNull(ds.get(i).get("nom")).toString(),
+                                User user = new User(Objects.requireNonNull(ds.get(i).get("uid")).toString(),
+                                        Objects.requireNonNull(ds.get(i).get("nom")).toString(),
                                         Objects.requireNonNull(ds.get(i).get("prenom")).toString(),
-                                        Objects.requireNonNull(ds.get(i).get("licence")).toString(), Objects.requireNonNull(ds.get(i).get("email")).toString(),
-                                        Objects.requireNonNull(ds.get(i).get("niveau")).toString(), Objects.requireNonNull(ds.get(i).get("fonction")).toString());
+                                        Objects.requireNonNull(ds.get(i).get("licence")).toString(),
+                                        Objects.requireNonNull(ds.get(i).get("email")).toString(),
+                                        Objects.requireNonNull(ds.get(i).get("niveau")).toString(),
+                                        Objects.requireNonNull(ds.get(i).get("fonction")).toString());
                                 Intent intent = new Intent(ConnectionActivity.this, AccountModificationActivity.class).putExtra("user", user);
                                 startActivity(intent);
                                 break;
