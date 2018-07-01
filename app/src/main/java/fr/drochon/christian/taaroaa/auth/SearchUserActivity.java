@@ -20,7 +20,6 @@ import com.google.firebase.perf.metrics.Trace;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import fr.drochon.christian.taaroaa.R;
@@ -34,6 +33,7 @@ public class SearchUserActivity extends BaseActivity {
     // FOR DATA
     private AdapterSearchedUser mAdapterSearchedUser;
     private List<User> listUsers;
+    private User modifSummaryUser;
 
 
     // --------------------
@@ -54,8 +54,9 @@ public class SearchUserActivity extends BaseActivity {
         final Trace myTrace = FirebasePerformance.getInstance().newTrace("searchUserActivityShowAllUsers_trace");
         myTrace.start();
 
-        getListUsers();
+
         configureRecyclerView();
+        //getListUsers();
         myTrace.stop();
 
         configureToolbar();
@@ -193,11 +194,14 @@ public class SearchUserActivity extends BaseActivity {
                 // Avec les uid, il ne peut y avoir de doublon, on peut donc etre sur qu'il n'y a qu'un seule doc qui existe s'il en existe un.
                 if (documentSnapshots != null) {
                     if (documentSnapshots.size() != 0) {
-                        Log.e("TAG", "Le document existe !");
-                        // liste des docs
-                        readDataInList(documentSnapshots.getDocuments());
+                        List<DocumentSnapshot> users = documentSnapshots.getDocuments();
+                        for (int i = 0; i < users.size(); i++) {
+                            Log.e("TAG", "Le document existe !");
+                            // liste des docs
+                            readDataInList(users);
 
-                        myTrace2.stop();
+                            myTrace2.stop();
+                        }
                     }
                 }
             }
@@ -234,10 +238,16 @@ public class SearchUserActivity extends BaseActivity {
         return mQ;
     }
 
-    /**
+/*    *//**
      * Methode permettant de remplir la liste de tous les utilisateurs contenus dans la bdd
-     */
+     *//*
     private void getListUsers() {
+        // recup de l'user passé depuis l'activité SummaryActivity
+        Intent intent1 = getIntent();
+        if (intent1 != null) {
+            modifSummaryUser = (User) Objects.requireNonNull(intent1.getExtras()).getSerializable("modifSummaryUser");
+        }
+
         setupDb().collection("users").addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
@@ -247,15 +257,17 @@ public class SearchUserActivity extends BaseActivity {
                         for (int i = 0; i < ds.size(); i++) {
                             Map<String, Object> map = ds.get(i).getData();
                             if (map != null) {
-                                User user = new User(map.get("uid").toString(), map.get("nom").toString(), map.get("prenom").toString());
-                                listUsers.add(user);
+                                if (!map.get("uid").toString().equals(modifSummaryUser.getUid())) {
+                                    User user = new User(map.get("uid").toString(), map.get("nom").toString(), map.get("prenom").toString());
+                                    listUsers.add(user);
+                                }
                             }
                         }
                     }
                 }
             }
         });
-    }
+    }*/
 
     /**
      * Methode permettant de recuperer l'integralité de la liste des snapshots et d'en faire des objets "User"
@@ -267,7 +279,7 @@ public class SearchUserActivity extends BaseActivity {
         // un DocumentReference fait référence à un emplacement de document dans une base de données Firestore et peut être utilisé pour
         // écrire, lire ou écouter l'emplacement. Il peut exister ou non un document à l'emplacement référencé.
         for (int i = 0; i < documentSnapshot.size(); i++) {
-            DocumentSnapshot doc = documentSnapshot.get(i); //Un DocumentSnapshot contient des données lues à partir d'un document dans votre base de données Firestore.
+            DocumentSnapshot doc = documentSnapshot.get(i); //Un DocumentSnapshot contient des données lues à partir d'un document dans la base de données Firestore.
             new User(doc.getId(), Objects.requireNonNull(doc.get("nom")).toString(), Objects.requireNonNull(doc.get("prenom"))
                     .toString(), Objects.requireNonNull(doc.get("licence")).toString(), Objects.requireNonNull(doc.get("email")).toString(),
                     Objects.requireNonNull(doc.get("niveau")).toString(), Objects.requireNonNull(doc.get("fonction")).toString());

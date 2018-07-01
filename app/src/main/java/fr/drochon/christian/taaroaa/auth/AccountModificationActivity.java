@@ -67,6 +67,7 @@ public class AccountModificationActivity extends BaseActivity {
     private Button mModificationCompte;
     private Button mSuppressionCompte;
     private TextView mTitrePage;
+    private TextView mTitrePassword;
 
 
     @Override
@@ -84,6 +85,7 @@ public class AccountModificationActivity extends BaseActivity {
         mFonctionAuClubspinner = findViewById(R.id.fonction_spinner);
         mEmail = findViewById(R.id.email_txt);
         mPassword = findViewById(R.id.password_txt);
+        mTitrePassword = findViewById(R.id.titre_password_txt);
         mProgressBar = findViewById(R.id.progress_bar);
         mModificationCompte = findViewById(R.id.modificiation_compte_btn);
         mSuppressionCompte = findViewById(R.id.suppression_compte_btn);
@@ -268,9 +270,8 @@ public class AccountModificationActivity extends BaseActivity {
 
 
     // --------------------
-    // REST REQUETES
+    // UI
     // --------------------
-
 
     /**
      * Methode permettant de donner acces à la modification d'un adherent si l'utilisateur connecté est
@@ -300,7 +301,7 @@ public class AccountModificationActivity extends BaseActivity {
             user = (User) Objects.requireNonNull(intent2.getExtras()).getSerializable("user");
         }
 
-        // affichage d'un user venant juste d'etre créé
+    /*    // affichage d'un user venant juste d'etre créé
         if (user != null) {
             // DESIGN
             mTitrePage.setText(R.string.bienvenue_sur_votre_compte);
@@ -325,9 +326,9 @@ public class AccountModificationActivity extends BaseActivity {
                 mEmail.setText(Objects.requireNonNull(user.getEmail()));
                 mPassword.setText(user.getPassword());
             }
-        }
+        }*/
 
-        // user deja créé provenant du sommaire ou de la recherche d'un adherent
+        // user deja créé provenant du sommaire
         // si l'intent n'arrive pas de la recherche d'un encadrant, alors, c'est qu'elle arrive du sommaire.(utilisateur dejà connecté, donc)
         if (summaryUser != null && searchedUser == null) {
             // UN moniteur est sur son compte
@@ -353,7 +354,7 @@ public class AccountModificationActivity extends BaseActivity {
                 mEmail.setText(Objects.requireNonNull(summaryUser.getEmail()));
                 mPassword.setText(summaryUser.getPassword());
             }
-            // il n'y a pas eu de recherche de plongeur par un encadrant. On affiche les caracteristique d'un plongeur classique
+           /* // il n'y a pas eu de recherche de plongeur par un encadrant. On affiche les caracteristique d'un plongeur classique
             else {
                 // DESIGN
                 mTitrePage.setText(R.string.bienvenue_sur_votre_compte);
@@ -378,15 +379,14 @@ public class AccountModificationActivity extends BaseActivity {
                     mEmail.setText(Objects.requireNonNull(summaryUser.getEmail()));
                     mPassword.setText(summaryUser.getPassword());
                 }
-            }
+            }*/
         }
         //l'intent arrive depuis l'activité de recherche. La mise à jour d'un adherent se fait ici par un encadrant
         else {
-            if (summaryUser != null) {
+            if (searchedUser != null) {
                 // DESIGN
-                if (summaryUser.getFonction() != null && summaryUser.getNom() != null && summaryUser.getPrenom() != null) {
-                    if (summaryUser.getFonction().equals("Initiateur") || summaryUser.getFonction().equals("Moniteur") &&
-                            !summaryUser.getNom().equals(searchedUser.getNom()) && !summaryUser.getPrenom().equals(searchedUser.getPrenom())) {
+                if (searchedUser.getFonction() != null && searchedUser.getNom() != null && searchedUser.getPrenom() != null
+                        && searchedUser.getEmail() != null && searchedUser.getUid() != null && searchedUser.getNiveau() != null) {
                         mTitrePage.setText(R.string.modifiez_le_compte_d_un_adherent);
                         //mItemView.setVisible(false);
                         mPrenom.setEnabled(false);
@@ -394,61 +394,30 @@ public class AccountModificationActivity extends BaseActivity {
                         mLicence.setEnabled(false);
                         mNiveauPlongeespinner.setEnabled(true);
                         mLinearLayoutFonctionAdherent.setVisibility(View.VISIBLE);
+                        mTitrePassword.setVisibility(View.GONE);
+                        mPassword.setVisibility(View.GONE);
                         mProgressBar.setVisibility(View.GONE);
                         //Affichage du bouton de suppression uniquement aux proprietaires d'un compte
                         mSuppressionCompte.setVisibility(View.GONE);
 
                         // DATAS
-                        uid = summaryUser.getUid();
-                        mPrenom.setText(summaryUser.getPrenom());
-                        mNom.setText(summaryUser.getNom());
-                        mLicence.setText(summaryUser.getLicence());
-                        mNiveauPlongeespinner.setSelection(getIndexSpinner(mNiveauPlongeespinner, Objects.requireNonNull(summaryUser.getNiveau())));
-                        mFonctionAuClubspinner.setSelection(getIndexSpinner(mFonctionAuClubspinner, Objects.requireNonNull(summaryUser.getFonction())));
-                        mEmail.setText(Objects.requireNonNull(summaryUser.getEmail()));
-                        mPassword.setText(summaryUser.getPassword());
+                        uid = searchedUser.getUid();
+                        mPrenom.setText(searchedUser.getPrenom());
+                        mNom.setText(searchedUser.getNom());
+                        mLicence.setText(searchedUser.getLicence());
+                        mNiveauPlongeespinner.setSelection(getIndexSpinner(mNiveauPlongeespinner, Objects.requireNonNull(searchedUser.getNiveau())));
+                        mFonctionAuClubspinner.setSelection(getIndexSpinner(mFonctionAuClubspinner, Objects.requireNonNull(searchedUser.getFonction())));
+                        mEmail.setText(Objects.requireNonNull(searchedUser.getEmail()));
+                        mPassword.setText(searchedUser.getPassword());
                     }
                 }
-            }
         }
     }
 
 
-    // user actuellement connecté dans l'app
-    // creation de la fonction d'un plongeur si elle n'existe pas, notamment
-    // lorsuq'un user vient juste de creer son compte et veut acceder à son compte tout de suite apres (depuis la tuile du sommaire)
-               /* Object fonction;
-                if (searchedUser.getFonction() == null) fonction = "Plongeur";
-                else fonction = searchedUser.getFonction();
-
-                Object nom = searchedUser.getNom();
-                Object prenom = searchedUser.getPrenom();*/
-
-    // Modification d'un compte adherent par un encadrant
-                /*if (summaryUser != null) {
-                    if (summaryUser.getFonction() != null && summaryUser.getNom() != null && summaryUser.getPrenom() != null) {
-                        if (summaryUser.getFonction().equals("Initiateur") || summaryUser.getFonction().equals("Moniteur") &&
-                                !summaryUser.getNom().equals(searchedUser.getNom()) && !summaryUser.getPrenom().equals(searchedUser.getPrenom())) {
-                            mTitrePage.setText(R.string.modifiez_le_compte_d_un_adherent);
-                            //mItemView.setVisible(false);
-                            mPrenom.setEnabled(false);
-                            mNom.setEnabled(false);
-                            mLicence.setEnabled(false);
-                            mNiveauPlongeespinner.setEnabled(true);
-                            mLinearLayoutFonctionAdherent.setVisibility(View.VISIBLE);
-                            mProgressBar.setVisibility(View.GONE);
-                            //Affichage du bouton de suppression uniquement aux proprietaires d'un compte
-                            mSuppressionCompte.setVisibility(View.GONE);
-                        }
-                        // moniteur etant sur son propre compte
-                    } else {
-
-                    }
-                }
-            }*/
-    //});
-    //}
-    //}
+    // --------------------
+    // REST REQUESTS
+    // --------------------
 
     /**
      * Cette methode ne comprend pas l'update d'une fonction dans le club, car seul les encadrants du club peuvent

@@ -27,6 +27,7 @@ public class SearchedUserViewHolder extends RecyclerView.ViewHolder {
     TextView mPrenomSearched;
     @BindView(R.id.list_cell_email)
     TextView mEmailSearched;
+    private User modifSummaryUser;
 
     /**
      * Contructeur qui prend en param la vue affichée.
@@ -52,8 +53,8 @@ public class SearchedUserViewHolder extends RecyclerView.ViewHolder {
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                for (User u: mSearchedUserList
-                     ) {
+                for (User u : mSearchedUserList
+                        ) {
                     Intent intent = new Intent(v.getContext(), AccountModificationActivity.class).putExtra("searchedUser", u);
                     v.getContext().startActivity(intent);
                 }
@@ -62,15 +63,23 @@ public class SearchedUserViewHolder extends RecyclerView.ViewHolder {
     }
 
     /**
-     * Methode appellée via l'adapter. Cette methode mettra à jour les differentes view du viewholder en fonction de l'utilisateur connecté
+     * Methode appellée via l'adapter. Cette methode mettra à jour les differentes view du viewholder en fonction de l'utilisateur connecté.
+     * Toutes les personnes de la bdd seront affichées excepté les moniteurs. Un encadrant ne pourra donc pas se modifier lui
+     * meme puisque son nom ne s'affiche pas dans la liste des rehcerches, ni aucun autres moniteurs. Chaque moniteur gere son compte.
      *
      * @param user utilisateur
      */
     public void updateWithUser(final User user) {
+
         // ajout des Covoit dans une liste afin de les retrouver pour l'affichage de chaque cours particulier sous forme de notification
         mSearchedUserList.add(user);
 
         for (int i = 0; i < mSearchedUserList.size(); i++) {
+            if(user.getFonction().equals("Moniteur")) {
+                mPrenomSearched.setVisibility(View.GONE);
+                mNomSearched.setVisibility(View.GONE);
+                mEmailSearched.setVisibility(View.GONE);
+            }
             mPrenomSearched.setText(user.getPrenom());
             mNomSearched.setText(user.getNom());
             mEmailSearched.setText(user.getEmail());

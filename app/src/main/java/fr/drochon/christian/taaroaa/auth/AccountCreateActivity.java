@@ -109,10 +109,10 @@ public class AccountCreateActivity extends BaseActivity {
 
         this.getConnectedUser();
 
-        // Fonction de verification pour la saisie d'un email valide via un
-        // token envoyé sur le compte mail designé
-        if(Objects.requireNonNull(getCurrentUser()).isEmailVerified())
-        alertDialogValidationEmail();
+        // PAS LA PEINE DE VERIFIER LE DOUBLON DE CREATION D'EMAIL, LE WIDGET DE CONNEXION LE FAIRE DEJA
+        //verifEmailAndPassword();
+        // Affichage d'un formulaire de creation d'user ou affichage de l'user s'il existe
+        goToAdaptedActivity();
 
         // --------------------
         // LISTENERS
@@ -274,21 +274,16 @@ public class AccountCreateActivity extends BaseActivity {
     }
 
     // --------------------
-    // VALIDATION EMAIL PAR LIEN ENVOYE DEPUIS FIREBASE
+    // CREATION EMAIL ET MOT DE PASSE + VERIF
     // --------------------
 
     /**
-     * Methode permettant à un nouvel utilisateur de se creer un compte, puisde recevoir un token afin de valider
-     * l'adresse qu'il a saisi. La validation du lien recu permettra de cofirmer que l'adresse email est valide et de creer un
-     * compte au nouvel utilisateur.
+     * Methode permettant à un nouvel utilisateur de se creer un email et password. En cas d'email dejà pris,
+     * il sera demandé de choisir une autre adresse email.
      */
-    private void connectToFirebaseWithEmailAndPassword() {
-        // Test performance de l'update d'user en bdd
-        final Trace myTrace = FirebasePerformance.getInstance().newTrace("connectionWithEmailAndPassword_trace");
-        myTrace.start();
+    private void verifEmailAndPassword() {
 
-        // recuperation de la bdd FirebaseAuth avec en param l'app taaroaa
-        final FirebaseAuth auth = FirebaseAuth.getInstance(FirebaseFirestore.getInstance().getApp());
+        FirebaseAuth auth = FirebaseAuth.getInstance(FirebaseFirestore.getInstance().getApp());
 
         // creation d'un user avec email et password en bdd FirebaseAuth
         auth.createUserWithEmailAndPassword(this.mEmail.getText().toString(), mPassword.getText().toString())
@@ -296,11 +291,10 @@ public class AccountCreateActivity extends BaseActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            // appel de la methode de verification d'email depuis firebase
-                            AccountCreateActivity accountCreateActivity = new AccountCreateActivity();
-                            accountCreateActivity.verifEmailUser();
+                            System.out.println("ok");
+                         /*   MainActivity mainActivity = new MainActivity();
+                            mainActivity.onResume();*/
 
-                            myTrace.stop();
                         } else {
                             // Dans le cas ou l'user ne renseignerait pas cette notification lui informant de valider son adresse,
                             // il ne pourra pas se creer de compte.
@@ -342,10 +336,13 @@ public class AccountCreateActivity extends BaseActivity {
                         List<DocumentSnapshot> ds = queryDocumentSnapshots.getDocuments();
                         for (int i = 0; i < ds.size(); i++) {
                             if (ds.get(i).exists()) {
-                                User user = new User(Objects.requireNonNull(ds.get(i).get("uid")).toString(), Objects.requireNonNull(ds.get(i).get("nom")).toString(),
+                                User user = new User(Objects.requireNonNull(ds.get(i).get("uid")).toString(),
+                                        Objects.requireNonNull(ds.get(i).get("nom")).toString(),
                                         Objects.requireNonNull(ds.get(i).get("prenom")).toString(),
-                                        Objects.requireNonNull(ds.get(i).get("licence")).toString(), Objects.requireNonNull(ds.get(i).get("email")).toString(),
-                                        Objects.requireNonNull(ds.get(i).get("niveau")).toString(), Objects.requireNonNull(ds.get(i).get("fonction")).toString());
+                                        Objects.requireNonNull(ds.get(i).get("licence")).toString(),
+                                        Objects.requireNonNull(ds.get(i).get("email")).toString(),
+                                        Objects.requireNonNull(ds.get(i).get("niveau")).toString(),
+                                        Objects.requireNonNull(ds.get(i).get("fonction")).toString());
                                 Intent intent = new Intent(AccountCreateActivity.this, AccountModificationActivity.class).putExtra("user", user);
                                 startActivity(intent);
                                 break;
@@ -354,7 +351,8 @@ public class AccountCreateActivity extends BaseActivity {
                     }
                     // SI USER N'EXISTE PAS CAR IL N' PAS VALIDE SON ADRESSE OU S4EST TROMPE DANS LE NOM DE SON ADRESSE  MAIL
                     else if (queryDocumentSnapshots.size() == 0) {
-                        connectToFirebaseWithEmailAndPassword();
+                        //connectToFirebaseWithEmailAndPassword();
+                        alertDialogValidationEmail();
                         //ici, on peut avoir le choix de lui rappeller qu'il souhaitait souscrire un compte par
                         // une notification, un email ou de le laisser transuille!
 
@@ -386,6 +384,7 @@ public class AccountCreateActivity extends BaseActivity {
      * meme effectuée, ne serait jamais prise en compte par firebase)
      */
     private void alertDialogValidationEmail() {
+
         if (getCurrentUser() != null) Objects.requireNonNull(getCurrentUser()).reload();
 
         AlertDialog.Builder adb = new AlertDialog.Builder(this);
@@ -420,8 +419,6 @@ public class AccountCreateActivity extends BaseActivity {
      * Methode permettant d'envoyer un email via un token pour la confirmation d'adresse mail d'un nouvek utilisateur
      */
     protected void verifEmailUser() {
-        if (getCurrentUser() != null) Objects.requireNonNull(getCurrentUser()).reload();
-        final FirebaseAuth auth = FirebaseAuth.getInstance(FirebaseFirestore.getInstance().getApp());
         // un ActionCodeSetting est necessaire à Firebase por savoir à qui envoyer l'email de confilration
         //et quel type de message. Ainsi, l'user recevra un lien de validation qu'il devra soumettre dans une
         //durée impartie. La validation de ce lien de l'user validera automatiquement la creation de son compte.
@@ -431,7 +428,7 @@ public class AccountCreateActivity extends BaseActivity {
         // the list of OAuth redirect domains if it is not already there.
         ActionCodeSettings actionCodeSettings = ActionCodeSettings.newBuilder()
                 .setUrl("https://taaroaa-fe93c.firebaseapp.com/?page/Auth?mode=%3Caction%3E&oobCode=%3Ccode%3E")
-                .setHandleCodeInApp(true)
+                .setHandleCodeInApp(false)
                 //.setIOSBundleId("com.example.ios")
                 .setAndroidPackageName(
                         "fr.drochon.christian.taaroaa",// Nom du package unique dde li'application. Ainsi ,des emails
@@ -440,6 +437,7 @@ public class AccountCreateActivity extends BaseActivity {
                         "19") // minimum SDK
                 .build();
 
+        if (getCurrentUser() != null) Objects.requireNonNull(getCurrentUser()).reload();
         //Afin de valider son formulaire, l'user devra cliquer sur la notif et il recevra alors automatiquement le token via Firebase
         if (!Objects.requireNonNull(
                 getCurrentUser()).isEmailVerified()) {
@@ -450,9 +448,9 @@ public class AccountCreateActivity extends BaseActivity {
 
                             if (task.isSuccessful()) {
                                 System.out.println("ok");
-                                /*Toast.makeText(getBaseContext().getApplicationContext(),
+                                Toast.makeText(getApplicationContext(),
                                         "Verification d'email envoyée à " + Objects.requireNonNull(getCurrentUser()).getEmail(),
-                                        Toast.LENGTH_LONG).show();*/
+                                        Toast.LENGTH_LONG).show();
                             } else {
                                 Log.e("TAG", "sendEmailVerification", task.getException());
                               /*  Toast.makeText(getBaseContext().getApplicationContext(),
@@ -463,7 +461,7 @@ public class AccountCreateActivity extends BaseActivity {
                     });
         }
         else {
-            Toast.makeText(this, "Votre adresse email estvalide. Vous pouvez désormais terminer la création de votre compte !",
+            Toast.makeText(this, "Votre adresse email est valide. Vous pouvez désormais terminer la création de votre compte !",
                     Toast.LENGTH_LONG).show();
         }
     }

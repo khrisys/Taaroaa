@@ -9,7 +9,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -120,10 +119,11 @@ public class SummaryActivity extends BaseActivity {
             }
         });
 
-
+        // recherche d'un adherent par un encadrant
         mModifCompte.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 Intent intent = new Intent(SummaryActivity.this, SearchUserActivity.class);
                 startActivity(intent);
             }

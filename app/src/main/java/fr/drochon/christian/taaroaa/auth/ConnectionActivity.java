@@ -14,6 +14,7 @@ import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -94,6 +95,10 @@ public class ConnectionActivity extends BaseActivity {
         });
     }
 
+    // --------------------
+    // UI
+    // --------------------
+
     @Override
     public int getFragmentLayout() {
         return 0;
@@ -124,7 +129,7 @@ public class ConnectionActivity extends BaseActivity {
     }
 
     // --------------------
-    // VALIDATION EMAIL PAR LIEN ENVOYE DEPUIS FIREBASE
+    // GESTION VALIDATION EMAIL ET REINITILAISATION MOT DE PASSE
     // --------------------
 
     /**
@@ -179,7 +184,7 @@ public class ConnectionActivity extends BaseActivity {
      */
     protected void verifEmailUser() {
         if (getCurrentUser() != null) Objects.requireNonNull(getCurrentUser()).reload();
-        final FirebaseAuth auth = FirebaseAuth.getInstance(FirebaseFirestore.getInstance().getApp());
+
         // un ActionCodeSetting est necessaire à Firebase por savoir à qui envoyer l'email de confilration
         //et quel type de message. Ainsi, l'user recevra un lien de validation qu'il devra soumettre dans une
         //durée impartie. La validation de ce lien de l'user validera automatiquement la creation de son compte.
@@ -189,7 +194,7 @@ public class ConnectionActivity extends BaseActivity {
         // the list of OAuth redirect domains if it is not already there.
         ActionCodeSettings actionCodeSettings = ActionCodeSettings.newBuilder()
                 .setUrl("https://taaroaa-fe93c.firebaseapp.com/?page/Auth?mode=%3Caction%3E&oobCode=%3Ccode%3E")
-                .setHandleCodeInApp(false)
+                .setHandleCodeInApp(true)
                 //.setIOSBundleId("com.example.ios")
                 .setAndroidPackageName(
                         "fr.drochon.christian.taaroaa",// Nom du package unique dde li'application. Ainsi ,des emails
@@ -208,9 +213,9 @@ public class ConnectionActivity extends BaseActivity {
 
                             if (task.isSuccessful()) {
 
-                                /*Toast.makeText(getBaseContext().getApplicationContext(),
-                                        "Verification d'email envoyée à " + Objects.requireNonNull(getCurrentUser()).getEmail(),
-                                        Toast.LENGTH_LONG).show();*/
+                                Toast.makeText(ConnectionActivity.this,
+                                        "Verification d'email envoyée à " + Objects.requireNonNull(getCurrentUser()).getEmail() + "\"",
+                                        Toast.LENGTH_LONG).show();
                             } else {
                                 Log.e("TAG", "sendEmailVerification", task.getException());
                               /*  Toast.makeText(getBaseContext().getApplicationContext(),
@@ -219,9 +224,6 @@ public class ConnectionActivity extends BaseActivity {
                             }
                         }
                     });
-        }
-        else {
-            // create user
         }
     }
 
@@ -257,7 +259,7 @@ public class ConnectionActivity extends BaseActivity {
                         //ici, on peut avoir le choix de lui rappeller qu'il souhaitait souscrire un compte par
                         // une notification, un email ou de le laisser transuille!
 
-                        //??????? //TODO A decommenter ou pas selon le choix du client
+                        //TODO A decommenter ou pas selon le choix du client
                      /*   AlertDialog.Builder adb = new AlertDialog.Builder(ConnectionActivity.this);
                         adb.setTitle("Adresse email incorrecte !");
                         // ajouter une couleur à l'icon de warning
