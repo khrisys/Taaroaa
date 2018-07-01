@@ -112,6 +112,7 @@ public class AccountCreateActivity extends BaseActivity {
 
         // Affichage d'un formulaire de creation d'user ou affichage de l'user s'il existe
         goToAdaptedActivity();
+        if (getCurrentUser() != null) Objects.requireNonNull(getCurrentUser()).reload();
 
         // --------------------
         // LISTENERS
@@ -296,7 +297,7 @@ public class AccountCreateActivity extends BaseActivity {
                                         Objects.requireNonNull(ds.get(i).get("email")).toString(),
                                         Objects.requireNonNull(ds.get(i).get("niveau")).toString(),
                                         Objects.requireNonNull(ds.get(i).get("fonction")).toString());
-                                Intent intent = new Intent(AccountCreateActivity.this, AccountModificationActivity.class).putExtra("user", user);
+                                Intent intent = new Intent(AccountCreateActivity.this, AccountModificationActivity.class).putExtra("createdUser", user);
                                 startActivity(intent);
                                 break;
                             }
@@ -304,7 +305,6 @@ public class AccountCreateActivity extends BaseActivity {
                     }
                     // SI USER N'EXISTE PAS CAR IL N' PAS VALIDE SON ADRESSE OU S4EST TROMPE DANS LE NOM DE SON ADRESSE  MAIL
                     else if (queryDocumentSnapshots.size() == 0) {
-                        //connectToFirebaseWithEmailAndPassword();
                         alertDialogValidationEmail();
                         //ici, on peut avoir le choix de lui rappeller qu'il souhaitait souscrire un compte par
                         // une notification, un email ou de le laisser transuille!

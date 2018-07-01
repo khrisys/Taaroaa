@@ -298,13 +298,13 @@ public class AccountModificationActivity extends BaseActivity {
         }
 
 
-        // recup de l'user passé par un intent depuis la classe ConnectionActivity
+        // recup de l'user passé par un intent depuis la classe AccountCreateActivity (un nouvel user)
         Intent intent2 = getIntent();
         if (intent2 != null) {
-            user = (User) Objects.requireNonNull(intent2.getExtras()).getSerializable("user");
+            user = (User) Objects.requireNonNull(intent2.getExtras()).getSerializable("createdUser");
         }
 
-    /*    // affichage d'un user venant juste d'etre créé
+        // affichage d'un user venant juste d'etre créé
         if (user != null) {
             // DESIGN
             mTitrePage.setText(R.string.bienvenue_sur_votre_compte);
@@ -329,7 +329,7 @@ public class AccountModificationActivity extends BaseActivity {
                 mEmail.setText(Objects.requireNonNull(user.getEmail()));
                 mPassword.setText(user.getPassword());
             }
-        }*/
+        }
 
         // user deja créé provenant du sommaire
         // si l'intent n'arrive pas de la recherche d'un encadrant, alors, c'est qu'elle arrive du sommaire.(utilisateur dejà connecté, donc)
@@ -357,7 +357,8 @@ public class AccountModificationActivity extends BaseActivity {
                 mEmail.setText(Objects.requireNonNull(summaryUser.getEmail()));
                 mPassword.setText(summaryUser.getPassword());
             }
-           /* // il n'y a pas eu de recherche de plongeur par un encadrant. On affiche les caracteristique d'un plongeur classique
+            // il n'y a pas eu de recherche de plongeur par un encadrant. On affiche les caracteristique d'un plongeur, qui que ce soit
+            // mais il n'aura pas acces à la modif de fonction et de niveau
             else {
                 // DESIGN
                 mTitrePage.setText(R.string.bienvenue_sur_votre_compte);
@@ -382,7 +383,7 @@ public class AccountModificationActivity extends BaseActivity {
                     mEmail.setText(Objects.requireNonNull(summaryUser.getEmail()));
                     mPassword.setText(summaryUser.getPassword());
                 }
-            }*/
+            }
         }
         //l'intent arrive depuis l'activité de recherche. La mise à jour d'un adherent se fait ici par un encadrant
         else {

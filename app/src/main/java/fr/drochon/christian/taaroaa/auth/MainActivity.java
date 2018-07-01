@@ -75,9 +75,6 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
         Button creationCompte = findViewById(R.id.connection_valid_btn);
         Button deconnexion = findViewById(R.id.deconnexion_btn);
 
-        // lorsque je suis connecté, c'est que j'ai un compte et je n'ai pas besoin de voir le bouton "creer un compte"
-        if(isCurrentUserLogged()) creationCompte.setVisibility(View.GONE);
-
 
         // Souscription aux notifications
         FirebaseMessaging.getInstance().subscribeToTopic("courses");

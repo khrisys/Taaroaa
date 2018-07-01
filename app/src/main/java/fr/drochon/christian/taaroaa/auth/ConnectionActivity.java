@@ -78,7 +78,6 @@ public class ConnectionActivity extends BaseActivity {
         configureToolbar();
         giveToolbarAName(R.string.creation_compte);
 
-
         // --------------------
         // LISTENER
         // --------------------
@@ -194,12 +193,12 @@ public class ConnectionActivity extends BaseActivity {
         // the list of OAuth redirect domains if it is not already there.
         ActionCodeSettings actionCodeSettings = ActionCodeSettings.newBuilder()
                 .setUrl("https://taaroaa-fe93c.firebaseapp.com/?page/Auth?mode=%3Caction%3E&oobCode=%3Ccode%3E")
-                .setHandleCodeInApp(true)
+                .setHandleCodeInApp(true) //ouvre la notif dans le tel et pas sur le web
                 //.setIOSBundleId("com.example.ios")
                 .setAndroidPackageName(
                         "fr.drochon.christian.taaroaa",// Nom du package unique dde li'application. Ainsi ,des emails
                         // ne peuvent pas etree envoyés pour des autres applications par erreur.
-                        true,
+                        true, // va tenter d'installer l'app si elle n'est pâs installée sur le tel
                         "19") // minimum SDK
                 .build();
 
@@ -233,7 +232,7 @@ public class ConnectionActivity extends BaseActivity {
      * en bdd des utilisateurs, mais aussi un utilisateur de ka bdd de l'authentification de l'application.
      */
     private void goToAdaptedActivity() {
-
+        if (getCurrentUser() != null) Objects.requireNonNull(getCurrentUser()).reload();
         setupDb().collection("users").whereEqualTo("email", mEmail.getText().toString()).addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
