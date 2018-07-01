@@ -71,7 +71,6 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
 
 
         mTextViewHiddenForSnackbar = findViewById(R.id.test_coordinator);
-        TextView title = findViewById(R.id.connexion_presentation_txt);
         Button creationCompte = findViewById(R.id.connection_valid_btn);
         Button deconnexion = findViewById(R.id.deconnexion_btn);
 
