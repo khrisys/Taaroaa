@@ -91,7 +91,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      * Les photos dans les notifications peuvent être très attrayantes. Voici comment nous pouvons ajouter une image à notre notification push:
      * Simple method for image downloading
      *
-     * @return
+     * @return image
      */
     private Bitmap getBitmapfromUrl() {
         try {

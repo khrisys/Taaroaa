@@ -42,8 +42,8 @@ public class CovoiturageHelper {
     /**
      * Methode permettant de supprimer un covoiturage
      *
-     * @param id
-     * @return
+     * @param id id covoiturage
+     * @return covoiturage comportant l'id precisé en parametre
      */
     public static Task<Void> deleteCovoiturage(String id) {
         return CovoiturageHelper.getCovoituragesCollection().document(id).delete();

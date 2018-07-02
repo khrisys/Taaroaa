@@ -27,7 +27,7 @@ public class NotificationsService extends FirebaseMessagingService {
     /**
      * Le remoteMessage affiche ce que j'ecris en titre de message dans la bdd
      *
-     * @param remoteMessage
+     * @param remoteMessage message recu
      */
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
@@ -54,7 +54,7 @@ public class NotificationsService extends FirebaseMessagingService {
     /**
      * Methode permettant de creer et d'afficher les notifications provenant de la bdd messaging
      *
-     * @param messageBody
+     * @param messageBody corps du message de la notif
      */
     private void sendVisualNotification(String messageBody) {
 
@@ -105,7 +105,7 @@ public class NotificationsService extends FirebaseMessagingService {
      * le son, la lumière, la vibration, etc...) des notifications inscrites dans un canal, sans avoir besoin de les coder
      * dans votre application Android.
      *
-     * @param CHANNEL_ID
+     * @param CHANNEL_ID id de la chaine qui permettra à l'utilisateur d'un tel de personnaliser ses notifications à partir de Android 8
      */
     private void createNotificationChannel(String CHANNEL_ID) {
 

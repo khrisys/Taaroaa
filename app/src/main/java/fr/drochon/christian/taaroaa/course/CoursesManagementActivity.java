@@ -164,8 +164,8 @@ public class CoursesManagementActivity extends BaseActivity {
      * Fait appel au fichier xml menu pour definir les icones.
      * Definit differentes options dans le menu caché.
      *
-     * @param menu
-     * @return bool
+     * @param menu menu de la toolbar
+     * @return la toolbar
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -177,8 +177,8 @@ public class CoursesManagementActivity extends BaseActivity {
      * recuperation  du clic d'un user. On utilise un switch ici car il peut y avoir plusieurs options.
      * Surtout ne pas oublier le "true" apres chaque case sinon, ce sera toujours le dernier case qui sera executé!
      *
-     * @param item
-     * @return bool
+     * @param item item de la toolbar
+     * @return toolbar
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -219,7 +219,7 @@ public class CoursesManagementActivity extends BaseActivity {
      * Methode permettant d'afficher soit un bouton "creer un cours" s'il n'existe pas en bdd, soit d'afficher les informations
      * d'un cours en cas de modification d'un cours avec un bouton "modifier le cours"
      *
-     * @param uid
+     * @param uid id de l'user
      */
     private void createOrUpdateAffichage(final String uid) {
 
@@ -241,7 +241,7 @@ public class CoursesManagementActivity extends BaseActivity {
                 // cours + changement de la phrase du bouton
 
                 // test de performance : le calendrier n'est pas affiché
-                if(documentSnapshots != null) {
+                if (documentSnapshots != null) {
 
                     if (documentSnapshots.size() == 1) {
                         Log.e("TAG", "Le document existe !");
@@ -306,7 +306,7 @@ public class CoursesManagementActivity extends BaseActivity {
      * Methode permettant de generer une alarm dans le systeme du telephone de maniere à envoyer une notification à l'utilisateur
      * 2 heures avant que le cours ne demarre.
      *
-     * @param course
+     * @param course objet cours
      */
     private void alarmCours(Course course) {
 
@@ -411,7 +411,9 @@ public class CoursesManagementActivity extends BaseActivity {
         }
     }
 
-/*    *//**
+    /*    */
+
+    /**
      * Cette methode ne comprend pas l'update d'un cours dans le club, car seul les encadrants du club peuvent
      * le faire, et cette fonctionnalité est donc reservée à une fonction adherent particuliere.
      *//*
@@ -470,8 +472,8 @@ public class CoursesManagementActivity extends BaseActivity {
         /**
          * Créé une instance de DatePicker et la renvoi
          *
-         * @param savedInstanceState
-         * @return
+         * @param savedInstanceState instance de sauvegarde du tel
+         * @return calendrier
          */
         @NonNull
         @Override
@@ -508,8 +510,8 @@ public class CoursesManagementActivity extends BaseActivity {
         /**
          * Créé une nouvelle instance d'un datepicket et la renvoi
          *
-         * @param savedInstanceState
-         * @return
+         * @param savedInstanceState instance de sauvegarde du tel
+         * @return horloge
          */
         @NonNull
         @Override
@@ -525,9 +527,9 @@ public class CoursesManagementActivity extends BaseActivity {
         /**
          * Affichage de l'heure obtenue dans l'edittext
          *
-         * @param view
-         * @param hourOfDay
-         * @param minute
+         * @param view      horloge
+         * @param hourOfDay heure du jour
+         * @param minute    minute du jour
          */
         @SuppressLint("SetTextI18n")
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {

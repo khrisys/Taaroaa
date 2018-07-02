@@ -16,14 +16,16 @@ public class User implements Serializable {
     private String mFonction;
     private String mPassword;
 
-
+    /**
+     * Constrcteur par def aut utile à la serialisation des informations des users au travers des activités
+     */
     public User() {
     }
 
     /**
      * Constructeur permettant de retrouver un user par son uid
      *
-     * @param uid
+     * @param uid id de l'user
      */
     public User(String uid) {
         this.uid = uid;
@@ -33,9 +35,9 @@ public class User implements Serializable {
      * Methode servant à la recherche d'un utilisateur dans la classe SearchUser
      * ainsi qu'à la modification d'un user
      *
-     * @param uid
-     * @param nom
-     * @param email
+     * @param uid   id de l'user
+     * @param nom   nom de l'user
+     * @param email email de l'user
      */
     public User(String uid, String nom, String email) {
         this.uid = uid;
@@ -46,10 +48,10 @@ public class User implements Serializable {
     /**
      * Creation d'user lors de la recuperation des infos juste apres la creation d'un compte via l'auth firabse
      *
-     * @param uid
-     * @param nom
-     * @param prenom
-     * @param email
+     * @param uid    id de l'user
+     * @param nom    nom de l'user
+     * @param prenom prenom de l'user
+     * @param email  email de l'user
      */
     public User(String uid, String nom, String prenom, String email) {
         this.uid = uid;
@@ -61,13 +63,13 @@ public class User implements Serializable {
     /**
      * Methode permettant de creer ou d'updater toutes les caracteristiques d'un user final
      *
-     * @param uid
-     * @param nom
-     * @param prenom
-     * @param licence
-     * @param email
-     * @param niveau
-     * @param fonction
+     * @param uid      id de l'user
+     * @param nom      nom de l'user
+     * @param prenom   prenom de l'user
+     * @param licence  licence de l'user
+     * @param email    email de l'user
+     * @param niveau   niveau de plongée de l'user
+     * @param fonction fonction de l'user au sein du club
      */
     public User(String uid, String nom, String prenom, String licence, String email, String niveau, String fonction) {
         this.uid = uid;

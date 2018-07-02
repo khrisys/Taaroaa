@@ -10,7 +10,6 @@ import java.util.List;
  */
 public class Course implements Serializable {
 
-    private List<User> listUsers;
     private String mUid;
     private String mTypeCours;
     private String mSujetDuCours;
@@ -20,13 +19,16 @@ public class Course implements Serializable {
     private Date mDateDuCours;
     private Date mTimeDuCours;
 
+    /**
+     * Constructeur par defaut utile au bon fonctionnement de la serialisation des infos au travers des activités
+     */
     public Course() {
     }
 
     /**
      * Constructeur permettant de retrouver un cours par son uid
      *
-     * @param uid
+     * @param uid id du cours
      */
     public Course(String uid) {
         mUid = uid;
@@ -35,12 +37,12 @@ public class Course implements Serializable {
     /**
      * Methode permettant de creer ou d'updater toutes les caracteristiques d'un cours final
      *
-     * @param uid
-     * @param typeCours
-     * @param sujetDuCours
-     * @param niveauDuCours
-     * @param nomDuMoniteur
-     * @param horaireDuCours
+     * @param uid            id du cours
+     * @param typeCours      type de cours
+     * @param sujetDuCours   sujet du cours
+     * @param niveauDuCours  niveau de formation du cours
+     * @param nomDuMoniteur  nom du moniteur qui donne le cours
+     * @param horaireDuCours date et heure du cours
      */
     public Course(String uid, String typeCours, String sujetDuCours, String niveauDuCours, String nomDuMoniteur, Date horaireDuCours) {
         mUid = uid;
@@ -118,11 +120,4 @@ public class Course implements Serializable {
         mTimeDuCours = timeDuCours;
     }
 
-    public List<User> getListUsers() {
-        return listUsers;
-    }
-
-    public void setListUsers(List<User> listUsers) {
-        this.listUsers = listUsers;
-    }
 }

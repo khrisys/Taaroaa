@@ -27,7 +27,7 @@ class AdapterCovoiturageVehicles extends FirestoreRecyclerAdapter<Covoiturage, V
      * Create a new RecyclerView adapter that listens to a Firestore Query.  See {@link
      * FirestoreRecyclerOptions} for configuration options.
      *
-     * @param options
+     * @param options adapter de la recyclerview
      */
     AdapterCovoiturageVehicles(@NonNull FirestoreRecyclerOptions<Covoiturage> options, Listener callback) {
         super(options);

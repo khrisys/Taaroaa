@@ -72,7 +72,7 @@ public class PupilsViewHolder extends RecyclerView.ViewHolder {
     /**
      * Methode appellée via l'adapter. Cette methode mettra à jour les differentes view du viewholder en fonction de l'utilisateur connecté
      *
-     * @param course
+     * @param course objet cours
      */
     public void updateWithCourse(final Course course) {
         // ajout des Cours dans une liste afin de les retrouver pour l'affichage de chaque cours particulier sous forme de notification
@@ -89,8 +89,8 @@ public class PupilsViewHolder extends RecyclerView.ViewHolder {
     /**
      * Methode permettant de formatter une date en string avec locale en francais
      *
-     * @param horaireDuCours
-     * @return
+     * @param horaireDuCours horaire du cours
+     * @return date du cours sous forme de string
      */
     private String stDateToString(Date horaireDuCours) {
 
@@ -102,8 +102,8 @@ public class PupilsViewHolder extends RecyclerView.ViewHolder {
     /**
      * Methode permettant de formatter une date en format heure
      *
-     * @param horaireDuCours
-     * @return
+     * @param horaireDuCours horaire du cours
+     * @return heure du cours sous forme de string
      */
     private String stTimeToString(Date horaireDuCours) {
 

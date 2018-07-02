@@ -81,7 +81,7 @@ public class SupervisorsViewHolder extends RecyclerView.ViewHolder {
      * Methode appellée via l'adapter. Cette methode mettra à jour les differentes view du viewholder en fonction d'un objet course passé en param.
      * On affiche donc ici les données d'une cellule à l'affichage de l'ecran des encadrants (et non pas les notifications
      *
-     * @param course
+     * @param course objet cours
      */
     public void updateWithCourse(final Course course) {
         // ajout des Cours dans une liste afin de les retrouver pour l'affichage de chaque cours particulier sous forme de notification
@@ -110,8 +110,8 @@ public class SupervisorsViewHolder extends RecyclerView.ViewHolder {
     /**
      * Methode permettant de formatter une date en string avec locale en francais
      *
-     * @param horaireDuCours
-     * @return
+     * @param horaireDuCours horaire du cours
+     * @return date du cours sous forme de string
      */
     private String stDateToString(Date horaireDuCours) {
 
@@ -123,8 +123,8 @@ public class SupervisorsViewHolder extends RecyclerView.ViewHolder {
     /**
      * Methode permettant de formatter une date en format heure
      *
-     * @param horaireDuCours
-     * @return
+     * @param horaireDuCours horaire du cours
+     * @return heure du cours sous forme de string
      */
     private String stTimeToString(Date horaireDuCours) {
 

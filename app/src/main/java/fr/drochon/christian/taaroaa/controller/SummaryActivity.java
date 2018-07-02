@@ -196,8 +196,8 @@ public class SummaryActivity extends BaseActivity {
      * On utilise un switch ici car il peut y avoir plusieurs options.
      * Surtout ne pas oublier le "true" apres chaque case sinon, ce sera toujours le dernier case qui sera executé!
      *
-     * @param item
-     * @return
+     * @param item item de toolbar
+     * @return options de toolbar
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

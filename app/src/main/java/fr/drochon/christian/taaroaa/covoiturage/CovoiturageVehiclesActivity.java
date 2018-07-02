@@ -96,8 +96,8 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
      * On utilise un switch ici car il peut y avoir plusieurs options.
      * Surtout ne pas oublier le "true" apres chaque case sinon, ce sera toujours le dernier case qui sera executé!
      *
-     * @param item
-     * @return boolean
+     * @param item item de la toolbar
+     * @return toolbar
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
