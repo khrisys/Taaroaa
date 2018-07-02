@@ -32,7 +32,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".controller.PasswordActivity"/>
         <activity android:name=".controller.SummaryActivity"/>
         <activity android:name=".auth.AccountCreateActivity"
                   android:windowSoftInputMode="stateHidden"> <!--ferme le clvier à l'ouverture de la fenetre-->
@@ -68,12 +67,14 @@
               <service android:name=".notifications.MyFirebaseMessagingService"/>
               <service android:name=".notifications.SendNotification"/>
               <service android:name=".notifications.MyFirebaseInstanceIDService"/>-->
-        <service android:name=".notifications.NotificationsService">
+        <service android:name=".notifications.NotificationsService"
+                 tools:ignore="ExportedService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-        <service android:name=".notifications.MyFirebaseMessagingService">
+        <service android:name=".notifications.MyFirebaseMessagingService"
+                 tools:ignore="ExportedService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
@@ -92,12 +93,14 @@
                 android:name="com.google.firebase.messaging.default_notification_color"
                 android:resource="@color/colorAccent" />
         </service>
-        <service android:name=".notifications.SendNotification">
+        <service android:name=".notifications.SendNotification"
+                 tools:ignore="ExportedService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-        <service android:name=".notifications.MyFirebaseInstanceIDService">
+        <service android:name=".notifications.MyFirebaseInstanceIDService"
+                 tools:ignore="ExportedService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
