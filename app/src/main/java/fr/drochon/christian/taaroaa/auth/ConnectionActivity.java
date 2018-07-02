@@ -178,7 +178,7 @@ public class ConnectionActivity extends BaseActivity {
     /**
      * Methode permettant d'envoyer un email via un token pour la confirmation d'adresse mail d'un nouvek utilisateur
      */
-    protected void verifEmailUser() {
+    private void verifEmailUser() {
 
 
         // un ActionCodeSetting est necessaire à Firebase por savoir à qui envoyer l'email de confilration

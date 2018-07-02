@@ -22,16 +22,13 @@
     <!-- MAIN ACTIVITY -->
     <string name="error_authentication_canceled">Authentification annulée&#8230;</string>
     <string name="connection_end">Vous venez de vous déconnecter de l\'application !\nA bientôt!</string>
-    <string name="error_no_internet">Aucune connexion internet !</string>
     <string name="error_unknown_error">Une erreur inconnue s\'est produite&#8230;</string>
     <string name="titre_app">Bienvenue sur l\'application de gestion d\'un club subaquatique</string>
     <string name="connectez_vous">Connexion ou création de compte</string>
     <string name="deconnectez_vous">Déconnexion</string>
-    <string name="mot_de_passe_oubli">mot de passe oublié ?</string>
 
     <!-- LOGIN ACTIVITY -->
     <string name="info_no_username_found">Aucun nom d\'utilisateur</string>
-    <string name="no_ad">Vous etes déjà connecté, vous ne pouvez pas créer un compte !</string>
 
     <!--ACCOUNT CREATE AND MODIFICATION USER ACTIVITIES-->
     <string name="alertDialog_account">Voulez vous réellement supprimer votre compte ?</string>
@@ -43,14 +40,12 @@
     <string name="modifiez_le_compte">Modifiez le compte adhérent</string>
     <string name="email">Email :</string>
     <string name="compte">Compte</string>
-    <string name="fonction_au_sein_du_club">Fonction au sein du club :</string>
     <string name="niveau_de_plongee_acquis">Niveau de plongée acquis :</string>
     <string name="numero_de_licence_optionnel">Numéro de licence (optionnel) :</string>
     <string name="plongee">Plongée</string>
     <string name="nom">Nom :</string>
     <string name="prenom">Prénom :</string>
     <string name="personnel">Personnel</string>
-    <string name="creez_votre_compte">Créez votre compte</string>
     <string name="bienvenue_sur_votre_compte">Bienvenue sur votre compte</string>
     <string name="modifiez_le_compte_d_un_adherent">Modifiez le compte d\'un adhérent</string>
     <string name="recherche_adherent_btn">Tapez le nom d\'un adhérent</string>

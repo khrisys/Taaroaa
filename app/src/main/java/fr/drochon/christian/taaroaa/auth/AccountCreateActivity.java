@@ -49,7 +49,7 @@ import fr.drochon.christian.taaroaa.model.User;
 
 public class AccountCreateActivity extends BaseActivity {
 
-    protected Spinner mFonctionPlongeur;
+    private Spinner mFonctionPlongeur;
     // DESIGN
     private TextInputEditText mPrenom;
     private TextInputEditText mNom;
@@ -393,7 +393,7 @@ public class AccountCreateActivity extends BaseActivity {
     /**
      * Methode permettant d'envoyer un email via un token pour la confirmation d'adresse mail d'un nouvek utilisateur
      */
-    protected void verifEmailUser() {
+    private void verifEmailUser() {
         // un ActionCodeSetting est necessaire à Firebase por savoir à qui envoyer l'email de confilration
         //et quel type de message. Ainsi, l'user recevra un lien de validation qu'il devra soumettre dans une
         //durée impartie. La validation de ce lien de l'user validera automatiquement la creation de son compte.

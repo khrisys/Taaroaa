@@ -12,7 +12,7 @@ import android.os.Build;
 
 import fr.drochon.christian.taaroaa.covoiturage.CovoiturageVehiclesActivity;
 
-public class RandomNotification {
+class RandomNotification {
 
     private final Context context;
 

@@ -448,12 +448,12 @@ public class CoursesManagementActivity extends BaseActivity {
     // --------------------
     // DATETIMEPICKERS
     // --------------------
-    public void showDatePickerDialog(View v) {
+    private void showDatePickerDialog(View v) {
         DialogFragment newFragment = new DatePickerFragment();
         newFragment.show(getSupportFragmentManager(), "datePicker");
     }
 
-    public void showTimePickerDialog(View v) {
+    private void showTimePickerDialog(View v) {
         DialogFragment newFragment = new TimePickerFragment();
         newFragment.show(getSupportFragmentManager(), "timePicker");
     }
