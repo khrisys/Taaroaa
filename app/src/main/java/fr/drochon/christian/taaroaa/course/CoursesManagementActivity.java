@@ -135,14 +135,14 @@ public class CoursesManagementActivity extends BaseActivity {
         mDateCours.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showDatePickerDialog(v);
+                showDatePickerDialog();
             }
         });
 
         mHeureCours.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showTimePickerDialog(v);
+                showTimePickerDialog();
             }
         });
 
@@ -448,12 +448,12 @@ public class CoursesManagementActivity extends BaseActivity {
     // --------------------
     // DATETIMEPICKERS
     // --------------------
-    private void showDatePickerDialog(View v) {
+    private void showDatePickerDialog() {
         DialogFragment newFragment = new DatePickerFragment();
         newFragment.show(getSupportFragmentManager(), "datePicker");
     }
 
-    private void showTimePickerDialog(View v) {
+    private void showTimePickerDialog() {
         DialogFragment newFragment = new TimePickerFragment();
         newFragment.show(getSupportFragmentManager(), "timePicker");
     }

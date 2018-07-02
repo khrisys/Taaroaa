@@ -126,8 +126,6 @@ public class AccountCreateActivity extends BaseActivity {
                 final Trace myTrace = FirebasePerformance.getInstance().newTrace("accountCreateActivityCreateAUser_trace");
                 myTrace.start();
 
-              /*  FirebaseAuth auth = FirebaseAuth.getInstance(FirebaseFirestore.getInstance().getApp());
-                FirebaseUser firebaseUser = auth.getCurrentUser();*/
                 if (getCurrentUser() != null) {
                     //CELUI LA REMET 0 JOUR LA NOTIF VALIDATION EMAIL
                     Objects.requireNonNull(getCurrentUser()).reload();
