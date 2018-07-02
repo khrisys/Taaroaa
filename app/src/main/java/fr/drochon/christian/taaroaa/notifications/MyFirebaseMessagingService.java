@@ -35,9 +35,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private static final String ADMIN_CHANNEL_ID = "admin_channel";
     private NotificationManager notificationManager;
 
-    public MyFirebaseMessagingService() {
-    }
-
     /**
      * Called by the system when the service is first created.  Do not call this method directly.
      */

@@ -1,16 +1,14 @@
 package fr.drochon.christian.taaroaa.auth;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import fr.drochon.christian.taaroaa.R;
 import fr.drochon.christian.taaroaa.model.User;
 
@@ -18,15 +16,9 @@ public class SearchedUserViewHolder extends RecyclerView.ViewHolder {
 
     //DATA
     private final List<User> mSearchedUserList;
-    // DESIGN
-    @BindView(R.id.linearLayout_user_cell)
-    LinearLayout mLinearLayoutSearchedUser;
-    @BindView(R.id.liste_cell_nom)
-    TextView mNomSearched;
-    @BindView(R.id.list_cell_prenom)
-    TextView mPrenomSearched;
-    @BindView(R.id.list_cell_email)
-    TextView mEmailSearched;
+    private TextView mNomSearched;
+    private TextView mPrenomSearched;
+    private TextView mEmailSearched;
 
     /**
      * Contructeur qui prend en param la vue affichée.
@@ -35,10 +27,13 @@ public class SearchedUserViewHolder extends RecyclerView.ViewHolder {
      *
      * @param itemView : cellule d'une liste comprenant le nom prenom et email de la personne recherchée.
      */
+    @SuppressLint("CutPasteId")
     SearchedUserViewHolder(View itemView) {
         super(itemView);
-        // liaison des elements du layout recyclerview et pupils_cell avec les variables declarées ici
-        ButterKnife.bind(this, itemView);
+
+        mEmailSearched = itemView.findViewById(R.id.list_cell_email);
+        mNomSearched = itemView.findViewById(R.id.liste_cell_nom);
+        mPrenomSearched = itemView.findViewById(R.id.list_cell_prenom);
 
         mSearchedUserList = new ArrayList<>();
 
@@ -74,7 +69,7 @@ public class SearchedUserViewHolder extends RecyclerView.ViewHolder {
         mSearchedUserList.add(user);
 
         for (int i = 0; i < mSearchedUserList.size(); i++) {
-            if(user.getFonction().equals("Moniteur")) {
+            if (user.getFonction().equals("Moniteur")) {
                 mPrenomSearched.setVisibility(View.GONE);
                 mNomSearched.setVisibility(View.GONE);
                 mEmailSearched.setVisibility(View.GONE);

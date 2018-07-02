@@ -138,13 +138,29 @@ public class AccountCreateActivity extends BaseActivity {
                         // fin de trace
                         myTrace.stop();
 
-                        // affichaga de l'alertdialog pendant à nouveau 5s pour avertir l(user de valider son email
+                        // gestion des champs vides
                     } else {
-                        if (!mNom.getText().toString().isEmpty() && !mPrenom.getText().toString().isEmpty() &&
-                                !mEmail.getText().toString().isEmpty() && isValidEmail(mEmail.getText())
-                                && !mPassword.getText().toString().isEmpty()) {
-                            alertDialogValidationEmail();
-                        } else verificationChampsVides();
+                        if (!mNom.getText().toString().isEmpty())
+                            if (!mPrenom.getText().toString().isEmpty())
+                                if (!mEmail.getText().toString().isEmpty())
+                                    if (!mPassword.getText().toString().isEmpty())
+                                        if (isValidEmail(mEmail.getText())) {
+                                            alertDialogValidationEmail();
+                                        } else {
+                                            verificationChampsVides();
+                                        }
+                                    else {
+                                        verificationChampsVides();
+                                    }
+                                else {
+                                    verificationChampsVides();
+                                }
+                            else {
+                                verificationChampsVides();
+                            }
+                        else {
+                            verificationChampsVides();
+                        }
                     }
                 }
             }

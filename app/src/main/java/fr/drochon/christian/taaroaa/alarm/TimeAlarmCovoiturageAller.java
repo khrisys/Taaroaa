@@ -34,7 +34,6 @@ public class TimeAlarmCovoiturageAller extends BroadcastReceiver {
         // recuperation de l'extra envoyé dans l'intent
         Bundle bundle = intent.getExtras();
         if(bundle != null) {
-            //hAller = bundle.getString("hAller");
             Covoiturage c = (Covoiturage) bundle.getSerializable("covoiturageAlarm");
 
             // --------------------

@@ -82,7 +82,6 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
         mAlarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
 
-
         // Test performance de l'update d'user en bdd
         final Trace myTrace1 = FirebasePerformance.getInstance().newTrace("coursesPupilsActivityGetAndShowAllCoursesDate_trace");
         myTrace1.start();
@@ -180,10 +179,8 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
      */
     private void showFloatingButton() {
 
-        if (this.getCurrentUser() != null) {
-            if (user.getFonction().equals("Moniteur") || user.getFonction().equals("Initiateur")) {
-                mFloatingActionButton.setVisibility(View.VISIBLE);
-            }
+        if (this.getCurrentUser() != null && user.getFonction().equals("Moniteur") || user.getFonction().equals("Initiateur")) {
+            mFloatingActionButton.setVisibility(View.VISIBLE);
         }
     }
 
@@ -222,7 +219,7 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
      */
     private void giveToolbarAName(String title) {
         ActionBar ab = getSupportActionBar();
-        if(ab != null) {
+        if (ab != null) {
             ab.setDisplayShowCustomEnabled(true);
             ActionBar.LayoutParams layoutParams = new ActionBar.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL);
 
@@ -325,7 +322,7 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
                         List<DocumentSnapshot> ds = documentSnapshots.getDocuments();
                         for (DocumentSnapshot documentSnapshot : ds) {
                             Map<String, Object> cours = documentSnapshot.getData();
-                            if(cours != null) {
+                            if (cours != null) {
                                 Course course = new Course(cours.get("id").toString(), cours.get("typeCours").toString(), cours.get("sujetDuCours").toString(),
                                         cours.get("niveauDuCours").toString(), cours.get("nomDuMoniteur").toString(), (Date) cours.get("horaireDuCours"));
                                 String niveau = cours.get("niveauDuCours").toString();
@@ -380,10 +377,8 @@ public class CoursesPupilsActivity extends BaseActivity implements AdapterCourse
         mQuery.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-                if (documentSnapshots != null) {
-                    if (documentSnapshots.size() != 0) {
-                        readDataInList(documentSnapshots.getDocuments());
-                    }
+                if (documentSnapshots != null && documentSnapshots.size() != 0) {
+                    readDataInList(documentSnapshots.getDocuments());
                 }
             }
         });

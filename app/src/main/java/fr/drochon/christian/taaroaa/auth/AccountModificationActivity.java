@@ -53,7 +53,7 @@ public class AccountModificationActivity extends BaseActivity {
 
     // identifiant pour identifier la requete REST
     private static final int UPDATE_USERNAME = 30;
-    String uid;
+    private String uid;
     private User user;
     private User summaryUser;
     private User searchedUser;
@@ -96,7 +96,7 @@ public class AccountModificationActivity extends BaseActivity {
 
         configureToolbar();
         this.giveToolbarAName(R.string.account_modif_name);
-        this.designDependingOnGetUsers();
+        this.getIntents();
 
         // methode à appeler APRES l'initialisation des variables, sinon les variables auront des references null
         this.updateUIWhenCreating(); // recuperation des informations de l'user actuel
@@ -201,14 +201,14 @@ public class AccountModificationActivity extends BaseActivity {
      * Methode permettant d'afficher les informations de l'user sur l'ecran AccountCreateActivity lorsqu'un user vient de creer un compte
      */
     private void updateUIWhenCreating() {
-        designDependingOnGetUsers();
+        getIntents();
     }
 
     /**
      * Methode permettant d'afficher les informations d'un user depuis la bdd firestore lorsque le cycle de vie de l'application est à OnResume()
      */
     private void updateUIWhenResuming() {
-        designDependingOnGetUsers();
+        getIntents();
     }
 
     /**
@@ -282,7 +282,7 @@ public class AccountModificationActivity extends BaseActivity {
      * Ceci permet de changer la fonction d'un adherent par un encadrant.
      * Cette methode desactive toutes les autres options pour empecher les erreurs de manipulation.
      */
-    private void designDependingOnGetUsers() {
+    private void getIntents() {
 
 
         // recup de l'user passé depuis l'activité SummaryActivity
@@ -387,33 +387,31 @@ public class AccountModificationActivity extends BaseActivity {
         }
         //l'intent arrive depuis l'activité de recherche. La mise à jour d'un adherent se fait ici par un encadrant
         else {
-            if (searchedUser != null) {
-                // DESIGN
-                if (searchedUser.getFonction() != null && searchedUser.getNom() != null && searchedUser.getPrenom() != null
-                        && searchedUser.getEmail() != null && searchedUser.getUid() != null && searchedUser.getNiveau() != null) {
-                    mTitrePage.setText(R.string.modifiez_le_compte_d_un_adherent);
-                    //mItemView.setVisible(false);
-                    mPrenom.setEnabled(false);
-                    mNom.setEnabled(false);
-                    mLicence.setEnabled(false);
-                    mNiveauPlongeespinner.setEnabled(true);
-                    mLinearLayoutFonctionAdherent.setVisibility(View.VISIBLE);
-                    mTitrePassword.setVisibility(View.GONE);
-                    mPassword.setVisibility(View.GONE);
-                    mProgressBar.setVisibility(View.GONE);
-                    //Affichage du bouton de suppression uniquement aux proprietaires d'un compte
-                    mSuppressionCompte.setVisibility(View.GONE);
+            // DESIGN
+            if (searchedUser != null && searchedUser.getFonction() != null && searchedUser.getNom() != null && searchedUser.getPrenom() != null
+                    && searchedUser.getEmail() != null && searchedUser.getUid() != null && searchedUser.getNiveau() != null) {
+                mTitrePage.setText(R.string.modifiez_le_compte_d_un_adherent);
+                //mItemView.setVisible(false);
+                mPrenom.setEnabled(false);
+                mNom.setEnabled(false);
+                mLicence.setEnabled(false);
+                mNiveauPlongeespinner.setEnabled(true);
+                mLinearLayoutFonctionAdherent.setVisibility(View.VISIBLE);
+                mTitrePassword.setVisibility(View.GONE);
+                mPassword.setVisibility(View.GONE);
+                mProgressBar.setVisibility(View.GONE);
+                //Affichage du bouton de suppression uniquement aux proprietaires d'un compte
+                mSuppressionCompte.setVisibility(View.GONE);
 
-                    // DATAS
-                    uid = searchedUser.getUid();
-                    mPrenom.setText(searchedUser.getPrenom());
-                    mNom.setText(searchedUser.getNom());
-                    mLicence.setText(searchedUser.getLicence());
-                    mNiveauPlongeespinner.setSelection(getIndexSpinner(mNiveauPlongeespinner, Objects.requireNonNull(searchedUser.getNiveau())));
-                    mFonctionAuClubspinner.setSelection(getIndexSpinner(mFonctionAuClubspinner, Objects.requireNonNull(searchedUser.getFonction())));
-                    mEmail.setText(Objects.requireNonNull(searchedUser.getEmail()));
-                    mPassword.setText(searchedUser.getPassword());
-                }
+                // DATAS
+                uid = searchedUser.getUid();
+                mPrenom.setText(searchedUser.getPrenom());
+                mNom.setText(searchedUser.getNom());
+                mLicence.setText(searchedUser.getLicence());
+                mNiveauPlongeespinner.setSelection(getIndexSpinner(mNiveauPlongeespinner, Objects.requireNonNull(searchedUser.getNiveau())));
+                mFonctionAuClubspinner.setSelection(getIndexSpinner(mFonctionAuClubspinner, Objects.requireNonNull(searchedUser.getFonction())));
+                mEmail.setText(Objects.requireNonNull(searchedUser.getEmail()));
+                mPassword.setText(searchedUser.getPassword());
             }
         }
     }
@@ -474,28 +472,24 @@ public class AccountModificationActivity extends BaseActivity {
         setupDb().collection("covoiturages").addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                if (queryDocumentSnapshots != null) {
-                    if (queryDocumentSnapshots.size() != 0) {
-                        List<DocumentSnapshot> covoits = queryDocumentSnapshots.getDocuments();
-                        for (DocumentSnapshot covoiturage : covoits) {
-                            Map<String, Object> covoit = covoiturage.getData();
-                            if (covoit != null) {
-                                if (covoit.get("nomConducteur").equals(mNom.getText().toString()) && covoit.get("prenomConducteur").equals(mPrenom.getText().toString())) {
-                                    CovoiturageHelper.updateCovoiturage(covoit.get("id").toString(), mNom.getText().toString(), mPrenom.getText().toString())
-                                            .addOnFailureListener(new OnFailureListener() {
-                                                @Override
-                                                public void onFailure(@NonNull Exception e) {
-                                                    System.out.println("nok");
-                                                }
-                                            })
-                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                @Override
-                                                public void onSuccess(Void aVoid) {
-                                                    System.out.println("ok");
-                                                }
-                                            });
-                                }
-                            }
+                if (queryDocumentSnapshots != null && queryDocumentSnapshots.size() > 0) {
+                    List<DocumentSnapshot> covoits = queryDocumentSnapshots.getDocuments();
+                    for (DocumentSnapshot covoiturage : covoits) {
+                        Map<String, Object> covoit = covoiturage.getData();
+                        if (covoit != null && covoit.get("nomConducteur").equals(mNom.getText().toString()) && covoit.get("prenomConducteur").equals(mPrenom.getText().toString())) {
+                            CovoiturageHelper.updateCovoiturage(covoit.get("id").toString(), mNom.getText().toString(), mPrenom.getText().toString())
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            System.out.println("nok");
+                                        }
+                                    })
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            System.out.println("ok");
+                                        }
+                                    });
                         }
                     }
                 }

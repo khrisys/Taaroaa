@@ -764,7 +764,7 @@
   {
     "eventType": "VIEW_CLICKED",
     "timestamp": 1528282870370,
-    "replacementText": "Modifiez le compte adhérent",
+    "replacementText": "Modifiez le compte adherent",
     "actionCode": -1,
     "delayTime": 0,
     "canScrollTo": true,

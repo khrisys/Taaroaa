@@ -33,7 +33,6 @@ public class SearchUserActivity extends BaseActivity {
     // FOR DATA
     private AdapterSearchedUser mAdapterSearchedUser;
     private List<User> listUsers;
-    private User modifSummaryUser;
 
 
     // --------------------
@@ -190,16 +189,14 @@ public class SearchUserActivity extends BaseActivity {
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
                 // condition de creation d'un user ou affichage simple d'un message indiquant que l'user existe dejà en bdd.
                 // Avec les uid, il ne peut y avoir de doublon, on peut donc etre sur qu'il n'y a qu'un seule doc qui existe s'il en existe un.
-                if (documentSnapshots != null) {
-                    if (documentSnapshots.size() != 0) {
-                        List<DocumentSnapshot> users = documentSnapshots.getDocuments();
-                        for (int i = 0; i < users.size(); i++) {
-                            Log.e("TAG", "Le document existe !");
-                            // liste des docs
-                            readDataInList(users);
+                if (documentSnapshots != null && documentSnapshots.size() != 0) {
+                    List<DocumentSnapshot> users = documentSnapshots.getDocuments();
+                    for (int i = 0; i < users.size(); i++) {
+                        Log.e("TAG", "Le document existe !");
+                        // liste des docs
+                        readDataInList(users);
 
-                            myTrace2.stop();
-                        }
+                        myTrace2.stop();
                     }
                 }
             }
@@ -222,14 +219,12 @@ public class SearchUserActivity extends BaseActivity {
         mQ.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                if (queryDocumentSnapshots != null) {
-                    if (queryDocumentSnapshots.size() != 0) {
-                        //List<DocumentSnapshot> docs = queryDocumentSnapshots.getDocuments();
-                        filter(listUsers, nom);
+                if (queryDocumentSnapshots != null && queryDocumentSnapshots.size() != 0) {
+                    //List<DocumentSnapshot> docs = queryDocumentSnapshots.getDocuments();
+                    filter(listUsers, nom);
 
-                        myTrace3.stop();
+                    myTrace3.stop();
 
-                    }
                 }
             }
         });

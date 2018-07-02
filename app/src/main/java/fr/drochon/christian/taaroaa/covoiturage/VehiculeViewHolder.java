@@ -53,28 +53,14 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
     private final List<String> mListPassagers;
     private final FirebaseFirestore db;
     private final AlarmManager mAlarmManager;
-    private Covoiturage sCovoiturage;
-    // DESIGN
-    @BindView(R.id.vehicle_linear_layout)
-    LinearLayout mLinearLayoutGlobal;
     @BindView(R.id.clic_global)
     LinearLayout mGlobalClic;
-    @BindView(R.id.covoit_conducteur_nom)
-    TextView mNomConducteur;
-    @BindView(R.id.poubelle_btn)
-    ImageButton mPoubelleImg;
-    @BindView(R.id.passager_titre_txt)
-    TextView mTitrePassager;
     @BindView(R.id.passager_spinner)
     Spinner mPassagerSpinner;
     @BindView(R.id.lieu_depart_aller_txt)
     TextView mLieuDepart;
-    @BindView(R.id.lieu_depart_retour_txt)
-    TextView mLieuRetour;
-    @BindView(R.id.vehicule_titre_txt)
-    TextView mTitreVehicule;
-    @BindView(R.id.typeVehicule_txt)
-    TextView mTypeVehicule;
+    private TextView mLieuRetour;
+    private TextView mTypeVehicule;
     @BindView(R.id.places_titre_txt)
     TextView mTitrePlace;
     @BindView(R.id.nbPlacesDispo_txt)
@@ -83,6 +69,10 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
     TextView mAller;
     @BindView(R.id.retour_txt)
     TextView mRetour;
+    @BindView(R.id.covoit_conducteur_nom)
+    TextView mNomConducteur;
+    private ImageButton mPoubelleImg;
+    private Covoiturage sCovoiturage;
 
 
     /**
@@ -97,6 +87,13 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
         super(itemView);
         // liaison des elements du layout recyclerview et pupils_cell avec les variables declarées ici
         ButterKnife.bind(this, itemView);
+
+        LinearLayout linearLayoutGlobal = itemView.findViewById(R.id.vehicle_linear_layout);
+        TextView titrePassager = itemView.findViewById(R.id.passager_titre_txt);
+        mLieuRetour = itemView.findViewById(R.id.lieu_depart_retour_txt);
+        mPoubelleImg = itemView.findViewById(R.id.poubelle_btn);
+        mTypeVehicule = itemView.findViewById(R.id.typeVehicule_txt);
+        TextView titreVehicule = itemView.findViewById(R.id.vehicule_titre_txt);
 
         mCovoiturageList = new ArrayList<>();
         mListPassagers = new ArrayList<>();
@@ -135,55 +132,51 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
         mPoubelleImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                db.collection("users").addSnapshotListener( new EventListener<QuerySnapshot>() {
+                db.collection("users").addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                        if(queryDocumentSnapshots != null){
-                            if(queryDocumentSnapshots.size() != 0){
-                                List<DocumentSnapshot> docSps = queryDocumentSnapshots.getDocuments();
-                                for (DocumentSnapshot ds : docSps) {
-                                    final Map<String, Object> user = ds.getData();
-                                    // comparaison entre les users cde la bdd et l'user ayant créé le covoiturage
-                                    if(user != null) {
-                                        if (mNomConducteur.getText().equals(user.get("prenom") + "  " + user.get("nom"))) {
-                                            //suppression de covoit
-                                            final AlertDialog.Builder adb = new AlertDialog.Builder(itemView.getContext());
-                                            adb.setTitle(R.string.alertDialog_delete_covoit);
+                        if (queryDocumentSnapshots != null && queryDocumentSnapshots.size() != 0) {
+                            List<DocumentSnapshot> docSps = queryDocumentSnapshots.getDocuments();
+                            for (DocumentSnapshot ds : docSps) {
+                                final Map<String, Object> user = ds.getData();
+                                // comparaison entre les users cde la bdd et l'user ayant créé le covoiturage
+                                if (user != null && mNomConducteur.getText().equals(user.get("prenom") + "  " + user.get("nom"))) {
+                                    //suppression de covoit
+                                    final AlertDialog.Builder adb = new AlertDialog.Builder(itemView.getContext());
+                                    adb.setTitle(R.string.alertDialog_delete_covoit);
 
-                                            // ajouter une couleur à l'icon de warning
-                                            Drawable warning = itemView.getResources().getDrawable(android.R.drawable.ic_dialog_alert);
-                                            ColorFilter filter = new LightingColorFilter(Color.RED, Color.BLUE);
-                                            warning.setColorFilter(filter);
-                                            adb.setIcon(android.R.drawable.ic_dialog_alert);
+                                    // ajouter une couleur à l'icon de warning
+                                    Drawable warning = itemView.getResources().getDrawable(android.R.drawable.ic_dialog_alert);
+                                    ColorFilter filter = new LightingColorFilter(Color.RED, Color.BLUE);
+                                    warning.setColorFilter(filter);
+                                    adb.setIcon(android.R.drawable.ic_dialog_alert);
 
-                                            adb.setTitle(R.string.alertDialog_delete_covoit);
-                                            adb.setPositiveButton("SUPPRIMER ?", new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int which) {
-                                                    deleteCovoiturageInFirebase(user.get("prenom").toString(), user.get("nom").toString());
+                                    adb.setTitle(R.string.alertDialog_delete_covoit);
+                                    adb.setPositiveButton("SUPPRIMER ?", new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            deleteCovoiturageInFirebase(user.get("prenom").toString(), user.get("nom").toString());
 
-                                                    //TODO notification aux passagers que le covoit est annulé
-                                                    //TODO faire une requete pour boucler sur les users et recuperer les passagers du covoit annulé par leurs noms et prenom. Sur ces personnes :  declencher l'alarm
-                                                    Calendar calendar = Calendar.getInstance();
-                                                    calendar.getTime();
-                                                    Intent intent = new Intent(itemView.getContext(), TimeAlarmCovoiturageSuppression.class)
-                                                            .putExtra("covoit", sCovoiturage);
-                                                    PendingIntent operation = PendingIntent.getBroadcast(itemView.getContext(), 3, intent, PendingIntent.FLAG_ONE_SHOT);
-                                                    // reveil de l'alarm
-                                                    if(mAlarmManager != null)
-                                                        mAlarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), operation);
+                                            //TODO notification aux passagers que le covoit est annulé
+                                            //TODO faire une requete pour boucler sur les users et recuperer les passagers du covoit annulé par leurs noms et prenom. Sur ces personnes :  declencher l'alarm
+                                            Calendar calendar = Calendar.getInstance();
+                                            calendar.getTime();
+                                            Intent intent = new Intent(itemView.getContext(), TimeAlarmCovoiturageSuppression.class)
+                                                    .putExtra("covoit", sCovoiturage);
+                                            PendingIntent operation = PendingIntent.getBroadcast(itemView.getContext(), 3, intent, PendingIntent.FLAG_ONE_SHOT);
+                                            // reveil de l'alarm
+                                            if (mAlarmManager != null)
+                                                mAlarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), operation);
 
-                                                    startActivityCovoiturageVehicule();
-                                                }
-                                            });
-                                            adb.setNegativeButton("ANNULER", new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialog, int which) {
-                                                    // rien : rester sur l'ecran actuel
-                                                }
-                                            });
-                                            adb.show();
+                                            startActivityCovoiturageVehicule();
                                         }
-                                    }
+                                    });
+                                    adb.setNegativeButton("ANNULER", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            // rien : rester sur l'ecran actuel
+                                        }
+                                    });
+                                    adb.show();
                                 }
                             }
                         }
@@ -201,15 +194,15 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
     /**
      * Methode appellée via l'adapter. Cette methode mettra à jour les differentes view du viewholder en fonction de l'utilisateur connecté
      *
-     * @param covoiturage
+     * @param covoiturage objet covoiturage
      */
     @SuppressLint({"ResourceType", "SetTextI18n"})
     public void updateWithCovoiturage(final Covoiturage covoiturage) {
         // ajout des Covoit dans une liste afin de les retrouver pour l'affichage de chaque cours particulier sous forme de notification
-        if(covoiturage != null) {
+        if (covoiturage != null) {
             mCovoiturageList.add(covoiturage);
-            if(covoiturage.getListPassagers() != null)
-            mListPassagers.addAll(covoiturage.getListPassagers());
+            if (covoiturage.getListPassagers() != null)
+                mListPassagers.addAll(covoiturage.getListPassagers());
             sCovoiturage = covoiturage;
 
             for (int i = 0; i < mCovoiturageList.size(); i++) {
@@ -273,26 +266,23 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
         db.collection("covoiturages").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                if(queryDocumentSnapshots != null){
-                    if(queryDocumentSnapshots.size() > 0){
-                        List<DocumentSnapshot> docSps = queryDocumentSnapshots.getDocuments();
-                        for (DocumentSnapshot ds : docSps) {
-                            Map<String, Object> covoit = ds.getData();
-                            if(covoit != null) {
-                                if (covoit.get("nomConducteur").toString().equals(nom) && covoit.get("prenomConducteur").toString().equals(prenom)) {
-                                    //CRUD
-                                    CovoiturageHelper.deleteCovoiturage(covoit.get("id").toString())
-                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                @Override
-                                                public void onSuccess(Void aVoid) {
-                                                    //TODO envoyer une notification à tous les passagers qui auraient été inscrits à ce covoiturage desormais supprimé
-                                                    Toast.makeText(itemView.getContext(), R.string.delete_covoit,
-                                                            Toast.LENGTH_LONG).show();
-                                                    startActivityCovoiturageVehicule(); // renvoi l'user sur la page des covoiturages apres validation de la creation de l'user dans les covoit
-                                                }
-                                            });
-                                }
-                            }
+                if (queryDocumentSnapshots != null && queryDocumentSnapshots.size() > 0) {
+                    List<DocumentSnapshot> docSps = queryDocumentSnapshots.getDocuments();
+                    for (DocumentSnapshot ds : docSps) {
+                        Map<String, Object> covoit = ds.getData();
+                        if (covoit != null && covoit.get("nomConducteur").toString().equals(nom) &&
+                                covoit.get("prenomConducteur").toString().equals(prenom)) {
+                            //CRUD
+                            CovoiturageHelper.deleteCovoiturage(covoit.get("id").toString())
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            //TODO envoyer une notification à tous les passagers qui auraient été inscrits à ce covoiturage desormais supprimé
+                                            Toast.makeText(itemView.getContext(), R.string.delete_covoit,
+                                                    Toast.LENGTH_LONG).show();
+                                            startActivityCovoiturageVehicule(); // renvoi l'user sur la page des covoiturages apres validation de la creation de l'user dans les covoit
+                                        }
+                                    });
                         }
                     }
                 }
@@ -306,21 +296,20 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
      */
     private void showPoubelle(final Covoiturage currentCovoit) {
         // erreur crashlytics lors du reveil du tel pour les notifs lorsque l'application est eteinte : l'id est null
-        FirebaseUser auth =  FirebaseAuth.getInstance().getCurrentUser();
-        if(auth != null)
-        db.collection("users").document(auth.getUid()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                if (documentSnapshot != null) {
-                    final Map<String, Object> user = documentSnapshot.getData();
-                    if(user != null) {
-                        if (currentCovoit.getNomConducteur().equals(user.get("nom").toString()) && currentCovoit.getPrenomConducteur().equals(user.get("prenom").toString())) {
+        FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
+        if (auth != null)
+            db.collection("users").document(auth.getUid()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                @Override
+                public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                    if (documentSnapshot != null) {
+                        final Map<String, Object> user = documentSnapshot.getData();
+                        if (user != null && currentCovoit.getNomConducteur().equals(user.get("nom").toString())
+                                && currentCovoit.getPrenomConducteur().equals(user.get("prenom").toString())) {
                             mPoubelleImg.setVisibility(View.VISIBLE);
                         }
                     }
                 }
-            }
-        });
+            });
     }
 
 
@@ -331,8 +320,8 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
     /**
      * Methode permettant de formatter une date en string avec locale en francais
      *
-     * @param horaireDuCours
-     * @return
+     * @param horaireDuCours date et heure du cours
+     * @return date et heure du cours formaté en string
      */
     private String stDateToString(Date horaireDuCours) {
 

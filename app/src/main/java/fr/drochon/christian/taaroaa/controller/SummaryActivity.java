@@ -85,28 +85,26 @@ public class SummaryActivity extends BaseActivity {
                                 for (DocumentSnapshot doc : ds) {
                                     Map<String, Object> user = doc.getData();
 
-                                    if (user != null) {
-                                        // Si l'user connecté existe en bdd, on recupere l'ensemble de l'objet user et on le passe en extra de l'intent
-                                        if (user.get("uid").toString().equals(Objects.requireNonNull(getCurrentUser()).getUid())) {
-                                            User u = new User(user.get("uid").toString(),
-                                                    user.get("nom").toString(),
-                                                    user.get("prenom").toString(),
-                                                    user.get("licence").toString(),
-                                                    user.get("email").toString(),
-                                                    user.get("niveau").toString(),
-                                                    user.get("fonction").toString(),
-                                                    user.get("password").toString());
-                                            Intent intent = new Intent(SummaryActivity.this, AccountModificationActivity.class).putExtra("summaryUser", u);
-                                            startActivity(intent);
+                                    // Si l'user connecté existe en bdd, on recupere l'ensemble de l'objet user et on le passe en extra de l'intent
+                                    if (user != null && user.get("uid").toString().equals(Objects.requireNonNull(getCurrentUser()).getUid())) {
+                                        User u = new User(user.get("uid").toString(),
+                                                user.get("nom").toString(),
+                                                user.get("prenom").toString(),
+                                                user.get("licence").toString(),
+                                                user.get("email").toString(),
+                                                user.get("niveau").toString(),
+                                                user.get("fonction").toString(),
+                                                user.get("password").toString());
+                                        Intent intent = new Intent(SummaryActivity.this, AccountModificationActivity.class).putExtra("summaryUser", u);
+                                        startActivity(intent);
 
-                                            myTrace1.stop();
-                                            break;
-                                        }
+                                        myTrace1.stop();
+                                        break;
                                     }
                                 }
+                            }
 
-                              }else startAccountActivity();
-                        }
+                        } else startAccountActivity();
                     }
                 });
             }
@@ -233,8 +231,7 @@ public class SummaryActivity extends BaseActivity {
                         if (user != null) {
                             if (user.get("fonction") == null || !user.get("fonction").equals("Moniteur")) {
                                 mModifCompte.setVisibility(View.GONE);
-                            }
-                            else if(user.get("fonction").equals("Moniteur")){
+                            } else if (user.get("fonction").equals("Moniteur")) {
                                 mModifCompte.setVisibility(View.VISIBLE);
                             }
                         }
@@ -247,7 +244,7 @@ public class SummaryActivity extends BaseActivity {
         }
     }
 
-    private void startAccountActivity(){
+    private void startAccountActivity() {
         Intent intent = new Intent(SummaryActivity.this, AccountCreateActivity.class);
         startActivity(intent);
     }

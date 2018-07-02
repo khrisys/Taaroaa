@@ -20,7 +20,8 @@ public class NotificationButtonReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
 
         if (intent != null) {
-            String body = null, title = null;
+            String body = null;
+            String title = null;
             if (intent.hasExtra(Notification.EXTRA_NOTIFICATION_ID)) {
                 body = intent.getStringExtra(Notification.EXTRA_NOTIFICATION_ID);
             }

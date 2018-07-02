@@ -213,85 +213,80 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
 
         final IdpResponse response = IdpResponse.fromResultIntent(data);
 
-        if (requestCode == RC_SIGN_IN) {
-            if (resultCode == RESULT_OK) {
+        if (requestCode == RC_SIGN_IN && resultCode == RESULT_OK && response != null) {
+            final String user1 = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
+            setupDb().collection("users").addSnapshotListener(this, new EventListener<QuerySnapshot>() {
+                @Override
+                public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                    if (queryDocumentSnapshots != null) {
+                        ///LA PERSONNE CONNECTEE EST DEJA ENREGISTREE EN BDD. ON RECUPERE ET AFFICHE TOUTES SES DONNEES
+                        User u;
+                        List<DocumentSnapshot> ds = queryDocumentSnapshots.getDocuments();
+                        for (int i = 0; i < ds.size(); i++) {
+                            if (ds.get(i).getId().equals(user1)) {
 
-                if (response != null) {
-
-                    final String user1 = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
-                    setupDb().collection("users").addSnapshotListener(this, new EventListener<QuerySnapshot>() {
-                        @Override
-                        public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                            if (queryDocumentSnapshots != null) {
-                                ///LA PERSONNE CONNECTEE EST DEJA ENREGISTREE EN BDD. ON RECUPERE ET AFFICHE TOUTES SES DONNEES
-                                User u;
-                                List<DocumentSnapshot> ds = queryDocumentSnapshots.getDocuments();
-                                for (int i = 0; i < ds.size(); i++) {
-                                    if (ds.get(i).getId().equals(user1)) {
-
-                                        u = new User(ds.get(i).getId(),
-                                                Objects.requireNonNull(ds.get(i).get("nom")).toString(),
-                                                ds.get(i).get("prenom").toString(), //le prenom peut etre null
-                                                Objects.requireNonNull(ds.get(i).get("licence")).toString(),
-                                                Objects.requireNonNull(ds.get(i).get("email")).toString(),
-                                                Objects.requireNonNull(ds.get(i).get("niveau")).toString(),
-                                                Objects.requireNonNull(ds.get(i).get("fonction")).toString(),
-                                                Objects.requireNonNull(ds.get(i).get("password")).toString());
+                                u = new User(ds.get(i).getId(),
+                                        Objects.requireNonNull(ds.get(i).get("nom")).toString(),
+                                        ds.get(i).get("prenom").toString(), //le prenom peut etre null
+                                        Objects.requireNonNull(ds.get(i).get("licence")).toString(),
+                                        Objects.requireNonNull(ds.get(i).get("email")).toString(),
+                                        Objects.requireNonNull(ds.get(i).get("niveau")).toString(),
+                                        Objects.requireNonNull(ds.get(i).get("fonction")).toString(),
+                                        Objects.requireNonNull(ds.get(i).get("password")).toString());
 
 
-                                        Intent intent = new Intent(MainActivity.this, AccountCreateActivity.class).putExtra("connectedUser", u);
-                                        startActivity(intent);
-                                        break;
-                                    }
-                                    //LA PERSONNE CONNECTEE N'EST PAS EN BDD OU ELLE EST ENTRAIN DE CREER SON COMPTE
-                                    else if (response.getEmail() != null) {
-                                        String mUsername = Objects.requireNonNull(getCurrentUser()).getDisplayName();
-                                        // decomposition du nom et du prenom recu dans le param username
-                                        //LA PERSONNE CONNECTEE EST DEJA ENREGISTREE EN BDD :  RECUPERE ET AFFICHE TOUTES SES DONNEES
-                                        if (mUsername != null) {
-                                            // decomposition du nom et du prenom recu dans le param name
-                                            String nom = null, prenom;
-                                            String[] parts;
-                                            if (mUsername.contains(" ")) {
-                                                parts = mUsername.split(" ");
-                                                try {
-                                                    if (parts[1] != null) nom = parts[1];
-                                                    else nom = "";
-                                                } catch (ArrayIndexOutOfBoundsException e1) {
-                                                    Log.e("TAG", "ArrayOutOfBoundException " + e1.getMessage());
-                                                }
-                                                if (parts[0] != null) prenom = parts[0];
-                                                else prenom = "";
-                                            } else {
-                                                nom = getCurrentUser().getDisplayName();
-                                                prenom = "";
-                                            }
-                                            mName = nom;
-                                            mFirstName = prenom;
-                                            mEmailUser = response.getEmail();
-                                            mPassword = response.getUser().getProviderId();
-                                            //ENVOI VERS LE CONTROLE DE DECURITE DU MAIL DE LA PERSONNE CONNECTEE
-                                            // envoi des identifiants sur laclasse AccountCreateActivity pour verification que son email
-                                            // notamment ne soit pas erronée, chose la pls frequente
-                                            Intent intent = new Intent(MainActivity.this, AccountCreateActivity.class);
-                                            intent.putExtra("nom", mName);
-                                            intent.putExtra("prenom", mFirstName);
-                                            intent.putExtra("email", mEmailUser);
-                                            intent.putExtra("password", mPassword);
-                                            startActivity(intent);
+                                Intent intent = new Intent(MainActivity.this, AccountCreateActivity.class).putExtra("connectedUser", u);
+                                startActivity(intent);
+                                break;
+                            }
+                            //LA PERSONNE CONNECTEE N'EST PAS EN BDD OU ELLE EST ENTRAIN DE CREER SON COMPTE
+                            else if (response.getEmail() != null) {
+                                String mUsername = Objects.requireNonNull(getCurrentUser()).getDisplayName();
+                                // decomposition du nom et du prenom recu dans le param username
+                                //LA PERSONNE CONNECTEE EST DEJA ENREGISTREE EN BDD :  RECUPERE ET AFFICHE TOUTES SES DONNEES
+                                if (mUsername != null) {
+                                    // decomposition du nom et du prenom recu dans le param name
+                                    String nom = null;
+                                    String prenom;
+                                    String[] parts;
+                                    if (mUsername.contains(" ")) {
+                                        parts = mUsername.split(" ");
+                                        try {
+                                            if (parts[1] != null) nom = parts[1];
+                                            else nom = "";
+                                        } catch (ArrayIndexOutOfBoundsException e1) {
+                                            Log.e("TAG", "ArrayOutOfBoundException " + e1.getMessage());
                                         }
+                                        if (parts[0] != null) prenom = parts[0];
+                                        else prenom = "";
+                                    } else {
+                                        nom = getCurrentUser().getDisplayName();
+                                        prenom = "";
                                     }
+                                    mName = nom;
+                                    mFirstName = prenom;
+                                    mEmailUser = response.getEmail();
+                                    mPassword = response.getUser().getProviderId();
+                                    //ENVOI VERS LE CONTROLE DE DECURITE DU MAIL DE LA PERSONNE CONNECTEE
+                                    // envoi des identifiants sur laclasse AccountCreateActivity pour verification que son email
+                                    // notamment ne soit pas erronée, chose la pls frequente
+                                    Intent intent = new Intent(MainActivity.this, AccountCreateActivity.class);
+                                    intent.putExtra("nom", mName);
+                                    intent.putExtra("prenom", mFirstName);
+                                    intent.putExtra("email", mEmailUser);
+                                    intent.putExtra("password", mPassword);
+                                    startActivity(intent);
                                 }
                             }
-                            // ERROR de recuperation de personne avec differents types d'erruer de connexion
-                            else {
-                                showSnackBar(getString(string.error_authentication_canceled));
-                                signOutUserFromFirebase();
-                            }
                         }
-                    });
+                    }
+                    // ERROR de recuperation de personne avec differents types d'erruer de connexion
+                    else {
+                        showSnackBar(getString(string.error_authentication_canceled));
+                        signOutUserFromFirebase();
+                    }
                 }
-            }
+            });
         }
     }
 

@@ -247,14 +247,12 @@ public class CoursesSupervisorsActivity extends BaseActivity implements AdapterC
         mQuery.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-                if (documentSnapshots != null) {
-                    if (documentSnapshots.size() != 0) {
-                        Log.e("TAG", "Le document existe !");
-                        // liste des docs
-                        readDataInList(documentSnapshots.getDocuments());
+                if (documentSnapshots != null && documentSnapshots.size() != 0) {
+                    Log.e("TAG", "Le document existe !");
+                    // liste des docs
+                    readDataInList(documentSnapshots.getDocuments());
 
-                        myTrace2.stop();
-                    }
+                    myTrace2.stop();
                 }
             }
         });

@@ -162,7 +162,7 @@ public class CovoiturageConducteursActivity extends BaseActivity {
         valid.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                createCovoiturageInFirebase();
+                createCovoiturage();
 
             }
         });
@@ -213,7 +213,7 @@ public class CovoiturageConducteursActivity extends BaseActivity {
     /**
      * Methode permettant de signaler une erreur lorsqu'un champ est resté vide alors que la soumission du formulaire a été faite.
      */
-    private void verificationChampsVides() {
+    private void verificationEmptiesFields() {
 
         if (mPrenom.getText().toString().isEmpty())
             mPrenom.setError("Merci de renseigner ce champ !");
@@ -311,7 +311,7 @@ public class CovoiturageConducteursActivity extends BaseActivity {
      * Methode permettant la creation d'un covoiturage dans le bdd. En cas de probleme,
      * la fonction renverra une notification à l'utilisateur.
      */
-    private void createCovoiturageInFirebase() {
+    private void createCovoiturage() {
 
         // pas d'id pour un objet non créé : generation auto par firebase
         final String id = CovoiturageHelper.getCovoituragesCollection().document().getId();
@@ -410,10 +410,16 @@ public class CovoiturageConducteursActivity extends BaseActivity {
                     //covoit.put("reservation", null);
 
                     this.mProgressBar.setVisibility(View.VISIBLE);
+                    final Date finalHoraireDelAller = horaireDelAller;
+                    final Date finalHoraireDuRetour = horaireDuRetour;
+
                     setupDb().collection("covoiturages").document(id).set(covoit)
                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
+                                    // alarm destinée au conducteur
+                                    alarmDepart(finalHoraireDelAller);
+                                    alarmRetour(finalHoraireDuRetour);
                                     Toast.makeText(CovoiturageConducteursActivity.this, R.string.create_covoit,
                                             Toast.LENGTH_LONG).show();
                                     startMainCovoitActivity(); // renvoi l'covoit sur la page des covoiturages  apres validation de la creation du covoit
@@ -431,10 +437,10 @@ public class CovoiturageConducteursActivity extends BaseActivity {
                             });
                 }
                 else {
-                    verificationChampsVides();
+                    verificationEmptiesFields();
                 }
             }
-        } else verificationChampsVides();
+        } else verificationEmptiesFields();
     }
 
     /**

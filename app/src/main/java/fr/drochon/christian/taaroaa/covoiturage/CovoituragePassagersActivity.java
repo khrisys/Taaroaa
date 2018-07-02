@@ -126,8 +126,6 @@ public class CovoituragePassagersActivity extends BaseActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-
             }
 
             @Override
@@ -313,7 +311,6 @@ public class CovoituragePassagersActivity extends BaseActivity {
 
                                 @Override
                                 public void onNothingSelected(AdapterView<?> parent) {
-
                                 }
                             });
                         }
@@ -342,16 +339,14 @@ public class CovoituragePassagersActivity extends BaseActivity {
         // Declenchement de l'alarm de 2h avant le depart jusqu'au demarrage effectif du covoit
         calendar.add(Calendar.HOUR, -2);
         FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
-        if (auth != null) {
-            if (user.getUid().equals(auth.getUid())) {
-                Covoiturage covoit = new Covoiturage();
-                covoit.setHoraireAller(covoiturage.getHoraireAller());
+        if (auth != null && user.getUid().equals(auth.getUid())) {
+            Covoiturage covoit = new Covoiturage();
+            covoit.setHoraireAller(covoiturage.getHoraireAller());
 
-                Intent intent = new Intent(this, TimeAlarmCovoiturageAller.class).putExtra("covoiturageAlarm", covoit);//.putExtra("user", passager);
-                PendingIntent operation = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
-                // reveil de l'alarm
-                mAlarmManagerAller.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), operation);
-            }
+            Intent intent = new Intent(this, TimeAlarmCovoiturageAller.class).putExtra("covoiturageAlarm", covoit);//.putExtra("user", passager);
+            PendingIntent operation = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+            // reveil de l'alarm
+            mAlarmManagerAller.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), operation);
         }
     }
 
@@ -394,8 +389,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
         setupDb().collection("users").orderBy("nom").addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                if(queryDocumentSnapshots != null){
-                if (queryDocumentSnapshots.size() != 0) {
+                if (queryDocumentSnapshots != null && queryDocumentSnapshots.size() != 0) {
                     List<DocumentSnapshot> ds = queryDocumentSnapshots.getDocuments();
                     for (DocumentSnapshot doc : ds) {
                         Map<String, Object> user = doc.getData();
@@ -405,7 +399,6 @@ public class CovoituragePassagersActivity extends BaseActivity {
                             listUsers.add(u);
                         }
                     }
-                }
                 }
             }
         });
@@ -423,7 +416,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
         setupDb().collection("users").whereEqualTo("nom", nom).whereEqualTo("prenom", prenom).addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                if(queryDocumentSnapshots != null){
+                if (queryDocumentSnapshots != null) {
                     if (queryDocumentSnapshots.size() != 0) {
                         List<DocumentSnapshot> ds = queryDocumentSnapshots.getDocuments();
                         for (DocumentSnapshot doc : ds) {
@@ -503,7 +496,8 @@ public class CovoituragePassagersActivity extends BaseActivity {
                     listPassagers.add(listSelectedUsers.get(i).toUpperCase());
 
                     // decomposition du nom et du prenom recu dans le param name
-                    String nom = null, prenom;
+                    String nom = null;
+                    String prenom;
                     String[] parts;
                     if (listSelectedUsers.get(i).contains(" ")) {
                         parts = listSelectedUsers.get(i).split(" ");

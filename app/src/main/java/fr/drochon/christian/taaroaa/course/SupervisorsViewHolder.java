@@ -32,12 +32,10 @@ public class SupervisorsViewHolder extends RecyclerView.ViewHolder {
     TextView mCourseType;
     @BindView(R.id.course_level_supervisors)
     TextView mCourseLevel;
-    @BindView(R.id.course_moniteur_supervisor)
-    TextView mMoniteur;
+    private TextView mMoniteur;
     @BindView(R.id.course_date_supervisors)
     TextView mDate;
-    @BindView(R.id.course_heure_supervisors)
-    TextView mHeure;
+    private TextView mHeure;
 
     // --------------------
     // AFFICHAGE DES NOTIFICATIONS DE CELLULE
@@ -55,6 +53,8 @@ public class SupervisorsViewHolder extends RecyclerView.ViewHolder {
         // liaison des elements du layout recyclerview et pupils_cell avec les variables declarées ici
         ButterKnife.bind(this, itemView);
 
+        mMoniteur = itemView.findViewById(R.id.course_moniteur_supervisor);
+        mHeure = itemView.findViewById(R.id.course_heure_supervisors);
         mCourseList = new ArrayList<>();
 
         // Affichage de la notification de l'ensemble des informations des cours

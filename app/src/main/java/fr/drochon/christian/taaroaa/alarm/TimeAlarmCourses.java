@@ -57,12 +57,10 @@ public class TimeAlarmCourses extends BroadcastReceiver {
         // Créé un nouvel intent. Par contre, on ne renvoie pas l'user vers une nouvelle activité car on s'y trouve dejà.
         // On ne l'y renvoie uniquement que si l'user n'est pas sur la page activityPupilsActivity au moment du declenchement de la notif.
         // Sinon, ca fera une boucle infinie puisque la meme acticité sera rappellée sans cesse.
-        if(intent.getExtras() != null) {
+        if (intent.getExtras() != null) {
             Object activity = Objects.requireNonNull(intent.getExtras().get("activity"));
-            if (activity != null) {
-                if (!activity.equals(CoursesPupilsActivity.class))
-                    intent = new Intent(context, CoursesPupilsActivity.class);
-            }
+            if (activity != null && !activity.equals(CoursesPupilsActivity.class))
+                intent = new Intent(context, CoursesPupilsActivity.class);
         }
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 2, intent, PendingIntent.FLAG_ONE_SHOT);
@@ -121,13 +119,13 @@ public class TimeAlarmCourses extends BroadcastReceiver {
                 // Register the channel with the system; you can't change the importance
                 // or other notification behaviors after this
                 NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
-                if(notificationManager != null)
-                notificationManager.createNotificationChannel(channel);
+                if (notificationManager != null)
+                    notificationManager.createNotificationChannel(channel);
             }
 
             // Show notification
-            if(notificationManager1 != null)
-            notificationManager1.notify(NOTIFICATION_TAG, NOTIFICATION_ID, notificationBuilder.build());
+            if (notificationManager1 != null)
+                notificationManager1.notify(NOTIFICATION_TAG, NOTIFICATION_ID, notificationBuilder.build());
         }
     }
 }
