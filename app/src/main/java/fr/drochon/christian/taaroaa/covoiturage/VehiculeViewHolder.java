@@ -88,12 +88,9 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
         // liaison des elements du layout recyclerview et pupils_cell avec les variables declarées ici
         ButterKnife.bind(this, itemView);
 
-        LinearLayout linearLayoutGlobal = itemView.findViewById(R.id.vehicle_linear_layout);
-        TextView titrePassager = itemView.findViewById(R.id.passager_titre_txt);
         mLieuRetour = itemView.findViewById(R.id.lieu_depart_retour_txt);
         mPoubelleImg = itemView.findViewById(R.id.poubelle_btn);
         mTypeVehicule = itemView.findViewById(R.id.typeVehicule_txt);
-        TextView titreVehicule = itemView.findViewById(R.id.vehicule_titre_txt);
 
         mCovoiturageList = new ArrayList<>();
         mListPassagers = new ArrayList<>();
