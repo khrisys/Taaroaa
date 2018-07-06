@@ -146,4 +146,7 @@ public class Covoiturage implements Serializable {
         return mListPassagers;
     }
 
+    public void setListPassagers(List<String> listPassagers) {
+        mListPassagers = listPassagers;
+    }
 }

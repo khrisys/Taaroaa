@@ -252,12 +252,12 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
                                 if (mUsername.contains(" ")) {
                                     parts = mUsername.split(" ");
                                     try {
-                                        if (parts[1] != null) nom = parts[1];
+                                        if (parts[0] != null) nom = parts[0];
                                         else nom = "";
                                     } catch (ArrayIndexOutOfBoundsException e1) {
                                         Log.e("TAG", "ArrayOutOfBoundException " + e1.getMessage());
                                     }
-                                    if (parts[0] != null) prenom = parts[0];
+                                    if (parts[1] != null) prenom = parts[1];
                                     else prenom = "";
                                 } else {
                                     nom = getCurrentUser().getDisplayName();

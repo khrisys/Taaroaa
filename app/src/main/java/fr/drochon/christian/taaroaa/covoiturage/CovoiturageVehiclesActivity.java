@@ -188,10 +188,11 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
 
                             // recuperation de l'objet covoiturage
                             //TODO requete ne renvoi pas l'attribut des passagers
-                            new Covoiturage(covoit.get("id").toString(), covoit.get("nomConducteur").toString(), covoit.get("prenomConducteur").toString(),
+                            Covoiturage covoiturage = new Covoiturage(covoit.get("id").toString(), covoit.get("nomConducteur").toString(), covoit.get("prenomConducteur").toString(),
                                     covoit.get("nbPlacesDispo").toString(), covoit.get("nbPlacesTotal").toString(), covoit.get("typeVehicule").toString(),
                                     stStringToDate(covoit.get("horaireAller").toString()), stStringToDate(covoit.get("horaireRetour").toString()),
                                     covoit.get("lieuDepartAller").toString(), covoit.get("lieuDepartRetour").toString(), listPassagers);
+                            covoiturage.setListPassagers(listPassagers);
                             myTrace1.stop();
                         }
                     }
