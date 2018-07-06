@@ -61,6 +61,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-perf:16.0.0'
     //EASY PERMISSIONS
     implementation 'pub.devrel:easypermissions:1.1.1'
+    //Pb SDK 19
+    implementation 'com.android.support:multidex:1.0.3'
 }
 
 apply plugin: 'com.google.gms.google-services'

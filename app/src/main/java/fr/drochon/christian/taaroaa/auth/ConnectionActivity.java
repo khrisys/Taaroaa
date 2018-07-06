@@ -23,7 +23,6 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.perf.FirebasePerformance;
@@ -139,11 +138,11 @@ public class ConnectionActivity extends BaseActivity {
         Objects.requireNonNull(getCurrentUser()).reload();
 
         // recuperation de la bdd FirebaseAuth avec en param l'app taaroaa
-        final FirebaseAuth auth = FirebaseAuth.getInstance(FirebaseFirestore.getInstance().getApp());
+        final FirebaseAuth auth = FirebaseAuth.getInstance();
 
         // creation d'un user avec email et password en bdd FirebaseAuth
         auth.createUserWithEmailAndPassword(this.mEmail.getText().toString(), mPassword.getText().toString())
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
@@ -201,15 +200,13 @@ public class ConnectionActivity extends BaseActivity {
 
         Objects.requireNonNull(getCurrentUser()).reload();
         //Afin de valider son formulaire, l'user devra cliquer sur la notif et il recevra alors automatiquement le token via Firebase
-        if (!Objects.requireNonNull(
-                getCurrentUser()).isEmailVerified()) {
+        if (!Objects.requireNonNull(getCurrentUser()).isEmailVerified()) {
             Objects.requireNonNull(getCurrentUser()).sendEmailVerification(actionCodeSettings)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
 
                             if (task.isSuccessful()) {
-
                                 Toast.makeText(ConnectionActivity.this,
                                         "Verification d'email envoyée à " + Objects.requireNonNull(getCurrentUser()).getEmail() + "\"",
                                         Toast.LENGTH_LONG).show();
@@ -256,9 +253,10 @@ public class ConnectionActivity extends BaseActivity {
                     // SI USER N'EXISTE PAS CAR IL N' PAS VALIDE SON ADRESSE OU S4EST TROMPE DANS LE NOM DE SON ADRESSE  MAIL
                     else if (queryDocumentSnapshots.size() == 0) {
                         connectToFirebaseWithEmailAndPassword();
+
+
                         //ici, on peut avoir le choix de lui rappeller qu'il souhaitait souscrire un compte par
                         // une notification, un email ou de le laisser transuille!
-
                         //TODO A decommenter ou pas selon le choix du client
                      /*   AlertDialog.Builder adb = new AlertDialog.Builder(ConnectionActivity.this);
                         adb.setTitle("Adresse email incorrecte !");

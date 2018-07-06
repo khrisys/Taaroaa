@@ -30,6 +30,7 @@ public class TimeAlarmCovoiturageAller extends BroadcastReceiver {
         // --------------------
         // RECUPERATION BUNDLE
         // --------------------
+        String aller = intent.getStringExtra("hAller");
 
         // recuperation de l'extra envoyé dans l'intent
         Bundle bundle = intent.getExtras();
@@ -39,12 +40,26 @@ public class TimeAlarmCovoiturageAller extends BroadcastReceiver {
             // --------------------
             // CONVERSION COVOITURAGE ALLER
             // --------------------
-            if (c != null) {
+            if (c != null ) {
                 // conversion de date pour affichage
                 Date dateAller = null;
                 SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy", Locale.US);
                 try {
                     dateAller = dateFormat.parse(c.getHoraireAller().toString());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                SimpleDateFormat dateFormat1 = new SimpleDateFormat("EEE dd MMM yyyy", Locale.FRANCE);
+                dateAllerStr = dateFormat1.format(dateAller);
+                SimpleDateFormat dateFormat2 = new SimpleDateFormat("HH:mm", Locale.FRANCE);
+                heureAllerStr = dateFormat2.format(dateAller);
+            }
+            //intent provient de la creation d'un covoiturage
+            else if(aller != null){
+                Date dateAller = null;
+                SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy", Locale.US);
+                try {
+                    dateAller = dateFormat.parse(aller);
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }

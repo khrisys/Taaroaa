@@ -22,7 +22,8 @@ public class Covoiturage implements Serializable {
     private List<String> mListPassagers;
 
     /**
-     * Constructeur par defaut utile à la bonne serialisation des informations au travers des activtés
+     * Constructeur par defaut utile à la bonne serialisation des informations au travers des activtés,
+     * notamment l'affichage des passagers
      */
     public Covoiturage() {
     }

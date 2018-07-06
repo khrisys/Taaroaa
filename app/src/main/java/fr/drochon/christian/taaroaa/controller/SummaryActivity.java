@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -76,9 +77,9 @@ public class SummaryActivity extends BaseActivity {
                 final Trace myTrace1 = FirebasePerformance.getInstance().newTrace("summaryActivityGoToPersonnalAccountWithBundle_trace");
                 myTrace1.start();
 
-                setupDb().collection("users").addSnapshotListener(SummaryActivity.this, new EventListener<QuerySnapshot>() {
+                setupDb().collection("users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
-                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                         if (queryDocumentSnapshots != null) {
                             if (queryDocumentSnapshots.size() != 0) {
                                 List<DocumentSnapshot> ds = queryDocumentSnapshots.getDocuments();
@@ -132,7 +133,7 @@ public class SummaryActivity extends BaseActivity {
 
                 final FirebaseUser auth = FirebaseAuth.getInstance().getCurrentUser();
                 if (auth != null) {
-                    setupDb().collection("users").document(auth.getUid()).addSnapshotListener(SummaryActivity.this, new EventListener<DocumentSnapshot>() {
+                    setupDb().collection("users").document(auth.getUid()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                         @Override
                         public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
                             if (documentSnapshot != null) {

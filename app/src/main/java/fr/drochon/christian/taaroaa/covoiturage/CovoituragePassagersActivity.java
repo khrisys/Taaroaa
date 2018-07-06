@@ -489,7 +489,9 @@ public class CovoituragePassagersActivity extends BaseActivity {
                 String placesRestantes = String.valueOf(nbPlacesRestantes);
                 mNbPlaceDispo.setText(placesRestantes);
                 // recuperation passagers existants dejà pour ce covoit
-                List<String> listPassagers = new ArrayList<>(covoiturage.getListPassagers());
+                List<String> listPassagers = new ArrayList<>();
+                if(covoiturage.getListPassagers() != null)
+                    listPassagers = covoiturage.getListPassagers();
 
                 // ajout de passager(s) dans l'objet covoiturage en plus de ceux qui existaient avant
                 for (int i = 0; i < listSelectedUsers.size(); i++) {

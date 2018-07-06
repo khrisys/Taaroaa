@@ -173,7 +173,8 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
         final Trace myTrace1 = FirebasePerformance.getInstance().newTrace("covoiturageVehiclesActivityGetAllCovoiturages_trace");
         myTrace1.start();
 
-        Query mQuery = setupDb().collection("covoiturages").orderBy("horaireRetour", Query.Direction.ASCENDING).whereGreaterThan("horaireRetour", Calendar.getInstance().getTime());
+        Query mQuery = setupDb().collection("covoiturages").orderBy("horaireRetour", Query.Direction.ASCENDING)
+                .whereGreaterThan("horaireRetour", Calendar.getInstance().getTime());
         mQuery.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
@@ -183,9 +184,10 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
                         Map<String, Object> covoit = ds.get(i).getData();
                         listPassagers = new ArrayList<>();
                         if (covoit != null) {
-                            listPassagers = (List<String>) covoit.get("passagers");
+                            listPassagers = (List<String>) covoit.get("listPassagers");
 
                             // recuperation de l'objet covoiturage
+                            //TODO requete ne renvoi pas l'attribut des passagers
                             new Covoiturage(covoit.get("id").toString(), covoit.get("nomConducteur").toString(), covoit.get("prenomConducteur").toString(),
                                     covoit.get("nbPlacesDispo").toString(), covoit.get("nbPlacesTotal").toString(), covoit.get("typeVehicule").toString(),
                                     stStringToDate(covoit.get("horaireAller").toString()), stStringToDate(covoit.get("horaireRetour").toString()),

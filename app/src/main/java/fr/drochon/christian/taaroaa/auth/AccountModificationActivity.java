@@ -147,7 +147,7 @@ public class AccountModificationActivity extends BaseActivity {
 
                     }
                     //En cas de negation, l'utilisateur reste sur l'ecran de creation de son compte
-                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                }).setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         EditText editText = findViewById(R.id.alertdialog_delete_account);
                         Toast.makeText(AccountModificationActivity.this, editText.getText(), Toast.LENGTH_LONG).show();
@@ -251,6 +251,9 @@ public class AccountModificationActivity extends BaseActivity {
     /**
      * Fait appel au fichier xml menu pour definir les icones.
      * Definit differentes options dans le menu caché.
+     *
+     * @param menu menu de la toolbar
+     * @return la toolbar
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -398,7 +401,7 @@ public class AccountModificationActivity extends BaseActivity {
                 mNiveauPlongeespinner.setEnabled(true);
                 mLinearLayoutFonctionAdherent.setVisibility(View.VISIBLE);
                 mTitrePassword.setVisibility(View.GONE);
-                mPassword.setVisibility(View.GONE);
+                //mPassword.setVisibility(View.GONE);
                 mProgressBar.setVisibility(View.GONE);
                 //Affichage du bouton de suppression uniquement aux proprietaires d'un compte
                 mSuppressionCompte.setVisibility(View.GONE);
@@ -448,10 +451,10 @@ public class AccountModificationActivity extends BaseActivity {
                         addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
-                                Toast.makeText(AccountModificationActivity.this, R.string.update_account,
-                                        Toast.LENGTH_LONG).show();
                                 updateUIAfterRESTRequestsCompleted(UPDATE_USERNAME);
                                 startSummaryActivity();
+                                Toast.makeText(AccountModificationActivity.this, R.string.update_account,
+                                        Toast.LENGTH_LONG).show();
 
                                 myTrace.stop();
                             }
@@ -519,9 +522,8 @@ public class AccountModificationActivity extends BaseActivity {
      * Methode permettant de supprimer les identifiants de l'user qui supprime son compte
      */
     private void deleteUserAuth() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            user.delete()
+        if (getCurrentUser() != null) {
+            getCurrentUser().delete()
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {

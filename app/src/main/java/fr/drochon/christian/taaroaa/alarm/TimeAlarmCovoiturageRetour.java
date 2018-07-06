@@ -31,6 +31,8 @@ public class TimeAlarmCovoiturageRetour extends BroadcastReceiver {
         // RECUPERATION BUNDLE
         // --------------------
 
+        String retour = intent.getStringExtra("hRetour");
+
         // recuperation de l'extra envoyé dans l'intent
         Bundle bundle = intent.getExtras();
         if(bundle != null) {
@@ -46,6 +48,20 @@ public class TimeAlarmCovoiturageRetour extends BroadcastReceiver {
                 SimpleDateFormat dateFormat3 = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy", Locale.US);
                 try {
                     dateRetour = dateFormat3.parse(c.getHoraireRetour().toString());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                SimpleDateFormat dateFormat4 = new SimpleDateFormat("EEE dd MMM yyyy", Locale.FRANCE);
+                dateRetourStr = dateFormat4.format(dateRetour);
+                SimpleDateFormat dateFormat5 = new SimpleDateFormat("HH:mm", Locale.FRANCE);
+                heureRetourStr = dateFormat5.format(dateRetour);
+            }
+            // provient de la creation d'un covoiturage
+            else if(retour != null){
+                Date dateRetour = null;
+                SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy", Locale.US);
+                try {
+                    dateRetour = dateFormat.parse(retour);
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }

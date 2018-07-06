@@ -94,7 +94,6 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
 
                 if (!isCurrentUserLogged()) {
                     startSignInActivity(); // non connecté : inscription ou entree valide
-                    //getFirstConnectedUser();
                 } else {
                     Toast.makeText(MainActivity.this, "Vous etes déjà connecté, vous ne pouvez pas créer un compte !", Toast.LENGTH_LONG).show();
                     startSummaryActivity(); // connecté : renvoyé vers le sommaire
@@ -148,8 +147,9 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
         super.onResume();
         //lancement de l"activite de connexin ou de login
 
-        // if (!isCurrentUserLogged())
-        //startSignInActivity();
+       /* if (!isCurrentUserLogged()) {
+            startSignInActivity(); // non connecté : inscription ou entree valide
+        }*/
 
 
         //CRASHLYTICS : force application to crash
@@ -174,7 +174,7 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
                                 Arrays.asList(new AuthUI.IdpConfig.EmailBuilder().build(), //EMAIL
                                         new AuthUI.IdpConfig.GoogleBuilder().build())) // SUPPORT GOOGLE
                         .setIsSmartLockEnabled(false, true)
-                        .setLogo(R.mipmap.logo1)
+                        //.setLogo(R.mipmap.logo1)
                         .build(),
                 RC_SIGN_IN);// identifiant de connexion
     }
@@ -239,44 +239,43 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
                                 startActivity(intent);
                                 break;
                             }
-                            //LA PERSONNE CONNECTEE N'EST PAS EN BDD OU ELLE EST ENTRAIN DE CREER SON COMPTE
-                            else if (response.getEmail() != null) {
-                                String mUsername = Objects.requireNonNull(getCurrentUser()).getDisplayName();
-                                // decomposition du nom et du prenom recu dans le param username
-                                //LA PERSONNE CONNECTEE EST DEJA ENREGISTREE EN BDD :  RECUPERE ET AFFICHE TOUTES SES DONNEES
-                                if (mUsername != null) {
-                                    // decomposition du nom et du prenom recu dans le param name
-                                    String nom = null;
-                                    String prenom;
-                                    String[] parts;
-                                    if (mUsername.contains(" ")) {
-                                        parts = mUsername.split(" ");
-                                        try {
-                                            if (parts[1] != null) nom = parts[1];
-                                            else nom = "";
-                                        } catch (ArrayIndexOutOfBoundsException e1) {
-                                            Log.e("TAG", "ArrayOutOfBoundException " + e1.getMessage());
-                                        }
-                                        if (parts[0] != null) prenom = parts[0];
-                                        else prenom = "";
-                                    } else {
-                                        nom = getCurrentUser().getDisplayName();
-                                        prenom = "";
+
+                        }
+                        //LA PERSONNE CONNECTEE N'EST PAS EN BDD OU ELLE EST ENTRAIN DE CREER SON COMPTE
+                        if (response.getEmail() != null) {
+                            String mUsername = Objects.requireNonNull(getCurrentUser()).getDisplayName();
+                            // decomposition du nom et du prenom recu dans le param username
+                            if (mUsername != null) {
+                                String nom = null;
+                                String prenom;
+                                String[] parts;
+                                if (mUsername.contains(" ")) {
+                                    parts = mUsername.split(" ");
+                                    try {
+                                        if (parts[1] != null) nom = parts[1];
+                                        else nom = "";
+                                    } catch (ArrayIndexOutOfBoundsException e1) {
+                                        Log.e("TAG", "ArrayOutOfBoundException " + e1.getMessage());
                                     }
-                                    mName = nom;
-                                    mFirstName = prenom;
-                                    mEmailUser = response.getEmail();
-                                    mPassword = response.getUser().getProviderId();
-                                    //ENVOI VERS LE CONTROLE DE DECURITE DU MAIL DE LA PERSONNE CONNECTEE
-                                    // envoi des identifiants sur laclasse AccountCreateActivity pour verification que son email
-                                    // notamment ne soit pas erronée, chose la pls frequente
-                                    Intent intent = new Intent(MainActivity.this, AccountCreateActivity.class);
-                                    intent.putExtra("nom", mName);
-                                    intent.putExtra("prenom", mFirstName);
-                                    intent.putExtra("email", mEmailUser);
-                                    intent.putExtra("password", mPassword);
-                                    startActivity(intent);
+                                    if (parts[0] != null) prenom = parts[0];
+                                    else prenom = "";
+                                } else {
+                                    nom = getCurrentUser().getDisplayName();
+                                    prenom = "";
                                 }
+                                mName = nom;
+                                mFirstName = prenom;
+                                mEmailUser = response.getEmail();
+                                mPassword = response.getUser().getProviderId();
+                                //ENVOI VERS LE CONTROLE DE DECURITE VIA MAIL DE LA PERSONNE CONNECTEE
+                                // envoi des identifiants sur laclasse AccountCreateActivity pour verification que son email
+                                // notamment ne soit pas erronée, chose la pls frequente
+                                Intent intent = new Intent(MainActivity.this, AccountCreateActivity.class);
+                                intent.putExtra("nom", mName);
+                                intent.putExtra("prenom", mFirstName);
+                                intent.putExtra("email", mEmailUser);
+                                intent.putExtra("password", mPassword);
+                                startActivity(intent);
                             }
                         }
                     }
