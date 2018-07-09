@@ -191,7 +191,7 @@ public class CovoiturageVehiclesActivity extends BaseActivity implements Adapter
                             Covoiturage covoiturage = new Covoiturage(covoit.get("id").toString(), covoit.get("nomConducteur").toString(), covoit.get("prenomConducteur").toString(),
                                     covoit.get("nbPlacesDispo").toString(), covoit.get("nbPlacesTotal").toString(), covoit.get("typeVehicule").toString(),
                                     stStringToDate(covoit.get("horaireAller").toString()), stStringToDate(covoit.get("horaireRetour").toString()),
-                                    covoit.get("lieuDepartAller").toString(), covoit.get("lieuDepartRetour").toString(), listPassagers);
+                                    covoit.get("lieuDepartAller").toString(), covoit.get("lieuArriveeRetour").toString(), listPassagers);
                             covoiturage.setListPassagers(listPassagers);
                             myTrace1.stop();
                         }

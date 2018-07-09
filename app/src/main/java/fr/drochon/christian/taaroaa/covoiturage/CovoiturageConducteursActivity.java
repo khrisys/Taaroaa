@@ -405,7 +405,7 @@ public class CovoiturageConducteursActivity extends BaseActivity {
                     covoit.put("horaireAller", horaireDelAller);
                     covoit.put("horaireRetour", horaireDuRetour);
                     covoit.put("lieuDepartAller", lieuAller);
-                    covoit.put("lieuDepartRetour", lieuRetour);
+                    covoit.put("lieuArriveeRetour", lieuRetour);
                     //TODO V2 : ligne à rajouter lors que l'obet Sortie existera
                     //covoit.put("reservation", null);
 

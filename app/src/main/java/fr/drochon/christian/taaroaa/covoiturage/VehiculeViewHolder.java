@@ -229,7 +229,7 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
             mAller.setText(stDateToString(covoiturage.getHoraireAller()));
             mRetour.setText(stDateToString(covoiturage.getHoraireRetour()));
             mLieuDepart.setText(covoiturage.getLieuDepartAller());
-            mLieuRetour.setText(covoiturage.getLieuDepartRetour());
+            mLieuRetour.setText(covoiturage.getLieuArriveeRetour());
         }
     }
 

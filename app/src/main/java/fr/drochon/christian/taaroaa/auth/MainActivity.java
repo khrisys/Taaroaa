@@ -23,7 +23,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.perf.FirebasePerformance;
 import com.google.firebase.perf.metrics.Trace;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -171,8 +171,7 @@ public class MainActivity extends BaseActivity implements ComponentCallbacks2 {
                         .createSignInIntentBuilder()
                         //.setTheme(R.style.LoginTheme)
                         .setAvailableProviders(
-                                Arrays.asList(new AuthUI.IdpConfig.EmailBuilder().build(), //EMAIL
-                                        new AuthUI.IdpConfig.GoogleBuilder().build())) // SUPPORT GOOGLE
+                                Collections.singletonList(new AuthUI.IdpConfig.EmailBuilder().build())) //EMAIL
                         .setIsSmartLockEnabled(false, true)
                         //.setLogo(R.mipmap.logo1)
                         .build(),

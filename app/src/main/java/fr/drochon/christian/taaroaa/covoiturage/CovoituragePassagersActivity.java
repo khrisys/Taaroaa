@@ -270,13 +270,29 @@ public class CovoituragePassagersActivity extends BaseActivity {
                 if (verificationChampsVides()) {
                     mTitrePassager.setVisibility(View.VISIBLE);
                     inputs = Integer.parseInt(charSequence.toString());
+                    // AFFICHAGE LISTE PASSAGERS
+                    // 1 : creation de la liste des passagers à afficher sans le conducteur
                     for (int i = 0; i < listUsers.size(); i++) {
-                        listUsersStr.add(listUsers.get(i).getPrenom() + " " + listUsers.get(i).getNom());
+                        if (!(listUsers.get(i).getNom().equals(covoiturage.getNomConducteur()))) {
+                            listUsersStr.add(listUsers.get(i).getPrenom() + " " + listUsers.get(i).getNom());
+                        }
                     }
+                    // 2 : filtre des paasagers pour ne pas afficher les passagers dejà existants dans le covoiturage
+                    if (covoiturage.getListPassagers() != null) {
+                        for (int j = 0; j < covoiturage.getListPassagers().size(); j++) {
+                            for (int k = 0; k < listUsersStr.size(); k++) {
+                                String s = listUsersStr.get(k);
+                                if (covoiturage.getListPassagers().get(j).equals(listUsersStr.get(k)))
+                                    listUsersStr.remove(k);
+                            }
+                        }
+                    }
+
 
                     if (inputs > 0) {
                         // creation des champs spinner de passagers dynamiquement
                         for (int i = 0; i < inputs; i++) {
+
                             // creation d'autant de spinner que desirés
                             Spinner spinnerPassagers = new Spinner(this);
                             // Create an ArrayAdapter using the string array and a default spinner layout
@@ -304,8 +320,18 @@ public class CovoituragePassagersActivity extends BaseActivity {
                                             } catch (IndexOutOfBoundsException e) {
                                                 e.getMessage();
                                             }
+
                                             listSelectedUsers.add(spinner.getSelectedItem().toString());
+                                            // interdiction de saisir 2 fois la meme personne
                                         }
+                                       /* else if(listSelectedUsers.contains(spinner.getSelectedItem().toString())){
+                                            // capture de l'exception lors de la creation de la liste, car les index n'exitent pas encore
+                                            try {
+                                                listUsersStr.remove(spinner.getSelectedItemPosition());
+                                            } catch (IndexOutOfBoundsException e) {
+                                                e.getMessage();
+                                            }
+                                        }*/
                                     }
                                 }
 
@@ -445,7 +471,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
         if (covoiturage != null) {
             mNomConducteur.setText(Html.fromHtml("<b>Conducteur : </b>" + covoiturage.getPrenomConducteur() + " " + covoiturage.getNomConducteur()));
             mDateDepart.setText(Html.fromHtml("<b>Aller : départ le </b>" + stDateToString(covoiturage.getHoraireAller()) + "<b> depuis </b>" + covoiturage.getLieuDepartAller()));
-            mDateretour.setText(Html.fromHtml("<b>Retour : dé[{ le </b>" + stDateToString(covoiturage.getHoraireRetour()) + "<b> jusqu'à </b>" + covoiturage.getLieuDepartRetour()));
+            mDateretour.setText(Html.fromHtml("<b>Retour : dé[{ le </b>" + stDateToString(covoiturage.getHoraireRetour()) + "<b> jusqu'à </b>" + covoiturage.getLieuArriveeRetour()));
             mNbPlaceDispo.setText(Html.fromHtml("<b>Places disponibles : </b>" + covoiturage.getNbPlacesDispo() + " / " + covoiturage.getNbPlacesTotal()));
             mTypeVehicule.setText(Html.fromHtml("<b>Type Véhicule : </b>" + covoiturage.getTypeVehicule()));
         }
@@ -490,7 +516,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
                 mNbPlaceDispo.setText(placesRestantes);
                 // recuperation passagers existants dejà pour ce covoit
                 List<String> listPassagers = new ArrayList<>();
-                if(covoiturage.getListPassagers() != null)
+                if (covoiturage.getListPassagers() != null)
                     listPassagers = covoiturage.getListPassagers();
 
                 // ajout de passager(s) dans l'objet covoiturage en plus de ceux qui existaient avant

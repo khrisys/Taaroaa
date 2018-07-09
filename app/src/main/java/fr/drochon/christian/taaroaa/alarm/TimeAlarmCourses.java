@@ -54,8 +54,10 @@ public class TimeAlarmCourses extends BroadcastReceiver {
             heureCoursStr = dateFormat2.format(dateCours);
         }
 
-        // Créé un nouvel intent. Par contre, on ne renvoie pas l'user vers une nouvelle activité car on s'y trouve dejà.
-        // On ne l'y renvoie uniquement que si l'user n'est pas sur la page activityPupilsActivity au moment du declenchement de la notif.
+        // Créé un nouvel intent.
+        // Recuperation de l'intent de CoursesPupilsActivity.
+        // Par contre, on ne renvoie pas l'user vers une nouvelle activité car on s'y trouve dejà.
+        // On ne l'y renvoie uniquement que si l'user n'est pas sur la page CoursesPupilsActivity au moment du declenchement de la notif.
         // Sinon, ca fera une boucle infinie puisque la meme acticité sera rappellée sans cesse.
         if (intent.getExtras() != null) {
             Object activity = Objects.requireNonNull(intent.getExtras().get("activity"));

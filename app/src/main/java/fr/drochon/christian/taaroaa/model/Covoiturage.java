@@ -18,7 +18,7 @@ public class Covoiturage implements Serializable {
     private Date mHoraireRetour;
     private String mTypeVehicule;
     private String mLieuDepartAller;
-    private String mLieuDepartRetour;
+    private String mLieuArriveeRetour;
     private List<String> mListPassagers;
 
     /**
@@ -28,8 +28,32 @@ public class Covoiturage implements Serializable {
     public Covoiturage() {
     }
 
-
-    //GETTERS AND SETTERS
+    /**
+     * Constructeur servant à creer un nouveau covoiturage, sachant qu'il ne peut y avoir encore de passager dans un nouveau covoiturage
+     * @param id
+     * @param nomConducteur
+     * @param prenomConducteur
+     * @param nbPlacesDispo
+     * @param nbPlacesTotal
+     * @param typeVehicule
+     * @param horaireAller
+     * @param horaireRetour
+     * @param lieuDeparttAller
+     * @param lieuArriveeRetour
+     */
+    public Covoiturage(String id, String nomConducteur, String prenomConducteur, String nbPlacesDispo, String nbPlacesTotal, String typeVehicule, Date horaireAller, Date horaireRetour,
+                       String lieuDeparttAller, String lieuArriveeRetour) {
+        this.id = id;
+        mNomConducteur = nomConducteur;
+        mPrenomConducteur = prenomConducteur;
+        mNbPlacesDispo = nbPlacesDispo;
+        mNbPlacesTotal = nbPlacesTotal;
+        mHoraireAller = horaireAller;
+        mHoraireRetour = horaireRetour;
+        mTypeVehicule = typeVehicule;
+        mLieuDepartAller = lieuDeparttAller;
+        mLieuArriveeRetour = lieuArriveeRetour;
+    }
 
     /**
      * Methode permettant de creer ou d'updater toutes les caracteristiques d'un covoiturage final
@@ -43,11 +67,11 @@ public class Covoiturage implements Serializable {
      * @param horaireAller     date et heure du trajet aller
      * @param horaireRetour    date et heure du depart du trajet retour
      * @param lieuDeparttAller lieu de depart aller
-     * @param lieuDepartRetour lieu de depart retour
+     * @param lieuArriveeRetour lieu de depart retour
      * @param passagers        nom et prenom des passagers
      */
     public Covoiturage(String id, String nomConducteur, String prenomConducteur, String nbPlacesDispo, String nbPlacesTotal, String typeVehicule, Date horaireAller, Date horaireRetour,
-                       String lieuDeparttAller, String lieuDepartRetour, List<String> passagers) {
+                       String lieuDeparttAller, String lieuArriveeRetour, List<String> passagers) {
         this.id = id;
         mNomConducteur = nomConducteur;
         mPrenomConducteur = prenomConducteur;
@@ -57,7 +81,7 @@ public class Covoiturage implements Serializable {
         mHoraireRetour = horaireRetour;
         mTypeVehicule = typeVehicule;
         mLieuDepartAller = lieuDeparttAller;
-        mLieuDepartRetour = lieuDepartRetour;
+        mLieuArriveeRetour = lieuArriveeRetour;
         mListPassagers = passagers;
     }
 
@@ -134,12 +158,12 @@ public class Covoiturage implements Serializable {
         mLieuDepartAller = lieuDepartAller;
     }
 
-    public String getLieuDepartRetour() {
-        return mLieuDepartRetour;
+    public String getLieuArriveeRetour() {
+        return mLieuArriveeRetour;
     }
 
-    public void setLieuDepartRetour(String lieuDepartRetour) {
-        mLieuDepartRetour = lieuDepartRetour;
+    public void setLieuArriveeRetour(String lieuArriveeRetour) {
+        mLieuArriveeRetour = lieuArriveeRetour;
     }
 
     public List<String> getListPassagers() {

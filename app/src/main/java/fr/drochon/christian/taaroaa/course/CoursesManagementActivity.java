@@ -333,7 +333,7 @@ public class CoursesManagementActivity extends BaseActivity {
     private void createCourseInFirebase() {
 
         // pas d'id pour un objet non créé
-        final String id = CourseHelper.getCoursesCollection().getId();
+        final String id = CourseHelper.getCoursesCollection().document().getId();
         final String moniteur = mMoniteurCours.getText().toString();
         final String sujet = mSujetCours.getText().toString();
         final String typeCours = mTypeCours.getSelectedItem().toString();

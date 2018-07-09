@@ -102,9 +102,9 @@
     <string name="supprimez_un_covoiturage">Supprimez un covoiturage</string>
     <string name="icone_pour_suppresssion_de_covoiturage">Icone pour suppresssion de covoiturage</string>
     <string name="aller">Aller :</string>
-    <string name="lieu_de_rdv_aller">Lieu de rdv aller :</string>
+    <string name="lieu_de_rdv_aller">Lieu de rdv :</string>
     <string name="retour">Retour</string>
-    <string name="lieu_de_rdv_retour">Lieu de rdv retour :</string>
+    <string name="lieu_de_rdv_retour">Destination retour :</string>
 
     <!--ID d'application Facebook-->
     <!--    <string name="facebook_app_id" translatable="false">2177677015844999</string>
