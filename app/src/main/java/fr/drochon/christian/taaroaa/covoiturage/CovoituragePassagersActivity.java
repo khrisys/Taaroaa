@@ -281,7 +281,6 @@ public class CovoituragePassagersActivity extends BaseActivity {
                     if (covoiturage.getListPassagers() != null) {
                         for (int j = 0; j < covoiturage.getListPassagers().size(); j++) {
                             for (int k = 0; k < listUsersStr.size(); k++) {
-                                String s = listUsersStr.get(k);
                                 if (covoiturage.getListPassagers().get(j).equals(listUsersStr.get(k)))
                                     listUsersStr.remove(k);
                             }
