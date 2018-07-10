@@ -126,12 +126,10 @@ public class AccountCreateActivity extends BaseActivity {
                 myTrace.start();
 
                 if (getCurrentUser() != null) {
-                    //CELUI LA REMET 0 JOUR LA NOTIF VALIDATION EMAIL
+                    //REMISE A JOUR DE LA NOTIF VALIDATION EMAIL
                     Objects.requireNonNull(getCurrentUser()).reload();
-                    getCurrentUser().isEmailVerified();
-                    Objects.requireNonNull(getCurrentUser()).reload();
-                    // thread permettant d'attendre 2 secondes, car la methode reload() n'est pas instantanée.
-                    //Et si la methode reload n'est pas prise en compte, l'email sera toujours non valide, meme s'il a été validé.
+                    // thread permettant d'attendre 2 secondes, car la methode reload() ne prend pas effet instantanément.
+                    //Or, si la methode reload() n'est pas prise en compte, l'email sera toujours non valide, meme s'il a été validé.
                     try {
                         Thread.sleep(2000);
                         mProgressBar.setVisibility(View.VISIBLE);

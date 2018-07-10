@@ -129,9 +129,9 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
         mPoubelleImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                db.collection("users").addSnapshotListener(new EventListener<QuerySnapshot>() {
+                db.collection("users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
-                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                         if (queryDocumentSnapshots != null && queryDocumentSnapshots.size() != 0) {
                             List<DocumentSnapshot> docSps = queryDocumentSnapshots.getDocuments();
                             for (DocumentSnapshot ds : docSps) {
