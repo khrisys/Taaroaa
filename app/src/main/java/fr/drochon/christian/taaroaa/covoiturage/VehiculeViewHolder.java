@@ -53,8 +53,6 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
     private final List<String> mListPassagers;
     private final FirebaseFirestore db;
     private final AlarmManager mAlarmManager;
-    @BindView(R.id.clic_global)
-    LinearLayout mGlobalClic;
     @BindView(R.id.passager_spinner)
     Spinner mPassagerSpinner;
     @BindView(R.id.lieu_depart_aller_txt)
@@ -88,6 +86,7 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
         // liaison des elements du layout recyclerview et pupils_cell avec les variables declarées ici
         ButterKnife.bind(this, itemView);
 
+        LinearLayout globalClic = itemView.findViewById(R.id.clic_global);
         mLieuRetour = itemView.findViewById(R.id.lieu_depart_retour_txt);
         mPoubelleImg = itemView.findViewById(R.id.poubelle_btn);
         mTypeVehicule = itemView.findViewById(R.id.typeVehicule_txt);
@@ -102,11 +101,11 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
         // LISTENERS
         // --------------------
 
-        mGlobalClic.setOnClickListener(new View.OnClickListener() {
+        globalClic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                // clic sur le nom du conducteur qui renvoi l'utilisateur à la page de reservation
+                // clic sur le covoiturage global qui renvoi l'utilisateur à la page de reservation
                 if (Integer.parseInt(sCovoiturage.getNbPlacesDispo()) > 0)
                     startActivityCovoituragePassagers();
                     //alterdialog de covoit complet et renvoi vers la page des covoiturages
