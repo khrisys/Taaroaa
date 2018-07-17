@@ -321,16 +321,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
                                             }
 
                                             listSelectedUsers.add(spinner.getSelectedItem().toString());
-                                            // interdiction de saisir 2 fois la meme personne
                                         }
-                                       /* else if(listSelectedUsers.contains(spinner.getSelectedItem().toString())){
-                                            // capture de l'exception lors de la creation de la liste, car les index n'exitent pas encore
-                                            try {
-                                                listUsersStr.remove(spinner.getSelectedItemPosition());
-                                            } catch (IndexOutOfBoundsException e) {
-                                                e.getMessage();
-                                            }
-                                        }*/
                                     }
                                 }
 
