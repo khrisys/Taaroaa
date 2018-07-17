@@ -56,7 +56,7 @@ import fr.drochon.christian.taaroaa.model.User;
 
 public class CovoituragePassagersActivity extends BaseActivity {
 
-    private static Covoiturage covoiturage;
+
     // DESIGN
     private TextInputEditText mNomConducteur;
     private TextInputEditText mDateDepart;
@@ -70,6 +70,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
     private ProgressBar mProgressBar;
     // DATAS
     private int inputs;
+    private static Covoiturage covoiturage;
     private List<User> listUsers;
     private List<String> listUsersStr;
     private List<String> listSelectedUsers;
@@ -238,7 +239,6 @@ public class CovoituragePassagersActivity extends BaseActivity {
             mNbPassagerInput.requestFocus();
             return false;
         }
-
         return true;
     }
 
@@ -277,7 +277,7 @@ public class CovoituragePassagersActivity extends BaseActivity {
                             listUsersStr.add(listUsers.get(i).getPrenom() + " " + listUsers.get(i).getNom());
                         }
                     }
-                    // 2 : filtre des paasagers pour ne pas afficher les passagers dejà existants dans le covoiturage
+                    // 2 : filtre des passagers pour ne pas afficher les passagers dejà existants dans le covoiturage
                     if (covoiturage.getListPassagers() != null) {
                         for (int j = 0; j < covoiturage.getListPassagers().size(); j++) {
                             for (int k = 0; k < listUsersStr.size(); k++) {

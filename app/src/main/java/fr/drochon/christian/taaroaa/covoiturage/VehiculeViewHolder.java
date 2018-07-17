@@ -48,17 +48,11 @@ import fr.drochon.christian.taaroaa.model.Covoiturage;
 
 public class VehiculeViewHolder extends RecyclerView.ViewHolder {
 
-    //DATA
-    private final List<Covoiturage> mCovoiturageList;
-    private final List<String> mListPassagers;
-    private final FirebaseFirestore db;
-    private final AlarmManager mAlarmManager;
+    // DESIGN
     @BindView(R.id.passager_spinner)
     Spinner mPassagerSpinner;
     @BindView(R.id.lieu_depart_aller_txt)
     TextView mLieuDepart;
-    private TextView mLieuRetour;
-    private TextView mTypeVehicule;
     @BindView(R.id.places_titre_txt)
     TextView mTitrePlace;
     @BindView(R.id.nbPlacesDispo_txt)
@@ -69,8 +63,15 @@ public class VehiculeViewHolder extends RecyclerView.ViewHolder {
     TextView mRetour;
     @BindView(R.id.covoit_conducteur_nom)
     TextView mNomConducteur;
+    //DATA
+    private final List<Covoiturage> mCovoiturageList;
+    private final List<String> mListPassagers;
+    private final FirebaseFirestore db;
+    private final AlarmManager mAlarmManager;
     private ImageButton mPoubelleImg;
     private Covoiturage sCovoiturage;
+    private TextView mLieuRetour;
+    private TextView mTypeVehicule;
 
 
     /**
